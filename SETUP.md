@@ -108,7 +108,7 @@ on Windows *Developer Mode* (Settings → System → For developers) or run
 
 ## Placeholders to fill in when you create a GitHub repo
 
-`CHANGE-ME/eq-zera` appears in `src/main/security.ts` (external-link allowlist),
+`Zeratfule/EQ-Zera` appears in `src/main/security.ts` (external-link allowlist),
 `src/renderer/src/features/whatsnew/WhatsNewPanel.tsx` (the "release notes" link), and the two
 tests that pin them. Replace with `<your-user>/<your-repo>`. To turn self-updates back on
 later: add a `publish:` block to `electron-builder.yml`, make `autoUpdateDisabled()` return `false`

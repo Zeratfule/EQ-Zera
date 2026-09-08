@@ -77,7 +77,7 @@ export const EXTERNAL_LINK_ALLOWLIST: readonly ExternalLinkRule[] = [
   { host: 'eqlwiki.com' },
   { host: 'www.eqlwiki.com' },
   { host: 'wiki.project1999.com' },
-  { host: 'github.com', pathPrefix: '/CHANGE-ME/eq-zera' }
+  { host: 'github.com', pathPrefix: '/Zeratfule/EQ-Zera' }
 ]
 
 const ALLOWED_LINK_RULES = new Map(EXTERNAL_LINK_ALLOWLIST.map((r) => [r.host, r] as const))
@@ -85,7 +85,7 @@ const ALLOWED_LINK_RULES = new Map(EXTERNAL_LINK_ALLOWLIST.map((r) => [r.host, r
 /**
  * Is `pathname` the allowed subtree itself, or something inside it?
  *
- * SEGMENT-AWARE, never a bare `startsWith`: `/CHANGE-ME/eq-zera-evil/x` shares the
+ * SEGMENT-AWARE, never a bare `startsWith`: `/Zeratfule/EQ-Zera-evil/x` shares the
  * prefix's characters and is a DIFFERENT repo, so the boundary is the separator. The prefix
  * itself passes (the repo's own front page is the same page the releases link's parent is).
  *

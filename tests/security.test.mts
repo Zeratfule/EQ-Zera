@@ -60,26 +60,26 @@ test('allowedExternalUrl accepts exactly the links the app produces today', () =
   // The What's new panel's way out to the full history (JOS-254). A constant in the renderer,
   // not scraped text — but it travels the same door as every other link, so it is pinned here.
   assert.equal(
-    allowedExternalUrl('https://github.com/CHANGE-ME/eq-zera/releases'),
-    'https://github.com/CHANGE-ME/eq-zera/releases'
+    allowedExternalUrl('https://github.com/Zeratfule/EQ-Zera/releases'),
+    'https://github.com/Zeratfule/EQ-Zera/releases'
   )
   // The subtree, not just that one leaf: query + fragment survive, and the repo's own front page
   // (the prefix itself, with or without its trailing slash) is inside its own subtree.
   assert.equal(
-    allowedExternalUrl('https://github.com/CHANGE-ME/eq-zera/releases/tag/v0.24.0'),
-    'https://github.com/CHANGE-ME/eq-zera/releases/tag/v0.24.0'
+    allowedExternalUrl('https://github.com/Zeratfule/EQ-Zera/releases/tag/v0.24.0'),
+    'https://github.com/Zeratfule/EQ-Zera/releases/tag/v0.24.0'
   )
   assert.equal(
-    allowedExternalUrl('https://github.com/CHANGE-ME/eq-zera/issues?q=is%3Aopen#top'),
-    'https://github.com/CHANGE-ME/eq-zera/issues?q=is%3Aopen#top'
+    allowedExternalUrl('https://github.com/Zeratfule/EQ-Zera/issues?q=is%3Aopen#top'),
+    'https://github.com/Zeratfule/EQ-Zera/issues?q=is%3Aopen#top'
   )
   assert.equal(
-    allowedExternalUrl('https://github.com/CHANGE-ME/eq-zera'),
-    'https://github.com/CHANGE-ME/eq-zera'
+    allowedExternalUrl('https://github.com/Zeratfule/EQ-Zera'),
+    'https://github.com/Zeratfule/EQ-Zera'
   )
   assert.equal(
-    allowedExternalUrl('https://github.com/CHANGE-ME/eq-zera/'),
-    'https://github.com/CHANGE-ME/eq-zera/'
+    allowedExternalUrl('https://github.com/Zeratfule/EQ-Zera/'),
+    'https://github.com/Zeratfule/EQ-Zera/'
   )
 })
 
@@ -95,35 +95,35 @@ test('the github.com entry is scoped to THIS repo, not to the host (JOS-263)', (
   // Another owner's repo of the SAME name, and a repo whose name merely starts with ours — the
   // prefix is segment-aware, never a bare startsWith.
   assert.equal(allowedExternalUrl('https://github.com/evil/everquest-companion/releases'), null)
-  assert.equal(allowedExternalUrl('https://github.com/CHANGE-ME/eq-zera-evil/releases'), null)
-  assert.equal(allowedExternalUrl('https://github.com/CHANGE-ME/eq-zeraEVIL'), null)
+  assert.equal(allowedExternalUrl('https://github.com/Zeratfule/EQ-Zera-evil/releases'), null)
+  assert.equal(allowedExternalUrl('https://github.com/Zeratfule/EQ-ZeraEVIL'), null)
   // A path that only LOOKS like it is under the prefix: `..` (and its `%2e%2e` spelling) is
   // resolved away by `new URL()` before the check, so both of these arrive as `/other/repo`.
-  assert.equal(allowedExternalUrl('https://github.com/CHANGE-ME/eq-zera/../../other/repo'), null)
-  assert.equal(allowedExternalUrl('https://github.com/CHANGE-ME/eq-zera/%2e%2e/%2e%2e/other/repo'), null)
+  assert.equal(allowedExternalUrl('https://github.com/Zeratfule/EQ-Zera/../../other/repo'), null)
+  assert.equal(allowedExternalUrl('https://github.com/Zeratfule/EQ-Zera/%2e%2e/%2e%2e/other/repo'), null)
   // An encoded separator is not a separator: `%2f` keeps this ONE segment, and it is not ours.
   assert.equal(allowedExternalUrl('https://github.com/jmoyers%2feverquest-companion/releases'), null)
   // The path scope is checked IN ADDITION to the host, never instead of it: our own repo path on
   // somebody else's host stays shut.
-  assert.equal(allowedExternalUrl('https://evil.com/CHANGE-ME/eq-zera/releases'), null)
+  assert.equal(allowedExternalUrl('https://evil.com/Zeratfule/EQ-Zera/releases'), null)
 })
 
 test('widening the allowlist for github.com widened nothing else (JOS-254)', () => {
   // The host is EXACT, so every neighbour of the new entry stays shut — the same guarantee the
   // wiki hosts get, restated for the entry that let renderer text name github at all.
-  assert.equal(allowedExternalUrl('https://github.com.evil.com/CHANGE-ME/eq-zera'), null)
-  assert.equal(allowedExternalUrl('https://evil-github.com/CHANGE-ME/eq-zera'), null)
-  assert.equal(allowedExternalUrl('https://raw.githubusercontent.com/CHANGE-ME/eq-zera/main/y'), null)
-  assert.equal(allowedExternalUrl('https://api.github.com/repos/CHANGE-ME/eq-zera'), null)
+  assert.equal(allowedExternalUrl('https://github.com.evil.com/Zeratfule/EQ-Zera'), null)
+  assert.equal(allowedExternalUrl('https://evil-github.com/Zeratfule/EQ-Zera'), null)
+  assert.equal(allowedExternalUrl('https://raw.githubusercontent.com/Zeratfule/EQ-Zera/main/y'), null)
+  assert.equal(allowedExternalUrl('https://api.github.com/repos/Zeratfule/EQ-Zera'), null)
   assert.equal(allowedExternalUrl('https://github.com@evil.com/x'), null)
   assert.equal(allowedExternalUrl('https://github.com.evil.com/jmoyers'), null)
   assert.equal(allowedExternalUrl('https://evil-github.com/jmoyers'), null)
   // …and it is still https-only, so the OS can never be asked to run a downloaded release.
-  assert.equal(allowedExternalUrl('http://github.com/CHANGE-ME/eq-zera/releases'), null)
+  assert.equal(allowedExternalUrl('http://github.com/Zeratfule/EQ-Zera/releases'), null)
   assert.equal(allowedExternalUrl('http://github.com/jmoyers'), null)
   assert.equal(allowedExternalUrl('file://github.com/x.exe'), null)
   // A non-default port is a different service here too.
-  assert.equal(allowedExternalUrl('https://github.com:8443/CHANGE-ME/eq-zera/releases'), null)
+  assert.equal(allowedExternalUrl('https://github.com:8443/Zeratfule/EQ-Zera/releases'), null)
 })
 
 test('allowedExternalUrl refuses every scheme but https — the RCE-adjacent shapes', () => {

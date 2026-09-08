@@ -349,7 +349,7 @@ async function checkGitHubLink(page: Page): Promise<void> {
   })
   check(
     "…pointing at this app's releases page",
-    link.href === 'https://github.com/CHANGE-ME/eq-zera/releases',
+    link.href === 'https://github.com/Zeratfule/EQ-Zera/releases',
     `href="${link.href}"`
   )
   check(

@@ -130,7 +130,7 @@ So the data and 80% of the joins exist; what's missing is the view and a refresh
 
 ## Housekeeping before either feature
 
-- Create the GitHub repo and replace `CHANGE-ME/eq-zera` (see `SETUP.md`).
+- Create the GitHub repo and replace `Zeratfule/EQ-Zera` (see `SETUP.md`).
 - Get `npm run typecheck && npm run lint && npm test` green on your machine as the baseline.
 - ~~Bump `version` in `package.json` to `0.2.0`~~ — WRONG for this tree (found 2026-09-07):
   `src/shared/releaseNotes.ts` documents that package.json stays `0.1.0` forever and CI stamps the
@@ -235,7 +235,7 @@ and ups per session; plat/hour on the Leveling tab beside XP/hour.
 
 ## Still yours
 
-GitHub repo name for the `CHANGE-ME` placeholders, git identity + initial commit, code signing.
+Code signing. (The repo is github.com/Zeratfule/EQ-Zera, private, since 2026-09-08; the placeholders are filled and the initial commit is in.)
 
 ## Roadmap 2 - as shipped (2026-09-08)
 

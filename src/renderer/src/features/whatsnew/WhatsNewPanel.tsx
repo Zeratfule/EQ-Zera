@@ -58,14 +58,14 @@ import { WhatsNewDevRow } from './WhatsNewDevRow'
  * `shell.openExternal` by main's `setWindowOpenHandler`, which passes only an allowlisted https
  * URL — and the `github.com` entry on `EXTERNAL_LINK_ALLOWLIST` (src/main/security.ts) is scoped
  * to THIS repo's subtree (JOS-263), so it opens this link and nothing else on the host. Keep this
- * constant pointing inside `github.com/CHANGE-ME/eq-zera/`; anywhere else silently
+ * constant pointing inside `github.com/Zeratfule/EQ-Zera/`; anywhere else silently
  * fails to open.
  *
  * It sits BELOW the scroll box rather than inside it: leaving the app is the last thing on offer
  * here, never the first, and a link that scrolled away with the history would be a door that
  * moves.
  */
-const GITHUB_RELEASES_URL = 'https://github.com/CHANGE-ME/eq-zera/releases'
+const GITHUB_RELEASES_URL = 'https://github.com/Zeratfule/EQ-Zera/releases'
 
 /** What each `kind` is called in front of a person. Entries with no kind get no sub-header at
  *  all — that is the shape of the backfilled releases, which drew no such distinction. */
