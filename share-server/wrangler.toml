@@ -1,0 +1,52 @@
+# wrangler.toml - the share service's deployment shape (docs/plans/share-links.md, ruling 3).
+#
+# Free-tier Cloudflare Workers + Workers KV. There is no framework and no build step of our own:
+# wrangler's esbuild bundles src/index.ts together with the app modules it imports out of
+# ../src/shared, so the service and the app validate a share with the SAME CODE rather than with
+# two descriptions of one schema. Measured bundle: 67 KB, 22 KB gzipped.
+#
+# THE KV `id` IS DELIBERATELY EMPTY. A namespace id is account state, not source, and committing
+# one would pin this repo to whichever account happened to run the command first. Create it once
+# and paste the id in - `share-server/README.md` has the two commands. Until then wrangler refuses
+# both scripts with `"kv_namespaces[0]" bindings should have a string "id" field`, which is the
+# right place and the right moment for that to fail.
+
+name = "eqzera-share"
+main = "src/index.ts"
+compatibility_date = "2026-09-01"
+
+# The custom domain, not a route pattern: `custom_domain = true` makes Cloudflare issue the
+# certificate and point share.eqzera.com straight at this worker, which is what ruling 3's
+# "the eqzera.com zone is on Cloudflare DNS" buys. It attaches on the first deploy after the
+# zone is active; before that, comment this out and the *.workers.dev URL still serves.
+routes = [{ pattern = "share.eqzera.com", custom_domain = true }]
+
+# No `compatibility_flags = ["nodejs_compat"]`: nothing here touches a Node builtin. The codec is
+# CompressionStream + crypto.subtle + btoa/atob, all of which are platform globals, and the shared
+# app modules are pure. Adding the flag would grow the bundle for nothing.
+
+[[kv_namespaces]]
+binding = "SHARES"
+# FILL THIS IN after `npx wrangler kv namespace create SHARES` (see README.md).
+id = ""
+
+[vars]
+# Every URL this service hands out is built from this - never from the request's Host header,
+# which is attacker-controlled and would let a link the app stores point somewhere else.
+PUBLIC_ORIGIN = "https://share.eqzera.com"
+
+# Per-IP rate limiting. `[[unsafe.bindings]]` is how the rate-limiting binding is declared today
+# (wrangler warns that unsafe fields are experimental; that warning is expected). The namespace
+# ids are LOCAL to this worker - any two distinct integers - and are what keeps the create and
+# read budgets from sharing one counter.
+[[unsafe.bindings]]
+name = "CREATE_LIMIT"
+type = "ratelimit"
+namespace_id = "1001"
+simple = { limit = 20, period = 60 }
+
+[[unsafe.bindings]]
+name = "READ_LIMIT"
+type = "ratelimit"
+namespace_id = "1002"
+simple = { limit = 300, period = 60 }
