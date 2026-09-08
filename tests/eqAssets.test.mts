@@ -8,10 +8,11 @@ import { existsSync, readFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { readPfs } from '../src/main/eqassets/pfs'
-import { RACE_CODES, facesFor, readCharacter, readWld, type CharacterModel } from '../src/main/eqassets/wld'
+import { RACE_CODES, TRACK_FRAMES_AT, facesFor, readCharacter, readWld, trackFrameAt, type CharacterModel, type Skeleton, type WldFile } from '../src/main/eqassets/wld'
 import { readItem } from '../src/main/eqassets/wldItem'
 import { ddsToBmp, isDds } from '../src/main/eqassets/dds'
 import { boneShortName, readAnimation } from '../src/main/eqassets/wldAnim'
+import type { EqModelClip } from '../src/shared/eqModel'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 const EQ = 'C:/Users/Public/Daybreak Game Company/Installed Games/EverQuest Legends'
@@ -272,8 +273,8 @@ test('the Iksar read out of global4_chr.s3d, faces and all, and their detail pie
   const faced = readCharacter(wld, 'IKF', { wear: { face: 3 }, has: pfs.has })!
   assert.deepEqual(headTextures(faced), ['ikfhe0003.bmp', 'ikfhe0004.bmp', 'ikfhe0005.bmp', 'ikfhe0006.bmp', 'ikfhe0007.bmp', 'ikfhe0031.bmp', 'ikfhe0032.bmp'], 'pieces 1 and 2 move to face 3; the five that exist at face 0 alone stay')
   // The idle: the Iksar male carries his own P01. The female carries none, and no human lives in
-  // this archive at all - the borrow order's second step (the same race's other sex) is what stops
-  // her standing in her bind pose, and it is pinned in its own test below.
+  // this archive at all - the donor ranking reaching across the sexes is what stops her standing in
+  // her bind pose, and it is pinned in its own test below.
   const male = readAnimation(wld, 'IKM', readCharacter(wld, 'IKM')!.skeleton, 'P01')
   assert.ok(male && male.frames > 1, 'IKM has an idle of its own')
   assert.equal(male.name, 'P01', 'and it is not borrowed')
@@ -313,13 +314,15 @@ test('every classic actor gets an idle, and a BORROWED one keeps the target rig�
   }
 })
 
-test('the borrow order is own, then the same race’s other sex, then human - so the Iksar female moves', { skip: SKIP4 }, () => {
+test('the ranked donor reaches across the sexes when a rig has no same-sex lender - the Iksar female moves', { skip: SKIP4 }, () => {
   const { wld } = iksar()
   const male = readCharacter(wld, 'IKM')!
   const female = readCharacter(wld, 'IKF')!
   assert.equal(readAnimation(wld, 'IKM', male.skeleton, 'P01')?.name, 'P01', 'IKM has its own idle')
   const borrowed = readAnimation(wld, 'IKF', female.skeleton, 'P01')
   assert.ok(borrowed, 'IKF borrows rather than standing in her bind pose - global4 carries no human at all')
+  // Her archive holds no female actor with an idle, so the ranking falls to its next rung, the
+  // same RACE - and IKM outranks the undead IKS because IKS names no sex and is not a player.
   assert.equal(borrowed.name, 'P01*', 'and the clip says it is borrowed')
   assert.ok(Object.keys(borrowed.tracks).length > 30, `most of her bones move (${String(Object.keys(borrowed.tracks).length)} of ${String(female.bones.length)})`)
   for (const [index, track] of Object.entries(borrowed.tracks)) {
@@ -354,5 +357,129 @@ test('an EMPTY wear changes not one texture - the guard against a dressing regre
     const dressedInNothing = readCharacter(wld, code, { wear: {}, has: pfs.has })!
     assert.deepEqual(headTextures(dressedInNothing), headTextures(shipped), `${code}: head`)
     assert.deepEqual(drawnTextures(dressedInNothing), drawnTextures(shipped), `${code}: every drawn material, in order`)
+  }
+})
+
+// ---- the borrow's POSE, not just its proportions (EQ Zera, 1.19.2) ---------------------------
+//
+// 1.19.1 stopped a borrowed clip carrying the donor's limb LENGTHS. The owner's next report was
+// that eight female rigs plus the ogre, troll, halfling and gnome males still did "weird things
+// with their arms", and the cause was the donor: a track states a bone's orientation RELATIVE TO
+// ITS PARENT, so it only means the same thing on a rig that RESTS the same way, and every female
+// rig rests differently from HUM. MEASURED, as the upper arm's angle off straight down at
+// mid-idle: borrowing HUM, a female came out at 96 degrees - arms straight out sideways; the
+// halfling and gnome males came out lopsided (44 left, 17 right). These are the two shapes of
+// that failure, asserted directly on every actor.
+
+/** q * r, and v rotated by q - just enough quaternion to walk a skeleton into world space. */
+function qmul(a: readonly number[], b: readonly number[]): number[] {
+  return [
+    a[3] * b[0] + a[0] * b[3] + a[1] * b[2] - a[2] * b[1],
+    a[3] * b[1] - a[0] * b[2] + a[1] * b[3] + a[2] * b[0],
+    a[3] * b[2] + a[0] * b[1] - a[1] * b[0] + a[2] * b[3],
+    a[3] * b[3] - a[0] * b[0] - a[1] * b[1] - a[2] * b[2]
+  ]
+}
+function qrot(q: readonly number[], v: readonly number[]): number[] {
+  const [x, y, z, w] = q
+  const ix = w * v[0] + y * v[2] - z * v[1]
+  const iy = w * v[1] + z * v[0] - x * v[2]
+  const iz = w * v[2] + x * v[1] - y * v[0]
+  const iw = -x * v[0] - y * v[1] - z * v[2]
+  return [ix * w + iw * -x + iy * -z - iz * -y, iy * w + iw * -y + iz * -x - ix * -z, iz * w + iw * -z + ix * -y - iy * -x]
+}
+
+/** Every bone's world orientation for one frame of a clip; a bone with no track holds its bind pose. */
+function poseAt(skeleton: Skeleton, clip: EqModelClip, frame: number): number[][] {
+  const out: number[][] = skeleton.bones.map(() => [0, 0, 0, 1])
+  const visit = (i: number, parent: readonly number[]): void => {
+    const track = clip.tracks[i]
+    const f = track ? Math.min(frame, track.q.length / 4 - 1) : 0
+    const local = track ? track.q.slice(f * 4, f * 4 + 4) : skeleton.bones[i].local.q
+    out[i] = qmul(parent, local)
+    for (const c of skeleton.bones[i].children) visit(c, out[i])
+  }
+  if (skeleton.bones.length > 0) visit(0, [0, 0, 0, 1])
+  return out
+}
+
+/** A posed rig, ready to be asked where a limb points. */
+interface Posed {
+  skeleton: Skeleton
+  code: string
+  pose: number[][]
+}
+
+/** The angle, in degrees, between a bone's direction toward `child` and straight DOWN (the game is Z up). */
+function limbAngle({ skeleton, code, pose }: Posed, bone: string, child: string): number | null {
+  const short = skeleton.bones.map((b) => boneShortName(b.name, code))
+  const i = short.indexOf(bone)
+  if (i < 0) return null
+  const c = skeleton.bones[i].children.find((k) => short[k] === child)
+  if (c === undefined) return null
+  const v = qrot(pose[i], skeleton.bones[c].local.t)
+  const n = Math.hypot(v[0], v[1], v[2])
+  return n < 1e-9 ? null : (Math.acos(Math.max(-1, Math.min(1, -v[2] / n))) * 180) / Math.PI
+}
+
+/** An idle has the arms down at the sides, and both of them in the same place. */
+const ARM_MAX_FROM_DOWN = 60
+const ARM_MAX_SPREAD = 15
+
+test('every actor’s idle stands with its arms down at its sides, and not one arm out', { skip: SKIP }, () => {
+  const { wld } = races()
+  for (const code of ALL_CODES) {
+    const model = readCharacter(wld, code)!
+    const clip = readAnimation(wld, code, model.skeleton, 'P01')!
+    const posed: Posed = { skeleton: model.skeleton, code, pose: poseAt(model.skeleton, clip, Math.floor(clip.frames / 2)) }
+    const left = limbAngle(posed, 'BI_L', 'FO_L')
+    const right = limbAngle(posed, 'BI_R', 'FO_R')
+    assert.ok(left !== null && right !== null, `${code}: has both upper arms`)
+    const detail = `${left.toFixed(0)} / ${right.toFixed(0)} degrees off straight down`
+    assert.ok(left < ARM_MAX_FROM_DOWN, `${code}: left arm hangs at the side, not out sideways (${detail})`)
+    assert.ok(right < ARM_MAX_FROM_DOWN, `${code}: right arm hangs at the side (${detail})`)
+    assert.ok(Math.abs(left - right) <= ARM_MAX_SPREAD, `${code}: the two arms agree with each other (${detail})`)
+    const thigh = limbAngle(posed, 'TH_L', 'CA_L')
+    assert.ok(thigh !== null && thigh < ARM_MAX_FROM_DOWN, `${code}: it stands on its legs (${String(thigh)})`)
+  }
+})
+
+/** The actor a clip was borrowed from: the one whose own frame-0 tracks it reproduces exactly. */
+function donorOf(wld: WldFile, code: string, skeleton: Skeleton, clip: EqModelClip): string | null {
+  const short = skeleton.bones.map((b) => boneShortName(b.name, code))
+  const actors = new Set<string>()
+  for (const name of wld.byName.keys()) {
+    const m = /^P01([A-Z]{3})(PE)?_TRACKDEF$/.exec(name)
+    if (m && m[1] !== code) actors.add(m[1])
+  }
+  const entries = Object.entries(clip.tracks)
+  for (const actor of actors) {
+    const same = entries.every(([i, track]) => {
+      const def = wld.byName.get(`P01${actor}${short[Number(i)]}_TRACKDEF`)
+      if (def?.type !== 0x12) return false
+      const q = trackFrameAt(def.body, TRACK_FRAMES_AT).q
+      return q.every((v, k) => Math.abs(v - track.q[k]) < 1e-6)
+    })
+    if (same && entries.length > 0) return actor
+  }
+  return null
+}
+
+test('a borrowed idle comes from a PLAYER actor of the same sex where the archive has one', { skip: SKIP }, () => {
+  const { wld } = races()
+  const borrowed = ALL_CODES.filter((code) => {
+    const model = readCharacter(wld, code)!
+    return readAnimation(wld, code, model.skeleton, 'P01')!.name === 'P01*'
+  })
+  assert.ok(borrowed.length > 0, 'some actors do borrow - otherwise this test proves nothing')
+  for (const code of borrowed) {
+    const model = readCharacter(wld, code)!
+    const clip = readAnimation(wld, code, model.skeleton, 'P01')!
+    const donor = donorOf(wld, code, model.skeleton, clip)
+    assert.ok(donor, `${code}: the clip is reproducible from one actor's own tracks`)
+    // A DONOR WITH A SEX IS A PLAYER RACE'S ACTOR. The archives carry undead and monster actors with
+    // their own P01 and bone tables that score well; a player character borrows a player character.
+    assert.match(donor, /[MF]$/, `${code} borrowed ${donor}, which is not a player actor`)
+    assert.equal(donor.slice(-1), code.slice(-1), `${code} borrowed ${donor}, which is the other sex - the whole 1.19.1 bug`)
   }
 })

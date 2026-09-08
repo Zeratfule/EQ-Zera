@@ -142,6 +142,22 @@ export const RELEASE_NOTES: readonly ReleaseNote[] = [
   // and before v1.19.0 was cut. The 1.17.0 and 1.18.0 entries below never shipped as tags of their
   // own; they are kept as the honest record of what arrived when, and the panel shows all three.
   {
+    version: '1.19.2',
+    date: '2026-09-08',
+    entries: [
+      {
+        kind: 'fixed',
+        text: 'Female character models hold their arms naturally, and halfling and gnome models stand on their feet. A race without an idle animation of its own now borrows one from a model of the same sex and build instead of the human male, whose rest pose does not fit them.',
+        fromReport: true
+      },
+      {
+        kind: 'fixed',
+        text: 'The Update ready and Restart to update lines fit their box in the side rail.',
+        fromReport: true
+      }
+    ]
+  },
+  {
     version: '1.19.1',
     date: '2026-09-08',
     entries: [

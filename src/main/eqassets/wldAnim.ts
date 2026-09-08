@@ -25,21 +25,102 @@
 // track keeps the TARGET's own bind translation and takes only the source's rotation - the idle is
 // a pose, and a pose is rotations.
 //
-// AND A RACE LOOKS TO ITS OWN KIND FIRST. The Iksar live in global4_chr.s3d, which carries no human
-// at all: before this, the Iksar female matched nothing and stood in her BIND pose ("stuck in
-// spread eagle"). The order is own → the same race's other sex → human, so she borrows IKM.
+// AND THE DONOR IS CHOSEN, NOT HARD-CODED - which is the rest of the 1.19.0 bug (owner, 1.19.1:
+// "human, barbarian, erudite, high elf, dark elf, half elf, halfling and gnome FEMALE models are
+// doing weird things with their arms"). A track holds a bone's orientation RELATIVE TO ITS PARENT,
+// so transplanting it says "stand as this actor stands" and is exact only between rigs that REST
+// the same way. Every female rig rests differently from HUM, and so do the short and the huge
+// males, so borrowing HUM put the arms where a human's local rotations point on a female chest:
+// MEASURED as the angle of the upper arm off straight-down, over a female rig, at mid-idle -
+// donor HUM 96 degrees (straight out sideways), donor ELF 34 degrees, which is ELF's own idle to
+// the degree. Halfling/gnome males borrowing HUM came out at 44/17 (lopsided) against DWM's 46/42.
+//
+// So the donor is RANKED by bone table, best first, and the ranking is a tuple compared left to
+// right: same sex, then same race, then how much of this rig's skeleton the donor covers, then how
+// far the two agree about which bone hangs off which, then the fewest donor bones this rig does not
+// have (a donor bone missing here means a child hangs off a different parent - the halflings' and
+// gnomes' legs). Same sex outranks same race deliberately: HUM is a human female's own race and the
+// worst donor she has. The Iksar female has no female donor at all in global4_chr.s3d, and the same
+// race is the next rung, so she borrows IKM - which is also why she is no longer "stuck in spread
+// eagle" with no clip at all.
+//
+// WHAT THE RANKING PICKS, measured, as the worst world-orientation error over every bone that
+// carries geometry: HUF BAF ERF HIF DAF HAF -> ELF (0-2 degrees); HOF GNF -> OGF; HOM GNM TRM OGM
+// -> DWM; ERM HIM DAM HAM -> ELM (9-14); IKF -> IKM (0). The only larger numbers anywhere are on
+// the `*_POINT` attachment bones, which carry no geometry and whose rest orientation is per race.
 
 import type { EqModelClip, EqModelTrack } from '../../shared/eqModel'
-import { fragmentAt, TRACK_FRAMES_AT, TRACK_FRAME_BYTES, trackFrameAt, type Bone, type Skeleton, type WldFile } from './wld'
+import { fragmentAt, skeletonOf, TRACK_FRAMES_AT, TRACK_FRAME_BYTES, trackFrameAt, type Bone, type Skeleton, type WldFile } from './wld'
 
 const DEFAULT_FRAME_MS = 100
-const HUMAN = 'HUM'
 
-/** The same race's other sex (`IKF` → `IKM`), or null for a code that names no sex. */
-function otherSex(code: string): string | null {
-  const sex = code.slice(-1)
-  if (sex === 'M') return `${code.slice(0, -1)}F`
-  return sex === 'F' ? `${code.slice(0, -1)}M` : null
+/** A donor must lend at least this much of the target's skeleton to be considered at all. */
+const MIN_COVERAGE = 0.75
+
+/** Every actor in this archive that carries `anim` of its own - the donor pool. */
+function donorPool(wld: WldFile, anim: string): string[] {
+  const named = new RegExp(`^${anim}([A-Z]{3})(PE)?_TRACKDEF$`)
+  const out = new Set<string>()
+  for (const name of wld.byName.keys()) {
+    const actor = named.exec(name)?.[1]
+    if (actor !== undefined && wld.byName.has(`${actor}_ACTORDEF`)) out.add(actor)
+  }
+  return [...out]
+}
+
+/** Each bone's PARENT, by the bone's own short name - how this rig says the skeleton hangs together. */
+function parentNames(skeleton: Skeleton, code: string): Map<string, string> {
+  const short = skeleton.bones.map((b) => boneShortName(b.name, code))
+  const out = new Map<string, string>()
+  skeleton.bones.forEach((bone, i) => {
+    for (const child of bone.children) out.set(short[child], short[i])
+  })
+  return out
+}
+
+/**
+ * HOW GOOD A DONOR IS FOR THIS RIG, as a tuple compared left to right (see the header for what each
+ * rung is worth and what it was measured at). Null when the donor cannot cover enough of the rig
+ * for the answer to be an idle at all.
+ */
+function donorRank(target: Skeleton, code: string, donor: Skeleton, actor: string): number[] | null {
+  const mine = target.bones.map((b) => boneShortName(b.name, code))
+  const theirs = new Set(donor.bones.map((b) => boneShortName(b.name, actor)))
+  const shared = mine.filter((n) => theirs.has(n))
+  if (shared.length < mine.length * MIN_COVERAGE) return null
+  const myParent = parentNames(target, code)
+  const theirParent = parentNames(donor, actor)
+  const agreed = shared.filter((n) => (myParent.get(n) ?? '') === (theirParent.get(n) ?? '')).length
+  return [
+    // A PLAYER RACE'S ACTOR FIRST, and the archives say which those are by NAMING A SEX: the same
+    // `global4_chr.s3d` that holds IKM also holds IKS, an undead Iksar whose skeleton covers the
+    // Iksar female's bones slightly better and whose idle is a walking corpse's. Ranked on the
+    // rungs below alone she borrowed IKS; a player character borrows a player character.
+    /[MF]$/.test(actor) ? 1 : 0,
+    code.slice(-1) === actor.slice(-1) ? 1 : 0,
+    code.slice(0, 2) === actor.slice(0, 2) ? 1 : 0,
+    shared.length / mine.length,
+    agreed / shared.length,
+    -(theirs.size - shared.length)
+  ]
+}
+
+/** Tuples compared left to right: the first rung that differs decides. */
+function outranks(a: readonly number[], b: readonly number[]): boolean {
+  const at = a.findIndex((v, i) => v !== b[i])
+  return at >= 0 && a[at] > b[at]
+}
+
+/** The best-ranked actor in this archive to borrow `anim` from, or null when nobody can lend it. */
+function bestDonor(wld: WldFile, code: string, target: Skeleton, anim: string): string | null {
+  let best: { actor: string; rank: number[] } | null = null
+  for (const actor of donorPool(wld, anim)) {
+    if (actor === code) continue
+    const donor = skeletonOf(wld, actor)
+    const rank = donor ? donorRank(target, code, donor, actor) : null
+    if (rank && (best === null || outranks(rank, best.rank))) best = { actor, rank }
+  }
+  return best?.actor ?? null
 }
 
 /** A bone's OWN bind offset, repeated once per frame: what a borrowed track keeps instead of the source's. */
@@ -79,9 +160,9 @@ function frameMsOf(wld: WldFile, name: string): number | null {
  * pose. Returns null when neither the race nor the human fallback has the animation at all.
  */
 export function readAnimation(wld: WldFile, code: string, skeleton: Skeleton, anim: string): EqModelClip | null {
-  const has = (actor: string): boolean => wld.byName.has(`${anim}${actor}_TRACKDEF`) || wld.byName.has(`${anim}${actor}PE_TRACKDEF`)
-  const source = [code, otherSex(code), HUMAN].find((a) => a !== null && has(a)) ?? null
-  if (source === null || source === undefined) return null
+  const own = wld.byName.has(`${anim}${code}_TRACKDEF`) || wld.byName.has(`${anim}${code}PE_TRACKDEF`)
+  const source = own ? code : bestDonor(wld, code, skeleton, anim)
+  if (source === null) return null
   const borrowed = source !== code
   const tracks: Record<number, EqModelTrack> = {}
   let frames = 1
