@@ -200,3 +200,4 @@ body:has(.eqz-page){background:#0c0a1f}
 .eqz-page{margin-block-start:0!important;margin-block-end:0!important}
 .eqz-formpage .wp-block-jetpack-contact-form{display:grid!important}
 .eqz-formpage .grunion-field-wrap{width:100%!important;max-width:none!important;flex:1 1 100%!important}
+.eqz-formpage .wp-block-jetpack-contact-form{grid-template-columns:1fr!important}
