@@ -190,9 +190,15 @@ function AvailableChip({ version, onDownload }: { version?: string; onDownload: 
         }}
       >
         <DownloadIcon fontSize="small" />
+        {/* TWO SHORT LINES AT THE RAIL'S OWN SIZE (owner, 2026-09-08: the one-line body2 sentence did
+            not fit the 220px rail). The offer and the version each get a caption line, and a
+            version that somehow overflows ellipsizes rather than pushing the box. */}
         <Box sx={{ minWidth: 0, flexGrow: 1 }}>
-          <Typography variant="body2" sx={{ fontWeight: 600, lineHeight: 1.2 }}>
-            Update ready: download{version ? ` v${version}` : ''}
+          <Typography variant="caption" sx={{ display: 'block', fontWeight: 700, lineHeight: 1.3 }} noWrap>
+            Update ready
+          </Typography>
+          <Typography variant="caption" sx={{ display: 'block', lineHeight: 1.3, opacity: 0.85 }} noWrap>
+            {version ? `Download v${version}` : 'Download it'}
           </Typography>
         </Box>
       </Box>
