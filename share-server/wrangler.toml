@@ -28,7 +28,7 @@ routes = [{ pattern = "share.eqzera.com", custom_domain = true }]
 [[kv_namespaces]]
 binding = "SHARES"
 # FILL THIS IN after `npx wrangler kv namespace create SHARES` (see README.md).
-id = ""
+id = "d39ee75537644522afeaba88191730e8"
 
 [vars]
 # Every URL this service hands out is built from this - never from the request's Host header,
