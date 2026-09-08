@@ -159,13 +159,33 @@ asarUnpack:
 # `electron-builder install-app-deps`), or it would ship built against the wrong ABI.
 npmRebuild: false
 
-# Auto-update + release hosting: electron-updater pulls from GitHub Releases of
-# this repo. The CI workflows (.github/workflows) publish here; the app reads
-# latest*.yml from the same owner/repo. `channel` is per-release (main vs latest).
-# EQ Zera fork: NO publish block. Without one electron-builder writes no app-update.yml and
-# the updater (held disabled in src/main/updater.ts AUTO_UPDATE_DISABLED) has no feed to read.
-# To re-enable self-updates later, add `publish: { provider: github, owner: <you>, repo: <repo> }`
-# and flip that constant.
+# RELEASE HOSTING: ON. SELF-UPDATE: STILL OFF. Those are two switches, and this
+# block is only the first of them.
+#
+# What this block does: it tells electron-builder where a `--publish` run
+# uploads to, so `.github/workflows/release.yml` can hand a `v*` tag to
+# `electron-builder --win --publish always` and get a GitHub Release carrying
+# the installer, its .blockmap and `latest.yml`. That is the whole job — a
+# download page for humans, plus the feed file a future updater would read.
+# (`channel` is per-release: latest vs main. release.yml uploads a byte copy of
+# latest.yml named main.yml so the 'main' channel, which is the app's default,
+# resolves to stable builds instead of stalling forever.)
+#
+# What it does NOT do: turn self-updates on. Declaring a publish target also
+# makes electron-builder write `app-update.yml` into the package, which is the
+# file electron-updater needs — but the app never gets that far, because
+# `AUTO_UPDATE_DISABLED` in src/main/updater.ts holds the updater in its
+# disabled state. That constant stays `true` until releases here are SIGNED,
+# and the reason is `win.signtoolOptions.publisherName` below: with a publisher
+# name set, electron-updater's NsisUpdater.verifySignature REJECTS every
+# downloaded update whose Authenticode publisher does not match it. Unsigned
+# releases plus a live updater is not "updates that work with a warning", it is
+# an updater that can only ever fail. Flip the constant in the same change that
+# adds the signing secrets, never before. SETUP.md, "Releasing", has both steps.
+publish:
+  provider: github
+  owner: Zeratfule
+  repo: EQ-Zera
 
 win:
   target:

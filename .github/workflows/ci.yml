@@ -1,0 +1,323 @@
+# CI for the EQ Zera fork — verify on every push to main and every pull request.
+#
+# This is upstream's `build.yml` with the fork's realities applied. What was
+# removed and why:
+#
+#   * The `release` job. Publishing lives in its own file (release.yml) so that
+#     the token-permission split upstream calls "a security boundary" survives
+#     the fork: GITHUB_TOKEN permissions are per-job and STATIC, so a workflow
+#     that both verifies and publishes has to hold `contents: write` on every
+#     push to main — handing a writable repo token to `npm ci` (600+ packages of
+#     third-party code) on a path that publishes nothing. This file is read-only
+#     everywhere. Keep it that way.
+#   * Every AWS / Terraform / GitHub Pages step. The fork has no cloud backend
+#     and no landing page; `infra/` and `site/` are inert (SETUP.md says so) and
+#     their upstream workflows stay parked in .github/workflows-upstream-disabled/.
+#   * Every AZURE_* secret. There is no code-signing certificate yet. The
+#     `win.signtoolOptions.sign` hook (scripts/azure-sign.cjs) self-skips when
+#     AZURE_SIGNING_ENDPOINT is absent, so the installer this job produces is
+#     simply unsigned — no configuration, no conditional.
+#
+# ON PULL REQUESTS TOO, unlike upstream (which only watched `main` and tags).
+# Upstream is a single-committer repo where main is where work lands; a public
+# fork that accepts a PR wants the same gates to have run before the merge
+# button is available. `pull_request` (not `pull_request_target`) is deliberate:
+# a fork PR runs with a read-only token and no secrets, which is the only safe
+# way to execute a stranger's package.json against this repo.
+#
+# ACTION PINNING: every `uses:` is a full 40-char commit SHA with the floating
+# tag in the trailing comment, carried over from upstream unchanged. A tag like
+# `@v4` is a MUTABLE pointer — whoever controls the action repo can repoint it
+# at new code that then runs in this job with this job's token. Re-resolve with:
+#   gh api repos/<owner>/<action>/git/ref/tags/<tag> --jq .object.sha
+# and update BOTH the SHA and the comment.
+#
+# NO `${{ }}` IS EVER INTERPOLATED INTO A `run:` BODY here. Values reach the
+# shell as environment variables, which are data; a `${{ }}` pasted into a
+# script is substituted BEFORE the shell parses it and is an injection site.
+
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+# Least privilege at the top: no job gets a scope it does not name. Stating it
+# here means a job added later cannot silently inherit write from a repo setting.
+permissions: {}
+
+# One run per ref. A push that supersedes an in-flight run cancels it — the
+# older run's verdict is about code nobody will merge.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # =========================================================================
+  # THE APP: typecheck, lint, unit tests, and the installer as a CI artifact.
+  # Publishes NOTHING. Read-only token.
+  # =========================================================================
+  app:
+    runs-on: windows-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        # persist-credentials:false keeps the job's token out of the runner's
+        # git config. Nothing here pushes.
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4 (v4.4.0)
+        with:
+          persist-credentials: false
+
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4 (v4.4.0)
+        with:
+          # 24 = the dev machine's major. NOT 20: `node --test tests/*.test.mts`
+          # relies on the runner's own glob expansion (pwsh/cmd don't expand),
+          # which Node's test runner only does from v21 — on 20 the literal
+          # pattern is "not found" and CI fails before it runs a single test.
+          node-version: 24
+          cache: npm
+
+      # `.npmrc` sets ignore-scripts=true, so this installs the whole tree
+      # WITHOUT executing any dependency's install hook. See .npmrc for the
+      # rationale and for why exactly one package needs its hook run by hand.
+      - name: Install dependencies
+        run: npm ci
+
+      # THE ONE HOOK WE RUN BY HAND. `npm ci` under ignore-scripts leaves
+      # node_modules/electron without its binary; dev and dist both fail
+      # without this. See AGENTS.md, "Shipping".
+      - name: Install Electron binary
+        run: npm run deps:electron
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      # ESLint: type-aware correctness + the FACTORING limits (complexity,
+      # nesting, file/function length, parameter count). Green today because
+      # eslint.ratchet.mjs suppresses the existing violations per file — that
+      # register ONLY SHRINKS, so this step failing means NEW debt, not old
+      # debt. Never regenerate the ratchet to make a red build green.
+      - name: Lint
+        run: npm run lint
+
+      # Unit + golden-window tests. tests/fixtures/*.log are committed
+      # (scrubbed), so the fixture-backed golden windows run here too; only the
+      # full-log tests, which need the owner's real growing game log, skip.
+      - name: Test
+        run: npm test
+
+      # e2e IS DELIBERATELY NOT HERE, and this is not an oversight.
+      # TODO(ci-v2): upstream's build.yml never ran `npm run test:e2e` on
+      # windows-latest — not on main, not on tags — so there is no green
+      # incantation to copy and no evidence the harness survives a shared
+      # runner. The suite boots up to four real Electron apps under
+      # playwright-core and builds its own DEBUG engine, which is a different
+      # cargo profile (and cache) from everything else in this file. It IS
+      # fixtures-only (tests/e2e/ runs against committed scrubbed logs, no game
+      # install needed), so it is plausible here; proving that means running it
+      # once on a runner and reading the timings, not adding a step on faith.
+      # Until then it stays the integrator's local gate.
+
+      # THE RUST TOOLCHAIN IS NOT CHOSEN HERE, and no toolchain ACTION is used —
+      # upstream uses none either. rustup ships on the GitHub Windows image and
+      # honours engine/rust-toolchain.toml, which pins 1.98.0 + rustfmt +
+      # clippy. That pin is load-bearing: protocol generation ends in rustfmt,
+      # so two rustfmt versions disagreeing about a line break would fail the
+      # staleness test on a schema nobody touched. `rustup show
+      # active-toolchain` both installs it and prints what it got.
+      - name: Install the pinned Rust toolchain
+        run: rustup show active-toolchain
+
+      # The registry index, the crate sources, and the build directory. Keyed on
+      # the lockfile + the toolchain pin, so a dependency or toolchain bump
+      # invalidates it and nothing else does. A DIFFERENT key prefix from the
+      # engine job's: that one builds the workspace in debug, this one builds
+      # the release binary the installer ships, and two jobs writing one key
+      # just race to save it.
+      - name: Cache cargo (release engine)
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4 (v4.3.0)
+        with:
+          path: |
+            ~/.cargo/registry/index
+            ~/.cargo/registry/cache
+            ~/.cargo/git/db
+            engine/target
+          key: cargo-app-${{ runner.os }}-${{ hashFiles('engine/Cargo.lock', 'engine/rust-toolchain.toml') }}
+          restore-keys: cargo-app-${{ runner.os }}-
+
+      # THE ENGINE THE INSTALLER CARRIES (JOS-473). The `engine` job below builds
+      # DEBUG and tests it; a packaged app ships RELEASE, so this job builds its
+      # own. It matters here because the artifact this job uploads is the
+      # installer people actually test, and an installer structurally different
+      # from a release build (no resources/engine/zengine.exe) verifies the
+      # wrong thing. A missing binary is only a WARNING to electron-builder's
+      # extraResources, so the failure would be silent — `npm run build:engine`
+      # asserts the file exists.
+      - name: Build the engine (release)
+        run: npm run build:engine
+
+      # UNSIGNED, and with NO signing env at all: this job verifies and produces
+      # a CI artifact, it publishes nothing, so it has no business holding
+      # signing credentials even once they exist (least privilege — the same
+      # reasoning as its read-only token). The win.signtoolOptions.sign hook
+      # self-skips without AZURE_SIGNING_ENDPOINT.
+      #
+      # `--publish never` is belt-and-braces: this job's token cannot write a
+      # release anyway.
+      - name: Build installer
+        shell: pwsh
+        run: |
+          npm run build
+          npx electron-builder --win --publish never
+
+      # The installer, its .blockmap and the update-feed yml, kept as a CI
+      # record for two weeks. Long enough to bisect a "the build from Tuesday
+      # was fine" report; short enough that nobody mistakes a CI artifact for a
+      # release. Releases come from release.yml and a `v*` tag, never from here.
+      - name: Upload installer artifact (CI record)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4 (v4.6.2)
+        with:
+          name: installer
+          path: |
+            release/**/*.exe
+            release/**/*.blockmap
+            release/**/*.yml
+          retention-days: 14
+          if-no-files-found: warn
+
+      # SOURCEMAPS (JOS-100) — A WORKFLOW ARTIFACT, DELIBERATELY NOT A RELEASE ASSET.
+      #
+      # An `errorReport` names a bundle position
+      # (`out/renderer/assets/index-a1b2.js:1:48213`). Turning that into
+      # `src/renderer/…/CombatView.tsx:214:9` needs the map for THAT EXACT
+      # BUILD — a map from any other commit resolves to a plausible WRONG line —
+      # so the maps have to be kept, keyed by what identifies the build, for as
+      # long as reports about it can arrive. `scripts/symbolicate.mts` is what
+      # consumes them.
+      #
+      # WHY NOT A RELEASE ASSET: a release asset is public and permanent. A
+      # published `.map` is the entire source tree, which for this repo is
+      # already public and therefore not a leak — but it is also not a download
+      # anybody asked for, it would sit in the release list next to the
+      # installer inviting confusion about what to install, and the day this
+      # tree gains one closed dependency the decision would have to be unwound
+      # retroactively, which for a published artifact is not possible. An
+      # artifact is private to the repo, expires on its own, and is exactly as
+      # available to the person triaging as a release asset would be.
+      #
+      # 90 DAYS is the maximum a public repo may set, and the useful minimum.
+      - name: Upload sourcemaps (private, for symbolicating error reports)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4 (v4.6.2)
+        with:
+          name: sourcemaps-ci-${{ github.run_number }}
+          path: out/**/*.map
+          retention-days: 90
+          if-no-files-found: warn
+
+  # =========================================================================
+  # THE ENGINE (engine/crates). Its own job, in parallel with `app`.
+  #
+  # WHY A SEPARATE JOB rather than steps bolted onto `app`: a different
+  # toolchain with a different cache, nothing to say about the installer, and
+  # running it in parallel means the Rust checks cost no wall clock.
+  #
+  # WHAT IT PROVES, and it is not just "it compiles":
+  #   * `cargo test` runs the STALENESS suite, which regenerates
+  #     crates/protocol/src/generated.rs from protocol/schema and diffs every
+  #     byte. A schema edit that landed without `npm run gen:protocol` is red
+  #     here. (`npm test` in the app job catches the same drift by digest,
+  #     without needing a toolchain — tests/protocolSchema.test.mts.)
+  #   * …and the fixture suite, which round-trips the worked moments through the
+  #     generated Rust types. The same bytes go through the TypeScript types in
+  #     `npm test`, so a shape only one language can express fails on the side
+  #     that cannot.
+  #   * …and the FACTORING RATCHET (JOS-523), which is why this job installs
+  #     Node as well as Rust: complexity 12 / 400 code lines per file / 100 per
+  #     function over engine/crates, frozen at today's debt by
+  #     engine/factoring-baseline.json.
+  # =========================================================================
+  engine:
+    runs-on: windows-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4 (v4.4.0)
+        with:
+          persist-credentials: false
+
+      # NODE, IN THE RUST JOB. The factoring ratchet below is a .mts script run
+      # through tsx, so it needs node_modules. No `npm run deps:electron` here,
+      # unlike the app job: nothing in this lane imports electron, so the
+      # ~190 MB download would be a minute spent on a binary nobody opens.
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4 (v4.4.0)
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # THE FACTORING RATCHET (JOS-523). It runs BEFORE the toolchain work
+      # because it is the cheapest opinion in the job and there is no reason to
+      # compile Rust to find out a file got longer. Green today because
+      # engine/factoring-baseline.json lists the current violations; RED means
+      # new debt, or an old one that grew. See scripts/checkRustFactoring.mts.
+      - name: Factoring ratchet
+        run: npm run check:rust-factoring
+
+      # rustup ships on the GitHub Windows image; this installs whatever
+      # engine/rust-toolchain.toml names, with the components it lists.
+      - name: Install the pinned toolchain
+        working-directory: engine
+        run: |
+          rustup show active-toolchain
+          rustc --version
+          cargo --version
+
+      - name: Cache cargo (engine workspace)
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4 (v4.3.0)
+        with:
+          path: |
+            ~/.cargo/registry/index
+            ~/.cargo/registry/cache
+            ~/.cargo/git/db
+            engine/target
+          key: cargo-engine-${{ runner.os }}-${{ hashFiles('engine/Cargo.lock', 'engine/rust-toolchain.toml') }}
+          restore-keys: cargo-engine-${{ runner.os }}-
+
+      - name: Format
+        working-directory: engine
+        run: cargo fmt --all --check
+
+      # `-D warnings` on purpose: the generated file allows clippy wholesale
+      # inside itself (generated code is not reviewable debt), so everything
+      # this gate sees is code a person wrote.
+      - name: Clippy
+        working-directory: engine
+        run: cargo clippy --all-targets --all-features -- -D warnings
+
+      - name: Test
+        working-directory: engine
+        run: cargo test --workspace
+
+      # THE PERFORMANCE BUDGET (owner ruling 3, JOS-501).
+      #
+      # RELEASE, and that is the whole reason this is a step of its own rather
+      # than part of the workspace test above: a debug fold is roughly an order
+      # of magnitude slower, so a budget measured on one measures the profile
+      # instead of the code. The CI tier folds a DETERMINISTIC GENERATED corpus
+      # (the owner's real log never enters git) against a floor an eighth of the
+      # dev box's, so a shared runner is judged fairly; the G3 tier — the real
+      # 209 MB fixture — is `npm run budget:g3`, run by hand at the release cut.
+      #
+      # `--nocapture` so the numbers appear in the log even when green: a budget
+      # that only speaks when it fails gives nobody a trend to look at.
+      - name: Performance budget (release)
+        working-directory: engine
+        run: cargo test --release -p zengine --test budget the_synthetic -- --nocapture

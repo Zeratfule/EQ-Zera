@@ -106,23 +106,112 @@ on Windows *Developer Mode* (Settings → System → For developers) or run
   pin them and nobody but you reads that file.
 - `infra/` (upstream's AWS Terraform) and `site/` (upstream's landing page) are unused.
 
-## Placeholders to fill in when you create a GitHub repo
+## Releasing
 
-`Zeratfule/EQ-Zera` appears in `src/main/security.ts` (external-link allowlist),
-`src/renderer/src/features/whatsnew/WhatsNewPanel.tsx` (the "release notes" link), and the two
-tests that pin them. Replace with `<your-user>/<your-repo>`. To turn self-updates back on
-later: add a `publish:` block to `electron-builder.yml`, make `autoUpdateDisabled()` return `false`
-in `src/main/updater.ts`, and sign your releases (electron-updater refuses unsigned updates
-when `publisherName` is set).
+The repo is `Zeratfule/EQ-Zera`. Two workflows live in `.github/workflows/`:
+
+| Workflow | Trigger | What it does | Token |
+|---|---|---|---|
+| `ci.yml` | push to `main`, every pull request | typecheck, lint, `npm test`, builds the engine and the installer, and the Rust job (fmt, clippy, `cargo test --workspace`, the release performance budget, the factoring ratchet). The installer is kept as a **workflow artifact for 14 days** — never published. | read-only |
+| `release.yml` | push of a `v*` tag | the same gates, then publishes a **GitHub Release** with the installer | `contents: write` |
+
+Those are two files rather than two jobs because GitHub token permissions are per-job and
+static: one workflow covering both paths would have to hold write access on every push to
+`main`, which would hand a writable repo token to `npm ci` and the whole third-party build on a
+path that publishes nothing.
+
+### Cutting a release
+
+1. **Write the release note first.** Add an entry for the version to
+   `src/shared/releaseNotes.ts` — at most three sentences per entry. `release.yml` runs
+   `scripts/check-release-notes.mjs` as its *first* step and refuses a tag with no entry. The
+   app's What's new panel reads that file, so a missing entry is not a crash, it is silence.
+   Check it locally with `node --import tsx scripts/check-release-notes.mjs v1.19.0`.
+2. Commit and push that to `main`, and let CI go green.
+3. Tag and push:
+
+   ```powershell
+   git tag v1.19.0
+   git push origin v1.19.0
+   ```
+
+`package.json` stays at `0.1.0` forever — **the tag is the version**. CI rewrites
+`package.json` in the runner only (`npm version --no-git-tag-version`, never committed), so a
+`v1.19.0` tag builds `1.19.0` and the two cannot drift. A tag that is not
+`vMAJOR.MINOR.PATCH` is rejected before anything is built.
+
+The release lands at `https://github.com/Zeratfule/EQ-Zera/releases`, carrying
+`eq-zera-Setup-<version>.exe`, its `.blockmap`, `latest.yml`, and a byte copy of `latest.yml`
+named `main.yml` (the update feed's default channel lives in the *filename*, so the copy is
+the whole bridge). It is assembled as a **draft**, every required asset is verified to be
+present, and only then does it flip live — so nobody can resolve the tag and find a file
+missing. A plain `vX.Y.Z` publishes as a normal release and takes the `latest` marker; a tag
+with a prerelease part (`v1.19.0-rc.1`) publishes as a prerelease and does not.
+
+Sourcemaps go to a **private workflow artifact**, named after the tag, kept 90 days — never a
+release asset. They are what `scripts/symbolicate.mts` needs to turn a bundle position in an
+error report back into a source line, and they only work for the exact build they came from.
+
+### The installer is unsigned
+
+There is no code-signing certificate for this project yet, so `scripts/azure-sign.cjs`
+self-skips and the published `.exe` carries no Authenticode signature. Windows SmartScreen
+shows "Windows protected your PC" on first run; the user clicks *More info → Run anyway*. The
+release body says so, in those words.
+
+**Because the build is unsigned, the GitHub account is the trust root.** Anyone who can publish
+a release here can put any executable on that page. Tag and release access *is* the security
+control; `SECURITY.md` states this to users.
+
+### The two switches that turn self-update on
+
+Self-update is off, and it takes both of these — flipping either alone makes things worse, not
+better:
+
+1. **`src/main/updater.ts`** — `autoUpdateDisabled()` returns `true`. Make it return `false`.
+2. **Signing secrets in CI** — add the certificate to the repo (below) and give
+   `release.yml`'s "Build installer and publish" step the matching `env:` block.
+
+The order is not optional. `electron-builder.yml` sets
+`win.signtoolOptions.publisherName: EQ Zera`, and electron-updater's
+`NsisUpdater.verifySignature` **rejects** any downloaded update whose Authenticode publisher
+does not match that name. Flipping the constant while releases are unsigned does not produce
+"updates with a warning" — it produces an updater that downloads a build and then refuses it,
+every time. (Clearing `publisherName` instead would make the updater skip signature checking
+altogether, which is worse: it turns a silent, per-user, no-UAC auto-install into something
+that trusts whatever the feed hands it.)
+
+`electron-builder.yml` already has its `publish:` block, so nothing else needs adding there.
+
+### Getting a certificate
+
+Two roads, and the hook in this tree already supports the first:
+
+- **Azure Trusted Signing** (~$10/month, Microsoft-run). No hardware token, no certificate file
+  in CI, and the certificate is short-lived and re-issued automatically — which is why
+  `scripts/azure-sign.cjs` exists and is wired permanently into `win.signtoolOptions.sign`. It
+  self-activates on six environment variables: `AZURE_TENANT_ID`, `AZURE_CLIENT_ID`,
+  `AZURE_CLIENT_SECRET`, `AZURE_SIGNING_ENDPOINT`, `AZURE_SIGNING_ACCOUNT`,
+  `AZURE_SIGNING_PROFILE`. Add them as repo secrets, pass them into the packaging step, and the
+  step also needs `Install-Module TrustedSigning -Scope CurrentUser` ahead of the build.
+  Requires an identity-verified Azure account; individual publishers face a 3-year
+  verification-history requirement, which is the usual blocker. Set `publisherName` to the
+  signing profile's subject CN exactly.
+- **A conventional OV or EV certificate** from a CA (DigiCert, Sectigo, SSL.com — roughly
+  $200–$600/year). electron-builder loads it from `CSC_LINK` (a base64 `.pfx` or a URL) plus
+  `CSC_KEY_PASSWORD`, both as repo secrets; no hook change is needed, and the Azure hook stays
+  inert because its env vars are absent. Since June 2023 the private key must live on an HSM or
+  a hardware token for a *new* certificate, which is awkward for unattended CI — most CAs sell
+  a cloud-HSM option that works with `CSC_LINK`. An **EV** certificate additionally clears
+  SmartScreen's reputation warning immediately; an **OV** one still warns until the build has
+  accumulated downloads.
+
+Whichever road, the certificate's subject CN and `publisherName` must match character for
+character, or every update is rejected.
 
 ## Git note
 
-The `app\.git` folder was created by a clone attempt that could not finish, and it contains a
-stale `index.lock`. Before your first commit, from PowerShell in the `app` folder:
-
-```powershell
-Remove-Item -Recurse -Force .git
-git init -b main
-git add -A
-git commit -m "Fork everquest-companion as EQ Zera"
-```
+The repository is `github.com/Zeratfule/EQ-Zera` (public, default branch `main`) since 2026-09-08.
+The folder's original `.git` was a clone attempt that never finished; it was replaced with a fresh
+`git init -b main` before the first commit, so there is nothing left to clean up. Pushes work from
+the GitHub CLI (`gh auth login --web`) or from GitHub Desktop.

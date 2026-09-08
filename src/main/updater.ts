@@ -556,11 +556,24 @@ function registerUpdaterEvents(
 
 /**
  * FORK SWITCH (EQ Zera). The upstream app self-updated from the original author's GitHub
- * Releases via `app-update.yml`. This fork ships no release feed yet, so the updater is
- * held in the same "disabled" state the dev build uses: no timers, no network, and the
- * renderer renders its already-designed "updates off" chip. Flip to `false` only after
- * `electron-builder.yml` has a `publish:` block pointing at YOUR repo and the installers
- * there are signed by a publisher whose name matches `publisherName`.
+ * Releases via `app-update.yml`. This fork is held in the same "disabled" state the dev
+ * build uses: no timers, no network, and the renderer renders its already-designed
+ * "updates off" chip.
+ *
+ * THE FEED NOW EXISTS AND THIS CONSTANT STILL SAYS TRUE, ON PURPOSE. `electron-builder.yml`
+ * carries a `publish:` block (github Zeratfule/EQ-Zera) and `.github/workflows/release.yml`
+ * publishes an installer plus `latest.yml`/`main.yml` on every `v*` tag — so the first of
+ * the two preconditions is met and the second is not. Those releases are UNSIGNED: there is
+ * no code-signing certificate, so `scripts/azure-sign.cjs` self-skips. And
+ * `win.signtoolOptions.publisherName` IS set, which means `NsisUpdater.verifySignature`
+ * rejects every downloaded update whose Authenticode publisher does not match it. Flipping
+ * this to `false` today would not produce "updates with a warning" — it would produce an
+ * updater that downloads a build and then refuses it, every time, forever.
+ *
+ * Flip to `false` in the same change that gives CI a real certificate (the six `AZURE_*`
+ * secrets the sign hook reads, or a `CSC_LINK`/`CSC_KEY_PASSWORD` pair), and only after
+ * confirming the certificate's subject CN matches `publisherName` exactly. SETUP.md,
+ * "Releasing", spells out both switches.
  */
 function autoUpdateDisabled(): boolean {
   return true

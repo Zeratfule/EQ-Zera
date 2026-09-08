@@ -1,0 +1,296 @@
+# PUBLISH THE WINDOWS INSTALLER — ON `v*` TAGS ONLY.
+#
+# Pushing to `main` verifies and builds an artifact (ci.yml). Publishing is a
+# separate, deliberate human act: `git tag vX.Y.Z && git push origin vX.Y.Z`.
+#
+# THIS FILE IS A SEPARATE WORKFLOW FROM ci.yml AND THAT SPLIT IS A SECURITY
+# BOUNDARY, not cosmetics. GITHUB_TOKEN permissions are per-job and STATIC —
+# they cannot be made conditional — so one workflow covering both paths would
+# have to hold `contents: write` on every push to main, handing a writable repo
+# token to `npm ci` plus the whole build (600+ packages of third-party code) on
+# a path that publishes nothing. ci.yml is read-only everywhere; this file is
+# the only place a write token exists. The preludes are duplicated on purpose:
+# a reusable workflow would re-introduce a shared surface across the boundary
+# and buy nothing at this size. KEEP THE TWO PRELUDES IN SYNC.
+#
+# THE VERSION COMES FROM THE TAG. package.json stays at 0.1.0 forever; the
+# stamp below rewrites it in the runner only (never committed), so a `v1.2.3`
+# push builds 1.2.3 regardless of what the file says and the two cannot drift.
+#
+# A TAG MAY NOT SHIP WITHOUT RELEASE NOTES (JOS-73). The What's-new panel reads
+# committed source (src/shared/releaseNotes.ts), so a missing entry is not a
+# crash — it is SILENCE: the fleet updates and the panel has nothing to say
+# about the build everybody is now running. `scripts/check-release-notes.mjs`
+# is the thing that complains, and it runs FIRST, before a minute of build time
+# is spent on a tag that cannot ship.
+#
+# UNSIGNED, AND THAT IS A STATED POSITION RATHER THAN AN OVERSIGHT. There is no
+# code-signing certificate for this fork yet, so:
+#   * no AZURE_* secrets exist and the `win.signtoolOptions.sign` hook
+#     (scripts/azure-sign.cjs) self-skips — the installer is unsigned and
+#     SmartScreen will warn on first run;
+#   * the app's SELF-UPDATE stays OFF (`AUTO_UPDATE_DISABLED` in
+#     src/main/updater.ts). electron-builder.yml sets `publisherName`, and
+#     electron-updater refuses any update whose Authenticode publisher does not
+#     match it — so flipping the constant before a certificate exists would ship
+#     an updater that can only ever fail. What this workflow publishes is a
+#     DOWNLOAD PAGE and a feed file, not a live update channel.
+# Turning both on is documented in SETUP.md, "Releasing".
+#
+# WHY THE RELEASE IS ASSEMBLED AS A DRAFT AND FLIPPED LIVE AT THE END.
+# electron-builder's GitHub publisher defaults to `releaseType: draft`, and we
+# keep that default deliberately. Upstream's v0.3.1 went live missing the
+# versioned installer and latest.yml because electron-builder 26's publisher
+# exited without awaiting its uploads; the feed 404'd for every updating client
+# and the release had to be repaired by hand. This repo runs the same
+# electron-builder major. So the release is built as a draft, the bridge step
+# ASSERTS every required asset is actually on it, and only then does it flip
+# live — a client can never resolve the tag and find a file missing.
+#
+# ACTION PINNING and the no-`${{ }}`-in-`run:` rule: see ci.yml's header. The
+# tag reaches pwsh as $env:GITHUB_REF_NAME, a value, and is validated against a
+# semver regex before anything derives a path or a release target from it.
+
+name: release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions: {}
+
+# Never cancel a publish mid-flight: a half-uploaded release is the exact
+# failure this workflow is shaped to prevent.
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: windows-latest
+    permissions:
+      contents: write # create/update the GitHub Release + upload its assets
+    steps:
+      - name: Checkout
+        # Checks out the tagged commit (github.ref is the tag).
+        # persist-credentials:false keeps the token out of the runner's git
+        # config — nothing here pushes; gh talks to GitHub via GH_TOKEN.
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4 (v4.4.0)
+        with:
+          persist-credentials: false
+
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4 (v4.4.0)
+        with:
+          node-version: 24 # see ci.yml for why not 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Electron binary
+        run: npm run deps:electron
+
+      # THE FIRST GATE, before typecheck and before any compilation: a tag with
+      # no entry in src/shared/releaseNotes.ts cannot ship. Exit 1 names the
+      # reason. The script accepts the tag with its `v` (parseVersion strips it)
+      # and a prerelease tag satisfies it with its base version's entry.
+      - name: Check release notes
+        shell: pwsh
+        run: node --import tsx scripts/check-release-notes.mjs $env:GITHUB_REF_NAME
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      # See ci.yml for what this gate is and why it is green.
+      - name: Lint
+        run: npm run lint
+
+      - name: Test
+        run: npm test
+
+      # --- Stamp the version from the tag ------------------------------------
+      # CI-only rewrite, never committed: the tag IS the version.
+      #
+      # The regex is a GUARD, not decoration. Everything downstream derives file
+      # paths and a `gh release` target from this string, so rejecting anything
+      # that is not `vMAJOR.MINOR.PATCH[-prerelease][+build]` makes a typo'd or
+      # hostile tag fail loudly here instead of producing a `release/<junk>/`
+      # path miss or a surprising `npm version` argument.
+      - name: Stamp version from tag
+        shell: pwsh
+        run: |
+          $tag = $env:GITHUB_REF_NAME
+          if ($tag -notmatch '^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$') {
+            throw "refusing to build: tag '$tag' is not a vMAJOR.MINOR.PATCH semver tag"
+          }
+          $ver = $tag -replace '^v', ''
+          npm version --no-git-tag-version --allow-same-version $ver
+          Write-Host "Stamped version from tag: $ver"
+
+      # The Rust toolchain is pinned by engine/rust-toolchain.toml and rustup
+      # honours it; no action, no version chosen here. See ci.yml.
+      - name: Install the pinned Rust toolchain
+        run: rustup show active-toolchain
+
+      - name: Cache cargo (release engine)
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4 (v4.3.0)
+        with:
+          path: |
+            ~/.cargo/registry/index
+            ~/.cargo/registry/cache
+            ~/.cargo/git/db
+            engine/target
+          key: cargo-app-${{ runner.os }}-${{ hashFiles('engine/Cargo.lock', 'engine/rust-toolchain.toml') }}
+          restore-keys: cargo-app-${{ runner.os }}-
+
+      # THE ENGINE THE INSTALLER CARRIES (JOS-473) — RELEASE, built before
+      # packaging because electron-builder copies it out of
+      # engine/target/release as an extraResource. A missing binary is only a
+      # WARNING there, so `npm run build:engine` asserts the file exists. See
+      # ci.yml for the whole argument; it is duplicated for the same reason the
+      # rest of the prelude is.
+      - name: Build the engine (release)
+        run: npm run build:engine
+
+      # --- Build + publish ----------------------------------------------------
+      # `--publish always` hands the installer, its .blockmap and latest.yml to
+      # electron-builder's GitHub publisher, which creates the release as a
+      # DRAFT (its default releaseType, kept on purpose — see the header). The
+      # bridge step below verifies what actually landed and owns the flip live.
+      #
+      # NO AZURE_* env: those secrets do not exist. The sign hook self-skips on
+      # a missing AZURE_SIGNING_ENDPOINT, so this produces an unsigned build
+      # with no conditional anywhere. When a certificate arrives, add the six
+      # secrets and an `env:` block here (SETUP.md lists them) — the hook and
+      # electron-builder.yml already carry the wiring.
+      - name: Build installer and publish (draft)
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          npm run build
+          npx electron-builder --win --publish always
+
+      # --- main-channel bridge, asset assertion, then the atomic flip ---------
+      #
+      # THE main.yml BRIDGE (do not remove). electron-updater resolves its feed
+      # by CHANNEL, and the channel lives in the FILENAME, not the yml body — an
+      # install on the 'main' channel polls main.yml and nothing else. A stable
+      # release natively writes only latest.yml, so without a byte copy named
+      # main.yml any main-channel install would silently stop updating forever.
+      # semver puts `X.Y.Z` above `X.Y.Z-main.N`, so those installs step up to
+      # the stable build on their next check. Nothing polls this fork's feed
+      # today (self-update is off), which is precisely why the bridge goes in
+      # now: the first release that ships without it is the one that strands
+      # whoever installed the release before.
+      #
+      # THE ASSERTION IS THE POINT OF THIS STEP. See the header: this repo runs
+      # the electron-builder major whose publisher exited without awaiting its
+      # uploads. Nothing here trusts that the build step's uploads completed;
+      # the release list is read back and compared against a required set, and
+      # the draft does not flip live until it matches.
+      - name: Bridge main.yml, verify assets, publish
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          $tag = $env:GITHUB_REF_NAME
+          $ver = $tag -replace '^v', ''
+          $feed = "release/$ver/latest.yml"
+          $exe  = "release/$ver/eq-zera-Setup-$ver.exe"
+          if (-not (Test-Path $feed)) { throw "expected feed file not found: $feed" }
+          if (-not (Test-Path $exe))  { throw "expected installer not found: $exe" }
+
+          # The bridge copy. Same bytes, different name.
+          Copy-Item $feed main.yml
+          gh release upload $tag main.yml --clobber
+          if ($LASTEXITCODE -ne 0) { throw "upload of main.yml failed" }
+
+          # Re-upload the three native assets with --clobber. This is a no-op
+          # when electron-builder's publisher did its job and a REPAIR when it
+          # exited early — either way the assertion below is measuring the
+          # release, not our hopes about it.
+          gh release upload $tag $exe "$exe.blockmap" $feed --clobber
+          if ($LASTEXITCODE -ne 0) { throw "upload of installer/blockmap/latest.yml failed" }
+
+          $assets = (gh release view $tag --json assets --jq '.assets[].name') -split "`n" |
+            ForEach-Object { $_.Trim() } | Where-Object { $_ }
+          $required = @(
+            "eq-zera-Setup-$ver.exe",
+            "eq-zera-Setup-$ver.exe.blockmap",
+            "latest.yml",
+            "main.yml"
+          )
+          $missing = $required | Where-Object { $assets -notcontains $_ }
+          if ($missing) { throw "refusing to publish: missing assets: $($missing -join ', ')" }
+
+          # THE RELEASE BODY. Upstream generated none (`--notes ""`) because its
+          # landing page carried the story; this fork has no site, so the release
+          # page is the only place a downloader reads anything. The SmartScreen
+          # sentence is the one from SETUP.md, verbatim in substance: an unsigned
+          # installer WILL be blocked on first run and a user who does not know
+          # the click-through will conclude the download is malware.
+          #
+          # NO BACKTICKS IN THESE STRINGS. A backtick is PowerShell's escape
+          # character inside a double-quoted string, so a markdown code span
+          # written here would be silently eaten (or, on 5.1, turn into whatever
+          # the unrecognised escape resolves to). Bold and plain text only.
+          $notes = @(
+            "**Download:** the eq-zera-Setup-$ver.exe asset below. Windows 10 or later; it installs",
+            'per-user under %LOCALAPPDATA%\Programs, with no admin prompt.',
+            '',
+            '**This installer is unsigned** — there is no code-signing certificate for this project',
+            'yet. Windows SmartScreen will show "Windows protected your PC" on first run; click',
+            '*More info -> Run anyway* to install it.',
+            '',
+            'The app does **not** self-update. Automatic updates stay off until releases are signed,',
+            'because an unsigned update is one nobody can verify the author of. Watch this page for',
+            'new versions and install them the same way.',
+            '',
+            "What changed in this build is in the app's What's new panel (and in",
+            'src/shared/releaseNotes.ts, which is where that panel reads it from).'
+          )
+          Set-Content -Path release-notes.md -Value $notes -Encoding utf8
+          gh release edit $tag --notes-file release-notes.md
+          if ($LASTEXITCODE -ne 0) { throw "setting the release body failed" }
+
+          # THE FLIP. A plain vX.Y.Z is a NORMAL release and takes the `latest`
+          # marker; a tag carrying a prerelease component (vX.Y.Z-rc.1) publishes
+          # as a prerelease and must NOT, because /releases/latest is what a
+          # download link and a future stable update resolution both read.
+          if ($tag -match '-') {
+            gh release edit $tag --draft=false --prerelease
+          } else {
+            gh release edit $tag --draft=false --latest
+          }
+          if ($LASTEXITCODE -ne 0) { throw "publishing the release failed" }
+          Write-Host "published $tag with main.yml bridged"
+
+      - name: Upload installer artifact (CI record)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4 (v4.6.2)
+        with:
+          name: installer
+          path: |
+            release/**/*.exe
+            release/**/*.blockmap
+            release/**/*.yml
+          retention-days: 14
+          if-no-files-found: warn
+
+      # THE ONE THAT MATTERS (JOS-100). Keyed by the TAG, because the tag is the
+      # version an `errorReport` carries — so "which maps do I need for v0.11.0"
+      # is answered by the artifact's name rather than by matching run numbers to
+      # releases. ci.yml's copy of this step argues at length why sourcemaps are
+      # an artifact and never a release asset.
+      #
+      # Deliberately gated on nothing: a release whose maps were skipped is a
+      # release whose crashes cannot be read, and that gets discovered months
+      # later by somebody trying to read one.
+      - name: Upload sourcemaps (private, for symbolicating error reports)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4 (v4.6.2)
+        with:
+          name: sourcemaps-${{ github.ref_name }}
+          path: out/**/*.map
+          retention-days: 90
+          if-no-files-found: warn
