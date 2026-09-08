@@ -55,9 +55,8 @@ fn a_row_and_its_break_line_fold_to_the_same_identity() {
 #[test]
 fn a_self_rows_identity_is_the_word_the_wear_off_line_uses() {
     let row = self_row("Clarity", 1_000, Some(60_000));
-    let brk = ev(
-        r#"{"kind":"buffExpired","seq":1,"ts":1,"raw":"b","spell":"Clarity","target":"self"}"#,
-    );
+    let brk =
+        ev(r#"{"kind":"buffExpired","seq":1,"ts":1,"raw":"b","spell":"Clarity","target":"self"}"#);
     assert!(row_break_identity(&row)
         .iter()
         .any(|k| break_event_identity(&brk, &[]).contains(k)));

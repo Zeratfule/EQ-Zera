@@ -17,8 +17,8 @@
 
 use crate::combat::spellfacts::is_player_shaped_name;
 use crate::jsmap::JsMap;
-use std::collections::{HashMap, HashSet};
 use serde::{Deserialize, Serialize};
+use std::collections::{HashMap, HashSet};
 
 #[derive(Default, Serialize, Deserialize)]
 pub struct OtherCombatants {

@@ -447,8 +447,7 @@ fn a_second_attach_preempts_the_first_and_no_events_interleave() {
     gate.release();
 
     settle("the winning fold to land", || {
-        matches!(world.health().status, HealthResultStatus::Live)
-            && world.mark().events == expected
+        matches!(world.health().status, HealthResultStatus::Live) && world.mark().events == expected
     });
 
     let loser = ledger.of(0);
@@ -474,9 +473,7 @@ fn a_second_attach_preempts_the_first_and_no_events_interleave() {
     let mut resets = Vec::new();
     while let Ok(message) = listener.inbox.try_recv() {
         match message {
-            EngineMessage::EpochMessage(epoch)
-                if matches!(epoch.reason, EpochReason::Attach) =>
-            {
+            EngineMessage::EpochMessage(epoch) if matches!(epoch.reason, EpochReason::Attach) => {
                 bumps.push(*epoch.epoch);
             }
             EngineMessage::ResetMessage(reset) => resets.push((*reset.id, *reset.epoch)),

@@ -180,7 +180,6 @@ impl CombatEngine {
         self.st.get_mut().set_live();
     }
 
-
     /// Is this engine still replaying? The flag the snapshot publishes, for a caller that needs it
     /// without serializing a whole meter.
     #[must_use]

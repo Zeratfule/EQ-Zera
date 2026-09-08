@@ -32,7 +32,7 @@ use eqlog::names::id_key;
 use serde::{Deserialize, Serialize};
 
 mod reproject;
-use reproject::{reproject_spec};
+use reproject::reproject_spec;
 
 /// Everything a LANDING states about itself.
 pub struct LandingSpec {
@@ -921,4 +921,3 @@ impl BuffInstances {
         }
     }
 }
-

@@ -34,8 +34,8 @@ use crate::modules::buff_timer_rows::{
 };
 use eqlog::jsstr::js_trim;
 use eqlog::names::id_key;
-use serde_json::{json, Value};
 use serde::{Deserialize, Serialize};
+use serde_json::{json, Value};
 
 /// The bounds on the offset, in seconds.
 ///

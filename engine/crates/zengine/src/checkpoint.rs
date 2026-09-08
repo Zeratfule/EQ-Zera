@@ -161,7 +161,9 @@ fn prefix_hash(log: &Path, offset: u64) -> io::Result<String> {
         let want = usize::try_from(left.min(HASH_CHUNK as u64)).unwrap_or(HASH_CHUNK);
         let got = file.read(&mut buf[..want])?;
         if got == 0 {
-            return Err(io::Error::other("the log is shorter than the checkpoint's offset"));
+            return Err(io::Error::other(
+                "the log is shorter than the checkpoint's offset",
+            ));
         }
         buf[..got].hash(&mut h);
         left -= got as u64;
@@ -210,23 +212,33 @@ fn read_and_restore(sink: &mut dyn EventSink, ctx: &Ctx, path: &Path) -> io::Res
     let header: Header = serde_json::from_str(line.trim_end())
         .map_err(|e| io::Error::other(format!("unreadable header: {e}")))?;
     if header.format != FORMAT {
-        return Err(io::Error::other(format!("format {} where this build reads {FORMAT}", header.format)));
+        return Err(io::Error::other(format!(
+            "format {} where this build reads {FORMAT}",
+            header.format
+        )));
     }
     let key = Key {
         engine: engine_identity(),
         inputs: inputs_identity(ctx),
     };
     if header.key != key {
-        return Err(io::Error::other("the engine build or the fold's inputs changed"));
+        return Err(io::Error::other(
+            "the engine build or the fold's inputs changed",
+        ));
     }
     if prefix_hash(&ctx.log, header.offset)? != header.prefix {
-        return Err(io::Error::other("the log's bytes before the checkpoint changed"));
+        return Err(io::Error::other(
+            "the log's bytes before the checkpoint changed",
+        ));
     }
     let mut modules = Vec::with_capacity(header.parts.len());
     for (id, len) in &header.parts {
         let mut bytes = vec![0u8; *len];
         reader.read_exact(&mut bytes)?;
-        modules.push(ModulePart { id: id.clone(), bytes });
+        modules.push(ModulePart {
+            id: id.clone(),
+            bytes,
+        });
     }
     let combat = match header.combat {
         Some(len) => {
@@ -290,7 +302,11 @@ fn write(ctx: &Ctx, path: &Path, offset: u64, ck: &FoldCheckpoint) -> io::Result
         last_ts: ck.last_ts,
         epoch_fired: ck.epoch_fired,
         session: ck.session,
-        parts: ck.modules.iter().map(|p| (p.id.clone(), p.bytes.len())).collect(),
+        parts: ck
+            .modules
+            .iter()
+            .map(|p| (p.id.clone(), p.bytes.len()))
+            .collect(),
         combat: ck.combat.as_ref().map(Vec::len),
     };
     if let Some(parent) = path.parent() {

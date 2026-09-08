@@ -22,8 +22,8 @@
 //! cell.
 
 use crate::jsmap::JsMap;
-use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
 
 pub const MAX_DISTINCT_DAMAGE_VALUES: usize = 32;
 

@@ -31,8 +31,8 @@
 
 use crate::jsmap::JsMap;
 use eqlog::names::{id_key, id_key_ref};
-use std::collections::{HashMap, HashSet};
 use serde::{Deserialize, Serialize};
+use std::collections::{HashMap, HashSet};
 
 /// How long a live hostile instance may go completely unobserved before its slot is eligible for
 /// retirement. Deliberately the same number as the encounter layer's `PRESENCE_GONE_MS`: an

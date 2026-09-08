@@ -195,7 +195,11 @@ fn every_module_resumes_from_every_cut_to_the_whole_fold() {
             let cut = line_boundary(&bytes, (bytes.len() as f64 * share) as usize);
             let head = modules_only(&bytes[..cut]);
             let missing = head.registry.not_checkpointable();
-            assert!(missing.is_empty(), "{}: modules that cannot checkpoint: {missing:?}", log.display());
+            assert!(
+                missing.is_empty(),
+                "{}: modules that cannot checkpoint: {missing:?}",
+                log.display()
+            );
             let ck = head.checkpoint().expect("a module-only fold checkpoints");
             drop(head);
             let mut resumed = Fold::new(registered(deps(&parser, launch_ms)), launch_ms);

@@ -58,14 +58,14 @@ use eqlog::names::{id_key, spell_canon_key, spell_rank};
 use ledger::{
     add_damage, iso_week_key, CasterKind, Family, ResistBucket, ResistLedgerStore, RowSpec,
 };
+use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use songs::{SongFold, SongOut, SONG_CONTACT_MS};
 use std::collections::HashSet;
 use world::{CasterIndex, DebuffWindows, MeleeContact, MobLevels, MobNames, TargetVerdicts};
-use serde::{Deserialize, Serialize};
 
 mod ev;
-use ev::{is_self, str_array, candidate_names};
+use ev::{candidate_names, is_self, str_array};
 
 mod module_impl;
 

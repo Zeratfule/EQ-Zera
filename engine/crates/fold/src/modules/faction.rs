@@ -72,18 +72,15 @@ impl FactionModule {
     /// Fold one line into the named faction's totals, minting the entry on first sight.
     fn record(&mut self, name: &str, ts: i64, delta: Option<i64>, cap: Option<&str>) {
         let key = name.trim().to_lowercase();
-        let row = self
-            .factions
-            .entry(key)
-            .or_insert_with(|| FactionTotals {
-                display: name.to_string(),
-                delta: 0,
-                hits: 0,
-                maxed: 0,
-                bottomed: 0,
-                first_ts: ts,
-                last_ts: ts,
-            });
+        let row = self.factions.entry(key).or_insert_with(|| FactionTotals {
+            display: name.to_string(),
+            delta: 0,
+            hits: 0,
+            maxed: 0,
+            bottomed: 0,
+            first_ts: ts,
+            last_ts: ts,
+        });
         row.last_ts = ts;
         match (delta, cap) {
             (Some(d), _) => {

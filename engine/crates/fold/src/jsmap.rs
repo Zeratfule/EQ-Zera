@@ -142,7 +142,10 @@ impl<'de, V: serde::Deserialize<'de>> serde::Deserialize<'de> for JsMap<V> {
             fn expecting(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
                 f.write_str("a map in insertion order")
             }
-            fn visit_map<A: serde::de::MapAccess<'de>>(self, mut a: A) -> Result<JsMap<V>, A::Error> {
+            fn visit_map<A: serde::de::MapAccess<'de>>(
+                self,
+                mut a: A,
+            ) -> Result<JsMap<V>, A::Error> {
                 let mut out = JsMap::new();
                 while let Some((k, v)) = a.next_entry::<String, V>()? {
                     out.insert(k, v);

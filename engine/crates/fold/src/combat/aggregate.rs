@@ -14,9 +14,9 @@ use crate::combat::procdetect::{add_spell_proc, SpellProcFold, SpellProcLane};
 use crate::combat::procwindows::WindowAccum;
 use crate::combat::rounds::{RoundAccum, SwingRecord};
 use crate::jsmap::JsMap;
+use serde::{Deserialize, Serialize};
 use std::borrow::Cow;
 use std::collections::{HashMap, HashSet};
-use serde::{Deserialize, Serialize};
 
 /// The engine's internal damage record. Sourced from the canonical `damage` event, but with a
 /// non-null attacker — caster-less other-player DoTs carry `attacker: null` and are dropped by the

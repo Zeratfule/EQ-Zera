@@ -164,8 +164,7 @@ fn a_live_snapshot_sweeps_a_charm_bind_whose_window_closed() {
 /// arm nothing while replaying and raise a nudge once the tail is running.
 #[test]
 fn the_pet_nudge_arms_only_once_the_tail_is_running() {
-    let summon =
-        r#"{"kind":"castBegin","seq":0,"ts":1000,"raw":"c","spell":"Kintaz's Animation"}"#;
+    let summon = r#"{"kind":"castBegin","seq":0,"ts":1000,"raw":"c","spell":"Kintaz's Animation"}"#;
 
     let mut e = fold(&[]);
     e.set_live();

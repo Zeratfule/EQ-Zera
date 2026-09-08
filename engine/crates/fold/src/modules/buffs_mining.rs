@@ -10,8 +10,8 @@
 use crate::event::{Event, Key, Kind};
 use crate::message_overlay::{message_text_of, MessageOverlayMiner, SeedMessage};
 use crate::spell_facts::{looks_landing_message, SpellFacts};
-use serde_json::Value;
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 
 #[derive(Serialize, Deserialize)]
 pub struct OverlayMining {

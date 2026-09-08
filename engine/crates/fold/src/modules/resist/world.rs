@@ -30,9 +30,9 @@ use crate::jsmap::JsMap;
 use eqlog::jsstr::{js_trim, JS_S};
 use eqlog::names::id_key;
 use regex::Regex;
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::sync::OnceLock;
-use serde::{Deserialize, Serialize};
 
 /// Bound on the display-name caches. Cleared wholesale rather than evicted one at a time, because a
 /// long session meets thousands of distinct names and an unbounded map is a slow leak.

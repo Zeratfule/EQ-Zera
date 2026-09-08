@@ -82,8 +82,14 @@ fn main() -> ExitCode {
         .file_name()
         .map(|s| s.to_string_lossy().to_string())
         .unwrap_or_default();
-    let Some(character) = args.character.clone().or_else(|| eqlog::character_of(&file_name)) else {
-        eprintln!("parity: cannot read a character out of \"{file_name}\" (pass --character <name>)");
+    let Some(character) = args
+        .character
+        .clone()
+        .or_else(|| eqlog::character_of(&file_name))
+    else {
+        eprintln!(
+            "parity: cannot read a character out of \"{file_name}\" (pass --character <name>)"
+        );
         return ExitCode::from(2);
     };
 

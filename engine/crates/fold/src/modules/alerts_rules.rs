@@ -32,8 +32,8 @@ use crate::modules::buff_timer_rows::BuffTimerRow;
 use eqlog::jsstr::js_trim;
 use eqlog::names::{id_key, spell_canon_key};
 use regex::{Regex, RegexBuilder};
-use serde_json::Value;
 use serde::{Deserialize, Serialize};
+use serde_json::Value;
 
 /// What a def that names no cooldown gets.
 const DEFAULT_COOLDOWN_MS: i64 = 2000;

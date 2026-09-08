@@ -26,8 +26,8 @@ use crate::EqModule;
 use evidence::{class_observation, tables_ready, who_classes, ClassObservation, SpellClassIndex};
 use intervals::{build_intervals, ComboCorrection, IntervalInput};
 use levels::{LevelPoint, WhoRow};
-use serde_json::{json, Value};
 use serde::{Deserialize, Serialize};
+use serde_json::{json, Value};
 
 /// The 16 EQ Legends classes, by their `/who` three-letter code. Note SHD, not SHK: the wiki spells
 /// the class both "Shadow Knight" and "Shadowknight" and both canonicalize here.

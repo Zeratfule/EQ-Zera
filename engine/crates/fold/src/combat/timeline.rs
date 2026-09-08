@@ -12,11 +12,11 @@
 //! Markers are never downsampled. They are sparse by construction, and drawing one in five would be
 //! worse than drawing none.
 
-use std::collections::VecDeque;
 use crate::combat::encounter::{encounter_name, TimelineRaw, TIMELINE_BUDGET};
 use crate::combat::state::EngineState;
 use crate::jsmap::JsMap;
 use serde::Serialize;
+use std::collections::VecDeque;
 
 /// The stable UI ordering of the damage taxonomy.
 const CATEGORY_ORDER: [&str; 5] = ["melee", "slay", "spell", "dot", "ds"];

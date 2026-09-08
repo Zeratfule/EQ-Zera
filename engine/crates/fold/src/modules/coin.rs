@@ -92,7 +92,13 @@ impl CoinModule {
 
     /// The shared row build: the coin pairs the event carried, then whatever the sentence named
     /// beside them.
-    fn push(&mut self, ev: &Event, source: &'static str, item: Option<String>, npc: Option<String>) {
+    fn push(
+        &mut self,
+        ev: &Event,
+        source: &'static str,
+        item: Option<String>,
+        npc: Option<String>,
+    ) {
         let Some(coins) = ev.coins("coins") else {
             return;
         };

@@ -14,8 +14,8 @@ use crate::jsfn::base_name;
 use crate::jsmap::JsMap;
 use crate::EqModule;
 use eqlog::jsstr::js_trim;
-use serde_json::{json, Value};
 use serde::{Deserialize, Serialize};
+use serde_json::{json, Value};
 
 #[derive(Default, Serialize, Deserialize)]
 pub struct OutputFilesModule {

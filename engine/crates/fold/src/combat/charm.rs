@@ -17,8 +17,8 @@ use crate::combat::spellfacts::{
     PROMOTE_MS,
 };
 use eqlog::names::spell_canon_key;
-use std::collections::{HashMap, HashSet};
 use serde::{Deserialize, Serialize};
+use std::collections::{HashMap, HashSet};
 
 /// What a `<mob> has been charmed.` broadcast means for US.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

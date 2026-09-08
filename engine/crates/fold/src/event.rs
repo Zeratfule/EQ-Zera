@@ -75,7 +75,6 @@ impl<'a> Event<'a> {
     }
 }
 
-
 impl Event<'_> {
     /// The kind, as text. A `Body::Json` whose `kind` this build does not know answers with the
     /// string it actually carries rather than with the empty text [`Kind::Other`] would give — the

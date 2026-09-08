@@ -32,9 +32,9 @@
 //! codepoint order, so the comparator is the language's.
 
 mod civil;
-use civil::iso_utc;
 use crate::jsmap::JsMap;
 use crate::spell_facts::{message_matches_other_suffix, SpellFacts};
+use civil::iso_utc;
 use eqlog::names::db_canon_key;
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};

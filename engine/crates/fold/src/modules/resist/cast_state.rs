@@ -14,8 +14,8 @@
 use super::catalog::caster_class_count;
 use super::ledger::CasterKind;
 use eqlog::names::spell_canon_key;
-use std::collections::{HashMap, HashSet};
 use serde::{Deserialize, Serialize};
+use std::collections::{HashMap, HashSet};
 
 /// The invocation name (lowercased by the parser) that carries the -150 resist adjust.
 pub const OVERCHANNEL_INVOCATION: &str = "overchannel";

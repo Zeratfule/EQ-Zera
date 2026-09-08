@@ -123,7 +123,9 @@ impl CombatLane {
     }
 
     fn lock(&self) -> MutexGuard<'_, LaneState> {
-        self.state.lock().unwrap_or_else(std::sync::PoisonError::into_inner)
+        self.state
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner)
     }
 
     /// A `roster` define, delivered in order with the events around it.
@@ -147,7 +149,11 @@ impl CombatLane {
     pub fn restore(&self, engine: &[u8], roster: Option<&[u8]>) -> bool {
         self.flush();
         let (reply, answer) = sync_channel::<bool>(1);
-        self.send(Msg::Restore(engine.to_vec(), roster.map(<[u8]>::to_vec), reply));
+        self.send(Msg::Restore(
+            engine.to_vec(),
+            roster.map(<[u8]>::to_vec),
+            reply,
+        ));
         answer.recv().unwrap_or(false)
     }
 

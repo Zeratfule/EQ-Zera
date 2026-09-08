@@ -51,8 +51,8 @@
 use super::catalog::facts_for_key;
 use crate::jsmap::JsMap;
 use eqlog::names::spell_canon_key;
-use std::collections::{HashMap, HashSet};
 use serde::{Deserialize, Serialize};
+use std::collections::{HashMap, HashSet};
 
 /// Measured, not chosen: consecutive song resists on one mob are 6, 12, 18, 24 s apart.
 pub const SONG_PULSE_MS: i64 = 6_000;

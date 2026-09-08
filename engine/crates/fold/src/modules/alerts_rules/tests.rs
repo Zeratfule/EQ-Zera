@@ -85,7 +85,9 @@ fn a_def_whose_fire_the_offset_moves_arms_instead_of_sounding() {
     let mut rules = set(vec![early]);
     let mut sched = crate::modules::alerts_early::EarlyWarnings::default();
     let fires = rules.fire(
-        &ev(r#"{"kind":"buffApply","seq":1,"ts":1000,"raw":"x","spell":"Dazzle","target":"a rat"}"#),
+        &ev(
+            r#"{"kind":"buffApply","seq":1,"ts":1000,"raw":"x","spell":"Dazzle","target":"a rat"}"#,
+        ),
         &mut sched,
     );
     assert!(fires.is_empty(), "nothing sounds at the match");
@@ -93,7 +95,9 @@ fn a_def_whose_fire_the_offset_moves_arms_instead_of_sounding() {
     // The clock is not spent — a cooldown belongs to a sound, and no sound has been made.
     // Proven by the second landing arming too: a spent clock would have swallowed it.
     rules.fire(
-        &ev(r#"{"kind":"buffApply","seq":2,"ts":1100,"raw":"x","spell":"Dazzle","target":"a bat"}"#),
+        &ev(
+            r#"{"kind":"buffApply","seq":2,"ts":1100,"raw":"x","spell":"Dazzle","target":"a bat"}"#,
+        ),
         &mut sched,
     );
     assert!(!sched.idle());

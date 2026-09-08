@@ -456,7 +456,8 @@ impl EventSink for FoldSink {
         let now = self.combat_now();
         Some(CombatSnapshot {
             now,
-            state: lane.with(|engine, roster| engine.snapshot(now, &snapshot_opts(opts), Some(roster))),
+            state: lane
+                .with(|engine, roster| engine.snapshot(now, &snapshot_opts(opts), Some(roster))),
         })
     }
 
@@ -464,7 +465,11 @@ impl EventSink for FoldSink {
     /// its own door rather than through a snapshot — and the ranking is `crate::search`.
     fn search_fights(&self, query: &str, limit: usize) -> Option<FightSearch> {
         let now = self.combat_now();
-        let corpus = self.fold.lane.as_ref()?.with(|engine, _| engine.fight_summaries(now));
+        let corpus = self
+            .fold
+            .lane
+            .as_ref()?
+            .with(|engine, _| engine.fight_summaries(now));
         Some(FightSearch {
             // The corpus is counted before the query is looked at, which is what makes an empty
             // query answer `{ hits: [], corpus: n }` rather than `corpus: 0`. A UI saying

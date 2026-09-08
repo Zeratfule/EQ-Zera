@@ -54,7 +54,10 @@ pub fn interned_opt<'de, D: serde::Deserializer<'de>>(d: D) -> Result<StaticOpt,
 
 /// `deserialize_with` for a `Vec<&'static str>` field (a path-typed alias such as `ClassAbbr`).
 pub fn interned_vec<'de, D: serde::Deserializer<'de>>(d: D) -> Result<Vec<&'static str>, D::Error> {
-    Ok(Vec::<String>::deserialize(d)?.iter().map(|s| intern(s)).collect())
+    Ok(Vec::<String>::deserialize(d)?
+        .iter()
+        .map(|s| intern(s))
+        .collect())
 }
 
 /// `deserialize_with` for a `HashMap<String, &'static str>` field.
@@ -69,7 +72,9 @@ pub fn interned_map<'de, D: serde::Deserializer<'de>>(
 
 pub fn intern(text: &str) -> &'static str {
     static POOL: Mutex<Option<HashSet<&'static str>>> = Mutex::new(None);
-    let mut guard = POOL.lock().unwrap_or_else(std::sync::PoisonError::into_inner);
+    let mut guard = POOL
+        .lock()
+        .unwrap_or_else(std::sync::PoisonError::into_inner);
     let pool = guard.get_or_insert_with(HashSet::new);
     if let Some(s) = pool.get(text) {
         return s;
@@ -131,11 +136,19 @@ impl Registry {
     /// and the registry is then in an undefined mix, so the caller must discard it.
     pub fn restore(&mut self, parts: &[ModulePart]) -> Result<(), String> {
         if parts.len() != self.mods.len() {
-            return Err(format!("{} parts for {} modules", parts.len(), self.mods.len()));
+            return Err(format!(
+                "{} parts for {} modules",
+                parts.len(),
+                self.mods.len()
+            ));
         }
         for (m, part) in self.mods.iter_mut().zip(parts) {
             if m.id() != part.id {
-                return Err(format!("part '{}' where module '{}' is registered", part.id, m.id()));
+                return Err(format!(
+                    "part '{}' where module '{}' is registered",
+                    part.id,
+                    m.id()
+                ));
             }
             if !m.restore(&part.bytes) {
                 return Err(format!("module '{}' refused its part", part.id));
@@ -174,7 +187,10 @@ impl Fold {
     /// combat arrangement). An error leaves the fold in an undefined mix: discard it.
     pub fn restore(&mut self, ck: &FoldCheckpoint) -> Result<(), String> {
         if ck.format != FORMAT {
-            return Err(format!("format {} where this build reads {FORMAT}", ck.format));
+            return Err(format!(
+                "format {} where this build reads {FORMAT}",
+                ck.format
+            ));
         }
         self.registry.restore(&ck.modules)?;
         let combat_ok = match (&mut self.combat, &self.lane, &ck.combat) {

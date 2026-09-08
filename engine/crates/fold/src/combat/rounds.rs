@@ -23,8 +23,8 @@
 //! skills have no such confound — one timer, one hand — and that split is `round_confidence`.
 
 use crate::jsmap::JsMap;
-use std::borrow::Cow;
 use serde::{Deserialize, Serialize};
+use std::borrow::Cow;
 
 /// `to_lowercase`, borrowed when it would be the identity - the same exact rule as
 /// `eqlog::names::id_key_ref`: all-ASCII with no capital is already its own lowercase.

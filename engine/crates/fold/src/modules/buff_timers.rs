@@ -36,7 +36,7 @@ use serde_json::{json, Value};
 use std::rc::Rc;
 
 mod candidates;
-use candidates::{damage_breaks, cc_candidates, sorted_names};
+use candidates::{cc_candidates, damage_breaks, sorted_names};
 
 /// How long an END is remembered — long enough for the projection to retire a matching active buff
 /// the buffs model never clears, and for the overlay to flash a drop. It is not a history.

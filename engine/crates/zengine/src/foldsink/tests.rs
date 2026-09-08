@@ -31,8 +31,7 @@ fn inputs_with_state<'a>(
 
 /// A scratch profile directory of this test's own.
 fn scratch(name: &str) -> PathBuf {
-    let dir =
-        std::env::temp_dir().join(format!("zengine-foldsink-{name}-{}", std::process::id()));
+    let dir = std::env::temp_dir().join(format!("zengine-foldsink-{name}-{}", std::process::id()));
     let _ = std::fs::remove_dir_all(&dir);
     std::fs::create_dir_all(&dir).expect("a scratch profile");
     dir

@@ -31,7 +31,7 @@ use crate::jsmap::JsMap;
 use serde::{Deserialize, Serialize};
 
 mod overlap;
-use overlap::{overlap_ms};
+use overlap::overlap_ms;
 
 /// The tertiary slot unlocks at level 10 — a PRIOR, overridden by a `/who` row's own arity.
 const TERTIARY_UNLOCK_LEVEL: i64 = 10;

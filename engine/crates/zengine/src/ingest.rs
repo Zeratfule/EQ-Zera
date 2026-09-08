@@ -905,7 +905,8 @@ fn run(world: &World, generation: u64, attach: &Attach, sinks: &SinkFactory) -> 
     }
     // THE WARM START (Z Engine): a checkpoint keyed on this very attach continues the scan from
     // its mark instead of byte zero. Absent or stale, `resume` is byte zero and nothing changed.
-    let ck_ctx = crate::checkpoint::Ctx::for_attach(attach, world, &resolved.zone, character.as_deref());
+    let ck_ctx =
+        crate::checkpoint::Ctx::for_attach(attach, world, &resolved.zone, character.as_deref());
     let resume = crate::checkpoint::try_restore(&mut *sink, &ck_ctx);
 
     let file = File::open(log)?;
@@ -961,7 +962,9 @@ fn run(world: &World, generation: u64, attach: &Attach, sinks: &SinkFactory) -> 
             return Ok(Ended::Preempted);
         }
         let at = TailCore::at(batch.checkpoint);
-        if cadence.due() && !world.report_progress(generation, mark(&at, size, batch.next_seq, &*sink)) {
+        if cadence.due()
+            && !world.report_progress(generation, mark(&at, size, batch.next_seq, &*sink))
+        {
             return Ok(Ended::Preempted);
         }
         answer_asks(&answers, &*sink, &serving);
@@ -970,7 +973,11 @@ fn run(world: &World, generation: u64, attach: &Attach, sinks: &SinkFactory) -> 
         // events already folded were folded under what the user had said at the time.
         answer_writes(&writes, &mut *sink);
     }
-    let crate::scan::ScanEnd { parser, core, mut seq } = pipeline.finish()?;
+    let crate::scan::ScanEnd {
+        parser,
+        core,
+        mut seq,
+    } = pipeline.finish()?;
     let mut ev = Ev::new();
 
     // The final measurement is not optional and does not ask the cadence. It is the one frame that

@@ -30,8 +30,8 @@ use crate::combat::spellfacts::{
 };
 use crate::jsmap::JsMap;
 use eqlog::names::spell_canon_key;
-use std::collections::{HashMap, HashSet};
 use serde::{Deserialize, Serialize};
+use std::collections::{HashMap, HashSet};
 
 /// What the evidence says this creature is, and therefore which endings apply to it.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]

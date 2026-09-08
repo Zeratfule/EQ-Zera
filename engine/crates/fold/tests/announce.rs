@@ -211,8 +211,9 @@ fn coin_announces_on_income_and_stays_quiet_for_a_payout_that_is_not_one() {
     // The zone line is bookkeeping — the label the next row will carry.
     let zoned = p.fold(r#"{"kind":"zone","seq":1,"ts":1000,"raw":"z","zone":"Nagafen's Lair"}"#);
     assert!(!zoned.contains(&"coin"));
-    let corpse =
-        p.fold(r#"{"kind":"coin","seq":2,"ts":2000,"raw":"c","source":"corpse","coins":{"gold":5}}"#);
+    let corpse = p.fold(
+        r#"{"kind":"coin","seq":2,"ts":2000,"raw":"c","source":"corpse","coins":{"gold":5}}"#,
+    );
     assert!(corpse.contains(&"coin"));
     // The auto-vendor is a loot line that stated a price.
     let sold = p.fold(
@@ -257,7 +258,8 @@ fn deaths_announces_on_the_death_and_never_on_the_hits_it_is_ringing() {
         p.fold(r#"{"kind":"playerDeath","seq":3,"ts":2000,"raw":"p","killer":"a fire giant"}"#);
     assert!(died.contains(&"deaths"));
     // A mob's death is somebody else's recap.
-    let mob = p.fold(r#"{"kind":"death","seq":4,"ts":2500,"raw":"d","name":"a rat","bySelf":true}"#);
+    let mob =
+        p.fold(r#"{"kind":"death","seq":4,"ts":2500,"raw":"d","name":"a rat","bySelf":true}"#);
     assert!(!mob.contains(&"deaths"));
 }
 

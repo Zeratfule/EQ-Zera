@@ -157,7 +157,11 @@ fn answers(client: &mut Client, id: &mut i64) -> Value {
 fn attach(engine: &Engine, log: &Path, state_dir: Option<&Path>) -> Client {
     let mut client = engine.connected();
     let dir = state_dir.map(|d| d.to_string_lossy().into_owned());
-    client.send(&attach_with_state(1, &log.to_string_lossy(), dir.as_deref()));
+    client.send(&attach_with_state(
+        1,
+        &log.to_string_lossy(),
+        dir.as_deref(),
+    ));
     client
 }
 
@@ -184,9 +188,19 @@ fn the_second_attach_restores_the_first_ones_landing_and_answers_the_same() {
     let mut client = attach(&first, &log, Some(&state));
     let mut id = 100;
     let cold = answers(&mut client, &mut id);
-    assert!(said(&first, "checkpoint: written"), "the landing wrote a checkpoint: {:?}", first.diagnostics());
-    let file = state.join("checkpoints").join("eqlog_Primitive_freeport.txt.zck");
-    assert!(file.is_file(), "the checkpoint file exists at {}", file.display());
+    assert!(
+        said(&first, "checkpoint: written"),
+        "the landing wrote a checkpoint: {:?}",
+        first.diagnostics()
+    );
+    let file = state
+        .join("checkpoints")
+        .join("eqlog_Primitive_freeport.txt.zck");
+    assert!(
+        file.is_file(),
+        "the checkpoint file exists at {}",
+        file.display()
+    );
     drop(client);
     first.close_stdin_and_wait();
 
@@ -194,8 +208,15 @@ fn the_second_attach_restores_the_first_ones_landing_and_answers_the_same() {
     let mut client = attach(&second, &log, Some(&state));
     let mut id = 200;
     let warm = answers(&mut client, &mut id);
-    assert!(said(&second, "checkpoint: restored"), "the second attach restored: {:?}", second.diagnostics());
-    assert_eq!(warm, cold, "a restored engine answers what the cold one answered");
+    assert!(
+        said(&second, "checkpoint: restored"),
+        "the second attach restored: {:?}",
+        second.diagnostics()
+    );
+    assert_eq!(
+        warm, cold,
+        "a restored engine answers what the cold one answered"
+    );
 }
 
 #[test]
@@ -220,14 +241,24 @@ fn a_restored_engine_folds_what_was_appended_and_matches_a_cold_fold_of_the_whol
     let mut client = attach(&warm_engine, &log, Some(&state));
     let mut id = 200;
     let warm = answers(&mut client, &mut id);
-    assert!(said(&warm_engine, "checkpoint: restored"), "{:?}", warm_engine.diagnostics());
+    assert!(
+        said(&warm_engine, "checkpoint: restored"),
+        "{:?}",
+        warm_engine.diagnostics()
+    );
 
     let cold_engine = Engine::start();
     let mut client = attach(&cold_engine, &log, None);
     let mut id = 300;
     let cold = answers(&mut client, &mut id);
-    assert_eq!(warm["events"], cold["events"], "every appended event was folded");
-    assert_eq!(warm, cold, "restore-then-continue answers what the whole fold answers");
+    assert_eq!(
+        warm["events"], cold["events"],
+        "every appended event was folded"
+    );
+    assert_eq!(
+        warm, cold,
+        "restore-then-continue answers what the whole fold answers"
+    );
 }
 
 #[test]
@@ -254,6 +285,10 @@ fn a_changed_log_prefix_is_a_cold_fold() {
     let mut client = attach(&second, &log, Some(&state));
     let mut id = 200;
     let _again = answers(&mut client, &mut id);
-    assert!(said(&second, "not used"), "a changed prefix refuses the checkpoint: {:?}", second.diagnostics());
+    assert!(
+        said(&second, "not used"),
+        "a changed prefix refuses the checkpoint: {:?}",
+        second.diagnostics()
+    );
     assert!(!said(&second, "checkpoint: restored"));
 }

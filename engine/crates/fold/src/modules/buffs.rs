@@ -43,10 +43,10 @@ use crate::modules::buffs_view::ActiveBuff;
 use crate::spell_facts::SpellFacts;
 use crate::EqModule;
 use eqlog::names::id_key;
+use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use std::cell::RefCell;
 use std::rc::Rc;
-use serde::{Deserialize, Serialize};
 
 mod candidates;
 use candidates::{candidates_of, wear_off_candidates};
@@ -782,4 +782,3 @@ impl EqModule for BuffsModule {
         Some(self)
     }
 }
-

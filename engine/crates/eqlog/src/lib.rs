@@ -246,7 +246,10 @@ mod tests {
             &p,
             "[Wed Aug 19 16:21:54 2026] You gain experience (with a bonus)! (3.288%)",
         );
-        assert!(bonus.contains(r#""kind":"expGain""#), "the bonus spelling is an experience gain: {bonus}");
+        assert!(
+            bonus.contains(r#""kind":"expGain""#),
+            "the bonus spelling is an experience gain: {bonus}"
+        );
         assert!(bonus.ends_with(r#""party":false,"pct":3.288}"#), "{bonus}");
         let dot = parse_one(
             &p,
@@ -261,7 +264,10 @@ mod tests {
             r#""dtype":"dot""#,
             r#""raw":"[Sun Aug 16 17:57:49 2026] You have taken 12 damage from Choking by a thunder spirit princess.""#,
         ] {
-            assert!(dot.contains(expected), "the first-person DoT line: wanted {expected} in {dot}");
+            assert!(
+                dot.contains(expected),
+                "the first-person DoT line: wanted {expected} in {dot}"
+            );
         }
         let out = parse_one(&p, "[Wed Aug 19 16:21:54 2026] You gain experience!");
         assert!(out.ends_with(r#""party":false}"#), "{out}");
@@ -285,7 +291,10 @@ mod tests {
         assert!(bare_comma.contains(r#""kind":"hail""#), "{bare_comma}");
         assert!(bare_comma.contains(r#""npc":"Nicholas""#), "{bare_comma}");
         // Conversation is not a hail and mints no `say` kind.
-        let chat = parse_one(&p, "[Wed Aug 19 16:21:54 2026] You say, 'anyone need a port'");
+        let chat = parse_one(
+            &p,
+            "[Wed Aug 19 16:21:54 2026] You say, 'anyone need a port'",
+        );
         assert!(chat.starts_with(r#"{"kind":"unknown""#), "{chat}");
     }
 
@@ -306,19 +315,31 @@ mod tests {
             &p,
             "[Wed Jul 29 01:24:24 2026] Your faction standing with Undead Frogloks of Guk has been adjusted by -15.",
         );
-        assert!(down.ends_with(r#""faction":"Undead Frogloks of Guk","delta":-15}"#), "{down}");
+        assert!(
+            down.ends_with(r#""faction":"Undead Frogloks of Guk","delta":-15}"#),
+            "{down}"
+        );
         // The saturation forms carry NO magnitude: a `cap`, and no `delta` to sum.
         let floored = parse_one(
             &p,
             "[Tue Aug 04 00:25:52 2026] Your faction standing with Inhabitants of Hate could not possibly get any worse.",
         );
-        assert!(floored.ends_with(r#""faction":"Inhabitants of Hate","cap":"min"}"#), "{floored}");
-        assert!(!floored.contains("delta"), "a rail states no magnitude: {floored}");
+        assert!(
+            floored.ends_with(r#""faction":"Inhabitants of Hate","cap":"min"}"#),
+            "{floored}"
+        );
+        assert!(
+            !floored.contains("delta"),
+            "a rail states no magnitude: {floored}"
+        );
         let capped = parse_one(
             &p,
             "[Sun Aug 02 21:43:06 2026] Your faction standing with Frogloks of Guk could not possibly get any better.",
         );
-        assert!(capped.ends_with(r#""faction":"Frogloks of Guk","cap":"max"}"#), "{capped}");
+        assert!(
+            capped.ends_with(r#""faction":"Frogloks of Guk","cap":"max"}"#),
+            "{capped}"
+        );
     }
 
     /// THE SOLD PRICE, appended after every field a sold row already carried — so the bytes ahead of
@@ -351,7 +372,10 @@ mod tests {
             &p,
             "[Thu Aug 20 02:46:23 2026] You looted a Thorny Vine Helm from Cleric of Innoruuk's corpse and sold it for free.",
         );
-        assert!(free.ends_with(r#""disposition":"sold","coins":{}}"#), "{free}");
+        assert!(
+            free.ends_with(r#""disposition":"sold","coins":{}}"#),
+            "{free}"
+        );
     }
 
     #[test]

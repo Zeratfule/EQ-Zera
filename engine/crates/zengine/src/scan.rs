@@ -71,7 +71,12 @@ pub struct ScanPipeline {
 impl ScanPipeline {
     /// Start parsing `file` at byte `offset` (a line boundary - a checkpoint's mark, or zero) on
     /// a helper thread, numbering the first event `first_seq`.
-    pub fn start_at(parser: Parser, mut file: File, offset: u64, first_seq: i64) -> io::Result<Self> {
+    pub fn start_at(
+        parser: Parser,
+        mut file: File,
+        offset: u64,
+        first_seq: i64,
+    ) -> io::Result<Self> {
         file.seek(SeekFrom::Start(offset))?;
         let (tx, rx) = sync_channel::<io::Result<Batch>>(IN_FLIGHT);
         let handle = thread::Builder::new()

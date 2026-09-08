@@ -661,9 +661,16 @@ impl Fold {
     /// [`Fold::with_combat`], on the combat lane's thread. `self_name` must be the one the
     /// registry's own roster was built with, since the lane folds a roster of its own beside the
     /// engine (see `lane.rs`).
-    pub fn with_combat_lane(mut self, mut engine: combat::CombatEngine, self_name: Option<&str>) -> Self {
+    pub fn with_combat_lane(
+        mut self,
+        mut engine: combat::CombatEngine,
+        self_name: Option<&str>,
+    ) -> Self {
         engine.reset();
-        self.lane = Some(lane::CombatLane::start(engine, modules::roster::RosterModule::new(self_name)));
+        self.lane = Some(lane::CombatLane::start(
+            engine,
+            modules::roster::RosterModule::new(self_name),
+        ));
         self
     }
 
