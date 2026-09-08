@@ -1,0 +1,295 @@
+Location	Name	ID	Count	Slots
+Any Slot	Brigandine Tunic +1	3307	1	10
+Any Slot-Slot2	Empty	0	0	0
+Any Slot-Slot7	Empty	0	0	0
+Ear	Drop of Crystallized Flame +7	177839	1	10
+Ear-Slot7	Empty	0	0	0
+Ear-Slot8	Empty	0	0	0
+Ear-Slot9	Empty	0	0	0
+Ear-Slot10	Empty	0	0	0
+Head	Valorium Helmet +1	4851	1	10
+Head-Slot2	Empty	0	0	0
+Head-Slot7	Empty	0	0	0
+Face	Polished Mithril Mask +3	4505	1	10
+Face-Slot7	Polished Mithril Mask (Exaltation)	4505	1	10
+Face-Slot8	Empty	0	0	0
+Face-Slot9	Empty	0	0	0
+Ear	Earring of Disease Reflection +4	10302	1	10
+Ear-Slot7	Empty	0	0	0
+Ear-Slot8	Empty	0	0	0
+Ear-Slot9	Empty	0	0	0
+Ear-Slot10	Empty	0	0	0
+Neck	Symbol of Marr +2	12800	1	10
+Neck-Slot7	Empty	0	0	0
+Neck-Slot8	Empty	0	0	0
+Shoulders	Pauldrons of Power	1542	1	10
+Arms	Lustrous Russet Vambraces +2	4833	1	10
+Arms-Slot2	Empty	0	0	0
+Arms-Slot7	Empty	0	0	0
+Arms-Slot8	Empty	0	0	0
+Back	Cloak of Flames +2	11621	1	10
+Back-Slot7	Empty	0	0	0
+Back-Slot8	Empty	0	0	0
+Wrist	Valorium Bracers +2	4854	1	10
+Wrist-Slot2	Empty	0	0	0
+Wrist-Slot7	Empty	0	0	0
+Wrist-Slot8	Empty	0	0	0
+Wrist	Lustrous Russet Bracer +1	4834	1	10
+Wrist-Slot2	Empty	0	0	0
+Wrist-Slot7	Empty	0	0	0
+Range	Idol of the Underking +1	14762	1	10
+Range-Slot7	Idol of the Underking (Exaltation)	14762	1	10
+Hands	Gauntlets of Fiery Might +5	11624	1	10
+Hands-Slot2	Empty	0	0	0
+Hands-Slot7	Empty	0	0	0
+Hands-Slot8	Empty	0	0	0
+Hands-Slot9	Empty	0	0	0
+Hands-Slot10	Empty	0	0	0
+Primary	Thelvorn, Blade of Light +5	27709	1	10
+Primary-Slot2	Empty	0	0	0
+Primary-Slot7	Empty	0	0	0
+Primary-Slot8	Empty	0	0	0
+Primary-Slot9	Empty	0	0	0
+Primary-Slot10	Thelvorn, Blade of Light (Exaltation)	27709	1	10
+Secondary	Whitened Treant Fists +4	6502	1	10
+Secondary-Slot2	Empty	0	0	0
+Secondary-Slot7	Empty	0	0	0
+Secondary-Slot8	Empty	0	0	0
+Secondary-Slot9	Empty	0	0	0
+Secondary-Slot10	Empty	0	0	0
+Fingers	Djarn's Amethyst Ring +1	10366	1	10
+Fingers-Slot7	Djarn's Amethyst Ring (Exaltation)	10366	1	10
+Fingers	Ring of Pureblood +1	1540	1	10
+Fingers-Slot7	Moonstone Ring (Exaltation)	10150	1	10
+Chest	Red Dragonscale Armor +1	11623	1	10
+Chest-Slot2	Empty	0	0	0
+Chest-Slot7	Empty	0	0	0
+Legs	Lustrous Russet Greaves +2	4836	1	10
+Legs-Slot2	Empty	0	0	0
+Legs-Slot7	Empty	0	0	0
+Legs-Slot8	Empty	0	0	0
+Feet	Lustrous Russet Boots +3	4837	1	10
+Feet-Slot2	Empty	0	0	0
+Feet-Slot7	Golden Efreeti Boots (Exaltation)	4407	1	10
+Feet-Slot8	Empty	0	0	0
+Feet-Slot9	Empty	0	0	0
+Waist	Flowing Black Silk Sash +2	1365	1	10
+Waist-Slot7	Empty	0	0	0
+Waist-Slot8	Empty	0	0	0
+Any Slot	Midnight Clad Straps +2	177795	1	10
+Any Slot-Slot1	Empty	0	0	0
+Any Slot-Slot7	Empty	0	0	0
+Any Slot-Slot8	Empty	0	0	0
+Ammo	Empty	0	0	0
+General 1	Spacious Rucksack	177751	1	24
+General 1-Slot1	Tiny Dagger	13080	86	10
+General 1-Slot2	Void-Touched Potential	148600	1	10
+General 1-Slot3	Mote of Infinitesimal Potential	148590	2	10
+General 1-Slot4	Weapon Ornamentation Token	177711	1	10
+General 1-Slot5	Bandages*	21779	20	10
+General 1-Slot6	Insidious Robe	1247	1	10
+General 1-Slot6-Slot2	Empty	0	0	0
+General 1-Slot7	Rod of Infinite Thought	11574	1	10
+General 1-Slot7-Slot2	Empty	0	0	0
+General 1-Slot8	Shadowed Book	10529	1	10
+General 1-Slot9	Kelin`s Seven Stringed Lute +1	11573	1	10
+General 1-Slot9-Slot7	Kelin`s Seven Stringed Lute (Exaltation)	11573	1	10
+General 1-Slot10	White Satin Gloves +1	2923	1	10
+General 1-Slot10-Slot2	Empty	0	0	0
+General 1-Slot10-Slot7	Empty	0	0	0
+General 1-Slot11	Adamantite Epaulets	4402	1	10
+General 1-Slot12	Empty	0	0	0
+General 1-Slot13	Empty	0	0	0
+General 1-Slot14	Empty	0	0	0
+General 1-Slot15	Empty	0	0	0
+General 1-Slot16	Orb of Tishan +4	11625	1	10
+General 1-Slot16-Slot2	Empty	0	0	0
+General 1-Slot16-Slot7	Empty	0	0	0
+General 1-Slot16-Slot8	Empty	0	0	0
+General 1-Slot16-Slot9	Empty	0	0	0
+General 1-Slot16-Slot10	Orb of Tishan (Exaltation)	11625	1	10
+General 1-Slot17	Red Dragon Scales	11622	1	10
+General 1-Slot18	Red Dragon Scales	11622	1	10
+General 1-Slot19	Torn, Burnt Book	19071	1	10
+General 1-Slot20	Red Dragon Scales	11622	1	10
+General 1-Slot21	Empty	0	0	0
+General 1-Slot22	Razing Sword of Skarlon +2	5412	1	10
+General 1-Slot22-Slot2	Empty	0	0	0
+General 1-Slot22-Slot7	Empty	0	0	0
+General 1-Slot22-Slot8	Empty	0	0	0
+General 1-Slot23	Empty	0	0	0
+General 1-Slot24	Empty	0	0	0
+General 2	Light Burlap Sack	17353	1	8
+General 2-Slot1	Empty	0	0	0
+General 2-Slot2	Empty	0	0	0
+General 2-Slot3	Empty	0	0	0
+General 2-Slot4	Empty	0	0	0
+General 2-Slot5	Anthemion Armbands +2	7834	1	10
+General 2-Slot5-Slot2	Empty	0	0	0
+General 2-Slot5-Slot7	Empty	0	0	0
+General 2-Slot5-Slot8	Empty	0	0	0
+General 2-Slot6	Empty	0	0	0
+General 2-Slot7	Empty	0	0	0
+General 2-Slot8	Empty	0	0	0
+General 3	Backpack*	32601	1	8
+General 3-Slot1	Empty	0	0	0
+General 3-Slot2	Empty	0	0	0
+General 3-Slot3	Empty	0	0	0
+General 3-Slot4	Empty	0	0	0
+General 3-Slot5	Empty	0	0	0
+General 3-Slot6	Empty	0	0	0
+General 3-Slot7	Empty	0	0	0
+General 3-Slot8	Empty	0	0	0
+General 4	Backpack*	32601	1	8
+General 4-Slot1	Empty	0	0	0
+General 4-Slot2	Empty	0	0	0
+General 4-Slot3	Empty	0	0	0
+General 4-Slot4	Empty	0	0	0
+General 4-Slot5	Empty	0	0	0
+General 4-Slot6	Moonstone Ring +1	10150	1	10
+General 4-Slot6-Slot7	Empty	0	0	0
+General 4-Slot7	Empty	0	0	0
+General 4-Slot8	Empty	0	0	0
+General 5	Backpack*	32601	1	8
+General 5-Slot1	Slowstone Amber	12508	1	10
+General 5-Slot2	Slowstone Amber	12508	1	10
+General 5-Slot3	Wand of Allure	12507	1	10
+General 5-Slot4	Wand of Allure	12507	1	10
+General 5-Slot5	Wand of Allure	12507	1	10
+General 5-Slot6	Empty	0	0	0
+General 5-Slot7	Azarack Skin	177794	1	10
+General 5-Slot8	Primary Class Unlock Token	176991	1	10
+General 6	Backpack	17005	1	8
+General 6-Slot1	Stiletto of the Bloodclaw +4	7312	1	10
+General 6-Slot1-Slot2	Empty	0	0	0
+General 6-Slot1-Slot7	Empty	0	0	0
+General 6-Slot1-Slot8	Empty	0	0	0
+General 6-Slot1-Slot9	Empty	0	0	0
+General 6-Slot1-Slot10	Stiletto of the Bloodclaw (Exaltation)	7312	1	10
+General 6-Slot2	Rokyls Channelling Crystal +5	10219	1	10
+General 6-Slot2-Slot2	Empty	0	0	0
+General 6-Slot2-Slot7	Rokyls Channelling Crystal (Exaltation)	10219	1	10
+General 6-Slot2-Slot8	Empty	0	0	0
+General 6-Slot2-Slot9	Empty	0	0	0
+General 6-Slot2-Slot10	Empty	0	0	0
+General 6-Slot3	Empty	0	0	0
+General 6-Slot4	Serpentine Bracer +1	10148	1	10
+General 6-Slot4-Slot2	Empty	0	0	0
+General 6-Slot4-Slot7	Serpentine Bracer (Exaltation)	10148	1	10
+General 6-Slot5	Moonstone Ring +3	10150	1	10
+General 6-Slot5-Slot7	Moonstone Ring (Exaltation)	10150	1	10
+General 6-Slot5-Slot8	Empty	0	0	0
+General 6-Slot5-Slot9	Empty	0	0	0
+General 6-Slot6	Gold Plated Koshigatana +4	11630	1	10
+General 6-Slot6-Slot2	Empty	0	0	0
+General 6-Slot6-Slot7	Empty	0	0	0
+General 6-Slot6-Slot8	Empty	0	0	0
+General 6-Slot6-Slot9	Empty	0	0	0
+General 6-Slot6-Slot10	Gold Plated Koshigatana (Exaltation)	11630	1	10
+General 6-Slot7	Midnight Clad Headband +1	177801	1	10
+General 6-Slot7-Slot1	Empty	0	0	0
+General 6-Slot7-Slot7	Empty	0	0	0
+General 6-Slot8	Signet Ring of the Lost Crusader +5	177838	1	10
+General 6-Slot8-Slot7	Empty	0	0	0
+General 6-Slot8-Slot8	Empty	0	0	0
+General 6-Slot8-Slot9	Empty	0	0	0
+General 6-Slot8-Slot10	Empty	0	0	0
+General 7	Backpack	17005	1	8
+General 7-Slot1	Hierophant`s Crook +4	11629	1	10
+General 7-Slot1-Slot2	Empty	0	0	0
+General 7-Slot1-Slot7	Empty	0	0	0
+General 7-Slot1-Slot8	Empty	0	0	0
+General 7-Slot1-Slot9	Empty	0	0	0
+General 7-Slot1-Slot10	Hierophant`s Crook (Exaltation)	11629	1	10
+General 7-Slot2	Empty	0	0	0
+General 7-Slot3	Empty	0	0	0
+General 7-Slot4	Empty	0	0	0
+General 7-Slot5	Empty	0	0	0
+General 7-Slot6	Empty	0	0	0
+General 7-Slot7	Green Silken Drape	1412	1	10
+General 7-Slot7-Slot2	Empty	0	0	0
+General 7-Slot8	Empty	0	0	0
+General 8	Backpack	17005	1	8
+General 8-Slot1	Prayers of Life	11631	1	10
+General 8-Slot2	Prayers of Life	11631	1	10
+General 8-Slot3	Prayers of Life	11631	1	10
+General 8-Slot4	Prayers of Life	11631	1	10
+General 8-Slot5	Prayers of Life	11631	1	10
+General 8-Slot6	Prayers of Life	11631	1	10
+General 8-Slot7	Empty	0	0	0
+General 8-Slot8	Empty	0	0	0
+General 9	Empty	0	0	0
+General 10	Empty	0	0	0
+General 11	Empty	0	0	0
+General 12	Empty	0	0	0
+Held	Empty	0	0	0
+Bank1	Empty	0	0	0
+Bank2	Empty	0	0	0
+Bank3	Empty	0	0	0
+Bank4	Empty	0	0	0
+Bank5	Empty	0	0	0
+Bank6	Empty	0	0	0
+Bank7	Empty	0	0	0
+Bank8	Empty	0	0	0
+Bank9	Empty	0	0	0
+Bank10	Empty	0	0	0
+Bank11	Empty	0	0	0
+Bank12	Empty	0	0	0
+Bank13	Empty	0	0	0
+Bank14	Empty	0	0	0
+Bank15	Empty	0	0	0
+Bank16	Empty	0	0	0
+Bank17	Empty	0	0	0
+Bank18	Empty	0	0	0
+Bank19	Empty	0	0	0
+Bank20	Empty	0	0	0
+Bank21	Empty	0	0	0
+Bank22	Empty	0	0	0
+Bank23	Empty	0	0	0
+Bank24	Empty	0	0	0
+SharedBank1	Empty	0	0	0
+SharedBank2	Empty	0	0	0
+SharedBank3	Empty	0	0	0
+SharedBank4	Empty	0	0	0
+SharedBank5	Empty	0	0	0
+SharedBank6	Empty	0	0	0
+Personal-Depot1	Griffenne Blood	22526	2	10
+
+KeyRing	Name	ID	
+Activated	Guise of the Deceiver	2469
+Equipment	Boots of the Long Road	177708
+Equipment	Lustrous Russet Gauntlets +2	4835
+Equipment	Rune Etched Chestplate +3	4872
+Equipment	Boots of the Long Road +1	177708
+Equipment	Valorium Gauntlets +3	4855
+Equipment	Shadow Rage Gloves +2	55605
+Equipment	Valorium Bracers	4854
+Equipment	Boots of the Long Road +1	177708
+Equipment	Eye of Innoruuk	20656
+Equipment	Indicolite Bracer +3	4914
+Equipment	Earring of Bashing	1538
+Equipment	Earthen Blade +1	5531
+Equipment	Valorium Boots	4857
+Equipment	Short Sword of the Ykesha	5500
+Equipment	Loam Encrusted Choker	1643
+Equipment	Skull-Shaped Barbute +3	4301
+Equipment	Lustrous Russet Helm	4831
+Equipment	Valorium Vambraces	4853
+Equipment	Selo`s Drums of the March +4	11626
+Equipment	Shiverback-Hide Gloves	1204
+Equipment	Indicolite Greaves +1	4916
+Equipment	Polished Mithril Torque +5	4501
+Equipment	Sword of the Lost +6	177837
+Equipment	Ethereal Mist Vambraces +2	4883
+Equipment	Woven Shadow Boots +3	4907
+Equipment	Midnight Clad Footwraps +1	177800
+Equipment	Ethereal Mist Greaves +2	4886
+Equipment	Woven Shadow Helm +1	4901
+Equipment	Indicolite Gauntlets +2	4915
+Equipment	Vexthorne	11557
+Equipment	Prismatic Shield +1	9405
+Equipment	Staff of Elemental Mastery: Earth	11567
+Equipment	Indicolite Vambraces +1	4913
+Equipment	Bloodmoon +1	11558
+Equipment	Shrieking Ahlspiess	7507
+Equipment	Eyerazzia +1	7508

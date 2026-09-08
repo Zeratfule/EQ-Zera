@@ -1,0 +1,18 @@
+{
+  "label": "2026-09-06-z1-release",
+  "at": "2026-09-07T03:45:32.211Z",
+  "binary": "C:\\Users\\jackt\\EQ Zera\\app\\engine\\target\\release\\zengine.exe",
+  "binaryBytes": 27456512,
+  "log": "C:\\Users\\Public\\Daybreak Game Company\\Installed Games\\EverQuest Legends\\Logs\\eqlog_Zeratfule_freeport.txt",
+  "logBytes": 141787146,
+  "spellDbMs": 450,
+  "scanMs": 17698,
+  "scanBytes": 141787146,
+  "events": 1723854,
+  "scanMBps": 7.6,
+  "eventsPerSec": 97404,
+  "attachToLiveMs": 18451,
+  "peakWorkingSetMb": 407.4,
+  "liveWorkingSetMb": 407.4,
+  "cpuMs": 18328.125
+}

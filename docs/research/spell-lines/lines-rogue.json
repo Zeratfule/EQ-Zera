@@ -1,0 +1,426 @@
+{
+ "class": "Rogue",
+ "lines": [
+  {
+   "id": "utility-poison-single",
+   "name": "Utility poisons, single-Strike tier (L4-20)",
+   "category": "poison-utility",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Weakening Poison",
+     "level": 4,
+     "inDb": false,
+     "note": "NOT in the supplied Rogue class-spell list, but it EXISTS on Legends: the spells.json row 'Weakening Poison' (effects: ['Add Melee Proc: Weakening Strike']) simply carries no `classes` tag, so the class scrape drops it. Listed at level 4 on the wiki Rogue roster. Grants Weakening Strike = melee attack slow (DB row: 'Decrease Melee Haste by 15%', 3 Min 30 Sec; the wiki table claims -35% attack speed / 2:42 - see openQuestions)."
+    },
+    {
+     "name": "Hobbling Poison",
+     "level": 5,
+     "inDb": false,
+     "note": "Same reason as Weakening Poison: real Legends ability, spells.json row present ('Add Melee Proc: Hobbling Strike'), untagged so absent from the class list. Wiki roster misspells the row header 'Hobbling Posion'. Grants Hobbling Strike = snare, -50% movement speed, up to 3:00."
+    },
+    {
+     "name": "Concussive Poison",
+     "level": 7,
+     "inDb": true,
+     "note": "IN INPUT. Input effects are ['Add Melee Proc:'] with a BLANK proc name - the class-tagged spells.json row genuinely has no name in that slot. The wiki Rogue roster resolves it: Concussive Strike (interrupts spell casting 75% of the time, Pushback 2). Confidence high (wiki description column plus src/shared/poisons.ts, which was owner-verified 2026-08-04)."
+    },
+    {
+     "name": "Befuddling Poison",
+     "level": 9,
+     "inDb": false,
+     "note": "Untagged spells.json row ('Add Melee Proc: Befuddling Strike'). Grants Befuddling Strike = mana drain, -110 MP, instant."
+    },
+    {
+     "name": "Grounding Poison",
+     "level": 11,
+     "inDb": false,
+     "note": "Untagged spells.json row ('Add Melee Proc: Grounding Strike'). Grants Grounding Strike = root, up to 1:00. NB the wiki's description cell for this row is a copy-paste error - it reads 'Coats your weapon in Befuddling Poison' while naming Grounding Strike as the proc. The proc name is the load-bearing part and agrees with the DB."
+    },
+    {
+     "name": "Clumsiness Poison",
+     "level": 18,
+     "inDb": true,
+     "note": "IN INPUT. Blank proc slot resolves to Clumsiness Strike = spell-cast slow. Wiki description cell has the typo 'Sepll Cast Slow Proc'."
+    },
+    {
+     "name": "Banishing Poison",
+     "level": 20,
+     "inDb": false,
+     "note": "Untagged spells.json row ('Add Melee Proc: Banishing Strike'). Grants Banishing Strike = dispel, removes one magical effect. Its landing emote is \"<mob>'s blessings wither!\" - deliberately NOT the Cancel Magic family's 'feels dispelled' message, so the two are counted separately."
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "NOT an upgrade chain. Each of these seven grants exactly ONE distinct Strike, one per effect class (slow / snare / interrupt / mana drain / root / spell slow / dispel), so a higher-level member is a different tool, not a stronger version of the one below it. They 'replace' one another only in the mechanical sense that ALL utility poisons share ONE coat slot (see stacking). Real upgrade relations exist but they cross into the combination tier: each single-Strike poison is strictly subsumed by every combination poison that grants its Strike (e.g. Banishing Poison 20 is subsumed by Antimagic 36 and Mage Bane 39). That relation is a lattice, not a chain, and is recorded per-member in the combination line below."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": ["rogue-poison-utility"],
+    "conflicts": [
+     {
+      "line": "Utility poisons, combination tier",
+      "class": "Rogue",
+      "detail": "ONE utility poison at a time, full stop - the two utility lines here are one exclusivity group, split only by tier for readability. Wiki Rogue page, Poisons section: 'Only one utility poison can be active at a time, but all other combat poisons can be active simultaneously, unless otherwise noted on their respective descriptions.' Every utility poison's own description repeats 'This is considered a utility Poison, only one of which may be active at a time.' The game states this in the log too: 'Your Antimagic Poison spell did not take hold. (Blocked by Neurotoxic Poison.)' - a failed coat with no coat line following.",
+      "source": "scripts/sources/cache/classes/Rogue.wikitext (Poisons section + every utility row's description); log evidence quoted in src/shared/poisons.ts"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Combat venom lines (asp / blood / stunning)",
+      "detail": "The utility slot is independent of the three combat venom slots. One utility + one member of each combat line = 4 concurrent coats, at any level. Independently corroborated off-wiki: everquestguides.com Beta Watch (Apr 27 - May 2, 2026) lists 'Rogue 1 utility + 3 combat poisons simultaneously'."
+     }
+    ],
+    "notes": "Coats are character-global, not per-weapon: 'Poisons apply globally to all melee and but not ranged attacks, not on a per-weapon basis.' Duration is Permanent - 'Once applied poisons last until class swap or character death.' Coating takes 2.5s; reuse timer 5 sec. Strikes are checked against the target's Poison Resistance and are not reflectable. When a utility coat is swapped the log prints 'The poison dries from the blade.' in the same second as the new coat."
+   },
+   "sources": [
+    "C:\\Users\\jmoye\\everquest-companion\\scripts\\sources\\cache\\classes\\Rogue.wikitext",
+    "C:\\Users\\jmoye\\everquest-companion\\src\\main\\data\\spells.json",
+    "C:\\Users\\jmoye\\everquest-companion\\src\\shared\\poisons.ts"
+   ]
+  },
+  {
+   "id": "utility-poison-combination",
+   "name": "Utility poisons, combination (dual-Strike) tier (L23-42)",
+   "category": "poison-utility",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Fettering Poison",
+     "level": 23,
+     "inDb": true,
+     "note": "IN INPUT. Grants Grounding Strike + Hobbling Strike (root + snare). Input effects ['Add Melee Proc:', 'Add Melee Proc: Hobbling Strike'] - the blank first slot is Grounding Strike, per the wiki description cell ('...trigger Grounding Strike and Hobbling Strike...'). Strictly subsumes Grounding Poison (11) and Hobbling Poison (5)."
+    },
+    {
+     "name": "Binding Poison",
+     "level": 25,
+     "inDb": true,
+     "note": "IN INPUT. Weakening Strike + Hobbling Strike (melee slow + snare). Blank first slot = Weakening Strike. Strictly subsumes Weakening Poison (4) and Hobbling Poison (5)."
+    },
+    {
+     "name": "Neurotoxic Poison",
+     "level": 28,
+     "inDb": true,
+     "note": "IN INPUT. Befuddling Strike + Weakening Strike (mana drain + melee slow). Blank first slot = Befuddling Strike. Strictly subsumes Befuddling Poison (9) and Weakening Poison (4). This is the utility coat actually observed in the owner's log, and it is the one that printed the 'Blocked by Neurotoxic Poison' refusals."
+    },
+    {
+     "name": "Mind Wrack Poison",
+     "level": 30,
+     "inDb": false,
+     "note": "NOT in the input class list (untagged spells.json row). NAME CONFLICT, unresolved: the spell DB row is 'Mind Wrack Poison' (effects: Concussive Strike + Clumsiness Strike) while the wiki Rogue roster's level-30 entry is headed 'Mind Break Poison' with the identical description (Concussive Strike + Clumsiness Strike, interrupt + spell-cast slow). Same ability, two spellings; the overlay should probably accept both. Strictly subsumes Concussive Poison (7) and Clumsiness Poison (18). Its coat line is 'You coat your blades in a mind wracking poison.'"
+    },
+    {
+     "name": "Thought Drain Poison",
+     "level": 33,
+     "inDb": true,
+     "note": "IN INPUT. Befuddling Strike + Clumsiness Strike (mana drain + spell-cast slow). Blank first slot = Befuddling Strike. Strictly subsumes Befuddling Poison (9) and Clumsiness Poison (18). Wiki typo in the cell: 'Clumnsiness Strike'."
+    },
+    {
+     "name": "Antimagic Poison",
+     "level": 36,
+     "inDb": true,
+     "note": "IN INPUT. Concussive Strike + Banishing Strike (interrupt + dispel). Blank first slot = Concussive Strike. Strictly subsumes Concussive Poison (7) and Banishing Poison (20)."
+    },
+    {
+     "name": "Mage Bane Poison",
+     "level": 39,
+     "inDb": true,
+     "note": "IN INPUT. Befuddling Strike + Banishing Strike (mana drain + dispel). Blank first slot = Befuddling Strike. Strictly subsumes Befuddling Poison (9) and Banishing Poison (20). Confirmed in play: after the owner coated Mage Bane the log gained 19 \"<mob>'s blessings wither!\" landings plus 3 'resisted your Banishing Strike!'."
+    },
+    {
+     "name": "Paralytic Poison",
+     "level": 42,
+     "inDb": true,
+     "note": "IN INPUT. Weakening Strike + Clumsiness Strike (melee slow + spell-cast slow). Blank first slot = Weakening Strike. Strictly subsumes Weakening Poison (4) and Clumsiness Poison (18). Top of the utility roster at the current level cap."
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "NOT an upgrade chain either. All eight grant exactly two Strikes and no two members grant the same PAIR - the eight pairs are drawn from the seven base Strikes with no repeats, so a level-42 Paralytic is not 'better than' a level-39 Mage Bane, it is a different pair (melee+spell slow vs mana drain+dispel). What IS strict is the cross-tier relation: every combination poison strictly subsumes the two single-Strike poisons whose Strikes it grants, and it always sits at a higher level than both. Since the whole utility roster shares one slot, coating any member clears whatever was on the blades - 'replacement' in the slot sense is universal and says nothing about power."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": ["rogue-poison-utility"],
+    "conflicts": [
+     {
+      "line": "Utility poisons, single-Strike tier",
+      "class": "Rogue",
+      "detail": "Same single slot - see that line's conflict entry. Splitting the utility roster into two lines here is presentational (base effect vs combined effect); mechanically all 15 utility poisons are ONE exclusivity group and at most one is ever coated.",
+      "source": "scripts/sources/cache/classes/Rogue.wikitext (Poisons section)"
+     },
+     {
+      "line": "Slow line (Insects line)",
+      "class": "Shaman",
+      "detail": "MEDIUM CONFIDENCE, no Legends text found. Weakening Strike is an attack-speed debuff on the mob (DB: 'Decrease Melee Haste by 15%'). Prior shaman-wave research recorded that attack-speed debuffs occupy one slot on the mob and a shaman slow and an enchanter slow overwrite each other, strongest wins. If that slot model holds, the rogue's Weakening Strike (from Binding 25, Neurotoxic 28, Paralytic 42, and Weakening Poison 4) would not stack with a shaman/enchanter slow and would be the weaker of the two. NOTHING on the Legends Rogue page states this - flagged, not asserted.",
+      "source": "docs/research/spell-lines/lines-merged.json (shaman `slow` line stacking note); no Legends-authored confirmation"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Combat venom lines (asp / blood / stunning)",
+      "detail": "Independent slots. A combination utility coat sits alongside up to three combat venoms."
+     }
+    ],
+    "notes": "The two Strikes a combination poison grants are separate proc rolls against the same melee swing stream; each rolls against the target's Poison Resistance independently. IMPORTANT for attribution (this is why the overlay cannot name a coat from an emote): FOUR poisons grant Weakening Strike (Weakening, Binding, Neurotoxic, Paralytic) and its emote \"<mob>'s limbs move slower!\" names no caster, so a slow landing proves 'a rogue slow proc', never a specific coat. Same shape for Befuddling Strike (5 sources), Clumsiness Strike (4), Concussive (3), Banishing (3), Hobbling (3), Grounding (2)."
+   },
+   "sources": [
+    "C:\\Users\\jmoye\\everquest-companion\\scripts\\sources\\cache\\classes\\Rogue.wikitext",
+    "C:\\Users\\jmoye\\everquest-companion\\src\\main\\data\\spells.json",
+    "C:\\Users\\jmoye\\everquest-companion\\src\\shared\\poisons.ts",
+    "https://www.everquestguides.com/legends/patch-notes.html"
+   ]
+  },
+  {
+   "id": "combat-venom-asp",
+   "name": "Asp / Cobra Venom line (combat, direct damage)",
+   "category": "poison-combat",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Asp Venom",
+     "level": 2,
+     "inDb": false,
+     "note": "NOT in the supplied class list (untagged spells.json row, effects ['Add Melee Proc: Asp Venom Strike']) but a real, low-level, heavily-used Legends ability - it is the single most-coated venom in the owner's log. Grants Asp Venom Strike: 'Deals 62 points of poison damage to your target' (DB: 'Decrease Hitpoints by 62', instant)."
+    },
+    {
+     "name": "Cobra Venom",
+     "level": 46,
+     "inDb": false,
+     "note": "Untagged spells.json row. Grants Cobra Venom Strike (direct damage; the wiki's numbers are still 'XX' placeholders, so the magnitude is UNKNOWN). Never seen in the owner's log because the character is level 45."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "EXPLICIT, quoted from the Legends wiki's Asp Venom row: 'This is considered a Combat Poison, and stacks with other all other combat poisons, except Cobra Venom, which replaces this.' The Cobra Venom row states the mirror image: 'stacks with all other combat poisons, excluding Asp Venom, which this replaces.' Both sides of the statement are Legends-authored, so this is the strongest replacement evidence in the whole rogue set. Direction is unambiguous (level 46 replaces level 2)."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": ["rogue-poison-combat-asp"],
+    "conflicts": [
+     {
+      "line": "Asp / Cobra Venom line (itself)",
+      "class": "Rogue",
+      "detail": "The line's two members are mutually exclusive by their own descriptions - at most one direct-damage venom is on the blades. This is the ONLY exception either row names.",
+      "source": "scripts/sources/cache/classes/Rogue.wikitext (Asp Venom and Cobra Venom rows)"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Blood Siphon / Blood Draw Venom line",
+      "detail": "'stacks with all other combat poisons' with only the same-line exception named. Observed directly: the log's venom bursts (01:05:10-:36, 18:21:24-:32, 21:15:27-:38 on 2026-08-03) each coat asp + siphoning + stunning together."
+     },
+     {
+      "line": "Stunning Venom",
+      "detail": "Same clause; observed in the same bursts."
+     },
+     {
+      "line": "Utility poisons (both tiers)",
+      "detail": "Different slot entirely; combat and utility coats coexist."
+     }
+    ],
+    "notes": "Combat venoms print a different wear-off line from utility poisons: 'The venom drips away.' vs 'The poison dries from the blade.' Asp Venom Strike and Cobra Venom Strike SHARE a landing emote - 'screams as poison burns their veins!' - so the emote cannot distinguish them; both are direct damage, so the effect class is never ambiguous even when the name is."
+   },
+   "sources": [
+    "C:\\Users\\jmoye\\everquest-companion\\scripts\\sources\\cache\\classes\\Rogue.wikitext",
+    "C:\\Users\\jmoye\\everquest-companion\\src\\shared\\poisons.ts"
+   ]
+  },
+  {
+   "id": "combat-venom-blood",
+   "name": "Blood Siphon / Blood Draw Venom line (combat, DoT + lifetap)",
+   "category": "poison-combat",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Blood Siphon Venom",
+     "level": 1,
+     "inDb": false,
+     "note": "NOT in the supplied class list (untagged spells.json row) but the rogue's level-1 ability. Grants Blood Siphon Strike: 56 damage every six seconds for 0:00:36, healing the rogue for the same amount; DB row confirms 'Decrease Hitpoints by 56 per tick', 'Return 100% of damage as HP', 36 Sec. The wiki adds 'Starting at level 46, additionally deals 100 damage when the spell lands.'"
+    },
+    {
+     "name": "Blood Draw Venom",
+     "level": 46,
+     "inDb": false,
+     "note": "Untagged spells.json row. Grants Blood Draw Strike, same shape as Blood Siphon Strike with the damage still written 'XX' on the wiki - magnitude UNKNOWN."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "EXPLICIT and two-sided. Blood Siphon Venom's row: 'stacks with all other combat poisons, except Blood Draw Venom, which replaces this ability.' Blood Draw Venom's row: 'stacks with all other combat poisons, except Blood Siphon Poison, which this ability replaces.' (The second says 'Blood Siphon Poison'; the roster's actual name is Blood Siphon Venom - a wiki wording slip, not a third ability.)"
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": ["rogue-poison-combat-blood"],
+    "conflicts": [
+     {
+      "line": "Blood Siphon / Blood Draw Venom line (itself)",
+      "class": "Rogue",
+      "detail": "Two members, mutually exclusive by their own descriptions; the only exception either row names.",
+      "source": "scripts/sources/cache/classes/Rogue.wikitext (Blood Siphon Venom and Blood Draw Venom rows)"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Asp / Cobra Venom line",
+      "detail": "Explicit 'stacks with all other combat poisons'; observed together in every venom burst in the owner's log."
+     },
+     {
+      "line": "Stunning Venom",
+      "detail": "Same clause; observed."
+     },
+     {
+      "line": "Utility poisons (both tiers)",
+      "detail": "Different slot."
+     }
+    ],
+    "notes": "Blood Siphon Strike and Blood Draw Strike SHARE the landing emote 'begins to bleed profusely!', so the emote cannot tell them apart; both are DoT-with-lifetap, so the effect class stays unambiguous. This is the only rogue proc with a real duration on the target (36s / 6 ticks) - relevant if the overlay ever needs to reconcile it against shaman or necro poison DoTs on the same mob (see openQuestions)."
+   },
+   "sources": [
+    "C:\\Users\\jmoye\\everquest-companion\\scripts\\sources\\cache\\classes\\Rogue.wikitext",
+    "C:\\Users\\jmoye\\everquest-companion\\src\\shared\\poisons.ts"
+   ]
+  },
+  {
+   "id": "combat-venom-stunning",
+   "name": "Stunning Venom (combat, stun) - single-member line",
+   "category": "poison-combat",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Stunning Venom",
+     "level": 15,
+     "inDb": false,
+     "note": "NOT in the supplied class list (untagged spells.json row). Grants Stunning Strike: 'Injects a paralytic agent, stunning your opponent. This effect works on creatures up to level 50.' (Pushback 1; 3s stun up to level 50.) NB the wiki's description cell for the ability calls it 'Stunning Poison' while the roster header and the DB row both say 'Stunning Venom' - a wording slip, and its Type cell is the green Combat badge."
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "No successor and no predecessor. Its description names NO exception at all - 'This is considered a Combat Poison, and stacks with all other combat poisons.' - which is exactly why it is its own line: nothing replaces it and it replaces nothing. If a level-cap raise ever adds a Stunning upgrade it would join here."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": ["rogue-poison-combat-stunning"],
+    "conflicts": [],
+    "stacksWith": [
+     {
+      "line": "Asp / Cobra Venom line",
+      "detail": "Explicit, no exception clause. Observed coated together in all three venom bursts in the owner's log."
+     },
+     {
+      "line": "Blood Siphon / Blood Draw Venom line",
+      "detail": "Explicit, no exception clause. Observed."
+     },
+     {
+      "line": "Utility poisons (both tiers)",
+      "detail": "Different slot."
+     }
+    ],
+    "notes": "The three combat lines (asp / blood / stunning) are what makes the cap THREE combat coats: it is not a hard slot count the game enforces, it falls out of the five combat venoms forming exactly three mutually-exclusive pairs/singletons. Three combat + one utility = four concurrent coats at any level, which matches the independent off-wiki report 'Rogue 1 utility + 3 combat poisons simultaneously'."
+   },
+   "sources": [
+    "C:\\Users\\jmoye\\everquest-companion\\scripts\\sources\\cache\\classes\\Rogue.wikitext",
+    "C:\\Users\\jmoye\\everquest-companion\\src\\shared\\poisons.ts",
+    "https://www.everquestguides.com/legends/patch-notes.html"
+   ]
+  }
+ ],
+ "standalone": [],
+ "unlinked": [
+  {
+   "name": "Weakening Strike",
+   "kind": "proc",
+   "grantedBy": ["Weakening Poison", "Binding Poison", "Neurotoxic Poison", "Paralytic Poison"],
+   "note": "Separate spells.json row, no `classes` tag, so it never appears in a class spell list. Melee attack slow. DB effects: ['Decrease Melee Haste by 15%', 'Increase Poison Counter by 9'], duration 3 Min 30 Sec. Landing emote suffix: \"'s limbs move slower!\" (possessive form). Four poisons grant it - a landing NEVER identifies which coat fired it."
+  },
+  {
+   "name": "Hobbling Strike",
+   "kind": "proc",
+   "grantedBy": ["Hobbling Poison", "Fettering Poison", "Binding Poison"],
+   "note": "Snare, -50% movement speed, up to 3:00. Emote suffix: 'starts limping!' (bare form)."
+  },
+  {
+   "name": "Concussive Strike",
+   "kind": "proc",
+   "grantedBy": ["Concussive Poison", "Mind Wrack Poison", "Antimagic Poison"],
+   "note": "Interrupt, 75% of the time, Pushback 2, instant. Emote suffix: 'blinks, looking confused!'"
+  },
+  {
+   "name": "Befuddling Strike",
+   "kind": "proc",
+   "grantedBy": ["Befuddling Poison", "Neurotoxic Poison", "Thought Drain Poison", "Mage Bane Poison"],
+   "note": "Mana drain, -110 MP, instant. Emote suffix: 'stumbles, clutching their head!' Granted by more poisons than any other Strike."
+  },
+  {
+   "name": "Grounding Strike",
+   "kind": "proc",
+   "grantedBy": ["Grounding Poison", "Fettering Poison"],
+   "note": "Root, up to 1:00. Emote suffix: \"'s feet won't budge!\""
+  },
+  {
+   "name": "Clumsiness Strike",
+   "kind": "proc",
+   "grantedBy": ["Clumsiness Poison", "Mind Wrack Poison", "Thought Drain Poison", "Paralytic Poison"],
+   "note": "Spell-cast slow. Emote suffix: \"'s fingers slow down.\" Wiki duration cell (2:18) disagrees with its own description text (0:03:30)."
+  },
+  {
+   "name": "Banishing Strike",
+   "kind": "proc",
+   "grantedBy": ["Banishing Poison", "Antimagic Poison", "Mage Bane Poison"],
+   "note": "Dispel - 'Removes a magical effect from your opponent.' Emote suffix: \"'s blessings wither!\" This is NOT the Cancel Magic dispel family ('feels dispelled'), which is an 11-class spell list and includes NPC casts; the overlay must count them separately or it will attribute NPC dispels to the rogue."
+  },
+  {
+   "name": "Stunning Strike",
+   "kind": "proc",
+   "grantedBy": ["Stunning Venom"],
+   "note": "Stun for 3s on creatures up to level 50, Pushback 1. Emote suffix: 'begins to sway!'"
+  },
+  {
+   "name": "Blood Siphon Strike",
+   "kind": "proc",
+   "grantedBy": ["Blood Siphon Venom"],
+   "note": "DoT + lifetap. DB effects: ['Decrease Hitpoints by 56 per tick', 'Return 100% of damage as HP', 'Increase Poison Counter by 9'], 36 Sec. Emote suffix 'begins to bleed profusely!' is SHARED with Blood Draw Strike."
+  },
+  {
+   "name": "Blood Draw Strike",
+   "kind": "proc",
+   "grantedBy": ["Blood Draw Venom"],
+   "note": "Level-46 DoT + lifetap; wiki damage is still an 'XX' placeholder. Shares the 'begins to bleed profusely!' emote with Blood Siphon Strike."
+  },
+  {
+   "name": "Asp Venom Strike",
+   "kind": "proc",
+   "grantedBy": ["Asp Venom"],
+   "note": "Direct damage, 62 poison damage, instant. Emote suffix 'screams as poison burns their veins!' is SHARED with Cobra Venom Strike. The single most frequently observed rogue proc in the owner's log."
+  },
+  {
+   "name": "Cobra Venom Strike",
+   "kind": "proc",
+   "grantedBy": ["Cobra Venom"],
+   "note": "Level-46 direct damage; wiki damage still an 'XX' placeholder. Shares the 'screams as poison burns their veins!' emote with Asp Venom Strike."
+  },
+  {
+   "name": "Unbound Lethality",
+   "kind": "aa",
+   "grantedBy": [],
+   "note": "LOW-MEDIUM CONFIDENCE, off-wiki only. Reported as an auto-granted Rogue class AA giving a passive 10/15/20% bonus to the duration of ALL poisons and lowering the resist value of all poisons by 25/50/75. If real, it scales every Strike duration in this file. Not present in the local wiki mirror's Rogue page (that page pulls Rogue AAs by transclusion from Alternate Advancement, which is not in the cache) and not in spells.json. Verify against the Alternate Advancement page before surfacing."
+  }
+ ],
+ "openQuestions": [
+  "NAME CONFLICT at level 30: spells.json has 'Mind Wrack Poison', the wiki Rogue roster has 'Mind Break Poison'. Identical description (Concussive Strike + Clumsiness Strike). One source is stale. Until resolved the overlay should match both spellings.",
+  "Weakening Strike magnitude disagrees between sources: the wiki table's Max Effect cell says '-35% Attack Speed' with duration 2:42, while its own description text says 0:03:30 and the spells.json row says 'Decrease Melee Haste by 15%' / 3 Min 30 Sec. The DB row is what the client reports, so 15% is the safer number, but the disagreement is unexplained. Same shape for Clumsiness Strike (wiki duration cell 2:18 vs description 0:03:30).",
+  "Does the rogue's Weakening Strike share the mob's attack-speed-debuff slot with a shaman or enchanter slow? Prior shaman-wave research says attack-speed debuffs occupy one slot and the strongest wins, which would mean a rogue slow is overwritten by (and cannot stack with) any real shaman slow. NO Legends-authored text confirms this for poison Strikes. Unresolved.",
+  "Do the rogue's poison-school DoTs (Blood Siphon / Blood Draw Strike) share a DoT slot with shaman or necromancer poison DoTs (Envenomed Breath / Envenomed Bolt / Venom of the Snake)? No evidence either way. Note that every Strike carries 'Increase Poison Counter by N' (9 on the two checked), so they ARE the same counter system a Cure Poison strips - which suggests a shared mechanic but says nothing about slot sharing.",
+  "Do Hobbling Strike (snare) and Grounding Strike (root) contend with ranger/druid snare and root lines on the mob? Untested and unstated.",
+  "The Rogue page itself asks, unanswered: 'does that include melee special attacks like slam? spellblade? backstab?' - i.e. whether Backstab and other melee specials roll the poison proc. Leave the overlay agnostic until answered.",
+  "Why do exactly these 9 poisons carry a `classes: '* Rogue - Level N'` tag in spells.json while the other 11 do not? All 20 exist as rows. The 9 tagged rows also share two other oddities: durationText 'Permanent' (the 11 untagged rows say 'Instant', which contradicts the wiki's Permanent for every poison) and a BLANK name in their first 'Add Melee Proc:' effect. That is a scrape/template artifact on the wiki side, not a gameplay difference - but it means any class-list-driven UI shows 9 of 20 rogue poisons unless it also reads the untagged rows."
+ ],
+ "sources": [
+  "C:\\Users\\jmoye\\everquest-companion\\scripts\\sources\\cache\\classes\\Rogue.wikitext - the local eqlwiki Rogue page snapshot. PRIMARY. Carries the full 20-poison roster table (name / level / Combat-or-Utility badge / description with the exact replacement wording / duration / reuse), the Poisons mechanics bullet list, and the per-Strike 'Poison Effects' tables.",
+  "C:\\Users\\jmoye\\everquest-companion\\src\\main\\data\\spells.json - the committed spell DB. Confirms all 20 poison rows and all 12 Strike rows exist, and supplies the numeric effects. Only 9 poison rows carry a Rogue class tag, which is exactly the input file.",
+  "C:\\Users\\jmoye\\everquest-companion\\src\\shared\\poisons.ts - the owner-verified (2026-08-04) in-repo digest of the same two sources plus log evidence: coat messages, wear-off messages, Strike emote suffixes, the three-combat-line model, and the 'Blocked by Neurotoxic Poison' refusal lines.",
+  "C:\\Users\\jmoye\\everquest-companion\\docs\\research\\spell-lines\\lines-merged.json - prior waves; source of the shaman slow-slot claim used (flagged) in the cross-class conflict.",
+  "https://www.everquestguides.com/legends/patch-notes.html - independent corroboration only: 'Rogue 1 utility + 3 combat poisons simultaneously' (Beta Watch, Apr 27 - May 2, 2026); 'Entirely new poison system' (May 3, 2026); 'Rogue sustain raised for Unbound Lethality, which extends poison duration and lowers enemy poison resistance' (v3.7, Jul 24, 2026).",
+  "https://www.eqprogression.com/legends/rogue-spells/ - ATTEMPTED, returned HTTP 403. Not used.",
+  "NOT USED: wiki.project1999.com poison pages. Classic EQ rogue poison-making is a tradeskill system with entirely different item-based poisons; on Legends these are granted abilities with a custom slot model. The only P99 link in the local Rogue page is about the Evade skill, unrelated."
+ ]
+}

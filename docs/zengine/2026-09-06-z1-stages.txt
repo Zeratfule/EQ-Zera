@@ -1,0 +1,54 @@
+stage baseline: 141.8 MB, 1723857 lines, 1723854 events (tz=America/New_York)
+  cumulative                          wall        rate
+  lines (split+materialize)          116 ms   1222.3 MB/s
+  + parse                           4908 ms     28.9 MB/s
+  + serialize (ev.finish)           5052 ms     28.1 MB/s
+  + fold (20 modules + combat)     17664 ms      8.0 MB/s
+  per-stage share of the full fold:
+    lines                            116 ms    0.7%
+    parse                           4792 ms   27.1%
+    serialize                        144 ms    0.8%
+    modules+combat                 12612 ms   71.4%
+  (serialized 519411369 bytes of NDJSON)
+  [retired] the deleted round trip (Event::from_json over the same events): 2943 ms, 1723854 values
+  dispatch floor (21 kind checks/event, minus the serialize pass): ~117 ms (1464613 hits)
+  attribution pass (19578 ms wall incl. observer cost); consumers by share:
+    combat                       7349 ms   58.2%
+    buffs                        1998 ms   15.8%
+    resist                       1419 ms   11.2%
+    respawn                       475 ms    3.8%
+    detectors                     282 ms    2.2%
+    buffTimers                    104 ms    0.8%
+    combo                          78 ms    0.6%
+    roster                         71 ms    0.6%
+    observedSpellRanks             68 ms    0.5%
+    progression                    67 ms    0.5%
+    kills                          64 ms    0.5%
+    consider                       59 ms    0.5%
+    alerts                         58 ms    0.5%
+    leveling                       57 ms    0.5%
+    spellSets                      56 ms    0.5%
+    itemTiers                      53 ms    0.4%
+    loot                           52 ms    0.4%
+    classUnlocks                   52 ms    0.4%
+    eventFeed                      52 ms    0.4%
+    turnins                        51 ms    0.4%
+    character                      50 ms    0.4%
+    outputFiles                    49 ms    0.4%
+    wrap (was reparse)             46 ms    0.4%
+  combat phases (feature profile), booked inside the consumer's share above:
+    damage.closure          411 ms
+    damage.prepare          190 ms
+    damage.origin           276 ms
+    damage.route           3347 ms
+    damage.analytics        390 ms
+    miss                   2213 ms
+    route.classify          241 ms
+    route.ensure             37 ms
+    out.source               73 ms
+    out.resolve             237 ms
+    out.agg                 809 ms
+    out.engage              101 ms
+    out.timeline            132 ms
+    out.log                 153 ms
+    inc                     285 ms

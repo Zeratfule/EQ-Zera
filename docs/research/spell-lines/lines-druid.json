@@ -1,0 +1,3551 @@
+{
+ "class": "Druid",
+ "lines": [
+  {
+   "id": "skin-line",
+   "name": "Skin line (Skin Like Wood -> Natureskin)",
+   "category": "hp-ac-buff",
+   "sharedWith": [
+    "Ranger"
+   ],
+   "members": [
+    {
+     "name": "Skin Like Wood",
+     "level": 1,
+     "inDb": true,
+     "note": "DB holds two rows for this spell (AC 2-3 vs AC 3-4 variant)"
+    },
+    {
+     "name": "Skin Like Wood",
+     "level": 1,
+     "inDb": true,
+     "note": "duplicate row"
+    },
+    {
+     "name": "Skin Like Rock",
+     "level": 14,
+     "inDb": true
+    },
+    {
+     "name": "Skin Like Rock",
+     "level": 14,
+     "inDb": true,
+     "note": "duplicate row"
+    },
+    {
+     "name": "Skin Like Steel",
+     "level": 24,
+     "inDb": true
+    },
+    {
+     "name": "Skin Like Steel",
+     "level": 24,
+     "inDb": true,
+     "note": "duplicate row"
+    },
+    {
+     "name": "Skin Like Diamond",
+     "level": 36,
+     "inDb": true,
+     "note": "live/modern level"
+    },
+    {
+     "name": "Skin Like Diamond",
+     "level": 39,
+     "inDb": true,
+     "note": "classic (P99) level; same magnitudes"
+    },
+    {
+     "name": "Skin Like Nature",
+     "level": 46,
+     "inDb": true,
+     "note": "live/modern level; adds 2 hp/tick regen"
+    },
+    {
+     "name": "Skin Like Nature",
+     "level": 49,
+     "inDb": true,
+     "note": "classic (P99) level; same magnitudes"
+    },
+    {
+     "name": "Natureskin",
+     "level": 57,
+     "inDb": true,
+     "note": "adds 4 hp/tick regen"
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "AC is a strict ladder, HP is not. Legends magnitudes: Skin Like Rock scales to 105 max HP (L65) while Skin Like Steel caps at 100 max HP (L50), so from ~L50 Rock out-HPs Steel and Steel is only worth its +3 AC (and costs 100 mana vs 60). Same exception the ranger wave found. Diamond/Nature/Natureskin are strict upgrades over Steel in both AC and HP."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "AC (Slot 1)",
+     "HP (Primary) - \"AC and HP\" column",
+     "HP Regeneration (Slot 4) [Skin Like Nature / Natureskin only]"
+    ],
+    "conflicts": [
+     {
+      "line": "Courage / Center / Daring / Bravery / Valor / Resolution / Fortitude / Heroism",
+      "class": "Cleric",
+      "detail": "Cleric AC+HP buff line occupies the same AC (Slot 1) heading and the same HP (Primary) \"AC and HP\" column - only one can be up.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Courage / Center / Daring / Valor / Resolution",
+      "class": "Paladin",
+      "detail": "Paladin versions of the cleric line, same AC (Slot 1) heading.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Inner Fire",
+      "class": "Shaman",
+      "detail": "Inner Fire is listed under AC (Slot 1) with the skins.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Aegolism",
+      "class": "Cleric",
+      "detail": "Aegolism is listed under \"AC (Slot 1 & 4)\" so it blocks everything in AC (Slot 1), including the whole Skin line.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Protection line (group skins)",
+      "class": "Druid",
+      "detail": "Protection of Wood/Rock/Steel/Diamond/Nature/the Glades use identical AC+MaxHP formulas to their Skin twins - same slot, so the group version overwrites the single-target one.",
+      "source": "https://everquest.allakhazam.com/db/spelllist.html?type=dru&level=1&opt=And+Higher&action=search"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Symbol of Transal/Ryltan/Pinzarn/Naltron/Marzin, Naltron's Mark",
+      "detail": "P99 Buff Lines puts the Symbol line in a separate \"HP Only and Requires Gem\" column of HP (Primary); it stacks on top of the skins."
+     },
+     {
+      "line": "Shielding / Talisman HP line (Enchanter/Magician/Necromancer/Wizard/Shaman)",
+      "detail": "Separate HP (Shielding / Talisman) heading."
+     },
+     {
+      "line": "Coat line (Thistlecoat..Bladecoat)",
+      "detail": "Coats are AC (Slot 2), the skins are AC (Slot 1)."
+     },
+     {
+      "line": "Guard / Armor of Faith / Shield of Words / Guardian / Shroud of the Spirits etc.",
+      "detail": "Those are AC (Slot 4)."
+     },
+     {
+      "line": "Regeneration line",
+      "detail": "Skin Like Nature / Natureskin put their hp/tick in HP Regeneration (Slot 4), not Slot 1, so they stack with Regeneration/Chloroplast/Regrowth."
+     }
+    ],
+    "notes": "Slot heading names taken verbatim from the P99 Buff Lines page: \"AC (Slot 1)\", \"HP (Primary)\", \"HP Regeneration (Slot 4)\"."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Buff_Lines",
+    "https://wiki.project1999.com/Druid/Spells",
+    "https://wiki.project1999.com/Druid/Spells/34",
+    "https://wiki.project1999.com/Druid/Spells/50",
+    "https://everquest.allakhazam.com/db/spelllist.html?type=dru&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "protection-line",
+   "name": "Protection line (group Skin buffs)",
+   "category": "hp-ac-buff-group",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Protection of Wood",
+     "level": 9,
+     "inDb": true
+    },
+    {
+     "name": "Protection of Rock",
+     "level": 19,
+     "inDb": true
+    },
+    {
+     "name": "Protection of Steel",
+     "level": 27,
+     "inDb": true
+    },
+    {
+     "name": "Protection of Diamond",
+     "level": 39,
+     "inDb": true
+    },
+    {
+     "name": "Protection of Nature",
+     "level": 49,
+     "inDb": true
+    },
+    {
+     "name": "Protection of the Glades",
+     "level": 60,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Strict as printed on Legends (AC 6->8->11->13->24, MaxHP 80->90->181->~400->470). But the same Rock-vs-Steel caveat applies as in the Skin line on live data, and Legends prints Protection of Wood as +10..+15 AC, which is far above both its live counterpart (AC 3 at L9) and its own single-target twin Skin Like Wood (AC 2-4). Treat Protection of Wood AC as suspect."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "AC (Slot 1)",
+     "HP (Primary) - \"AC and HP\" column",
+     "Mana Regeneration (Protection of the Glades) [Glades only]",
+     "HP Regeneration (Slot 4) [Protection of Nature only]"
+    ],
+    "conflicts": [
+     {
+      "line": "Skin line",
+      "class": "Druid/Ranger",
+      "detail": "Same slot and identical effect formulas - the group Protection buff replaces the single-target Skin buff and vice versa.",
+      "source": "https://everquest.allakhazam.com/db/spelllist.html?type=dru&level=1&opt=And+Higher&action=search"
+     },
+     {
+      "line": "Aegolism",
+      "class": "Cleric",
+      "detail": "Aegolism occupies AC (Slot 1 & 4); Protection of the Glades occupies AC (Slot 1). They mutually block. This is the classic \"Aegolism or Glades, not both\" raid decision.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Courage/Center/Daring/Bravery/Valor/Resolution/Fortitude/Heroism, Heroic Bond",
+      "class": "Cleric/Paladin",
+      "detail": "Same AC (Slot 1) heading and same HP (Primary) column.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Inner Fire",
+      "class": "Shaman",
+      "detail": "AC (Slot 1).",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Symbol line",
+      "detail": "Symbol/Naltron's Mark sit in the separate gem-requiring HP column."
+     },
+     {
+      "line": "Clarity line (Enchanter)",
+      "detail": "Protection of the Glades mana regen has its own heading, \"Mana Regeneration (Protection of the Glades)\", so it stacks with Clarity/Clarity II and with bard Cantata/Chorus."
+     },
+     {
+      "line": "Coat line",
+      "detail": "AC (Slot 2)."
+     }
+    ],
+    "notes": "Only Protection of the Glades appears on the P99 Buff Lines page (Velious). Protection of Wood/Rock/Steel/Diamond/Nature are absent from every P99 druid spell page and are sold in Shadow Haven on live - they are Luclin-era group additions that Legends inherited, not classic."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Buff_Lines",
+    "https://everquest.allakhazam.com/db/spelllist.html?type=dru&level=1&opt=And+Higher&action=search",
+    "https://everquest.allakhazam.com/db/spell.html?spell=2514"
+   ]
+  },
+  {
+   "id": "regeneration-line",
+   "name": "Regeneration line (single target)",
+   "category": "hp-regen-buff",
+   "sharedWith": [
+    "Shaman",
+    "Ranger"
+   ],
+   "members": [
+    {
+     "name": "Regeneration",
+     "level": 34,
+     "inDb": true
+    },
+    {
+     "name": "Chloroplast",
+     "level": 42,
+     "inDb": true
+    },
+    {
+     "name": "Regrowth",
+     "level": 54,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Regeneration (5/tick) -> Chloroplast (10/tick at L39 rising to 16/tick at L50) -> Regrowth (flat 15/tick). On Legends' own numbers a level 50+ druid gets MORE regen from Chloroplast (16) than from Regrowth (15); Regrowth's advantage is the longer duration. Classic P99 lists Chloroplast at +10 and Regrowth at +15, i.e. a strict upgrade - Legends' Chloroplast scaling inverts it."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "HP Regeneration (Slot 1)"
+    ],
+    "conflicts": [
+     {
+      "line": "Regeneration / Chloroplast",
+      "class": "Shaman",
+      "detail": "Shaman Regeneration (24) and Chloroplast (39) are the same spells in the same HP Regeneration (Slot 1) heading.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Chloroplast",
+      "class": "Ranger",
+      "detail": "Ranger 55 Chloroplast, same slot.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Pack Regeneration line",
+      "class": "Druid",
+      "detail": "Pack Regeneration / Pack Chloroplast / Regrowth of the Grove share HP Regeneration (Slot 1) with the single-target line.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Fungal Regrowth (Fungi Covered Great Staff)",
+      "class": "item",
+      "detail": "Same slot - a fungi click blocks Regrowth and vice versa.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Treeform / Spirit of Oak",
+      "detail": "Those sit in HP Regeneration (Slot 3 & 6)."
+     },
+     {
+      "line": "Skin Like Nature / Natureskin / Protection of Nature",
+      "detail": "Their hp/tick is HP Regeneration (Slot 4)."
+     },
+     {
+      "line": "Hymn of Restoration / Cantata of Replenishment (Bard)",
+      "detail": "HP Regeneration (Layer 2, Slot 1)."
+     },
+     {
+      "line": "Worn regen (Fungus Covered Scale Tunic, Aura of Battle items)",
+      "detail": "HP Regeneration (Worn), capped at 15/tick combined."
+     }
+    ],
+    "notes": "P99 slot heading: \"HP Regeneration (Slot 1)\"."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Buff_Lines"
+   ]
+  },
+  {
+   "id": "pack-regeneration-line",
+   "name": "Pack Regeneration line (group regen)",
+   "category": "hp-regen-buff-group",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Pack Regeneration",
+     "level": 39,
+     "inDb": true
+    },
+    {
+     "name": "Pack Chloroplast",
+     "level": 45,
+     "inDb": true
+    },
+    {
+     "name": "Regrowth of the Grove",
+     "level": 58,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Pack Regeneration 5/tick -> Pack Chloroplast 13-16/tick -> Regrowth of the Grove 15/tick. Same inversion as the single-target line: Pack Chloroplast at L50 (16/tick) beats Regrowth of the Grove (15/tick) on raw regen."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "HP Regeneration (Slot 1)"
+    ],
+    "conflicts": [
+     {
+      "line": "Regeneration line",
+      "class": "Druid",
+      "detail": "Same slot as the single-target versions - the group buff overwrites Regeneration/Chloroplast/Regrowth on each member.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Regeneration / Chloroplast",
+      "class": "Shaman",
+      "detail": "Same HP Regeneration (Slot 1).",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Fungal Regrowth",
+      "class": "item",
+      "detail": "Same slot.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Treeform / Spirit of Oak",
+      "detail": "HP Regeneration (Slot 3 & 6)."
+     },
+     {
+      "line": "Skin Like Nature / Natureskin",
+      "detail": "HP Regeneration (Slot 4)."
+     }
+    ],
+    "notes": "P99 Buff Lines explicitly lists Pack Regeneration, Pack Chloroplast and Regrowth of the Grove alongside Regeneration/Chloroplast/Regrowth under HP Regeneration (Slot 1)."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Buff_Lines"
+   ]
+  },
+  {
+   "id": "coat-line",
+   "name": "Coat line (self AC + small damage shield)",
+   "category": "ac-ds-self-buff",
+   "sharedWith": [
+    "Ranger"
+   ],
+   "members": [
+    {
+     "name": "Thistlecoat",
+     "level": 7,
+     "inDb": true
+    },
+    {
+     "name": "Barbcoat",
+     "level": 17,
+     "inDb": true
+    },
+    {
+     "name": "Bramblecoat",
+     "level": 27,
+     "inDb": true
+    },
+    {
+     "name": "Spikecoat",
+     "level": 37,
+     "inDb": true
+    },
+    {
+     "name": "Thorncoat",
+     "level": 47,
+     "inDb": true
+    },
+    {
+     "name": "Bladecoat",
+     "level": 56,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict on both AC (3->8->14->19->26->37) and damage shield (1->2->3->4->5->6)."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "AC (Slot 2)",
+     "Damage Shield (Slot 3)"
+    ],
+    "conflicts": [
+     {
+      "line": "Minor/Lesser/Shielding/Major/Greater/Arch Shielding, Shield of the Magi",
+      "class": "Enchanter/Magician/Necromancer/Wizard",
+      "detail": "The caster self-shielding line shares AC (Slot 2) with the coats.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Armor of Protection",
+      "class": "Cleric",
+      "detail": "AC (Slot 2).",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Yaulp / Yaulp II / III / IV",
+      "class": "Cleric/Paladin",
+      "detail": "Yaulp's AC component is AC (Slot 2).",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Coat line",
+      "class": "Ranger",
+      "detail": "Rangers get the same coats (Thistlecoat 15 .. Thorncoat 60).",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Shield of Thistles..Shield of Blades / Legacy line",
+      "detail": "Those are Damage Shield (Slot 1); the coats are Damage Shield (Slot 3), so a coat DS and a Shield-of DS add together."
+     },
+     {
+      "line": "Skin / Protection line",
+      "detail": "AC (Slot 1)."
+     },
+     {
+      "line": "Magician DS line (Shield of Fire..Cadeau of Flame)",
+      "detail": "Damage Shield (Slot 1) - stacks with a coat's Slot 3 DS but not with Shield of Thorns."
+     }
+    ],
+    "notes": "P99 slot headings: \"AC (Slot 2)\" and \"Damage Shield (Slot 3)\". This is the key druid stacking trick: coat + Shield-of-X give two damage shields at once."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Buff_Lines"
+   ]
+  },
+  {
+   "id": "shield-of-line",
+   "name": "Shield of Thistles line (single-target damage shield)",
+   "category": "damage-shield-buff",
+   "sharedWith": [
+    "Ranger"
+   ],
+   "members": [
+    {
+     "name": "Shield of Thistles",
+     "level": 7,
+     "inDb": true
+    },
+    {
+     "name": "Shield of Barbs",
+     "level": 17,
+     "inDb": true
+    },
+    {
+     "name": "Shield of Brambles",
+     "level": 27,
+     "inDb": true
+    },
+    {
+     "name": "Shield of Spikes",
+     "level": 37,
+     "inDb": true
+    },
+    {
+     "name": "Shield of Thorns (Spell)",
+     "level": 47,
+     "inDb": true,
+     "note": "DB holds two rows (4.9-6.5 min single vs 15 min single/self)"
+    },
+    {
+     "name": "Shield of Thorns (Spell)",
+     "level": 47,
+     "inDb": true,
+     "note": "duplicate row"
+    },
+    {
+     "name": "Shield of Blades",
+     "level": 58,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict: 5/6 -> 7/9 -> 11/12 -> 14/17 -> 24 -> 32 damage per hit."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Damage Shield (Slot 1)"
+    ],
+    "conflicts": [
+     {
+      "line": "Shield of Fire / Shield of Flame / Inferno Shield / Barrier of Combustion / Shield of Lava / Cadeau of Flame / Boon of Immolation / Aegis of Ro",
+      "class": "Magician",
+      "detail": "Magician DS line shares Damage Shield (Slot 1) - a magician DS overwrites the druid one and vice versa.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Legacy of Spike / Legacy of Thorn",
+      "class": "Druid",
+      "detail": "The group DS spells are in the same Damage Shield (Slot 1) heading (Legacy of Thorn is listed there explicitly).",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Banshee Aura",
+      "class": "Necromancer/Shadow Knight",
+      "detail": "Damage Shield (Slot 1).",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Feedback",
+      "class": "Enchanter",
+      "detail": "Damage Shield (Slot 1).",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "O'Keils Radiation",
+      "class": "Wizard",
+      "detail": "Damage Shield (Slot 1).",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Coat line",
+      "detail": "Damage Shield (Slot 3)."
+     },
+     {
+      "line": "O'Keils Flickering Flame / Kilva's Skin of Flame / Call of Earth",
+      "detail": "Damage Shield (Slot 2)."
+     },
+     {
+      "line": "Psalm of Cooling / Psalm of Warmth (Bard)",
+      "detail": "Damage Shield (Layer 2, Slot 1)."
+     }
+    ],
+    "notes": "P99 slot heading: \"Damage Shield (Slot 1)\"."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Buff_Lines"
+   ]
+  },
+  {
+   "id": "legacy-ds-line",
+   "name": "Legacy line (group damage shield)",
+   "category": "damage-shield-buff-group",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Legacy of Spike",
+     "level": 49,
+     "inDb": true
+    },
+    {
+     "name": "Legacy of Thorn",
+     "level": 59,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "24 -> 28 damage per hit; Legacy of Thorn also runs longer."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Damage Shield (Slot 1)"
+    ],
+    "conflicts": [
+     {
+      "line": "Shield of Thistles line",
+      "class": "Druid",
+      "detail": "Same Damage Shield (Slot 1) - the group DS overwrites a single-target Shield of X.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Magician DS line",
+      "class": "Magician",
+      "detail": "Damage Shield (Slot 1). At raid level Aegis of Ro (33) beats Legacy of Thorn (28) and blocks it.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Coat line",
+      "detail": "Damage Shield (Slot 3)."
+     }
+    ],
+    "notes": "Legacy of Thorn is listed on P99 Buff Lines under Damage Shield (Slot 1) at +28. Legacy of Spike is NOT on that page (the page is admittedly incomplete) - slot assignment for Legacy of Spike is inferred from it being the same spell family with the same +24 magnitude as Shield of Thorns."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Buff_Lines"
+   ]
+  },
+  {
+   "id": "sow-line",
+   "name": "Spirit of Wolf line",
+   "category": "movement-buff",
+   "sharedWith": [
+    "Ranger",
+    "Shaman"
+   ],
+   "members": [
+    {
+     "name": "Spirit of Wolf",
+     "level": 10,
+     "inDb": true
+    },
+    {
+     "name": "Pack Spirit",
+     "level": 35,
+     "inDb": true,
+     "note": "group version"
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Pack Spirit is the group version at the same 30-55% magnitude, not a speed upgrade."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Speed (Primary)"
+    ],
+    "conflicts": [
+     {
+      "line": "All movement buffs",
+      "class": "any",
+      "detail": "P99 Buff Lines has exactly one Speed heading, \"Speed (Primary)\": Selo's, Spirit of Cheetah, Form of the Hunter, Scale of Wolf, Form of the Howler, Form of the Great Wolf, Share Wolf Form, Greater Wolf Form, Wolf Form, Spirit of Wolf. Only the highest holds.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Selo's Accelerando / Selo's Song of Travel",
+      "class": "Bard",
+      "detail": "Same Speed (Primary) heading; bard song wins at 65% base.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Spirit of Wolf",
+      "class": "Shaman",
+      "detail": "Identical spell (Shaman 9).",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [],
+    "notes": "P99 slot heading: \"Speed (Primary)\". Movement speed is a single global slot for the whole game. Pack Spirit and Pack Shrew are not listed on the Buff Lines page but are ordinary movement buffs."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Buff_Lines"
+   ]
+  },
+  {
+   "id": "shrew-line",
+   "name": "Spirit of the Shrew line",
+   "category": "movement-buff",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Spirit of the Shrew",
+     "level": 30,
+     "inDb": true
+    },
+    {
+     "name": "Pack Shrew",
+     "level": 35,
+     "inDb": true,
+     "note": "group version"
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Both are 30% movement + Ultravision; Pack Shrew is simply the group version. Neither upgrades Spirit of Wolf (30% vs SoW's 55% at cap) - the point is the Ultravision."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Speed (Primary)"
+    ],
+    "conflicts": [
+     {
+      "line": "All movement buffs",
+      "class": "any",
+      "detail": "Speed (Primary) is one slot; casting Shrew over SoW will drop the target's speed.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [],
+    "notes": "Not on the P99 Buff Lines page and not on any P99 druid spell page - these are live-era (Luclin+) additions Legends inherited. Live confirms DRU/30 and DRU/35."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Buff_Lines",
+    "https://everquest.allakhazam.com/db/spelllist.html?type=dru&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "scale-of-wolf-line",
+   "name": "Scale of Wolf line",
+   "category": "movement-buff",
+   "sharedWith": [
+    "Shaman"
+   ],
+   "members": [
+    {
+     "name": "Scale of Wolf",
+     "level": 26,
+     "inDb": true
+    },
+    {
+     "name": "Spirit of Scale",
+     "level": 53,
+     "inDb": true,
+     "note": "group version"
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Same 70% cap; Spirit of Scale is the group version with a much longer duration."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Speed (Primary)"
+    ],
+    "conflicts": [
+     {
+      "line": "All movement buffs",
+      "class": "any",
+      "detail": "Speed (Primary).",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [],
+    "notes": "Both carry \"Make Fragile\": the buff drops if the target attacks or casts. P99 Buff Lines lists Scale of Wolf at +70% (Druid 24, Shaman 24) under Speed (Primary); Spirit of Scale is missing from that page but is a P99 Kunark spell at 53."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Buff_Lines"
+   ]
+  },
+  {
+   "id": "cheetah-line",
+   "name": "Spirit of Cheetah",
+   "category": "movement-buff",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Spirit of Cheetah",
+     "level": 21,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "No upgrade; a self-only 8-tick sprint."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Speed (Primary)"
+    ],
+    "conflicts": [
+     {
+      "line": "All movement buffs",
+      "class": "any",
+      "detail": "Speed (Primary) - it will overwrite SoW for its 48 seconds and leave the target unbuffed after.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [],
+    "notes": "P99 lists Spirit of Cheetah at +115% (Druid 60, 8 ticks). Legends prints a flat 75%."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Buff_Lines"
+   ]
+  },
+  {
+   "id": "wolf-form-self-line",
+   "name": "Wolf Form line (self illusion + speed + ATK)",
+   "category": "movement-form-buff",
+   "sharedWith": [
+    "Ranger"
+   ],
+   "members": [
+    {
+     "name": "Wolf Form",
+     "level": 20,
+     "inDb": true
+    },
+    {
+     "name": "Greater Wolf Form",
+     "level": 30,
+     "inDb": true
+    },
+    {
+     "name": "Form of the Great Wolf",
+     "level": 40,
+     "inDb": true
+    },
+    {
+     "name": "Form of the Howler",
+     "level": 54,
+     "inDb": true,
+     "note": "trades ATK for +2 mana/tick"
+    },
+    {
+     "name": "Form of the Hunter",
+     "level": 60,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Speed and ATK climb 55/25 -> 60/35 -> 60/45-51 -> 62-67/none -> 70/62. Form of the Howler is NOT a strict upgrade over Form of the Great Wolf: it drops the ATK bonus entirely in exchange for +2 mana/tick, so a meleeing druid keeps Form of the Great Wolf."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Speed (Primary)",
+     "Attack (Slot 3)",
+     "Mana Regeneration (Gift) [Form of the Howler only]"
+    ],
+    "conflicts": [
+     {
+      "line": "All movement buffs",
+      "class": "any",
+      "detail": "Speed (Primary).",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Avatar",
+      "class": "Shaman",
+      "detail": "Avatar +100 ATK is Attack (Slot 3) - it blocks the wolf-form ATK component.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Boon of the Garou",
+      "class": "Enchanter",
+      "detail": "Attack (Slot 3).",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Gift of Brilliance / Gift of Insight",
+      "class": "Enchanter",
+      "detail": "Form of the Howler's +2 mana/tick is in the \"Mana Regeneration (Gift)\" column with the enchanter Gift line.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Firefist",
+      "detail": "Firefist ATK is Attack (Slot 1), the forms are Attack (Slot 3)."
+     },
+     {
+      "line": "Clarity / Clarity II",
+      "detail": "Mana Regeneration (Clarity) is a different column from (Gift)."
+     }
+    ],
+    "notes": "P99 slot headings: \"Speed (Primary)\", \"Attack (Slot 3)\", \"Mana Regeneration (Gift)\"."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Buff_Lines"
+   ]
+  },
+  {
+   "id": "wolf-form-group-line",
+   "name": "Share Wolf Form line (group illusion + speed)",
+   "category": "movement-form-buff-group",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Share Wolf Form",
+     "level": 35,
+     "inDb": true
+    },
+    {
+     "name": "Share Form of the Great Wolf",
+     "level": 45,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "60% / +30 ATK -> 60% / +51 ATK + Ultravision, and a 6-hour duration on Legends."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Speed (Primary)",
+     "Attack (Slot 3)"
+    ],
+    "conflicts": [
+     {
+      "line": "All movement buffs",
+      "class": "any",
+      "detail": "Speed (Primary).",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Wolf Form line (self)",
+      "class": "Druid",
+      "detail": "Same speed and ATK slots.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Avatar",
+      "class": "Shaman",
+      "detail": "Attack (Slot 3).",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Firefist",
+      "detail": "Attack (Slot 1)."
+     }
+    ],
+    "notes": "Share Wolf Form is on P99 Buff Lines (Group: Druid 39, +60% and +30 ATK). Share Form of the Great Wolf is not - it is a live-era (DRU/45) addition."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Buff_Lines",
+    "https://everquest.allakhazam.com/db/spelllist.html?type=dru&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "treeform-line",
+   "name": "Treeform line (self root + regen)",
+   "category": "self-form-buff",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Treeform",
+     "level": 6,
+     "inDb": true
+    },
+    {
+     "name": "Spirit of Oak",
+     "level": 59,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Treeform 3-5 hp/tick and -10 fire resist; Spirit of Oak 10-13 hp/tick plus 4 mana/tick and no resist penalty. Both root the caster."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "HP Regeneration (Slot 3 & 6)"
+    ],
+    "conflicts": [
+     {
+      "line": "Illusion: Troll",
+      "class": "Enchanter",
+      "detail": "Also HP Regeneration (Slot 3 & 6).",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Treeform / Spirit of Oak",
+      "class": "Druid",
+      "detail": "Same heading, so the two do not stack with each other.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Regeneration line",
+      "detail": "HP Regeneration (Slot 1)."
+     },
+     {
+      "line": "Skin Like Nature / Natureskin",
+      "detail": "HP Regeneration (Slot 4)."
+     },
+     {
+      "line": "Hymn of Restoration",
+      "detail": "Layer 2."
+     }
+    ],
+    "notes": "P99 slot heading: \"HP Regeneration (Slot 3 & 6)\". Spirit of Oak's +4 mana/tick is not listed anywhere in the P99 mana-regen table - its mana slot is an open question."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Buff_Lines"
+   ]
+  },
+  {
+   "id": "strength-line",
+   "name": "Strength line",
+   "category": "stat-buff",
+   "sharedWith": [
+    "Ranger"
+   ],
+   "members": [
+    {
+     "name": "Strength of Earth",
+     "level": 7,
+     "inDb": true
+    },
+    {
+     "name": "Strength of Stone",
+     "level": 34,
+     "inDb": true
+    },
+    {
+     "name": "Storm Strength",
+     "level": 44,
+     "inDb": true
+    },
+    {
+     "name": "Girdle of Karana",
+     "level": 55,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "+15 -> +25 -> +35 -> +42 STR at cap."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Strength (Primary)"
+    ],
+    "conflicts": [
+     {
+      "line": "Strengthen / Spirit Strength / Raging Strength / Furious Strength / Strength / Maniacal Strength / Talisman of the Rhino",
+      "class": "Shaman",
+      "detail": "Shared \"Strength (Primary)\" heading.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Strengthen / Rampage / Berserker Spirit",
+      "class": "Enchanter",
+      "detail": "Strength (Primary).",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Strength of Earth / Storm Strength",
+      "class": "Ranger",
+      "detail": "Ranger 22 / 53 versions of the same spells.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Focus of Spirit / potions",
+      "detail": "Strength (Power) column."
+     },
+     {
+      "line": "Anthem De Arms / Chant of Battle (Bard)",
+      "detail": "Strength (Anthem) column."
+     },
+     {
+      "line": "Yaulp line",
+      "detail": "Strength (Short Duration: Yaulp)."
+     },
+     {
+      "line": "Illusion: Werewolf",
+      "detail": "Strength (Illusion)."
+     }
+    ],
+    "notes": "P99 slot heading: \"Strength (Primary)\". Note the druid line tops out at +42 (Girdle of Karana) vs shaman +67/+68 - a shaman STR buff overwrites the druid one."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Buff_Lines"
+   ]
+  },
+  {
+   "id": "firefist-line",
+   "name": "Firefist (self ATK)",
+   "category": "atk-buff",
+   "sharedWith": [
+    "Ranger"
+   ],
+   "members": [
+    {
+     "name": "Firefist",
+     "level": 6,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "No upgrade in the druid book; the wolf forms provide larger ATK in a different slot."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Attack (Slot 1)"
+    ],
+    "conflicts": [
+     {
+      "line": "Strength of Nature",
+      "class": "Ranger",
+      "detail": "Attack (Slot 1), +25.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Grim Aura",
+      "class": "Necromancer/Shadow Knight",
+      "detail": "Attack (Slot 1).",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Yaulp IV",
+      "class": "Cleric/Paladin",
+      "detail": "Attack (Slot 1).",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Aura of Battle / Rage of Tallon (worn)",
+      "class": "item",
+      "detail": "The P99 max-ATK table shares a cell with Firefist for worn ATK.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Wolf Form line",
+      "detail": "Attack (Slot 3)."
+     },
+     {
+      "line": "Call of the Predator (Ranger)",
+      "detail": "Attack (Slot 2)."
+     }
+    ],
+    "notes": "P99 slot heading: \"Attack (Slot 1)\" (+10 Firefist, Self-only: Druid 9, Ranger 22)."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Buff_Lines"
+   ]
+  },
+  {
+   "id": "fire-resist-line",
+   "name": "Fire resist line",
+   "category": "resist-buff",
+   "sharedWith": [
+    "Cleric",
+    "Ranger",
+    "Shaman"
+   ],
+   "members": [
+    {
+     "name": "Endure Fire",
+     "level": 1,
+     "inDb": true
+    },
+    {
+     "name": "Resist Fire",
+     "level": 20,
+     "inDb": true
+    },
+    {
+     "name": "Circle of Winter",
+     "level": 51,
+     "inDb": true,
+     "note": "group"
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "+20 -> +40 -> +45 (group)."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Fire Resistance (Slot 1)"
+    ],
+    "conflicts": [
+     {
+      "line": "Endure Fire / Resist Fire",
+      "class": "Cleric/Ranger/Shaman",
+      "detail": "Same spells, same Fire Resistance Slot 1 heading.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Aura of Red Petals (PoM flower)",
+      "class": "item",
+      "detail": "Fire Resistance Slot 1 at +50 - it blocks Circle of Winter.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Magician DS/FR line (Shield of Fire .. Aegis of Ro)",
+      "detail": "Fire Resistance Slot 2."
+     },
+     {
+      "line": "O'Keils Flickering Flame",
+      "detail": "Fire Resistance Slot 3."
+     },
+     {
+      "line": "Elemental Armor / Aura of Cold potions",
+      "detail": "Fire Resistance Slot 4."
+     },
+     {
+      "line": "Psalm of Cooling / Elemental Rhythms (Bard)",
+      "detail": "Fire Resistance Layer 2, Slot 2 & 3."
+     }
+    ],
+    "notes": "P99 slot heading: Fire Resistance \"Slot 1\". Legends puts Resist Fire at 20 vs P99/Kunark 24 - the live/modern level."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Buff_Lines"
+   ]
+  },
+  {
+   "id": "cold-resist-line",
+   "name": "Cold resist line",
+   "category": "resist-buff",
+   "sharedWith": [
+    "Cleric",
+    "Ranger",
+    "Shaman"
+   ],
+   "members": [
+    {
+     "name": "Endure Cold",
+     "level": 9,
+     "inDb": true
+    },
+    {
+     "name": "Resist Cold",
+     "level": 30,
+     "inDb": true
+    },
+    {
+     "name": "Circle of Summer",
+     "level": 52,
+     "inDb": true,
+     "note": "group"
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "+20 -> +40 -> +45 (group)."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Cold Resistance (Primary)"
+    ],
+    "conflicts": [
+     {
+      "line": "Endure Cold / Resist Cold",
+      "class": "Cleric/Ranger/Shaman",
+      "detail": "Same spells under Cold Resistance \"Primary\".",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Aura of White Petals",
+      "class": "item",
+      "detail": "Cold Resistance Flower/Armor column at +50 - listed separately, so it stacks with Circle of Summer in the P99 max table.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Aura of White Petals / Elemental Armor",
+      "detail": "Cold Resistance \"Flower/Armor\" column."
+     },
+     {
+      "line": "Psalm of Warmth (Bard)",
+      "detail": "Bard column."
+     },
+     {
+      "line": "Aura of Heat potions",
+      "detail": "Potion column."
+     }
+    ],
+    "notes": "P99 heading: Cold Resistance \"Primary\". Legends Resist Cold at 30 vs P99 34 / Kunark - live level is 30. Circle of Summer carries an explicit stacking block on live (\"block if slot 1 Cold Resist < 45\")."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Buff_Lines",
+    "https://everquest.allakhazam.com/db/spelllist.html?type=dru&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "disease-resist-line",
+   "name": "Disease resist line",
+   "category": "resist-buff",
+   "sharedWith": [
+    "Cleric",
+    "Necromancer",
+    "Paladin",
+    "Shaman"
+   ],
+   "members": [
+    {
+     "name": "Endure Disease",
+     "level": 19,
+     "inDb": true
+    },
+    {
+     "name": "Resist Disease",
+     "level": 44,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "+20 -> +40."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Disease Resistance (Primary)"
+    ],
+    "conflicts": [
+     {
+      "line": "Talisman of Jasinth",
+      "class": "Shaman",
+      "detail": "Disease Resistance Primary at +45 - overwrites Resist Disease.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Endure/Resist Disease",
+      "class": "Cleric/Necromancer/Paladin/Shaman",
+      "detail": "Same spells.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Aura of Black Petals",
+      "class": "item",
+      "detail": "Disease Resistance Primary +50.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Psalm of Vitality (Bard)",
+      "detail": "Psalm column."
+     },
+     {
+      "line": "Aloe Sweat / Aura of Antibody",
+      "detail": "Item column."
+     }
+    ],
+    "notes": "P99 heading: Disease Resistance \"Primary\"."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Buff_Lines"
+   ]
+  },
+  {
+   "id": "poison-resist-line",
+   "name": "Poison resist line",
+   "category": "resist-buff",
+   "sharedWith": [
+    "Cleric",
+    "Paladin",
+    "Shaman"
+   ],
+   "members": [
+    {
+     "name": "Endure Poison",
+     "level": 19,
+     "inDb": true
+    },
+    {
+     "name": "Resist Poison",
+     "level": 44,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "+20 -> +40."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Poison Resistance (Primary)"
+    ],
+    "conflicts": [
+     {
+      "line": "Talisman of Shadoo",
+      "class": "Shaman",
+      "detail": "Poison Resistance Primary +45.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Endure/Resist Poison",
+      "class": "Cleric/Paladin/Shaman",
+      "detail": "Same spells.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Aura of Green Petals",
+      "detail": "Flower column."
+     },
+     {
+      "line": "Dead Man Floating (Necromancer)",
+      "detail": "Its own column."
+     },
+     {
+      "line": "Psalm of Purity (Bard)",
+      "detail": "Psalm column."
+     }
+    ],
+    "notes": "P99 heading: Poison Resistance \"Primary\"."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Buff_Lines"
+   ]
+  },
+  {
+   "id": "magic-resist-line",
+   "name": "Magic resist line",
+   "category": "resist-buff",
+   "sharedWith": [
+    "Cleric",
+    "Enchanter",
+    "Paladin",
+    "Shaman"
+   ],
+   "members": [
+    {
+     "name": "Endure Magic",
+     "level": 34,
+     "inDb": true
+    },
+    {
+     "name": "Resist Magic",
+     "level": 49,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "+20 -> +40."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Magic Resistance (Primary)"
+    ],
+    "conflicts": [
+     {
+      "line": "Group Resist Magic",
+      "class": "Enchanter",
+      "detail": "Magic Resistance Primary +55 - overwrites Resist Magic.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Endure/Resist Magic",
+      "class": "Cleric/Enchanter/Paladin/Shaman",
+      "detail": "Same spells.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Psalm of Mystic Shielding / Elemental / Guardian / Purifying Rhythms (Bard)",
+      "detail": "Psalm column."
+     },
+     {
+      "line": "Shielding line (caster self-buffs)",
+      "detail": "Magic Shield column."
+     }
+    ],
+    "notes": "P99 heading: Magic Resistance \"Primary\"."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Buff_Lines"
+   ]
+  },
+  {
+   "id": "healing-line",
+   "name": "Healing line (direct heal)",
+   "category": "heal",
+   "sharedWith": [
+    "Cleric",
+    "Shaman",
+    "Ranger",
+    "Paladin"
+   ],
+   "members": [
+    {
+     "name": "Minor Healing",
+     "level": 1,
+     "inDb": true
+    },
+    {
+     "name": "Light Healing",
+     "level": 9,
+     "inDb": true
+    },
+    {
+     "name": "Healing",
+     "level": 19,
+     "inDb": true
+    },
+    {
+     "name": "Greater Healing",
+     "level": 29,
+     "inDb": true
+    },
+    {
+     "name": "Greater Healing",
+     "level": 34,
+     "inDb": true,
+     "note": "second DB row at a higher level with larger magnitudes (345-425 vs 280-350)"
+    },
+    {
+     "name": "Superior Healing",
+     "level": 44,
+     "inDb": true
+    },
+    {
+     "name": "Chloroblast",
+     "level": 55,
+     "inDb": true
+    },
+    {
+     "name": "Nature's Touch",
+     "level": 60,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Monotonic: 20 -> 65 -> 175 -> 350 -> 425 -> 600 -> 385(fast/cheap) -> 880. Chloroblast breaks the raw-magnitude ladder on purpose: it is the fast, mana-efficient heal, not a bigger one."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "Direct heals do not occupy buff slots."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Druid/Spells",
+    "https://wiki.project1999.com/Druid/Spells/34",
+    "https://wiki.project1999.com/Druid/Spells/50",
+    "https://everquest.allakhazam.com/db/spelllist.html?type=dru&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "renewal-heal-line",
+   "name": "Renewal line (mid-tier direct heals)",
+   "category": "heal",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Nature's Renewal",
+     "level": 39,
+     "inDb": true
+    },
+    {
+     "name": "Forest's Renewal",
+     "level": 49,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "447 -> 671 hp."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "Direct heals; no buff slot."
+   },
+   "sources": [
+    "https://everquest.allakhazam.com/db/spelllist.html?type=dru&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "budding-heal-line",
+   "name": "Budding Heal line (heal-over-time)",
+   "category": "heal-over-time",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Budding Heal",
+     "level": 4,
+     "inDb": true
+    },
+    {
+     "name": "Sprouting Heal",
+     "level": 10,
+     "inDb": true
+    },
+    {
+     "name": "Flowering Heal",
+     "level": 20,
+     "inDb": true
+    },
+    {
+     "name": "Blooming Heal",
+     "level": 30,
+     "inDb": true
+    },
+    {
+     "name": "Blossoming Heal",
+     "level": 40,
+     "inDb": true
+    },
+    {
+     "name": "Efflorescing Heal",
+     "level": 48,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Per-tick 11 -> 30 -> 60 -> 90 -> 120 -> 150 with a matching completion heal 18 -> 100 -> 197 -> 300 -> 390 -> 450. All 24-second duration."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "No classic slot data exists for these spells. As a hp/tick buff they would most plausibly land in an HP Regeneration slot, but which one is unknown - verify in-game before claiming they stack with Regrowth."
+   },
+   "sources": [
+    "https://everquest.allakhazam.com/db/spelllist.html?type=dru&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "cure-disease-line",
+   "name": "Cure Disease line",
+   "category": "cure",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Cure Disease",
+     "level": 4,
+     "inDb": true
+    },
+    {
+     "name": "Counteract Disease",
+     "level": 28,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "4 -> 8 disease counters."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://wiki.project1999.com/Druid/Spells"
+   ]
+  },
+  {
+   "id": "cure-poison-line",
+   "name": "Cure Poison line",
+   "category": "cure",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Cure Poison",
+     "level": 5,
+     "inDb": true
+    },
+    {
+     "name": "Counteract Poison",
+     "level": 28,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "4 -> 8 poison counters."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://wiki.project1999.com/Druid/Spells"
+   ]
+  },
+  {
+   "id": "remove-curse-line",
+   "name": "Remove Curse line",
+   "category": "cure",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Remove Minor Curse",
+     "level": 8,
+     "inDb": true
+    },
+    {
+     "name": "Remove Lesser Curse",
+     "level": 23,
+     "inDb": true
+    },
+    {
+     "name": "Remove Curse",
+     "level": 38,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "2 -> 4 -> 4 curse counters (Remove Curse matches Remove Lesser Curse on Legends' printed magnitude; on live the ladder continues to Remove Greater Curse / Eradicate Curse, which Legends does not have)."
+   },
+   "missingOnLegends": [
+    "Remove Greater Curse (live DRU/54)",
+    "Eradicate Curse (live DRU/54)"
+   ],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://everquest.allakhazam.com/db/spelllist.html?type=dru&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "dispel-line",
+   "name": "Cancel Magic line (dispel)",
+   "category": "dispel",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Cancel Magic",
+     "level": 18,
+     "inDb": true
+    },
+    {
+     "name": "Nullify Magic",
+     "level": 43,
+     "inDb": true
+    },
+    {
+     "name": "Annul Magic",
+     "level": 55,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Cancel Magic(1) -> Cancel Magic(4) x2 -> Cancel Magic(9) x2."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://wiki.project1999.com/Druid/Spells",
+    "https://wiki.project1999.com/Druid/Spells/34",
+    "https://wiki.project1999.com/Druid/Spells/50"
+   ]
+  },
+  {
+   "id": "stamina-line",
+   "name": "Fatigue line",
+   "category": "utility",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Invigor",
+     "level": 14,
+     "inDb": true
+    },
+    {
+     "name": "Extinguish Fatigue",
+     "level": 29,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "35 -> 90 stamina restored."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://wiki.project1999.com/Druid/Spells"
+   ]
+  },
+  {
+   "id": "invis-line",
+   "name": "Camouflage line (invisibility)",
+   "category": "utility-buff",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Camouflage",
+     "level": 4,
+     "inDb": true,
+     "note": "outdoors only"
+    },
+    {
+     "name": "Superior Camouflage",
+     "level": 18,
+     "inDb": true
+    },
+    {
+     "name": "Improved Superior Camo",
+     "level": 48,
+     "inDb": true,
+     "note": "live/modern level (\"Improved Superior Camouflage\" DRU/48)"
+    },
+    {
+     "name": "Improved Superior Camou",
+     "level": 50,
+     "inDb": true,
+     "note": "classic (P99 Velious) level; duplicate of the above under a truncated name"
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Camouflage (outdoors-only, 20 min) -> Superior Camouflage (anywhere, 24 min) -> Improved Superior Camo (improved invis: does not break on casting)."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "Invisibility does not stack with itself; recasting refreshes."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Druid/Spells",
+    "https://wiki.project1999.com/Druid/Spells/50",
+    "https://everquest.allakhazam.com/db/spelllist.html?type=dru&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "iva-line",
+   "name": "Invisibility versus Animals",
+   "category": "utility-buff",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Invisibility versus Animals",
+     "level": 8,
+     "inDb": true,
+     "note": "live/modern level; 36 min"
+    },
+    {
+     "name": "Invisibility Versus Animals",
+     "level": 9,
+     "inDb": true,
+     "note": "classic (P99) level; 27-36 min. Same spell, different casing in the DB"
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Two DB rows for one spell; no in-line upgrade."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://wiki.project1999.com/Druid/Spells",
+    "https://everquest.allakhazam.com/db/spelllist.html?type=dru&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "levitate-line",
+   "name": "Levitate line",
+   "category": "utility-buff",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Levitate",
+     "level": 14,
+     "inDb": true,
+     "note": "consumes Bat Wing"
+    },
+    {
+     "name": "Levitation",
+     "level": 50,
+     "inDb": true,
+     "note": "no reagent"
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Levitation drops the Bat Wing reagent."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://wiki.project1999.com/Druid/Spells",
+    "https://everquest.allakhazam.com/db/spelllist.html?type=dru&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "breath-line",
+   "name": "Enduring Breath line",
+   "category": "utility-buff",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Enduring Breath",
+     "level": 6,
+     "inDb": true,
+     "note": "consumes Fish Scales"
+    },
+    {
+     "name": "Everlasting Breath",
+     "level": 50,
+     "inDb": true,
+     "note": "no reagent"
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Everlasting Breath drops the Fish Scales reagent."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://wiki.project1999.com/Druid/Spells",
+    "https://everquest.allakhazam.com/db/spelllist.html?type=dru&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "snare-line",
+   "name": "Snare line",
+   "category": "snare",
+   "sharedWith": [
+    "Ranger"
+   ],
+   "members": [
+    {
+     "name": "Tangling Weeds",
+     "level": 1,
+     "inDb": true,
+     "note": "18 s, 20% - the throwaway pre-Snare version"
+    },
+    {
+     "name": "Snare",
+     "level": 1,
+     "inDb": true
+    },
+    {
+     "name": "Ensnare",
+     "level": 26,
+     "inDb": true
+    },
+    {
+     "name": "Bonds of Tunare",
+     "level": 57,
+     "inDb": true,
+     "note": "targeted AE version"
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Snare (40%, 3 min) -> Ensnare (40%, 11 min) is a duration upgrade, not a magnitude one. Bonds of Tunare (65%, AE) is a different tool rather than a replacement for single-target Ensnare."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "Snare effects overwrite one another; they do not stack with each other or with a root."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Druid/Spells",
+    "https://wiki.project1999.com/Druid/Spells/50",
+    "https://everquest.allakhazam.com/db/spelllist.html?type=dru&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "root-line",
+   "name": "Roots line",
+   "category": "root",
+   "sharedWith": [
+    "Ranger"
+   ],
+   "members": [
+    {
+     "name": "Grasping Roots",
+     "level": 2,
+     "inDb": true
+    },
+    {
+     "name": "Ensnaring Roots",
+     "level": 21,
+     "inDb": true
+    },
+    {
+     "name": "Enveloping Roots",
+     "level": 36,
+     "inDb": true
+    },
+    {
+     "name": "Engulfing Roots",
+     "level": 45,
+     "inDb": true
+    },
+    {
+     "name": "Engorging Roots",
+     "level": 56,
+     "inDb": true
+    },
+    {
+     "name": "Entrapping Roots",
+     "level": 60,
+     "inDb": true,
+     "note": "targeted AE version"
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Duration and initial damage both climb (48 s / 10 dmg -> 3 min / 190 dmg). Entrapping Roots is the AE variant at the top of the line, not a single-target upgrade."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "Root and snare do not stack; each root overwrites the previous."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Druid/Spells",
+    "https://wiki.project1999.com/Druid/Spells/34",
+    "https://wiki.project1999.com/Druid/Spells/50"
+   ]
+  },
+  {
+   "id": "charm-animal-line",
+   "name": "Charm Animal line",
+   "category": "charm",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Befriend Animal",
+     "level": 13,
+     "inDb": true,
+     "note": "up to L24"
+    },
+    {
+     "name": "Charm Animals",
+     "level": 23,
+     "inDb": true,
+     "note": "up to L33"
+    },
+    {
+     "name": "Beguile Animals",
+     "level": 33,
+     "inDb": true,
+     "note": "up to L43"
+    },
+    {
+     "name": "Allure of the Wild",
+     "level": 43,
+     "inDb": true,
+     "note": "up to L49"
+    },
+    {
+     "name": "Call of Karana",
+     "level": 52,
+     "inDb": true,
+     "note": "up to L53"
+    },
+    {
+     "name": "Tunare`s Request",
+     "level": 55,
+     "inDb": true,
+     "note": "up to L35 only, but ~3 hour duration - a utility/travel charm, not a level upgrade"
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Strict on max charmable level through Call of Karana (24 -> 33 -> 43 -> 49 -> 53). Tunare`s Request breaks it: it only charms to L35 but lasts hours, so it does not replace Call of Karana."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://wiki.project1999.com/Druid/Spells",
+    "https://wiki.project1999.com/Druid/Spells/34",
+    "https://wiki.project1999.com/Druid/Spells/50"
+   ]
+  },
+  {
+   "id": "charm-plant-line",
+   "name": "Beguile Plants",
+   "category": "charm",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Beguile Plants",
+     "level": 28,
+     "inDb": true,
+     "note": "up to L25, plants only"
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "No upgrade in the druid book."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://wiki.project1999.com/Druid/Spells"
+   ]
+  },
+  {
+   "id": "animal-fear-line",
+   "name": "Animal fear line",
+   "category": "fear",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Panic Animal",
+     "level": 1,
+     "inDb": true
+    },
+    {
+     "name": "Terrorize Animal",
+     "level": 15,
+     "inDb": true
+    },
+    {
+     "name": "Repulse Animal",
+     "level": 51,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Duration climbs 3 -> 9 -> 8+ ticks; all cap at animals up to L52."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://wiki.project1999.com/Druid/Spells",
+    "https://wiki.project1999.com/Druid/Spells/50"
+   ]
+  },
+  {
+   "id": "animal-pacify-line",
+   "name": "Animal pacify line",
+   "category": "pacify",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Lull Animal",
+     "level": 1,
+     "inDb": true
+    },
+    {
+     "name": "Calm Animal",
+     "level": 15,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Reaction radius cap 30 -> 50, at the cost of duration (2 min -> 42 s)."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://wiki.project1999.com/Druid/Spells"
+   ]
+  },
+  {
+   "id": "harmony-line",
+   "name": "Harmony line",
+   "category": "pacify",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Harmony",
+     "level": 5,
+     "inDb": true,
+     "note": "targeted AE"
+    },
+    {
+     "name": "Harmony of Nature",
+     "level": 29,
+     "inDb": true,
+     "note": "single target, works up to L65"
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Harmony of Nature raises the level cap (40 -> 65) but Legends prints it as single-target while Harmony is a targeted AE, so the AE pull tool is not replaced."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://wiki.project1999.com/Druid/Spells",
+    "https://everquest.allakhazam.com/db/spelllist.html?type=dru&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "anti-summoned-line",
+   "name": "Ward Summoned line (anti-summoned nukes)",
+   "category": "nuke",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Ward Summoned",
+     "level": 2,
+     "inDb": true
+    },
+    {
+     "name": "Expulse Summoned",
+     "level": 13,
+     "inDb": true
+    },
+    {
+     "name": "Dismiss Summoned",
+     "level": 23,
+     "inDb": true
+    },
+    {
+     "name": "Expel Summoned",
+     "level": 33,
+     "inDb": true
+    },
+    {
+     "name": "Banish Summoned",
+     "level": 43,
+     "inDb": true
+    },
+    {
+     "name": "Exile Summoned",
+     "level": 55,
+     "inDb": true
+    },
+    {
+     "name": "Banishment",
+     "level": 60,
+     "inDb": true,
+     "note": "Destroy Target instead of damage"
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Damage climbs 14 -> 122 -> 244 -> 309 -> 540 -> 725; Banishment outright destroys a summoned target."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://wiki.project1999.com/Druid/Spells",
+    "https://wiki.project1999.com/Druid/Spells/34",
+    "https://wiki.project1999.com/Druid/Spells/50"
+   ]
+  },
+  {
+   "id": "fire-dd-line",
+   "name": "Fire direct damage line",
+   "category": "nuke",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Burst of Flame",
+     "level": 1,
+     "inDb": true
+    },
+    {
+     "name": "Burst of Flame",
+     "level": 1,
+     "inDb": true,
+     "note": "duplicate DB row"
+    },
+    {
+     "name": "Burst of Fire",
+     "level": 3,
+     "inDb": true
+    },
+    {
+     "name": "Ignite",
+     "level": 8,
+     "inDb": true
+    },
+    {
+     "name": "Combust",
+     "level": 28,
+     "inDb": true
+    },
+    {
+     "name": "Firestrike",
+     "level": 38,
+     "inDb": true
+    },
+    {
+     "name": "Calefaction",
+     "level": 44,
+     "inDb": true
+    },
+    {
+     "name": "Scoriae",
+     "level": 54,
+     "inDb": true
+    },
+    {
+     "name": "Wildfire",
+     "level": 59,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Damage is monotonic (5 -> 14 -> 46 -> 182 -> 422 -> 450 -> 688 -> 1024) but Calefaction is famously not worth it: on P99 it is flagged as absurdly expensive for barely more damage than Firestrike, so the community skips it."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://wiki.project1999.com/Druid/Spells",
+    "https://wiki.project1999.com/Druid/Spells/34",
+    "https://wiki.project1999.com/Druid/Spells/50"
+   ]
+  },
+  {
+   "id": "wind-dd-line",
+   "name": "Wind line (direct damage with interrupt)",
+   "category": "nuke",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Whirling Wind",
+     "level": 3,
+     "inDb": true
+    },
+    {
+     "name": "Dizzying Wind",
+     "level": 16,
+     "inDb": true
+    },
+    {
+     "name": "Fury of Air",
+     "level": 30,
+     "inDb": true
+    },
+    {
+     "name": "Breath of Karana",
+     "level": 56,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "13 -> 95 -> 170 -> 812 damage; all carry a stun/interrupt component (Fury of Air a real 2.5 s stun, the others a 0.0 s interrupt)."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://wiki.project1999.com/Druid/Spells",
+    "https://wiki.project1999.com/Druid/Spells/50"
+   ]
+  },
+  {
+   "id": "magic-dd-line",
+   "name": "Single-target magic/lightning nuke line",
+   "category": "nuke",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Careless Lightning",
+     "level": 16,
+     "inDb": true
+    },
+    {
+     "name": "Dustdevil",
+     "level": 43,
+     "inDb": true
+    },
+    {
+     "name": "Dustdevil",
+     "level": 43,
+     "inDb": true,
+     "note": "duplicate DB row"
+    },
+    {
+     "name": "Starfire",
+     "level": 48,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "105 -> 582 -> 634 damage."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://wiki.project1999.com/Druid/Spells",
+    "https://everquest.allakhazam.com/db/spelllist.html?type=dru&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "cold-dd-line",
+   "name": "Single-target cold nuke line",
+   "category": "nuke",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Ice",
+     "level": 47,
+     "inDb": true,
+     "note": "also -50 fire resist"
+    },
+    {
+     "name": "Frost",
+     "level": 57,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "520 -> 762 damage; Ice keeps a niche for its -50 fire resist debuff."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://wiki.project1999.com/Druid/Spells/34",
+    "https://wiki.project1999.com/Druid/Spells/50"
+   ]
+  },
+  {
+   "id": "lightning-ae-line",
+   "name": "Targeted AE lightning line",
+   "category": "nuke-ae",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Invoke Lightning",
+     "level": 4,
+     "inDb": true
+    },
+    {
+     "name": "Lightning Strike",
+     "level": 31,
+     "inDb": true
+    },
+    {
+     "name": "Lightning Blast",
+     "level": 46,
+     "inDb": true
+    },
+    {
+     "name": "Fist of Karana",
+     "level": 58,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "25 -> 184 -> 477 -> 812 damage per target."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://wiki.project1999.com/Druid/Spells",
+    "https://wiki.project1999.com/Druid/Spells/34",
+    "https://wiki.project1999.com/Druid/Spells/50"
+   ]
+  },
+  {
+   "id": "hail-ae-line",
+   "name": "Targeted AE cold line (Cascade of Hail)",
+   "category": "nuke-ae",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Cascade of Hail",
+     "level": 12,
+     "inDb": true
+    },
+    {
+     "name": "Pogonip",
+     "level": 22,
+     "inDb": true
+    },
+    {
+     "name": "Avalanche",
+     "level": 37,
+     "inDb": true
+    },
+    {
+     "name": "Blizzard",
+     "level": 54,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "27 -> 62 -> 125 -> 490 per wave. P99 describes Cascade of Hail and Pogonip as \"three waves\" spells."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://wiki.project1999.com/Druid/Spells",
+    "https://wiki.project1999.com/Druid/Spells/34",
+    "https://wiki.project1999.com/Druid/Spells/50"
+   ]
+  },
+  {
+   "id": "pbae-line",
+   "name": "Point-blank AE line",
+   "category": "nuke-ae",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Tremor",
+     "level": 21,
+     "inDb": true
+    },
+    {
+     "name": "Earthquake",
+     "level": 31,
+     "inDb": true
+    },
+    {
+     "name": "Upheaval",
+     "level": 48,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "122 -> 246 -> 638 damage."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://wiki.project1999.com/Druid/Spells",
+    "https://wiki.project1999.com/Druid/Spells/34",
+    "https://wiki.project1999.com/Druid/Spells/50"
+   ]
+  },
+  {
+   "id": "swarm-dot-line",
+   "name": "Swarm/insect DoT line",
+   "category": "dot",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Stinging Swarm",
+     "level": 10,
+     "inDb": true
+    },
+    {
+     "name": "Creeping Crud",
+     "level": 24,
+     "inDb": true
+    },
+    {
+     "name": "Drones of Doom",
+     "level": 32,
+     "inDb": true
+    },
+    {
+     "name": "Drifting Death",
+     "level": 40,
+     "inDb": true
+    },
+    {
+     "name": "Winged Death",
+     "level": 53,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "42 -> 85 -> 156 -> 195 -> 143/tick, with Winged Death trading per-tick damage for a 10-tick duration (highest total)."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "Successive members of a DoT line overwrite each other on the same target; different lines (swarm vs fire) stack."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Druid/Spells",
+    "https://wiki.project1999.com/Druid/Spells/34",
+    "https://wiki.project1999.com/Druid/Spells/50"
+   ]
+  },
+  {
+   "id": "fire-dot-line",
+   "name": "Fire DoT line",
+   "category": "dot",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Flame Lick",
+     "level": 1,
+     "inDb": true,
+     "note": "also -3 AC"
+    },
+    {
+     "name": "Immolate",
+     "level": 25,
+     "inDb": true,
+     "note": "also -10..-18 AC"
+    },
+    {
+     "name": "Breath of Ro",
+     "level": 52,
+     "inDb": true,
+     "note": "also -20 AC and -27..-33 fire resist"
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "17 -> 67 -> 92 per tick, and the AC debuff grows with it."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "The AC-debuff components of Flame Lick/Immolate/Breath of Ro are part of the same spells and follow the DoT stacking."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Druid/Spells",
+    "https://wiki.project1999.com/Druid/Spells/50"
+   ]
+  },
+  {
+   "id": "ro-debuff-line",
+   "name": "Ro debuff line",
+   "category": "debuff",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Ro's Fiery Sundering",
+     "level": 39,
+     "inDb": true,
+     "note": "-fire resist and -AC"
+    },
+    {
+     "name": "Fixation of Ro",
+     "level": 42,
+     "inDb": true,
+     "note": "-AC and -ATK"
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Not an upgrade chain: Ro's Fiery Sundering is the fire-resist strip (-40 FR) used before nukes; Fixation of Ro is the melee-mitigation debuff (-18 AC, -60 ATK). They are used together."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "Debuffs; not on the P99 Buff Lines page. Breath of Ro (in the fire DoT line) carries an overlapping fire-resist debuff and will contend with Ro's Fiery Sundering."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Druid/Spells/34",
+    "https://wiki.project1999.com/Druid/Spells/50"
+   ]
+  },
+  {
+   "id": "pet-buff-line",
+   "name": "Pet buff line (Feral Spirit)",
+   "category": "pet-buff",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Feral Spirit",
+     "level": 18,
+     "inDb": true
+    },
+    {
+     "name": "Savage Spirit",
+     "level": 41,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Attack speed 20% -> 70%, STR 20 -> 45, AC 14 -> 16."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Haste (Primary)"
+    ],
+    "conflicts": [
+     {
+      "line": "Any spell haste on the pet",
+      "class": "any",
+      "detail": "P99 Buff Lines treats spell haste as a single \"Haste (Primary)\" slot; the highest holds.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://wiki.project1999.com/Druid/Spells",
+    "https://wiki.project1999.com/Druid/Spells/34",
+    "https://wiki.project1999.com/Buff_Lines"
+   ]
+  },
+  {
+   "id": "light-line",
+   "name": "Light source line",
+   "category": "summon-item",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Dance of the Fireflies",
+     "level": 1,
+     "inDb": true
+    },
+    {
+     "name": "Starshine",
+     "level": 9,
+     "inDb": true
+    },
+    {
+     "name": "Halo of Light",
+     "level": 11,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Brighter/longer-lasting summoned light sources."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://wiki.project1999.com/Druid/Spells"
+   ]
+  },
+  {
+   "id": "food-line",
+   "name": "Summon food/drink",
+   "category": "summon-item",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Summon Drink",
+     "level": 10,
+     "inDb": true
+    },
+    {
+     "name": "Summon Food",
+     "level": 11,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Two halves of the same utility, not an upgrade chain."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://wiki.project1999.com/Druid/Spells"
+   ]
+  },
+  {
+   "id": "imbue-line",
+   "name": "Imbue line (tradeskill gem imbuing)",
+   "category": "summon-item",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Imbue Emerald",
+     "level": 29,
+     "inDb": true
+    },
+    {
+     "name": "Imbue Emerald",
+     "level": 29,
+     "inDb": true,
+     "note": "duplicate DB row"
+    },
+    {
+     "name": "Imbue Plains Pebble",
+     "level": 29,
+     "inDb": true
+    },
+    {
+     "name": "Mass Imbue Plains Pebble",
+     "level": 29,
+     "inDb": true,
+     "note": "live-era mass version"
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Parallel per-gem utility spells, not an upgrade chain."
+   },
+   "missingOnLegends": [
+    "Mass Imbue Emerald (live DRU/29)",
+    "Greater Mass Imbue Emerald (live DRU/44)",
+    "Greater Mass Imbue Plains Pebble (live DRU/44)"
+   ],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://wiki.project1999.com/Druid/Spells",
+    "https://everquest.allakhazam.com/db/spelllist.html?type=dru&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "ring-teleport-line",
+   "name": "Ring line (self teleport to a fixed destination)",
+   "category": "teleport",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Ring of Karana",
+     "level": 15,
+     "inDb": true
+    },
+    {
+     "name": "Ring of Surefall Glade",
+     "level": 15,
+     "inDb": true
+    },
+    {
+     "name": "Ring of Butcher",
+     "level": 16,
+     "inDb": true
+    },
+    {
+     "name": "Ring of Toxxulia",
+     "level": 17,
+     "inDb": true
+    },
+    {
+     "name": "Ring of West Commons",
+     "level": 17,
+     "inDb": true,
+     "note": "live \"Ring of Commons\" DRU/17 under a Legends name"
+    },
+    {
+     "name": "Ring of Commons",
+     "level": 19,
+     "inDb": true,
+     "note": "classic (P99) level 19 twin of Ring of West Commons"
+    },
+    {
+     "name": "Ring of South Ro",
+     "level": 20,
+     "inDb": true,
+     "note": "live \"Ring of Ro\" DRU/20 under a Legends name"
+    },
+    {
+     "name": "Ring of Stonebrunt",
+     "level": 20,
+     "inDb": true
+    },
+    {
+     "name": "Ring of Steamfont",
+     "level": 21,
+     "inDb": true
+    },
+    {
+     "name": "Ring of Feerrott",
+     "level": 22,
+     "inDb": true
+    },
+    {
+     "name": "Ring of Lavastorm",
+     "level": 22,
+     "inDb": true
+    },
+    {
+     "name": "Ring of Ro",
+     "level": 24,
+     "inDb": true,
+     "note": "classic (P99) level 24 twin of Ring of South Ro"
+    },
+    {
+     "name": "Ring of the Combines",
+     "level": 24,
+     "inDb": true
+    },
+    {
+     "name": "Ring of Misty Thicket",
+     "level": 25,
+     "inDb": true,
+     "note": "live \"Ring of Misty\" DRU/25 under a Legends name"
+    },
+    {
+     "name": "Ring of South Ro",
+     "level": 25,
+     "inDb": true,
+     "note": "DATA BUG: second row named Ring of South Ro but its effect teleports the GROUP to Butcherblock (-2135,1984,3)"
+    },
+    {
+     "name": "Ring of Misty",
+     "level": 29,
+     "inDb": true,
+     "note": "classic (P99) level 29 twin of Ring of Misty Thicket"
+    },
+    {
+     "name": "Ring of Great Divide",
+     "level": 34,
+     "inDb": true
+    },
+    {
+     "name": "Ring of Iceclad",
+     "level": 34,
+     "inDb": true
+    },
+    {
+     "name": "Ring of Cobalt Scar",
+     "level": 39,
+     "inDb": true
+    },
+    {
+     "name": "Ring of Wakening Lands",
+     "level": 39,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Not an upgrade chain - one spell per destination. Level order tracks when each destination unlocks. Several destinations appear twice on Legends: once at the live/modern level under the live name and once at the classic (P99) level under the classic name."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://wiki.project1999.com/Druid/Spells",
+    "https://wiki.project1999.com/Druid/Spells/34",
+    "https://everquest.allakhazam.com/db/spelllist.html?type=dru&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "circle-teleport-line",
+   "name": "Circle line (group teleport to a fixed destination)",
+   "category": "teleport",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Circle of Karana",
+     "level": 25,
+     "inDb": true
+    },
+    {
+     "name": "Circle of Toxxulia",
+     "level": 25,
+     "inDb": true
+    },
+    {
+     "name": "Circle of Surefall Glade",
+     "level": 26,
+     "inDb": true
+    },
+    {
+     "name": "Circle of West Commons",
+     "level": 27,
+     "inDb": true,
+     "note": "live \"Circle of Commons\" DRU/27 under a Legends name"
+    },
+    {
+     "name": "Circle of Stonebrunt",
+     "level": 28,
+     "inDb": true
+    },
+    {
+     "name": "Circle of Butcher",
+     "level": 29,
+     "inDb": true,
+     "note": "classic (P99) level"
+    },
+    {
+     "name": "Circle of Commons",
+     "level": 29,
+     "inDb": true,
+     "note": "classic (P99) level twin of Circle of West Commons"
+    },
+    {
+     "name": "Circle of Lavastorm",
+     "level": 30,
+     "inDb": true
+    },
+    {
+     "name": "Circle of Steamfont",
+     "level": 31,
+     "inDb": true
+    },
+    {
+     "name": "Circle of Feerrott",
+     "level": 32,
+     "inDb": true
+    },
+    {
+     "name": "Circle of South Ro",
+     "level": 32,
+     "inDb": true,
+     "note": "live \"Circle of Ro\" DRU/32 under a Legends name"
+    },
+    {
+     "name": "Circle of Iceclad",
+     "level": 34,
+     "inDb": true,
+     "note": "classic (P99) level"
+    },
+    {
+     "name": "Circle of Ro",
+     "level": 34,
+     "inDb": true,
+     "note": "classic (P99) level twin of Circle of South Ro"
+    },
+    {
+     "name": "Circle of the Combines",
+     "level": 34,
+     "inDb": true,
+     "note": "classic (P99) level"
+    },
+    {
+     "name": "Circle of Misty Thicket",
+     "level": 36,
+     "inDb": true,
+     "note": "live \"Circle of Misty\" DRU/36 under a Legends name"
+    },
+    {
+     "name": "Circle of Great Divide",
+     "level": 39,
+     "inDb": true,
+     "note": "classic (P99) level"
+    },
+    {
+     "name": "Circle of Misty",
+     "level": 39,
+     "inDb": true,
+     "note": "classic (P99) level twin of Circle of Misty Thicket"
+    },
+    {
+     "name": "Circle of Cobalt Scar",
+     "level": 44,
+     "inDb": true,
+     "note": "classic (P99) level"
+    },
+    {
+     "name": "Circle of Wakening Lands",
+     "level": 44,
+     "inDb": true,
+     "note": "classic (P99) level"
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Each Circle is the group version of the same-named Ring, learned ~10 levels later. Not an upgrade chain within itself."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://wiki.project1999.com/Druid/Spells",
+    "https://wiki.project1999.com/Druid/Spells/34",
+    "https://everquest.allakhazam.com/db/spelllist.html?type=dru&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "zephyr-line",
+   "name": "Zephyr line (translocate a single target)",
+   "category": "teleport",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Zephyr: Toxxulia",
+     "level": 32,
+     "inDb": true
+    },
+    {
+     "name": "Zephyr: Butcherblock",
+     "level": 33,
+     "inDb": true
+    },
+    {
+     "name": "Zephyr: North Karana",
+     "level": 34,
+     "inDb": true
+    },
+    {
+     "name": "Zephyr: Stonebrunt",
+     "level": 35,
+     "inDb": true
+    },
+    {
+     "name": "Zephyr: Surefall Glade",
+     "level": 35,
+     "inDb": true
+    },
+    {
+     "name": "Zephyr: West Commons",
+     "level": 35,
+     "inDb": true
+    },
+    {
+     "name": "Zephyr: Feerrott",
+     "level": 39,
+     "inDb": true
+    },
+    {
+     "name": "Zephyr: Steamfont",
+     "level": 39,
+     "inDb": true
+    },
+    {
+     "name": "Zephyr: South Ro",
+     "level": 40,
+     "inDb": true
+    },
+    {
+     "name": "Zephyr: Misty Thicket",
+     "level": 45,
+     "inDb": true
+    },
+    {
+     "name": "Zephyr: Lavastorm",
+     "level": 47,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "One spell per destination; a translocate sends the target rather than the caster."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://everquest.allakhazam.com/db/spelllist.html?type=dru&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "succor-line",
+   "name": "Succor line (evacuation)",
+   "category": "evacuation",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Lesser Succor",
+     "level": 18,
+     "inDb": true,
+     "note": "in-zone safe spot"
+    },
+    {
+     "name": "Succor: East Karana",
+     "level": 26,
+     "inDb": true,
+     "note": "live \"Succor East\" DRU/26 under a Legends name"
+    },
+    {
+     "name": "Succor: East",
+     "level": 29,
+     "inDb": true,
+     "note": "classic (P99) level 29 twin"
+    },
+    {
+     "name": "Succor: Butcherblock",
+     "level": 32,
+     "inDb": true,
+     "note": "live \"Succor Butcher\" DRU/32 under a Legends name"
+    },
+    {
+     "name": "Succor: Butcher",
+     "level": 34,
+     "inDb": true,
+     "note": "classic (P99) level 34 twin"
+    },
+    {
+     "name": "Succor: South Ro",
+     "level": 38,
+     "inDb": true,
+     "note": "live \"Succor Ro\" DRU/38 under a Legends name"
+    },
+    {
+     "name": "Succor: Ro",
+     "level": 39,
+     "inDb": true,
+     "note": "classic (P99) level 39 twin"
+    },
+    {
+     "name": "Succor: Lavastorm",
+     "level": 41,
+     "inDb": true
+    },
+    {
+     "name": "Succor: North Karana",
+     "level": 46,
+     "inDb": true,
+     "note": "live \"Succor North\" DRU/46 under a Legends name"
+    },
+    {
+     "name": "Succor: North",
+     "level": 49,
+     "inDb": true,
+     "note": "classic (P99) level 49 twin; DB effect string is truncated (\"Evacuate to\")"
+    },
+    {
+     "name": "Egress",
+     "level": 52,
+     "inDb": true,
+     "note": "self-only in-zone evac, instant, no reagent"
+    },
+    {
+     "name": "Succor",
+     "level": 57,
+     "inDb": true,
+     "note": "group in-zone evac, 750 mana"
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Mostly one spell per destination zone, not an upgrade chain. The genuine upgrade is Lesser Succor -> Succor (in-zone group evac), and Egress is the self-only fast version everyone actually uses in a wipe."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://wiki.project1999.com/Druid/Spells",
+    "https://wiki.project1999.com/Druid/Spells/34",
+    "https://wiki.project1999.com/Druid/Spells/50",
+    "https://everquest.allakhazam.com/db/spelllist.html?type=dru&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "wind-evac-line",
+   "name": "Wind line (Kunark long-range evacuation)",
+   "category": "evacuation",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Wind of the North",
+     "level": 39,
+     "inDb": true,
+     "note": "to Skyfire Mountains"
+    },
+    {
+     "name": "Wind of the South",
+     "level": 39,
+     "inDb": true,
+     "note": "to Emerald Jungle"
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "A destination pair, not an upgrade chain. Both are Kunark-era group evacuations out of Kunark dungeons."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://wiki.project1999.com/Druid/Spells/34"
+   ]
+  }
+ ],
+ "standalone": [
+  {
+   "name": "Sense Animals",
+   "level": 1,
+   "note": "Divination utility; no upgrade in the druid book."
+  },
+  {
+   "name": "Gate",
+   "level": 5,
+   "note": "Self-teleport to bind point; shared across all casters."
+  },
+  {
+   "name": "Bind Affinity",
+   "level": 12,
+   "note": "Sets a bind point."
+  },
+  {
+   "name": "See Invisible",
+   "level": 13,
+   "note": "Legends has no upgrade; the level-60 Mask of the Hunter also grants See Invisible."
+  },
+  {
+   "name": "Tiny Companion",
+   "level": 17,
+   "note": "Shrinks the pet. Live DRU/17."
+  },
+  {
+   "name": "Sunbeam",
+   "level": 22,
+   "note": "Targeted AE blind; no upgrade."
+  },
+  {
+   "name": "Summon Companion",
+   "level": 41,
+   "note": "Calls the pet to the caster. Live DRU/41."
+  },
+  {
+   "name": "Fire",
+   "level": 48,
+   "note": "Kunark targeted-AE fire nuke that also strips 50 cold resist; the counterpart to Ice (47) but with no upgrade chain of its own."
+  },
+  {
+   "name": "Vengeance of the Wild",
+   "level": 49,
+   "note": "Curse-counter DoT. Live DRU/49; not on any P99 druid page."
+  },
+  {
+   "name": "Glamour of Tunare",
+   "level": 53,
+   "note": "Animal-only magic-resist debuff (-20 MR, +1 poison counter) used to land charm on resistant animals; not itself a charm."
+  },
+  {
+   "name": "Nature Walkers Behest",
+   "level": 55,
+   "note": "Summons the druid pet (\"DruidPet\"). The only druid pet-summon spell in the book."
+  },
+  {
+   "name": "Wake of Karana",
+   "level": 56,
+   "note": "Stops rain (weather control); pure flavour utility."
+  },
+  {
+   "name": "Mask of the Hunter",
+   "level": 60,
+   "note": "Self-only: +3 mana/tick, See Invisible, size/magnification. Its mana regen sits in the P99 \"Mana Regeneration (Gift)\" column, so it conflicts with Gift of Brilliance/Insight and with Form of the Howler, but stacks with Clarity and with Protection of the Glades."
+  }
+ ],
+ "unlinked": [
+  {
+   "info": "P99 Buff Lines carries an explicit warning that the page is incomplete for item-based buffs and for \"+0 rows\" (buffs that block a line without contributing to the stat). Legacy of Spike, Spirit of Scale, Pack Spirit, Pack Shrew and Spirit of the Shrew have no row on it.",
+   "source": "https://wiki.project1999.com/Buff_Lines"
+  },
+  {
+   "info": "Focus of Spirit (Shaman 60) and Mortal Deftness stack by developer accident only if Mortal Deftness is cast first - the page flags this as the one documented exception to the slot model.",
+   "source": "https://wiki.project1999.com/Buff_Lines"
+  },
+  {
+   "info": "Worn HP regeneration (Fungus Covered Scale Tunic, Aura of Battle items) stacks with spell regen but has a combined 15 hp/tick cap of its own.",
+   "source": "https://wiki.project1999.com/Buff_Lines"
+  },
+  {
+   "info": "Live Protection of the Glades carries hard-coded stacking blocks in its spell data (\"Block new spell if slot 1 is effect AC and < 108\", \"... slot 2 Max Hitpoints and < 2486\"), i.e. it refuses to be overwritten by weaker AC/HP buffs rather than relying purely on slot identity.",
+   "source": "https://everquest.allakhazam.com/db/spell.html?spell=2514"
+  },
+  {
+   "info": "P99 flags Calefaction (Druid 44) as a trap purchase: ~80pp for barely more damage than casting Firestrike twice.",
+   "source": "https://wiki.project1999.com/Druid/Spells/34"
+  },
+  {
+   "info": "Live-only druid spells with no Legends counterpart that are not Luclin+ destination ports: Healing Water (DRU/34), Spirit of Ash (DRU/36), Spirit of Eagle (DRU/54), Tangle (DRU/50), Reebo's Augury/Cleansing/Exorcism line (DRU/11-34), Mass Imbue Emerald (DRU/29), Greater Mass Imbue Emerald and Greater Mass Imbue Plains Pebble (DRU/44), Eradicate Curse/Disease/Poison and Remove Greater Curse (DRU/54-58).",
+   "source": "https://everquest.allakhazam.com/db/spelllist.html?type=dru&level=1&opt=And+Higher&action=search"
+  }
+ ],
+ "openQuestions": [
+  "Legends has TWO rows for Skin Like Wood/Rock/Steel and for Shield of Thorns, and two differently-levelled rows for Skin Like Diamond (36/39), Skin Like Nature (46/49), Greater Healing (29/34), Invisibility versus Animals (8/9) and Improved Superior Camo/Camou (48/50). Are these genuinely two castable spells on the server, or duplicate scrape rows for one spell? The Diamond/Nature/Camo pairs look like a live-level row plus a classic-level row of the same spell.",
+  "Ring of South Ro appears twice: level 20 (teleports to South Ro) and level 25 (Group, but the coordinates are Butcherblock -2135,1984,3). The level-25 row is almost certainly a mislabelled Circle/Ring of Butcher. Needs a server-side check.",
+  "Protection of Wood on Legends prints \"+10 to +15 AC\", far above live (AC 3 at L9) and above its own single-target twin Skin Like Wood (AC 2-4). Likely a data error in the Legends description.",
+  "Legends Chloroplast scales to 16 hp/tick (L50) while Regrowth is a flat 15 hp/tick, inverting the classic strict upgrade (P99 lists Chloroplast at +10, Regrowth at +15). Same for Pack Chloroplast (16) vs Regrowth of the Grove (15). Is this intentional Legends re-tuning?",
+  "The Budding/Sprouting/Flowering/Blooming/Blossoming/Efflorescing Heal line has no classic or live counterpart at all - it is Legends-custom. Which buff slot (if any) does its hp/tick occupy, and does it stack with Regrowth?",
+  "Spirit of Oak grants +4 mana/tick on Legends but appears nowhere in the P99 mana-regeneration table (only in HP Regeneration Slot 3 & 6). Which mana-regen column does it use - does it block Clarity or Mask of the Hunter?",
+  "Legacy of Spike (49) is absent from the P99 Buff Lines page; its Damage Shield (Slot 1) placement here is inferred from Legacy of Thorn and from the identical +24 magnitude it shares with Shield of Thorns.",
+  "Legends druid levels below 34 follow live/modern Allakhazam exactly (Burst of Fire 3, Camouflage 4, Firefist 6, Thistlecoat 7, Skin Like Rock 14, Barbcoat 17, Resist Fire 20, Ensnare 26, Bramblecoat 27, Resist Cold 30...), while 34+ follows the classic 5-level cadence. Confirm whether the server intends the split."
+ ],
+ "sources": [
+  "https://wiki.project1999.com/Buff_Lines",
+  "https://wiki.project1999.com/Druid/Spells",
+  "https://wiki.project1999.com/Druid/Spells/34",
+  "https://wiki.project1999.com/Druid/Spells/50",
+  "https://everquest.allakhazam.com/db/spelllist.html?type=dru&level=1&opt=And+Higher&action=search",
+  "https://everquest.allakhazam.com/db/spell.html?spell=2514"
+ ]
+}

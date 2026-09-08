@@ -1,0 +1,2673 @@
+{
+ "class": "Cleric",
+ "server": "EverQuest Legends",
+ "spellCountInDb": 206,
+ "coverage": {
+  "assignedToLines": 193,
+  "standalone": 13,
+  "total": 206
+ },
+ "lines": [
+  {
+   "id": "heroism-line",
+   "name": "Heroism line (Courage line)",
+   "category": "hp-ac-buff",
+   "sharedWith": [
+    "Paladin"
+   ],
+   "members": [
+    {
+     "name": "Courage",
+     "level": 1,
+     "inDb": true
+    },
+    {
+     "name": "Center",
+     "level": 7,
+     "inDb": true
+    },
+    {
+     "name": "Daring",
+     "level": 17,
+     "inDb": true
+    },
+    {
+     "name": "Bravery",
+     "level": 22,
+     "inDb": true
+    },
+    {
+     "name": "Valor",
+     "level": 32,
+     "inDb": true
+    },
+    {
+     "name": "Resolution",
+     "level": 42,
+     "inDb": true
+    },
+    {
+     "name": "Heroism",
+     "level": 52,
+     "inDb": true
+    },
+    {
+     "name": "Heroic Bond",
+     "level": 52,
+     "inDb": true,
+     "note": "Group version of Heroism; identical AC/HP magnitudes on Legends. Same line - does not stack with Heroism."
+    },
+    {
+     "name": "Fortitude",
+     "level": 55,
+     "inDb": true,
+     "note": "EXCEPTION: L55 but WEAKER than L52 Heroism on Legends (AC 17-18 / HP 320-360 vs 18-19 / 360-400). Its value is duration: 2h24m vs 1h12m. p99 also lists it below Heroism (+18 AC / +345 HP vs +19 / +400)."
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Courage -> Center -> Daring -> Bravery -> Valor -> Resolution -> Heroism is strictly increasing in both AC and HP, so each replaces the previous. Two exceptions: Fortitude (55) is a lower-magnitude, double-duration sidegrade to Heroism (52), and Heroic Bond (52) is the group-cast twin of Heroism rather than an upgrade. Aegolism (60) supersedes the whole line for stacking purposes."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "conflicts": [
+     {
+      "line": "skin-line",
+      "class": "Druid/Ranger",
+      "detail": "Verbatim p99: \"These spells are cast by Clerics and Paladins to increase hit points and armor class. They do not stack with Skin line spells or Inner Fire.\" Confirmed structurally on Buff Lines: Courage/Center/Daring/Bravery/Valor/Resolution/Heroism/Fortitude AND Skin Like Wood/Rock/Steel/Diamond/Nature/Natureskin/Protection of the Glades all sit under the single heading \"AC (Slot 1)\" and in the same column of \"HP (Primary)\"; buffs under the same heading cannot stack.",
+      "source": "https://wiki.project1999.com/Category:Heroism_line"
+     },
+     {
+      "line": "inner-fire",
+      "class": "Shaman",
+      "detail": "Inner Fire (Shaman 1, +3 AC / +20 HP) shares AC Slot 1 and the HP Primary column with the Heroism line.",
+      "source": "https://wiki.project1999.com/Category:Heroism_line"
+     },
+     {
+      "line": "protection-of-the-glades",
+      "class": "Druid",
+      "detail": "Protection of the Glades (Druid 60, +24 AC / +470 HP / +6 mana per tick) is the top of the Skin column in AC Slot 1 and HP Primary, so it overwrites / is blocked by Heroism-line buffs.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "symbol-line",
+      "class": "Cleric",
+      "detail": "ONLY via Aegolism: Aegolism is the \"Cleric (Combination)\" entry that sits above both the Heroism/Skin column and the Symbol column, so it stacks with neither.",
+      "source": "https://wiki.project1999.com/Aegolism"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "symbol-line",
+      "detail": "Verbatim p99: Heroism-line spells \"do stack with Aegis line, Symbol line, Shielding line, and Talisman line spells.\" On Buff Lines the Symbol line is a separate column of HP (Primary) headed \"HP Only and Requires Gem (eg. Peridot)\"."
+     },
+     {
+      "line": "aegis-line",
+      "detail": "Heroism AC is Slot 1; Aegis-line AC is Slot 4. Different slots, they stack."
+     },
+     {
+      "line": "talisman-line",
+      "detail": "Shaman Talisman HP sits under the separate heading \"HP (Shielding / Talisman)\"."
+     },
+     {
+      "line": "shielding-line",
+      "detail": "Caster Shielding HP is in the same separate \"HP (Shielding / Talisman)\" group; its AC is Slot 2."
+     }
+    ],
+    "notes": "Slot map for a cleric-buffed character: AC Slot 1 = Heroism/Skin/Inner Fire; AC Slot 2 = Shielding / Yaulp / Armor of Protection; AC Slot 4 = Aegis line, shaman Guardian, enchanter Umbra. HP columns: (a) Heroism+Skin combined column, (b) Symbol column, (c) Shielding/Talisman column. Aegolism occupies AC \"Slot 1 & 4\" and the HP combination row simultaneously."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Category:Heroism_line",
+    "https://wiki.project1999.com/Buff_Lines",
+    "https://everquest.allakhazam.com/db/spelllist.html?type=clr&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "symbol-line",
+   "name": "Symbol line",
+   "category": "hp-buff",
+   "sharedWith": [
+    "Paladin"
+   ],
+   "members": [
+    {
+     "name": "Symbol of Transal",
+     "level": 11,
+     "inDb": true
+    },
+    {
+     "name": "Symbol of Ryltan",
+     "level": 21,
+     "inDb": true
+    },
+    {
+     "name": "Symbol of Pinzarn",
+     "level": 31,
+     "inDb": true
+    },
+    {
+     "name": "Symbol of Naltron",
+     "level": 41,
+     "inDb": true
+    },
+    {
+     "name": "Symbol of Marzin",
+     "level": 54,
+     "inDb": true
+    },
+    {
+     "name": "Naltron's Mark",
+     "level": 58,
+     "inDb": true,
+     "note": "Group version. EXCEPTION: caps at 446 HP vs Symbol of Naltron's 525 and Symbol of Marzin's 700 - a group convenience buff, not an upgrade."
+    },
+    {
+     "name": "Aegolism",
+     "level": 60,
+     "inDb": true,
+     "note": "p99 files Aegolism under the Symbol line, but mechanically it is the all-in-one that replaces Heroism + Symbol of Marzin + Aegis at once. Legends' own effect text carries the classic blocker: \"Block new spell if slot 3 is effect 'Max Hitpoints' and < 1100\" - Symbol spells put Max Hitpoints in slot 3, so Aegolism refuses them."
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Transal -> Ryltan -> Pinzarn -> Naltron -> Marzin is strictly increasing. Naltron's Mark (58, group) is weaker than Symbol of Marzin (54, single) - buff the tank with Marzin and the group with Naltron's Mark. Aegolism (60) replaces the whole line."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "conflicts": [
+     {
+      "line": "symbol-line-self",
+      "class": "Cleric/Paladin",
+      "detail": "All Symbol spells share the \"HP Only and Requires Gem\" column of HP (Primary) - only one can be up.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "aegolism",
+      "class": "Cleric",
+      "detail": "Aegolism blocks any incoming spell whose slot 3 is Max Hitpoints below 1100, which is exactly the Symbol line. p99: Aegolism is \"an all-in-one spell, replacing Heroism, Symbol of Marzin and Aegis with a single buff with roughly the same stats and reduced overall mana cost.\"",
+      "source": "https://wiki.project1999.com/Aegolism"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "heroism-line",
+      "detail": "Verbatim p99: \"Symbol spells increase hit points. They are cast by Clerics and Paladins. They stack with Heroism line, Talisman line and Shielding line spells.\""
+     },
+     {
+      "line": "skin-line",
+      "detail": "Skin line shares the Heroism column, so the same rule applies: Symbol stacks on top of Skin Like Nature / Natureskin / Protection of the Glades. This is the key to the best classic HP stack."
+     },
+     {
+      "line": "talisman-line",
+      "detail": "Shaman Talisman HP is the \"HP (Shielding / Talisman)\" group - a third, independent HP column."
+     },
+     {
+      "line": "aegis-line",
+      "detail": "Symbol is HP-only; Aegis is AC Slot 4. No overlap."
+     }
+    ],
+    "notes": "Symbol spells require a gem reagent (peridot etc.), which is why p99 labels the column \"HP Only and Requires Gem\"."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Category:Symbol_line",
+    "https://wiki.project1999.com/Buff_Lines",
+    "https://wiki.project1999.com/Aegolism"
+   ]
+  },
+  {
+   "id": "aegis-line",
+   "name": "Aegis line (cleric AC armor line)",
+   "category": "ac-buff",
+   "sharedWith": [
+    "Paladin"
+   ],
+   "members": [
+    {
+     "name": "Holy Armor",
+     "level": 1,
+     "inDb": true
+    },
+    {
+     "name": "Spirit Armor",
+     "level": 15,
+     "inDb": true
+    },
+    {
+     "name": "Guard",
+     "level": 25,
+     "inDb": true
+    },
+    {
+     "name": "Armor of Faith",
+     "level": 35,
+     "inDb": true
+    },
+    {
+     "name": "Shield of Words",
+     "level": 45,
+     "inDb": true
+    },
+    {
+     "name": "Aegis",
+     "level": 57,
+     "inDb": true
+    },
+    {
+     "name": "Bulwark of Faith",
+     "level": 57,
+     "inDb": true,
+     "note": "Same level as Aegis (57) and strictly better AC (37 vs 34) but shorter duration (1h21m vs 2h24m). Both are Velious drop spells."
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Holy Armor -> Spirit Armor -> Guard -> Armor of Faith -> Shield of Words -> Aegis is strictly increasing AC. Aegis and Bulwark of Faith are both level 57: Bulwark gives more AC, Aegis lasts longer. Aegolism (60) subsumes the line."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "conflicts": [
+     {
+      "line": "aegis-line-self",
+      "class": "Cleric/Paladin",
+      "detail": "All seven sit under the single \"AC (Slot 4)\" heading on Buff Lines, alongside shaman Guardian/Shroud of the Spirits/Protect/Turtle Skin/Scale Skin/Shifting Shield, enchanter Umbra/Shadow/Shade/Obscure/Cloud/Mist/Haze and magician Phantom Armor/Plate/Chain/Leather. Only one AC Slot 4 buff can be up.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "shaman-guardian-line",
+      "class": "Shaman",
+      "detail": "Shaman Guardian (+24) / Shroud of the Spirits (+28) share AC Slot 4 with the Aegis line - Bulwark of Faith (+37) wins.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "enchanter-umbra-line",
+      "class": "Enchanter",
+      "detail": "Umbra (+29) and the Haze->Shadow chain share AC Slot 4.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "aegolism",
+      "class": "Cleric",
+      "detail": "Aegolism is listed under \"AC (Slot 1 & 4)\" - it occupies Slot 4 as well, so it blocks the Aegis line.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "heroism-line",
+      "detail": "Verbatim p99: \"These spells are cast by Clerics and Paladins to increase armor class. They stack with Heroism line and Skin line spells.\""
+     },
+     {
+      "line": "skin-line",
+      "detail": "Same verbatim statement - Aegis AC (Slot 4) layers on top of druid Skin AC (Slot 1)."
+     },
+     {
+      "line": "symbol-line",
+      "detail": "Different statistic entirely."
+     },
+     {
+      "line": "shielding-line",
+      "detail": "Caster/self Shielding AC is Slot 2; Yaulp and Armor of Protection are also Slot 2."
+     }
+    ],
+    "notes": "Best classic non-Aegolism AC on a tank = Bulwark of Faith (Slot 4, 37) + Protection of the Glades or Heroism (Slot 1) + a Slot 2 and Slot 3 source."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Category:Aegis_line",
+    "https://wiki.project1999.com/Buff_Lines"
+   ]
+  },
+  {
+   "id": "armor-of-protection-line",
+   "name": "Armor of Protection line (cleric self AC/HP)",
+   "category": "hp-ac-buff",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Armor of Protection",
+     "level": 34,
+     "inDb": true
+    },
+    {
+     "name": "Armor of the Faithful",
+     "level": 49,
+     "inDb": true,
+     "note": "Higher level (49) but only +6 AC vs +15; it buys +260 HP. Not present on the p99 Buff Lines tables, so its slot assignment is unverified."
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Armor of the Faithful is higher level but trades 9 AC for 35 HP; neither strictly replaces the other on the Legends numbers."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "conflicts": [
+     {
+      "line": "yaulp-line",
+      "class": "Cleric",
+      "detail": "Armor of Protection (+15 AC) is listed under \"AC (Slot 2)\" together with Yaulp IV (+15), Yaulp III (+12), Yaulp II (+8) and Yaulp (+6) and the caster Shielding line. A cleric cannot run Armor of Protection and Yaulp at the same time.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "shielding-line",
+      "class": "Enchanter/Magician/Necromancer/Wizard",
+      "detail": "Same AC Slot 2 heading (Minor->Lesser->Shielding->Major->Greater->Arch Shielding, Shield of the Magi), and its HP is listed under \"HP (Shielding / Talisman)\".",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "talisman-line",
+      "class": "Shaman",
+      "detail": "Armor of Protection's +225 HP appears in the \"HP (Shielding / Talisman)\" group with Talisman of Tnarg/Altuna/Kragg and Focus of Spirit, so it conflicts with shaman Talisman HP.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "heroism-line",
+      "detail": "Different AC slot (2 vs 1); its HP is in the Shielding/Talisman column, not the Heroism column."
+     },
+     {
+      "line": "aegis-line",
+      "detail": "AC Slot 2 vs Slot 4."
+     }
+    ],
+    "notes": "p99 Buff Lines lists Armor of Protection's +225 HP in BOTH the Heroism/Skin column of HP (Primary) and in HP (Shielding / Talisman). One of the two is likely a wiki transcription error; the Shielding/Talisman placement matches its AC Slot 2 (Shielding) assignment and is the more plausible one. Flagged as an open question."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Buff_Lines",
+    "https://everquest.allakhazam.com/db/spelllist.html?type=clr&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "temperance-line",
+   "name": "Temperance line",
+   "category": "hp-ac-buff",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Temperance",
+     "level": 40,
+     "inDb": true
+    },
+    {
+     "name": "Blessing of Temperance",
+     "level": 45,
+     "inDb": true,
+     "note": "Group version, identical magnitudes."
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Blessing of Temperance is the group cast of Temperance with identical values, not an upgrade."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "conflicts": [
+     {
+      "line": "heroism-line",
+      "class": "Cleric",
+      "detail": "Unverified on classic sources. Temperance is a Luclin-era spell (Cleric 60 on live) that Legends has re-tiered to 40/45; on live it is an HP/AC buff in the same family as Aegolism. Its Legends magnitudes (+800 max HP, +160 AC at level 40) are far outside anything in the classic AC slot tables, so no classic slot statement applies.",
+      "source": "https://everquest.allakhazam.com/db/spelllist.html?type=clr&level=1&opt=And+Higher&action=search"
+     }
+    ],
+    "stacksWith": [],
+    "notes": "DISCREPANCY: Legends gives Temperance at 40 and Blessing of Temperance at 45 with +800 HP / +160 AC. Allakhazam confirms the levels 40 and 45 for the modern spell set, but +160 AC at level 40 dwarfs Aegolism (+54 AC at 60) and every AC entry in the p99 tables. Treat the magnitude as Legends-specific and do not annotate a classic stacking slot for it without server data."
+   },
+   "sources": [
+    "https://everquest.allakhazam.com/db/spelllist.html?type=clr&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "yaulp-line",
+   "name": "Yaulp line",
+   "category": "self-buff",
+   "sharedWith": [
+    "Paladin"
+   ],
+   "members": [
+    {
+     "name": "Yaulp",
+     "level": 1,
+     "inDb": true
+    },
+    {
+     "name": "Yaulp II",
+     "level": 16,
+     "inDb": true
+    },
+    {
+     "name": "Yaulp III",
+     "level": 41,
+     "inDb": true
+    },
+    {
+     "name": "Yaulp IV",
+     "level": 53,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Each adds more AC/STR than the last. Yaulp IV also adds ATK and drops to a 4-tick duration where I-III are permanent-until-cancelled on Legends."
+   },
+   "missingOnLegends": [
+    {
+     "name": "Yaulp V",
+     "level": 56,
+     "inDb": false,
+     "note": "Planes of Power era on Allakhazam; correctly absent from a classic-era set."
+    }
+   ],
+   "stacking": {
+    "conflicts": [
+     {
+      "line": "armor-of-protection-line",
+      "class": "Cleric",
+      "detail": "Yaulp I-IV and Armor of Protection are all listed under \"AC (Slot 2)\".",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "shielding-line",
+      "class": "Enchanter/Magician/Necromancer/Wizard",
+      "detail": "Same AC Slot 2 heading.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "heroism-line",
+      "detail": "AC Slot 2 vs Slot 1."
+     },
+     {
+      "line": "aegis-line",
+      "detail": "AC Slot 2 vs Slot 4."
+     }
+    ],
+    "notes": "Yaulp STR is in its own \"Strength (Short Duration: Yaulp)\" group on p99, separate from the shaman/druid STR lines."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Buff_Lines"
+   ]
+  },
+  {
+   "id": "reckless-strength-line",
+   "name": "Reckless Strength line",
+   "category": "stat-buff",
+   "sharedWith": [
+    "Paladin"
+   ],
+   "members": [
+    {
+     "name": "Reckless Strength",
+     "level": 2,
+     "inDb": true
+    },
+    {
+     "name": "Frenzied Strength",
+     "level": 31,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Frenzied Strength (+40 decaying) replaces Reckless Strength (+20 decaying)."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "conflicts": [
+     {
+      "line": "strength-primary",
+      "class": "Shaman/Druid/Enchanter",
+      "detail": "Decaying-STR cleric buffs are in the general \"Strength (Primary)\" family rather than the Yaulp group; the Legends note on Reckless Strength itself says \"Yaulp becomes better here\" after ~100 seconds.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [],
+    "notes": "Legends carries an unusually detailed decay curve in the effects text for Reckless Strength."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Buff_Lines"
+   ]
+  },
+  {
+   "id": "healing-line",
+   "name": "Direct heal line",
+   "category": "heal",
+   "sharedWith": [
+    "Paladin",
+    "Ranger",
+    "Druid",
+    "Shaman"
+   ],
+   "members": [
+    {
+     "name": "Minor Healing",
+     "level": 1,
+     "inDb": true
+    },
+    {
+     "name": "Light Healing",
+     "level": 4,
+     "inDb": true
+    },
+    {
+     "name": "Healing",
+     "level": 10,
+     "inDb": true
+    },
+    {
+     "name": "Greater Healing",
+     "level": 20,
+     "inDb": true
+    },
+    {
+     "name": "Superior Healing",
+     "level": 30,
+     "inDb": true
+    },
+    {
+     "name": "Healing Light",
+     "level": 45,
+     "inDb": true
+    },
+    {
+     "name": "Remedy",
+     "level": 51,
+     "inDb": true
+    },
+    {
+     "name": "Divine Light",
+     "level": 53,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Each step heals more and is more mana-efficient per HP (p99 Healing Spell Lines sorts by mana/HP ratio: Minor Healing 1.0, Light Healing up to 1.32, Healing 1.67, Greater Healing 1.8, Superior Healing 2.33, Remedy 2.50, Divine Light 2.60). But the cheap spells stay useful for topping off small wounds without over-healing, and Remedy (51) is deliberately fast/cheap rather than big."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "Instant heals do not occupy buff slots."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Healing_Spell_Lines",
+    "https://everquest.allakhazam.com/db/spelllist.html?type=clr&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "complete-heal-line",
+   "name": "Complete Heal line",
+   "category": "heal",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Complete Healing",
+     "level": 39,
+     "inDb": true,
+     "note": "Named \"Complete Heal\" on Allakhazam and p99; Legends uses \"Complete Healing\". Same spell: 10,000 HP, ~10s cast."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Single-member line - nothing replaces it in the classic era. It is the defining cleric spell: at 400 mana for 10,000 HP its ratio (25.0) is ten times any other heal, which is what makes the \"CH rotation\" the classic raid healing model."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "Word of Redemption (60) is the group analogue at 10,000 HP."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Healing_Spell_Lines",
+    "https://everquest.allakhazam.com/db/spelllist.html?type=clr&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "group-heal-line",
+   "name": "Word of Health line (group heals)",
+   "category": "heal",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Word of Health",
+     "level": 30,
+     "inDb": true
+    },
+    {
+     "name": "Word of Healing",
+     "level": 45,
+     "inDb": true
+    },
+    {
+     "name": "Word of Vigor",
+     "level": 52,
+     "inDb": true,
+     "note": "Also removes 100 stamina loss."
+    },
+    {
+     "name": "Word of Restoration",
+     "level": 57,
+     "inDb": true,
+     "note": "Also cures 9 poison and 9 disease counters."
+    },
+    {
+     "name": "Word of Redemption",
+     "level": 60,
+     "inDb": true,
+     "note": "Group Complete Heal - 10,000 HP to the group."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strictly increasing group heal amount and mana efficiency (p99 ratios 0.56 -> 0.67 -> 0.83 -> 0.83), with the later members bolting on stamina and cure riders."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://wiki.project1999.com/Healing_Spell_Lines",
+    "https://everquest.allakhazam.com/db/spelllist.html?type=clr&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "celestial-hot-line",
+   "name": "Celestial line (heal over time)",
+   "category": "heal-over-time",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Celestial Remedy",
+     "level": 19,
+     "inDb": true
+    },
+    {
+     "name": "Celestial Health",
+     "level": 29,
+     "inDb": true
+    },
+    {
+     "name": "Celestial Healing",
+     "level": 44,
+     "inDb": true
+    },
+    {
+     "name": "Celestial Elixir",
+     "level": 59,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strictly increasing per-tick healing (35 -> 115 -> 180 -> 300)."
+   },
+   "missingOnLegends": [
+    {
+     "name": "Celestial Cleansing",
+     "level": 59,
+     "inDb": false,
+     "note": "Paladin-only member of the same line; never a cleric spell."
+    }
+   ],
+   "stacking": {
+    "conflicts": [
+     {
+      "line": "celestial-hot-line-self",
+      "class": "Cleric",
+      "detail": "HoTs of one line overwrite each other; the strongest sticks.",
+      "source": "https://wiki.project1999.com/Healing_Spell_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "hp-regeneration-lines",
+      "detail": "The Celestial HoTs are heal-over-time spells, not the \"HP Regeneration\" slot buffs (druid Regeneration/Chloroplast/Regrowth, bard Hymn), so they run alongside them."
+     }
+    ],
+    "notes": "p99 rates Celestial Elixir at ratio 4.0 (1200 HP for 300 mana), the most mana-efficient cleric healing outside Complete Heal."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Healing_Spell_Lines",
+    "https://everquest.allakhazam.com/db/spelllist.html?type=clr&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "echo-line",
+   "name": "Echo line (Legends-only burst heal + short HoT)",
+   "category": "heal",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Echo of Health",
+     "level": 8,
+     "inDb": true
+    },
+    {
+     "name": "Echoing Light",
+     "level": 14,
+     "inDb": true
+    },
+    {
+     "name": "Renewing Echo",
+     "level": 24,
+     "inDb": true
+    },
+    {
+     "name": "Celestial Echo",
+     "level": 34,
+     "inDb": true
+    },
+    {
+     "name": "Sacred Echo",
+     "level": 43,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strictly increasing initial heal and per-tick echo (50/20 -> 117-140/55 -> 187-265/110 -> 262-310/165-190 -> 624-640/260)."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "NOT A CLASSIC LINE. No spell of any of these five names appears in the Allakhazam cleric list at any level, nor on p99. This is a Legends-original healing line slotted between the direct heals; annotate it as server-custom and do not attach classic stacking claims to it."
+   },
+   "sources": [
+    "https://everquest.allakhazam.com/db/spelllist.html?type=clr&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "blessing-proc-line",
+   "name": "Blessing of the Page line (melee-proc heal)",
+   "category": "proc-buff",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Blessing of the Page",
+     "level": 8,
+     "inDb": true
+    },
+    {
+     "name": "Blessing of the Squire",
+     "level": 16,
+     "inDb": true
+    },
+    {
+     "name": "Blessing of the Knight",
+     "level": 34,
+     "inDb": true
+    },
+    {
+     "name": "Blessing of the Lord Commander",
+     "level": 48,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Heal-per-hit rises 1 -> 2 -> 4 -> 6 and duration 30m -> 40m -> 50m -> 60m."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "conflicts": [
+     {
+      "line": "blessing-proc-line-self",
+      "class": "Cleric",
+      "detail": "Members of one proc line overwrite each other.",
+      "source": "https://everquest.allakhazam.com/db/spelllist.html?type=clr&level=1&opt=And+Higher&action=search"
+     }
+    ],
+    "stacksWith": [],
+    "notes": "NOT A CLASSIC LINE - none of the four names appear in the Allakhazam cleric list. Legends-original. Mark of Karn (56) is the closest classic mechanic (reverse damage shield) but it is a detrimental cast on the mob, not a friendly proc buff."
+   },
+   "sources": [
+    "https://everquest.allakhazam.com/db/spelllist.html?type=clr&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "blessing-piety-line",
+   "name": "Blessing of Piety line (spell haste)",
+   "category": "spell-haste-buff",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Blessing of Piety",
+     "level": 15,
+     "inDb": true,
+     "note": "Capped at target level 39 and restricted to spell type 13 / min 3.00 sec cast."
+    },
+    {
+     "name": "Blessing of Faith",
+     "level": 35,
+     "inDb": true,
+     "note": "Cap raised to level 61 (-5% per level over), restriction reduced to min 3.00 sec cast."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Blessing of Faith is the same 10% spell haste with a far higher level cap and fewer limiters, so it fully replaces Blessing of Piety."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "conflicts": [
+     {
+      "line": "blessing-piety-line-self",
+      "class": "Cleric",
+      "detail": "Same effect (SPA 127 spell haste); the two overwrite each other.",
+      "source": "https://everquest.allakhazam.com/db/spelllist.html?type=clr&level=1&opt=And+Higher&action=search"
+     }
+    ],
+    "stacksWith": [],
+    "notes": "Both names and levels (15 and 35) match the Allakhazam cleric list exactly, so the line is genuine even though spell haste is not covered by the p99 Buff Lines page. p99 Buff Lines has no spell-haste section at all - that is an unlinked gap, not a contradiction."
+   },
+   "sources": [
+    "https://everquest.allakhazam.com/db/spelllist.html?type=clr&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "vie-line",
+   "name": "Vie line (spell damage mitigation)",
+   "category": "damage-absorption",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Ward of Vie",
+     "level": 20,
+     "inDb": true
+    },
+    {
+     "name": "Guard of Vie",
+     "level": 40,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Same 10% mitigation, absorption pool rises 460 -> 700."
+   },
+   "missingOnLegends": [
+    {
+     "name": "Protection of Vie",
+     "level": 54,
+     "inDb": false,
+     "note": "Next member on Allakhazam; absent from Legends."
+    }
+   ],
+   "stacking": {
+    "conflicts": [
+     {
+      "line": "damage-absorption-magic",
+      "class": "Bard/Enchanter",
+      "detail": "p99 groups magic damage absorption under \"Damage Absorption, Magic\" (Song Shield / Psalm / Melody / Manasink); the Vie line is not listed there, so its slot is unverified against classic sources.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [],
+    "notes": "Levels 20 and 40 match Allakhazam exactly."
+   },
+   "sources": [
+    "https://everquest.allakhazam.com/db/spelllist.html?type=clr&level=1&opt=And+Higher&action=search",
+    "https://wiki.project1999.com/Buff_Lines"
+   ]
+  },
+  {
+   "id": "resist-fire-line",
+   "name": "Endure/Resist Fire line",
+   "category": "resist-buff",
+   "sharedWith": [
+    "Paladin",
+    "Druid",
+    "Ranger",
+    "Shaman"
+   ],
+   "members": [
+    {
+     "name": "Endure Fire",
+     "level": 8,
+     "inDb": true
+    },
+    {
+     "name": "Resist Fire",
+     "level": 33,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Resist X (+40) strictly replaces Endure X (+20)."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "conflicts": [
+     {
+      "line": "Fire Resistance - Slot 1",
+      "class": "Druid/Shaman/Ranger/Enchanter",
+      "detail": "Endure X and Resist X sit under the same \"Fire Resistance - Slot 1\" heading as the equivalent druid/shaman spells, so only the largest sticks. Druid Circle of Winter (+45) and the Aura of Red Petals click share Slot 1; magician Shield of Lava / Cadeau of Flame are Slot 2 and stack.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "bard-psalms-and-flower-clicks",
+      "detail": "Bard Psalms and the Plane of Mischief flower clicks are separate columns and stack on top of the primary resist buff."
+     }
+    ],
+    "notes": "Cleric resist buffs top out at +40; there is no cleric equivalent of the druid Circle (+45) or shaman Talisman (+45) resist spells."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Buff_Lines"
+   ]
+  },
+  {
+   "id": "resist-cold-line",
+   "name": "Endure/Resist Cold line",
+   "category": "resist-buff",
+   "sharedWith": [
+    "Paladin",
+    "Druid",
+    "Ranger",
+    "Shaman"
+   ],
+   "members": [
+    {
+     "name": "Endure Cold",
+     "level": 13,
+     "inDb": true
+    },
+    {
+     "name": "Resist Cold",
+     "level": 38,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Resist X (+40) strictly replaces Endure X (+20)."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "conflicts": [
+     {
+      "line": "Cold Resistance - Primary",
+      "class": "Druid/Shaman/Ranger/Enchanter",
+      "detail": "Endure X and Resist X sit under the same \"Cold Resistance - Primary\" heading as the equivalent druid/shaman spells, so only the largest sticks. Druid Circle of Summer (+45) shares the Primary heading; Elemental Armor and the flower clicks are a separate column and stack.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "bard-psalms-and-flower-clicks",
+      "detail": "Bard Psalms and the Plane of Mischief flower clicks are separate columns and stack on top of the primary resist buff."
+     }
+    ],
+    "notes": "Cleric resist buffs top out at +40; there is no cleric equivalent of the druid Circle (+45) or shaman Talisman (+45) resist spells."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Buff_Lines"
+   ]
+  },
+  {
+   "id": "resist-poison-line",
+   "name": "Endure/Resist Poison line",
+   "category": "resist-buff",
+   "sharedWith": [
+    "Paladin",
+    "Druid",
+    "Ranger",
+    "Shaman"
+   ],
+   "members": [
+    {
+     "name": "Endure Poison",
+     "level": 6,
+     "inDb": true
+    },
+    {
+     "name": "Resist Poison",
+     "level": 30,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Resist X (+40) strictly replaces Endure X (+20)."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "conflicts": [
+     {
+      "line": "Poison Resistance - Primary",
+      "class": "Druid/Shaman/Ranger/Enchanter",
+      "detail": "Endure X and Resist X sit under the same \"Poison Resistance - Primary\" heading as the equivalent druid/shaman spells, so only the largest sticks. Shaman Talisman of Shadoo and the flower clicks are separate columns.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "bard-psalms-and-flower-clicks",
+      "detail": "Bard Psalms and the Plane of Mischief flower clicks are separate columns and stack on top of the primary resist buff."
+     }
+    ],
+    "notes": "Cleric resist buffs top out at +40; there is no cleric equivalent of the druid Circle (+45) or shaman Talisman (+45) resist spells."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Buff_Lines"
+   ]
+  },
+  {
+   "id": "resist-disease-line",
+   "name": "Endure/Resist Disease line",
+   "category": "resist-buff",
+   "sharedWith": [
+    "Paladin",
+    "Druid",
+    "Ranger",
+    "Shaman"
+   ],
+   "members": [
+    {
+     "name": "Endure Disease",
+     "level": 11,
+     "inDb": true
+    },
+    {
+     "name": "Resist Disease",
+     "level": 36,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Resist X (+40) strictly replaces Endure X (+20)."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "conflicts": [
+     {
+      "line": "Disease Resistance - Primary",
+      "class": "Druid/Shaman/Ranger/Enchanter",
+      "detail": "Endure X and Resist X sit under the same \"Disease Resistance - Primary\" heading as the equivalent druid/shaman spells, so only the largest sticks. Shaman Talisman of Jasinth (+45) shares the Primary heading and beats Resist Disease (+40).",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "bard-psalms-and-flower-clicks",
+      "detail": "Bard Psalms and the Plane of Mischief flower clicks are separate columns and stack on top of the primary resist buff."
+     }
+    ],
+    "notes": "Cleric resist buffs top out at +40; there is no cleric equivalent of the druid Circle (+45) or shaman Talisman (+45) resist spells."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Buff_Lines"
+   ]
+  },
+  {
+   "id": "resist-magic-line",
+   "name": "Endure/Resist Magic line",
+   "category": "resist-buff",
+   "sharedWith": [
+    "Paladin",
+    "Druid",
+    "Ranger",
+    "Shaman"
+   ],
+   "members": [
+    {
+     "name": "Endure Magic",
+     "level": 16,
+     "inDb": true
+    },
+    {
+     "name": "Resist Magic",
+     "level": 43,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Resist X (+40) strictly replaces Endure X (+20)."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "conflicts": [
+     {
+      "line": "Magic Resistance - Primary",
+      "class": "Druid/Shaman/Ranger/Enchanter",
+      "detail": "Endure X and Resist X sit under the same \"Magic Resistance - Primary\" heading as the equivalent druid/shaman spells, so only the largest sticks. Enchanter Resistance to Magic and shaman Talisman of Kragg-family MR share Primary; bard Psalm and the Magic Shield group stack.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "bard-psalms-and-flower-clicks",
+      "detail": "Bard Psalms and the Plane of Mischief flower clicks are separate columns and stack on top of the primary resist buff."
+     }
+    ],
+    "notes": "Cleric resist buffs top out at +40; there is no cleric equivalent of the druid Circle (+45) or shaman Talisman (+45) resist spells."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Buff_Lines"
+   ]
+  },
+  {
+   "id": "cure-poison-line",
+   "name": "Cure Poison line",
+   "category": "cure",
+   "sharedWith": [
+    "Paladin",
+    "Druid",
+    "Shaman"
+   ],
+   "members": [
+    {
+     "name": "Cure Poison",
+     "level": 1,
+     "inDb": true
+    },
+    {
+     "name": "Counteract Poison",
+     "level": 22,
+     "inDb": true
+    },
+    {
+     "name": "Abolish Poison",
+     "level": 48,
+     "inDb": true
+    },
+    {
+     "name": "Antidote",
+     "level": 58,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Counters removed rise 4 -> 8 -> 36 -> 64 (Antidote is four 16-counter slots)."
+   },
+   "missingOnLegends": [
+    {
+     "name": "Eradicate Poison",
+     "level": 52,
+     "inDb": false,
+     "note": "Post-classic on Allakhazam."
+    }
+   ],
+   "stacking": {
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "Instant cures, no buff slot. Word of Restoration (57) also strips 9 poison counters group-wide."
+   },
+   "sources": [
+    "https://everquest.allakhazam.com/db/spelllist.html?type=clr&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "cure-disease-line",
+   "name": "Cure Disease line",
+   "category": "cure",
+   "sharedWith": [
+    "Paladin",
+    "Druid",
+    "Shaman",
+    "Necromancer"
+   ],
+   "members": [
+    {
+     "name": "Cure Disease",
+     "level": 4,
+     "inDb": true
+    },
+    {
+     "name": "Counteract Disease",
+     "level": 28,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Counters removed rise 4 -> 8."
+   },
+   "missingOnLegends": [
+    {
+     "name": "Pure Blood",
+     "level": 51,
+     "inDb": false,
+     "note": "Present on Allakhazam at Cleric 51; absent from Legends."
+    },
+    {
+     "name": "Eradicate Disease",
+     "level": 58,
+     "inDb": false,
+     "note": "Post-classic on Allakhazam."
+    }
+   ],
+   "stacking": {
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "Word of Restoration (57) strips 9 disease counters group-wide, which is why the cleric disease-cure chain stops early."
+   },
+   "sources": [
+    "https://everquest.allakhazam.com/db/spelllist.html?type=clr&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "remove-curse-line",
+   "name": "Remove Curse line",
+   "category": "cure",
+   "sharedWith": [
+    "Paladin",
+    "Druid",
+    "Shaman"
+   ],
+   "members": [
+    {
+     "name": "Remove Minor Curse",
+     "level": 8,
+     "inDb": true
+    },
+    {
+     "name": "Remove Lesser Curse",
+     "level": 23,
+     "inDb": true
+    },
+    {
+     "name": "Remove Curse",
+     "level": 38,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Counters 2 -> 4 -> 4. NOTE: on the Legends numbers Remove Lesser Curse (23) and Remove Curse (38) both strip 4 counters, so the level-38 spell is not an upgrade in magnitude."
+   },
+   "missingOnLegends": [
+    {
+     "name": "Remove Greater Curse",
+     "level": 54,
+     "inDb": false,
+     "note": "On Allakhazam; absent from Legends."
+    },
+    {
+     "name": "Eradicate Curse",
+     "level": 54,
+     "inDb": false,
+     "note": "Post-classic on Allakhazam."
+    }
+   ],
+   "stacking": {
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://everquest.allakhazam.com/db/spelllist.html?type=clr&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "dispel-line",
+   "name": "Cancel Magic line",
+   "category": "dispel",
+   "sharedWith": [
+    "Paladin",
+    "Ranger",
+    "Druid",
+    "Shaman",
+    "Necromancer",
+    "Wizard",
+    "Magician",
+    "Enchanter"
+   ],
+   "members": [
+    {
+     "name": "Cancel Magic",
+     "level": 13,
+     "inDb": true
+    },
+    {
+     "name": "Nullify Magic",
+     "level": 38,
+     "inDb": true
+    },
+    {
+     "name": "Annul Magic",
+     "level": 53,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Dispel strength 1 -> 4 -> 9 (and 2 dispel slots each on the later two)."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://everquest.allakhazam.com/db/spelllist.html?type=clr&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "resurrection-line",
+   "name": "Resurrection line",
+   "category": "resurrection",
+   "sharedWith": [
+    "Paladin"
+   ],
+   "members": [
+    {
+     "name": "Reanimation",
+     "level": 12,
+     "inDb": true
+    },
+    {
+     "name": "Reconstitution",
+     "level": 18,
+     "inDb": true
+    },
+    {
+     "name": "Reparation",
+     "level": 22,
+     "inDb": true
+    },
+    {
+     "name": "Revive",
+     "level": 27,
+     "inDb": true
+    },
+    {
+     "name": "Renewal",
+     "level": 32,
+     "inDb": true
+    },
+    {
+     "name": "Resuscitate",
+     "level": 37,
+     "inDb": true
+    },
+    {
+     "name": "Restoration",
+     "level": 42,
+     "inDb": true
+    },
+    {
+     "name": "Resurrection",
+     "level": 47,
+     "inDb": true
+    },
+    {
+     "name": "Reviviscence",
+     "level": 56,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Experience returned rises 0% -> 10% -> 20% -> 0%(?) -> 50% -> 50% -> 75% -> 90% -> 96%. DISCREPANCY: the Legends effects list Revive (27) as plain \"Resurrect\" with no experience figure, which would make it a downgrade from Reparation (22, 20% exp); classically Revive returns experience. Renewal (32) and Resuscitate (37) are both listed at 50% on Legends, which also looks like a data gap."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "Res effects do not stack - one res per corpse."
+   },
+   "sources": [
+    "https://everquest.allakhazam.com/db/spelllist.html?type=clr&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "smite-line",
+   "name": "Smite line (single-target nukes)",
+   "category": "nuke",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Strike",
+     "level": 1,
+     "inDb": true
+    },
+    {
+     "name": "Furor",
+     "level": 5,
+     "inDb": true
+    },
+    {
+     "name": "Smite",
+     "level": 14,
+     "inDb": true
+    },
+    {
+     "name": "Wrath",
+     "level": 29,
+     "inDb": true
+    },
+    {
+     "name": "Retribution",
+     "level": 44,
+     "inDb": true
+    },
+    {
+     "name": "Reckoning",
+     "level": 54,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Damage rises 6-8 -> 16-19 -> 74-83 -> 198-218 -> 496-516 -> 630-675."
+   },
+   "missingOnLegends": [
+    {
+     "name": "Judgment",
+     "level": 56,
+     "inDb": false,
+     "note": "Post-classic on Allakhazam (Planes of Power)."
+    }
+   ],
+   "stacking": {
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "These are the cleric's only non-undead single-target nukes; they are Magic-resist checked and expensive relative to a caster class."
+   },
+   "sources": [
+    "https://everquest.allakhazam.com/db/spelllist.html?type=clr&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "undead-nuke-line",
+   "name": "Ward/Banish Undead line",
+   "category": "nuke-undead",
+   "sharedWith": [
+    "Paladin",
+    "Shadow Knight",
+    "Necromancer"
+   ],
+   "members": [
+    {
+     "name": "Ward Undead",
+     "level": 4,
+     "inDb": true
+    },
+    {
+     "name": "Expulse Undead",
+     "level": 13,
+     "inDb": true
+    },
+    {
+     "name": "Dismiss Undead",
+     "level": 23,
+     "inDb": true
+    },
+    {
+     "name": "Expel Undead",
+     "level": 33,
+     "inDb": true
+    },
+    {
+     "name": "Banish Undead",
+     "level": 43,
+     "inDb": true
+    },
+    {
+     "name": "Exile Undead",
+     "level": 55,
+     "inDb": true
+    },
+    {
+     "name": "Banishment of Shadows",
+     "level": 60,
+     "inDb": true,
+     "note": "Capstone: \"Destroy Target\" rather than a damage number - the level 60 undead finisher."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Damage rises 35-41 -> 88-94 -> 140-162 -> 261-273 -> 585 -> 675-725, then Banishment of Shadows."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "Undead-only targeting; far better damage-per-mana than the Smite line, which is the core of cleric undead soloing."
+   },
+   "sources": [
+    "https://everquest.allakhazam.com/db/spelllist.html?type=clr&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "summoned-nuke-line",
+   "name": "Ward/Banish Summoned line",
+   "category": "nuke-summoned",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Ward Summoned",
+     "level": 17,
+     "inDb": true
+    },
+    {
+     "name": "Expulse Summoned",
+     "level": 27,
+     "inDb": true
+    },
+    {
+     "name": "Dismiss Summoned",
+     "level": 37,
+     "inDb": true
+    },
+    {
+     "name": "Expel Summoned",
+     "level": 47,
+     "inDb": true
+    },
+    {
+     "name": "Banish Summoned",
+     "level": 56,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "DISCREPANCY: the Legends damage ranges are quoted at level bands well below the spell levels (Ward Summoned 17 shows \"6 (L2) to 14 (L18)\", Expulse Summoned 27 shows \"113 (L13) to 122 (L22)\", Banish Summoned 56 shows \"529 (L43) to 540 (L47)\"). Taken literally, Expel Summoned (47, 243-309) would be weaker than Dismiss Summoned (37, 226-244) at the top and stronger at the bottom. The level bands in the effects strings look mis-scaled; the ordering by spell level is almost certainly the true upgrade order."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "Construct/Elemental targeting only."
+   },
+   "sources": [
+    "https://everquest.allakhazam.com/db/spelllist.html?type=clr&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "undead-dot-line",
+   "name": "Undead damage-over-time line",
+   "category": "dot-undead",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Sermon of the Righteous",
+     "level": 25,
+     "inDb": true
+    },
+    {
+     "name": "Turning of the Unnatural",
+     "level": 37,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "EXCEPTION / DISCREPANCY: Turning of the Unnatural (37) does 25 HP per tick against Sermon of the Righteous (25) at 69-79 per tick over the same 30 seconds - the higher-level spell is roughly a third as strong on the Legends numbers. Either the Legends data is wrong or the two are not the same line. Do not present Turning as an upgrade without checking server data."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "conflicts": [
+     {
+      "line": "undead-dot-line-self",
+      "class": "Cleric",
+      "detail": "DoTs of the same line overwrite; unrelated DoTs stack.",
+      "source": "https://everquest.allakhazam.com/db/spelllist.html?type=clr&level=1&opt=And+Higher&action=search"
+     }
+    ],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://everquest.allakhazam.com/db/spelllist.html?type=clr&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "word-pbae-line",
+   "name": "Word of Pain line (PB AE nukes)",
+   "category": "nuke-ae",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Word of Pain",
+     "level": 9,
+     "inDb": true
+    },
+    {
+     "name": "Word of Shadow",
+     "level": 19,
+     "inDb": true
+    },
+    {
+     "name": "Word of Spirit",
+     "level": 26,
+     "inDb": true
+    },
+    {
+     "name": "Word of Souls",
+     "level": 39,
+     "inDb": true
+    },
+    {
+     "name": "Word Divine",
+     "level": 49,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Damage rises 24-29 -> 52-58 -> 97-104 -> 147-155 -> 339."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "Point-blank AE. Runs parallel to the Tremor line, which is the heavier-hitting, higher-mana PB AE chain."
+   },
+   "sources": [
+    "https://everquest.allakhazam.com/db/spelllist.html?type=clr&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "tremor-pbae-line",
+   "name": "Tremor line (heavy PB AE)",
+   "category": "nuke-ae",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Tremor",
+     "level": 34,
+     "inDb": true
+    },
+    {
+     "name": "Earthquake",
+     "level": 44,
+     "inDb": true
+    },
+    {
+     "name": "Upheaval",
+     "level": 52,
+     "inDb": true
+    },
+    {
+     "name": "The Unspoken Word",
+     "level": 59,
+     "inDb": true,
+     "note": "Capstone PB AE: 605 damage plus a blind and a 0-second stun."
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Upheaval (52) and Earthquake (44) both quote damage at bands below their own level on Legends (Earthquake \"214 (L31) to 246 (L39)\", Upheaval \"618 (L48) to 638 (L50)\"), same mis-scaling as the summoned line. By spell level the order is Tremor -> Earthquake -> Upheaval -> The Unspoken Word."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://everquest.allakhazam.com/db/spelllist.html?type=clr&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "stun-line",
+   "name": "Stun line (single target)",
+   "category": "stun",
+   "sharedWith": [
+    "Paladin"
+   ],
+   "members": [
+    {
+     "name": "Stun",
+     "level": 2,
+     "inDb": true
+    },
+    {
+     "name": "Holy Might",
+     "level": 16,
+     "inDb": true
+    },
+    {
+     "name": "Force",
+     "level": 31,
+     "inDb": true
+    },
+    {
+     "name": "Sound of Force",
+     "level": 46,
+     "inDb": true
+    },
+    {
+     "name": "Enforced Reverence",
+     "level": 58,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Stun duration 4s -> 6s -> 6s -> 8s -> 8s and attached damage 0 -> 29-60 -> 74-90 -> 220 -> 300. All are capped at target level 55, and Legends notes some player-cast stuns are clamped to 4 seconds."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "conflicts": [
+     {
+      "line": "stun-line-self",
+      "class": "Cleric",
+      "detail": "Stuns do not stack; recasting simply refreshes/overwrites.",
+      "source": "https://everquest.allakhazam.com/db/spelllist.html?type=clr&level=1&opt=And+Higher&action=search"
+     }
+    ],
+    "stacksWith": [],
+    "notes": "The level 55 cap is the classic reason cleric stuns stop working on raid targets."
+   },
+   "sources": [
+    "https://everquest.allakhazam.com/db/spelllist.html?type=clr&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "ae-stun-line",
+   "name": "AE stun line",
+   "category": "stun",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Sacred Word",
+     "level": 39,
+     "inDb": true
+    },
+    {
+     "name": "Stun Command",
+     "level": 55,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Sacred Word (39) stuns 6s and adds 40-90 damage; Stun Command (55) stuns 9s with no damage. Different tools - Stun Command is the raid AE-stun, Sacred Word is the levelling AE."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "Both are Targeted AE."
+   },
+   "sources": [
+    "https://everquest.allakhazam.com/db/spelllist.html?type=clr&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "root-line",
+   "name": "Root line",
+   "category": "root",
+   "sharedWith": [
+    "Paladin",
+    "Shaman",
+    "Necromancer",
+    "Wizard",
+    "Enchanter"
+   ],
+   "members": [
+    {
+     "name": "Root",
+     "level": 7,
+     "inDb": true
+    },
+    {
+     "name": "Instill",
+     "level": 27,
+     "inDb": true,
+     "note": "Allakhazam spell 131: \"2: Root\", CLR/27, duration 1.1 min @L17 to 1.6 min @L27 - matches the Legends 1m36s exactly. The Legends record has an empty effects array; that is a data gap to fill in with \"Root\"."
+    },
+    {
+     "name": "Immobilize",
+     "level": 46,
+     "inDb": true
+    },
+    {
+     "name": "Paralyzing Earth",
+     "level": 56,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Duration rises 48s -> ~1m36s -> 1m -> 3m. NOTE: Immobilize (46) is listed at 1 minute on Legends, shorter than Instill (27) at 1m36s - check the Legends duration data."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "conflicts": [
+     {
+      "line": "root-line-self",
+      "class": "All rooting classes",
+      "detail": "Roots overwrite each other; a new root resets the break timer.",
+      "source": "https://everquest.allakhazam.com/db/spell.html?spell=131"
+     }
+    ],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://everquest.allakhazam.com/db/spell.html?spell=131",
+    "https://everquest.allakhazam.com/db/spelllist.html?type=clr&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "fear-line",
+   "name": "Fear line",
+   "category": "fear",
+   "sharedWith": [
+    "Shadow Knight",
+    "Necromancer",
+    "Enchanter"
+   ],
+   "members": [
+    {
+     "name": "Fear",
+     "level": 6,
+     "inDb": true
+    },
+    {
+     "name": "Inspire Fear",
+     "level": 21,
+     "inDb": true
+    },
+    {
+     "name": "Invoke Fear",
+     "level": 36,
+     "inDb": true
+    },
+    {
+     "name": "Trepidation",
+     "level": 57,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Duration 18s -> 5 ticks -> 42s -> 6 ticks; the level cap on the fear effect rises with each."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "Allakhazam gives classic Fear a level-52 cap, which is why the higher members exist."
+   },
+   "sources": [
+    "https://everquest.allakhazam.com/db/spelllist.html?type=clr&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "fear-undead-line",
+   "name": "Fear Undead line",
+   "category": "fear-undead",
+   "sharedWith": [
+    "Paladin",
+    "Shadow Knight",
+    "Necromancer"
+   ],
+   "members": [
+    {
+     "name": "Spook the Dead",
+     "level": 1,
+     "inDb": true
+    },
+    {
+     "name": "Panic the Dead",
+     "level": 26,
+     "inDb": true
+    },
+    {
+     "name": "Dread of Night",
+     "level": 51,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Duration 18s -> 9 ticks -> 8 ticks and fear level cap rises (Fear(1) -> Fear(4) -> Fear(7))."
+   },
+   "missingOnLegends": [
+    {
+     "name": "Cower the Dead",
+     "level": 56,
+     "inDb": false,
+     "note": "Post-classic on Allakhazam."
+    }
+   ],
+   "stacking": {
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://everquest.allakhazam.com/db/spelllist.html?type=clr&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "blind-line",
+   "name": "Flash of Light line (blind)",
+   "category": "blind",
+   "sharedWith": [
+    "Paladin",
+    "Shaman"
+   ],
+   "members": [
+    {
+     "name": "Flash of Light",
+     "level": 1,
+     "inDb": true
+    },
+    {
+     "name": "Blinding Luminance",
+     "level": 34,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Duration 12s -> 4 ticks; both carry -5 ATK."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "The Unspoken Word (59) also applies a blind as a rider."
+   },
+   "sources": [
+    "https://everquest.allakhazam.com/db/spelllist.html?type=clr&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "lull-line",
+   "name": "Lull/Pacify line",
+   "category": "lull",
+   "sharedWith": [
+    "Paladin",
+    "Enchanter"
+   ],
+   "members": [
+    {
+     "name": "Lull",
+     "level": 1,
+     "inDb": true
+    },
+    {
+     "name": "Soothe",
+     "level": 5,
+     "inDb": true
+    },
+    {
+     "name": "Calm",
+     "level": 15,
+     "inDb": true
+    },
+    {
+     "name": "Pacify",
+     "level": 36,
+     "inDb": true
+    },
+    {
+     "name": "Wake of Tranquility",
+     "level": 55,
+     "inDb": true,
+     "note": "Targeted AE pacify - the group-pulling capstone."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Aggro-radius reduction improves (15/30 -> 10/40 -> 5/50 -> 1/55 -> 1/60) and Soothe onward add the Pacify component. Lull itself has no Pacify effect, only radius reduction."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "Atone (32) is a memory blur, a different tool, and is listed separately."
+   },
+   "sources": [
+    "https://everquest.allakhazam.com/db/spelllist.html?type=clr&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "ivu-line",
+   "name": "Invisibility versus Undead line",
+   "category": "invisibility",
+   "sharedWith": [
+    "Paladin",
+    "Shadow Knight",
+    "Necromancer",
+    "Enchanter"
+   ],
+   "members": [
+    {
+     "name": "Invisibility versus Undead",
+     "level": 11,
+     "inDb": true,
+     "note": "DUPLICATE RECORD: Legends has two level-11 entries differing only in capitalisation and target type (\"Single Friendly (or Self)\" vs \"Single\"). Allakhazam has exactly one, \"Invisibility Versus Undead\", CLR/11."
+    },
+    {
+     "name": "Invisibility Versus Undead",
+     "level": 11,
+     "inDb": true,
+     "note": "Second of the duplicate pair - see above."
+    },
+    {
+     "name": "Improved Invisibility to Undead",
+     "level": 48,
+     "inDb": true,
+     "note": "Allakhazam CLR/48, matching."
+    },
+    {
+     "name": "Improved Invis vs Undead",
+     "level": 50,
+     "inDb": true,
+     "note": "DUPLICATE/VARIANT: level 50 on Legends, same effect and 10-minute duration as the level-48 spell. No level-50 IVU spell exists on Allakhazam - likely a second Legends record of the same spell."
+    },
+    {
+     "name": "Sunskin",
+     "level": 51,
+     "inDb": true,
+     "note": "Group IVU (Kunark quest reward from Frist Furtun on the p99 wiki, and CLR/51 on Allakhazam)."
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "The Improved versions give a stronger IVU that resists more undead see-invis, but at 10 minutes versus 27 - shorter, not strictly better. Sunskin is the group cast."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "conflicts": [
+     {
+      "line": "invisibility-line",
+      "class": "All",
+      "detail": "Regular invisibility and IVU are separate effects and can be layered, but IVU spells overwrite each other.",
+      "source": "https://everquest.allakhazam.com/db/spelllist.html?type=clr&level=1&opt=And+Higher&action=search"
+     }
+    ],
+    "stacksWith": [],
+    "notes": "FLAG FOR THE DB: three of the five records here are duplicates of two spells. Deduping \"Invisibility versus Undead\"/\"Invisibility Versus Undead\" and \"Improved Invisibility to Undead\"/\"Improved Invis vs Undead\" would take the cleric list from 206 to 204."
+   },
+   "sources": [
+    "https://everquest.allakhazam.com/db/spelllist.html?type=clr&level=1&opt=And+Higher&action=search",
+    "https://wiki.project1999.com/Cleric_Spells_(Good)"
+   ]
+  },
+  {
+   "id": "hammer-line",
+   "name": "Hammer line (summoned weapon)",
+   "category": "summon-item",
+   "sharedWith": [
+    "Paladin"
+   ],
+   "members": [
+    {
+     "name": "Hammer of Wrath",
+     "level": 7,
+     "inDb": true
+    },
+    {
+     "name": "Hammer of Striking",
+     "level": 20,
+     "inDb": true
+    },
+    {
+     "name": "Hammer of Requital",
+     "level": 40,
+     "inDb": true
+    },
+    {
+     "name": "Unswerving Hammer",
+     "level": 54,
+     "inDb": true,
+     "note": "Named \"Unswerving Hammer of Faith\" on Allakhazam and on the p99 Frist Furtun quest page. Breaks the pattern: it summons a hammer PET, not a wieldable item."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Each summons a better hammer; Unswerving Hammer changes category to a swarm-style pet."
+   },
+   "missingOnLegends": [
+    {
+     "name": "Hammer of Judgment",
+     "level": 56,
+     "inDb": false,
+     "note": "Post-classic on Allakhazam."
+    },
+    {
+     "name": "Hammer of Divinity",
+     "level": 58,
+     "inDb": false,
+     "note": "Post-classic on Allakhazam."
+    },
+    {
+     "name": "Hammer of Souls",
+     "level": 60,
+     "inDb": false,
+     "note": "Post-classic on Allakhazam."
+    }
+   ],
+   "stacking": {
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://everquest.allakhazam.com/db/spelllist.html?type=clr&level=1&opt=And+Higher&action=search",
+    "https://wiki.project1999.com/Cleric_Spells_(Good)"
+   ]
+  },
+  {
+   "id": "summon-drink-line",
+   "name": "Summon Drink line",
+   "category": "summon-item",
+   "sharedWith": [
+    "Druid",
+    "Shaman",
+    "Magician"
+   ],
+   "members": [
+    {
+     "name": "Summon Drink",
+     "level": 3,
+     "inDb": true
+    },
+    {
+     "name": "Abundant Drink",
+     "level": 28,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Abundant Drink summons a larger stack."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://everquest.allakhazam.com/db/spelllist.html?type=clr&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "summon-food-line",
+   "name": "Summon Food line",
+   "category": "summon-item",
+   "sharedWith": [
+    "Druid",
+    "Shaman",
+    "Magician"
+   ],
+   "members": [
+    {
+     "name": "Summon Food",
+     "level": 8,
+     "inDb": true
+    },
+    {
+     "name": "Abundant Food",
+     "level": 33,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Abundant Food summons a larger stack."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://everquest.allakhazam.com/db/spelllist.html?type=clr&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "imbue-gem-line",
+   "name": "Imbue Gem line (single)",
+   "category": "tradeskill-summon",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Imbue Amber",
+     "level": 29,
+     "inDb": true
+    },
+    {
+     "name": "Imbue Black Pearl",
+     "level": 29,
+     "inDb": true
+    },
+    {
+     "name": "Imbue Black Sapphire",
+     "level": 29,
+     "inDb": true
+    },
+    {
+     "name": "Imbue Diamond",
+     "level": 29,
+     "inDb": true
+    },
+    {
+     "name": "Imbue Emerald",
+     "level": 29,
+     "inDb": true,
+     "note": "DUPLICATE RECORD: Legends has two identical \"Imbue Emerald\" entries at level 29."
+    },
+    {
+     "name": "Imbue Emerald",
+     "level": 29,
+     "inDb": true,
+     "note": "Second of the duplicate pair."
+    },
+    {
+     "name": "Imbue Opal",
+     "level": 29,
+     "inDb": true
+    },
+    {
+     "name": "Imbue Peridot",
+     "level": 29,
+     "inDb": true
+    },
+    {
+     "name": "Imbue Plains Pebble",
+     "level": 29,
+     "inDb": true
+    },
+    {
+     "name": "Imbue Rose Quartz",
+     "level": 29,
+     "inDb": true
+    },
+    {
+     "name": "Imbue Ruby",
+     "level": 29,
+     "inDb": true
+    },
+    {
+     "name": "Imbue Sapphire",
+     "level": 29,
+     "inDb": true
+    },
+    {
+     "name": "Imbue Topaz",
+     "level": 29,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Not an upgrade chain - these are parallel per-gem variants all granted at level 29. Each imbues one gem type for deity-specific cleric armor quests."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "Allakhazam lists twelve single Imbue spells at CLR/29 (Amber, Black Pearl, Black Sapphire, Diamond, Emerald, Opal, Peridot, Plains Pebble, Rose Quartz, Ruby, Sapphire, Topaz) - exactly the Legends set once the duplicated Emerald record is collapsed."
+   },
+   "sources": [
+    "https://everquest.allakhazam.com/db/spelllist.html?type=clr&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "mass-imbue-gem-line",
+   "name": "Mass Imbue Gem line",
+   "category": "tradeskill-summon",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Mass Imbue Amber",
+     "level": 29,
+     "inDb": true
+    },
+    {
+     "name": "Mass Imbue Black Pearl",
+     "level": 29,
+     "inDb": true
+    },
+    {
+     "name": "Mass Imbue Black Sapphire",
+     "level": 29,
+     "inDb": true
+    },
+    {
+     "name": "Mass Imbue Diamond",
+     "level": 29,
+     "inDb": true
+    },
+    {
+     "name": "Mass Imbue Ivory",
+     "level": 29,
+     "inDb": true,
+     "note": "NOT ON ALLAKHAZAM. Also its effect text summons \"Imbued Amber\", which is almost certainly a copy/paste bug in the Legends data."
+    },
+    {
+     "name": "Mass Imbue Jade",
+     "level": 29,
+     "inDb": true,
+     "note": "NOT ON ALLAKHAZAM - Legends-specific."
+    },
+    {
+     "name": "Mass Imbue Opal",
+     "level": 29,
+     "inDb": true
+    },
+    {
+     "name": "Mass Imbue Peridot",
+     "level": 29,
+     "inDb": true
+    },
+    {
+     "name": "Mass Imbue Plains Pebble",
+     "level": 29,
+     "inDb": true
+    },
+    {
+     "name": "Mass Imbue Rose Quartz",
+     "level": 29,
+     "inDb": true
+    },
+    {
+     "name": "Mass Imbue Ruby",
+     "level": 29,
+     "inDb": true
+    },
+    {
+     "name": "Mass Imbue Topaz",
+     "level": 29,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Parallel per-gem variants at level 29, batch versions of the single Imbue spells."
+   },
+   "missingOnLegends": [
+    {
+     "name": "Mass Imbue Emerald",
+     "level": 29,
+     "inDb": false,
+     "note": "On Allakhazam at CLR/29 but absent from Legends, which carries Mass Imbue Ivory and Mass Imbue Jade instead."
+    },
+    {
+     "name": "Mass Imbue Sapphire",
+     "level": 29,
+     "inDb": false,
+     "note": "On Allakhazam at CLR/29 but absent from Legends."
+    },
+    {
+     "name": "Greater Mass Imbue (all 12 gems)",
+     "level": 44,
+     "inDb": false,
+     "note": "Allakhazam lists a full twelve-spell Greater Mass Imbue set at CLR/44; none are on Legends."
+    }
+   ],
+   "stacking": {
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "DISCREPANCY: Legends swaps Emerald and Sapphire out of the Mass set for Ivory and Jade, and the whole Greater Mass tier is missing."
+   },
+   "sources": [
+    "https://everquest.allakhazam.com/db/spelllist.html?type=clr&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "invulnerability-line",
+   "name": "Divine Aura line (invulnerability)",
+   "category": "self-defense",
+   "sharedWith": [
+    "Paladin"
+   ],
+   "members": [
+    {
+     "name": "Divine Aura",
+     "level": 1,
+     "inDb": true
+    },
+    {
+     "name": "Divine Barrier",
+     "level": 29,
+     "inDb": true,
+     "note": "Adds a 25-36 damage shield and 50 HP regen on top of the invulnerability."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Divine Barrier is Divine Aura plus riders at the same 3-tick duration. Both root the caster in place mechanically (cannot cast or act meaningfully while up in classic)."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "Self-only; the classic \"DA\" panic button."
+   },
+   "sources": [
+    "https://everquest.allakhazam.com/db/spelllist.html?type=clr&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "death-save-line",
+   "name": "Death Pact line (death save)",
+   "category": "death-save",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Death Pact",
+     "level": 51,
+     "inDb": true,
+     "note": "Partial-health death save, 60 minute duration."
+    },
+    {
+     "name": "Divine Intervention",
+     "level": 60,
+     "inDb": true,
+     "note": "Full-health death save, but only 10 minutes."
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Divine Intervention restores full health versus Death Pact's partial, but lasts 10 minutes against 60 - it is a raid-encounter cast, not a general replacement. Keep both."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "conflicts": [
+     {
+      "line": "death-save-line-self",
+      "class": "Cleric",
+      "detail": "Only one death save can be on a target; recasting overwrites.",
+      "source": "https://everquest.allakhazam.com/db/spelllist.html?type=clr&level=1&opt=And+Higher&action=search"
+     }
+    ],
+    "stacksWith": [],
+    "notes": "Not covered by the p99 Buff Lines page (it tracks statistics, not triggered effects)."
+   },
+   "sources": [
+    "https://everquest.allakhazam.com/db/spelllist.html?type=clr&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "stamina-line",
+   "name": "Invigor line (stamina recovery)",
+   "category": "utility",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Invigor",
+     "level": 9,
+     "inDb": true
+    },
+    {
+     "name": "Extinguish Fatigue",
+     "level": 19,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Stamina loss removed rises 35 -> 90; Word of Vigor (52) folds a 100-point version into the group heal."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://everquest.allakhazam.com/db/spelllist.html?type=clr&level=1&opt=And+Higher&action=search"
+   ]
+  }
+ ],
+ "standalone": [
+  {
+   "name": "True North",
+   "level": 1,
+   "note": "Self compass utility, level 1, shared with nearly every class."
+  },
+  {
+   "name": "Cure Blindness",
+   "level": 3,
+   "note": "Single-member cure; the cleric never gets a stronger version."
+  },
+  {
+   "name": "Gate",
+   "level": 5,
+   "note": "Self teleport to bind point."
+  },
+  {
+   "name": "Sanctuary",
+   "level": 6,
+   "note": "Free-target proximity alert (Sentinel on Allakhazam). No upgrade."
+  },
+  {
+   "name": "Sense the Dead",
+   "level": 9,
+   "note": "Undead detection; no upgrade in the cleric list."
+  },
+  {
+   "name": "Bind Affinity",
+   "level": 10,
+   "note": "Sets a bind point."
+  },
+  {
+   "name": "Halo of Light",
+   "level": 12,
+   "note": "Summoned light source."
+  },
+  {
+   "name": "Sense Summoned",
+   "level": 12,
+   "note": "Construct/elemental detection; no upgrade."
+  },
+  {
+   "name": "Wave of Fear",
+   "level": 21,
+   "note": "PB AE fear at level 21, 3 ticks. The only AE member of the fear family - no upgrade, so it is not part of the single-target Fear line."
+  },
+  {
+   "name": "Atone",
+   "level": 32,
+   "note": "Memory blur (30%). The cleric aggro-wipe; no upgrade, and not part of the Lull line despite being used alongside it."
+  },
+  {
+   "name": "Promised Renewal",
+   "level": 39,
+   "note": "Delayed 5000-point heal after three ticks. Not on Allakhazam at any level 60 or below - a Legends import of a much later-era mechanic, re-tiered to 39."
+  },
+  {
+   "name": "Ward of the Divine",
+   "level": 50,
+   "note": "Self defensive proc buff, 20 minutes. Allakhazam confirms CLR/50; the Legends effect text is empty (\"Add Defensive Proc:\") and needs filling in."
+  },
+  {
+   "name": "Mark of Karn",
+   "level": 56,
+   "note": "Detrimental cast on a mob: anything that hits it heals for 6, and it strips any existing damage shield. Allakhazam confirms CLR/56. No upgrade."
+  }
+ ],
+ "unlinked": [
+  {
+   "info": "THE MASTER STACKING RULE. p99 Buff Lines states it plainly: \"Buffs under the same heading can't be stacked together. If a buff (except Focus of Spirit) combines multiple lines they will be listed below it in separate columns. The combination buffs won't stack with the buffs underneath, and those buffs will only stack with the other columns.\" Every conflict below is derived from which heading a spell appears under.",
+   "source": "https://wiki.project1999.com/Buff_Lines"
+  },
+  {
+   "info": "AC SLOT MAP relevant to a cleric-buffed character. Slot 1: Heroism line + druid/ranger Skin line + Protection of the Glades + Natureskin + shaman Inner Fire. Slot 2: caster Shielding line + cleric Yaulp I-IV + cleric Armor of Protection + druid/ranger coat line (Thistlecoat->Thorncoat) + magician Phantom line is actually slot 4. Slot 3: Ranger Call of Earth, enchanter Augmentation/Augment, shaman Frenzy. Slot 4: cleric Aegis line + shaman Guardian/Shroud of the Spirits + enchanter Umbra/Shadow + magician Phantom Armor. Aegolism uniquely occupies Slot 1 AND Slot 4.",
+   "source": "https://wiki.project1999.com/Buff_Lines"
+  },
+  {
+   "info": "HP COLUMN MAP. HP (Primary) has three parts: the combination row (Aegolism, +1100), the \"AC and HP\" column (Protection of the Glades +470, Heroic Bond +400, Heroism +400, Natureskin +400, Fortitude +345, Resolution +250, Skin Like Nature +250, Armor of Protection +225, Skin Like Diamond +200, Valor +200, Bravery +140, Skin Like Steel +100, Skin Like Rock +100, Center +95, Courage +20, Skin Like Wood +20, Inner Fire +20), and the \"HP Only and Requires Gem\" column (Symbol of Marzin +700, Symbol of Naltron +525, Naltron's Mark +446, Symbol of Pinzarn +307, Symbol of Ryltan +158, Symbol of Transal +73). A separate heading, HP (Shielding / Talisman), holds Focus of Spirit +405, Talisman of Kragg +380, Shield of the Magi +250, Talisman of Altuna +250, Armor of Protection +225, Arch Shielding +150, Talisman of Tnarg +150 and the lower Shielding spells.",
+   "source": "https://wiki.project1999.com/Buff_Lines"
+  },
+  {
+   "info": "THE BEST CLASSIC HP/AC STACK does NOT include Aegolism. Because Protection of the Glades (Skin/Heroism column) stacks with Symbol of Marzin (Symbol column) and with Bulwark of Faith (AC slot 4), a group with a level 60 druid and a level 57+ cleric gets 470 + 700 = 1170 HP and 24 + 37 = 61 AC plus 6 mana per tick, beating Aegolism's 1100 HP / 54 AC - and Aegolism would block PotG outright. The cleric should skip Aegolism and cast Symbol of Marzin + Bulwark of Faith on top of the druid's PotG.",
+   "source": "https://wiki.project1999.com/Buff_Lines"
+  },
+  {
+   "info": "Verbatim p99: \"Aegolism and PotG do not stack with each other and neither will override the other.\" So a mis-timed Aegolism locks the group out of PotG for its full 2h30m.",
+   "source": "https://wiki.project1999.com/Protection_of_the_Glades"
+  },
+  {
+   "info": "Verbatim p99 on Aegolism: \"For stacking purposes, this spell is considered an 'all-in-one' spell, replacing Heroism, Symbol of Marzin and Aegis with a single buff with roughly the same stats and reduced overall mana cost.\" And on its own page: \"This buff will prevent PoTG from sticking.\"",
+   "source": "https://wiki.project1999.com/Aegolism"
+  },
+  {
+   "info": "The Legends Aegolism record carries the classic stacking blocker verbatim in its effects: \"Stacking: Block new spell if slot 3 is effect 'Max Hitpoints' and < 1100\". Symbol spells put Max Hitpoints in slot 3 (Allakhazam shows Symbol of Transal as \"3: Increase Max Hitpoints\"), which is the mechanism by which Aegolism refuses the Symbol line.",
+   "source": "https://everquest.allakhazam.com/db/spelllist.html?type=clr&level=1&opt=And+Higher&action=search"
+  },
+  {
+   "info": "The DRUID SKIN LINE members, from the provided druid file and the p99 AC Slot 1 / HP Primary table: Skin Like Wood (1), Skin Like Rock (14), Skin Like Steel (24), Skin Like Diamond (36/39), Skin Like Nature (46/49), Natureskin (57), Protection of the Glades (60, group). Rangers share the line at higher levels (Skin Like Wood 9, Rock 22, Steel 39, Diamond 54, Nature 59). p99: \"Druids and Rangers have access to this line of hit point and armor increasing buffs.\"",
+   "source": "https://wiki.project1999.com/Category:Skin_line"
+  },
+  {
+   "info": "CLERIC vs DRUID AT COMPARABLE LEVELS (both files' own numbers, max-level values). L1 Courage 4 AC / 20 HP == Skin Like Wood 4 AC / 20 HP, tie. L7-16 Center 6 AC / 95 HP vs Skin Like Rock 7 AC / 105 HP - DRUID WINS this band. L17-23 Daring 9 AC / 130 HP vs Skin Like Rock - cleric wins. L22-31 Bravery 10 AC / 140 HP vs Skin Like Steel 10 AC / 100 HP - cleric wins. L32-41 Valor 13 AC / 200 HP vs Skin Like Diamond 13 AC / 200 HP - dead tie at cap, but the cleric gets it 4-7 levels earlier. L42-51 Resolution 16 AC / 250 HP vs Skin Like Nature 16 AC / 250 HP + 2 HP/tick - tie, druid adds regen. L52-59 Heroism 19 AC / 400 HP vs Natureskin 19 AC / 400 HP + 4 HP/tick - tie at cap, druid version arrives 5 levels later but adds regen. L60 Aegolism 54 AC / 1100 HP (single) vs Protection of the Glades 24 AC / 470 HP + 6 mana/tick (GROUP).",
+   "source": "https://wiki.project1999.com/Buff_Lines"
+  },
+  {
+   "info": "RESIST BUFF CEILING: the cleric line stops at +40 (Resist Fire/Cold/Poison/Disease/Magic). Druid Circle of Winter/Summer and shaman Talisman of Jasinth/Shadoo give +45 in the SAME primary slot, so a druid or shaman in group makes the cleric resist buffs redundant rather than additive.",
+   "source": "https://wiki.project1999.com/Buff_Lines"
+  },
+  {
+   "info": "Legends' cleric levels track the MODERN (post-revamp) Allakhazam level assignments, not the p99 classic ones. Examples: Holy Armor 1 (p99 5), Center 7 (p99 9), Daring 17 (p99 19), Bravery 22 (p99 24), Guard 25 (p99 29), Valor 32 (p99 34), Armor of Faith 35 (p99 39), Resolution 42 (p99 44), Shield of Words 45 (p99 49), Yaulp II 16 (p99 19), Yaulp III 41 (p99 44), Healing 10 (p99 14), Greater Healing 20 (p99 24), Superior Healing 30 (p99 34), Symbol of Naltron 41 (p99 44). Every one of these matches Allakhazam exactly. When annotating, use Allakhazam levels as the level authority and p99 only for line membership and stacking.",
+   "source": "https://everquest.allakhazam.com/db/spelllist.html?type=clr&level=1&opt=And+Higher&action=search"
+  },
+  {
+   "info": "Spells present on Allakhazam's cleric list at level 60 and below but absent from Legends, beyond those noted per-line: the nine LDoN \"Iony's\" adventure utility spells (Lesser/normal/Greater Augury, Exorcism and Cleansing at 10/14/23/24/33/34), Epitaph of Life 52, Mark of Retribution 54, Aura of the Zealot 55, Ethereal Light 58, Blessed Armor of the Risen 58, Ethereal Remedy 59, Imbue Valor 59, Deistic Voice 59, Ancient High Priest's Bulwark 60, Ancient Gift of Aegolism 60, Blessing of Aegolism 60, Ethereal Elixir 60, Marzin's Mark 60. All are LDoN-or-later, so their absence is consistent with a classic-through-Velious spell set.",
+   "source": "https://everquest.allakhazam.com/db/spelllist.html?type=clr&level=1&opt=And+Higher&action=search"
+  },
+  {
+   "info": "Lines with NO classic counterpart at all (Legends originals): the Echo line (Echo of Health / Echoing Light / Renewing Echo / Celestial Echo / Sacred Echo) and the Blessing of the Page proc-heal line (Page / Squire / Knight / Lord Commander). Neither name set appears on Allakhazam or p99.",
+   "source": "https://everquest.allakhazam.com/db/spelllist.html?type=clr&level=1&opt=And+Higher&action=search"
+  }
+ ],
+ "openQuestions": [
+  "p99 Buff Lines lists Armor of Protection's +225 HP under BOTH the Heroism/Skin column of HP (Primary) and under HP (Shielding / Talisman). Which is right decides whether a cleric self-buffing Armor of Protection loses their Heroism-line HP or their shaman Talisman HP. The Shielding/Talisman placement is more consistent with its AC Slot 2 assignment.",
+  "Armor of the Faithful (49) is on Allakhazam but on none of the p99 stacking tables, so its AC and HP slot assignments are unknown. Does it conflict with Armor of Protection, or with the Heroism line?",
+  "Legends Temperance (40) and Blessing of Temperance (45) give +800 max HP and +160 AC - values with no classic analogue at any level. Which slots do they occupy on Legends, and do they block Aegolism / PotG?",
+  "Turning of the Unnatural (37) does 25 HP/tick against Sermon of the Righteous (25) at 69-79 HP/tick. Is the Legends magnitude wrong, or are the two genuinely not one line?",
+  "Several detrimental spells quote damage at level bands far below their own spell level (Ward Summoned 17 \"6 (L2) to 14 (L18)\", Expulse Summoned 27 \"113 (L13)\", Earthquake 44 \"214 (L31)\", Upheaval 52 \"618 (L48)\", Banish Summoned 56 \"529 (L43)\"). Is that a scraping artefact or the real Legends scaling?",
+  "Symbol of Naltron and Naltron's Mark both carry \"UNKNOWN CALC 118\" in the Legends effects. p99 resolves them to +525 and +446 max HP - should those be backfilled?",
+  "Four records look like duplicates: Invisibility versus Undead / Invisibility Versus Undead (both 11), Improved Invisibility to Undead (48) / Improved Invis vs Undead (50), and two identical Imbue Emerald (29). Deduping would take the cleric list from 206 to 203.",
+  "Instill (27) and Ward of the Divine (50) have empty or stub effects arrays in the Legends data. Allakhazam gives Instill \"2: Root\" with a 1.1-1.6 minute duration, matching the Legends 1m36s.",
+  "Legends carries Mass Imbue Ivory and Mass Imbue Jade, which exist nowhere in the Allakhazam cleric list, and lacks Mass Imbue Emerald and Mass Imbue Sapphire, which do. Deliberate server change or data error?",
+  "The p99 Buff Lines page has no spell-haste section, so the Blessing of Piety / Blessing of Faith line has no classic stacking statement. Does it conflict with any other haste-type buff on Legends?"
+ ],
+ "sources": [
+  "https://wiki.project1999.com/Buff_Lines",
+  "https://wiki.project1999.com/Category:Heroism_line",
+  "https://wiki.project1999.com/Category:Symbol_line",
+  "https://wiki.project1999.com/Category:Aegis_line",
+  "https://wiki.project1999.com/Category:Skin_line",
+  "https://wiki.project1999.com/Aegolism",
+  "https://wiki.project1999.com/Protection_of_the_Glades",
+  "https://wiki.project1999.com/Healing_Spell_Lines",
+  "https://everquest.allakhazam.com/db/spelllist.html?type=clr&level=1&opt=And+Higher&action=search",
+  "https://everquest.allakhazam.com/db/spell.html?spell=131",
+  "https://wiki.project1999.com/Cleric_Spells_(Good)"
+ ]
+}

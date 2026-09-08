@@ -1,0 +1,487 @@
+// The Combat tab's HEADER — the two-rank bar above the dashboard. Split out of CombatView.tsx;
+// the design rationale for both ranks lives with the markup below, where it is load-bearing.
+//
+// IT MOUNTS NO POPPER (JOS-143). Line 1 carries the fight SELECTOR — a searchable combobox whose
+// list opens under its trigger (FightPicker) — and line 2 sat directly beneath it holding two
+// tooltips on the segmented controls and three more on the passive pills at the right edge. A MUI
+// tooltip flips to `top` when the window has no room below it, which on this bar means opening
+// onto the picker trigger, and it takes pointer events while it is up. Every string here is a
+// native `title` instead: same words on hover, no DOM node, no hit area, nothing to intercept a
+// click. Nothing was dropped — these strings are the only statement of the coat list, the
+// modifier groups and why Timeline is disabled.
+
+import { Box, Divider, Paper, Stack, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material'
+import CircleIcon from '@mui/icons-material/Circle'
+import { FightPicker } from './FightPicker'
+// The pill-track chrome for all three switches below. It moved to its own module when the meter
+// card grew tabs of its own (JOS-361) and had to wear the same control — see segmented.ts.
+import { segmented } from './segmented'
+import { ScopeStatus } from './ScopeStatus'
+import type { CombatScope, MeterMode, ScopeOptions } from './dashboardData'
+import type { MeterScope, RosterSnap } from '@shared/roster'
+import { fmtDur } from './combatShared'
+import { formatDateTime } from '../../lib/formatDate'
+import { formatNum as fmt, formatRate } from '../../lib/formatRate'
+import type { BladeCoatState, CoatSlot, CombatSnapshot, SegmentView } from '@shared/combat'
+import { PALETTE } from '../../../../shared/palette'
+
+type StanceState = NonNullable<CombatSnapshot['stance']>
+type PoisonState = CombatSnapshot['poison']
+
+/**
+ * One of the two mutually-exclusive combat modifiers, as passive state (Task #51).
+ *
+ * NAMING: the log's two groups are a melee/general STANCE and a caster INVOCATION, and the
+ * model keeps exactly those names (`StanceState.stance` / `.invocation`, the timeline's pinned
+ * lanes, the parser). The DISPLAY drops the jargon — the categories read as strange next to a
+ * value like "Berserker" — and simply numbers the two slots: `1: Berserker`, `2: Inversion`.
+ * The slot number is a dim prefix; the VALUE carries the weight. The hover text still names the
+ * underlying group, so nothing is hidden.
+ */
+function ModifierSlot({
+  slot,
+  value,
+  color,
+  tip
+}: {
+  slot: 1 | 2 | 3
+  value: string
+  color: string
+  /** Overrides the default "Modifier n — <group>: <value>" hover text (slot 3 says more). */
+  tip?: string
+}): React.JSX.Element {
+  return (
+    /* A subtle pill, so the two slots read as one passive readout at the end of the lens line
+       rather than as two more bits of loose text competing with the controls. The TEXT is
+       unchanged ('1: Berserker') — it is asserted verbatim by the headless e2e harness. */
+    <Stack
+      direction="row"
+      spacing={0.25}
+      alignItems="baseline"
+      data-testid={`stance-slot-${slot}`}
+      title={tip ?? `Modifier ${slot} - ${slot === 1 ? 'combat stance' : 'invocation'}: ${value}`}
+      sx={{
+        // SHRINKABLE, in that order: minWidth 0 lets the pill give ground when the lens line
+        // runs out of room, and the value below ellipsizes rather than pushing the line into
+        // a second row (the header's height is the thing that must not move — see the header
+        // Paper). The title always carries the full value, so nothing is lost.
+        minWidth: 0,
+        px: 0.5,
+        py: '1px',
+        borderRadius: 999,
+        bgcolor: 'rgba(255,255,255,0.04)'
+      }}
+    >
+      <Typography variant="caption" sx={{ fontSize: 10, color: 'text.disabled', flexShrink: 0 }}>
+        {slot}:
+      </Typography>
+      {/* `minWidth: 0` is what makes the promise above TRUE. A `noWrap` Typography in a flex
+          row has `min-width: auto`, so without this it refuses to shrink and pushes the lens
+          line wide no matter how much room the Stack gives up — latent until slot 3 started
+          carrying up to four coat names. The title has every full value either way. */}
+      <Typography variant="caption" noWrap sx={{ minWidth: 0, color, fontWeight: 600, textTransform: 'capitalize' }}>
+        {value}
+      </Typography>
+    </Stack>
+  )
+}
+
+/**
+ * The passive modifier readout: stance, invocation, and (Task #64) the BLADE COATS.
+ *
+ * Slot 3 mirrors slots 1–2 exactly — the same `<n>: <value>` pill in the same shape, which is
+ * also the contract the headless e2e harness asserts on the first two. Its VALUE is every coat
+ * on the blades, not just one: the game runs up to four at once (three combat venoms, one
+ * utility poison) and this pill named only the utility slot until 2026-08-04 — so the usual
+ * asp + siphoning + stunning loadout with no utility poison rendered as nothing at all, which
+ * is exactly what the owner reported. Short labels carry it ("Neurotoxic · Asp · Blood Siphon
+ * · Stunning"); the trailing "Poison"/"Venom" is noise at pill size and the hover text has it.
+ *
+ * ORDER IS THE ELLIPSIS BUDGET. The pill is inside the header's one shrinkable group, so under
+ * pressure it truncates from the RIGHT — utility first (the slot the player actually chooses
+ * between and swaps mid-fight), then the venoms (coated once and forgotten). The hover text
+ * always carries every full name with its applied time, so nothing is lost.
+ */
+function coatShortName(poison: string): string {
+  return poison === 'unknown' ? 'unknown' : poison.replace(/\s+(Poison|Venom)$/, '')
+}
+
+/** Utility first, then the venom stack — the one order both the pill and its hover text use, and
+ *  each coat carries the slot family it came from rather than being re-identified later. */
+function coatList(coat: BladeCoatState): { slot: CoatSlot; group: string }[] {
+  return [
+    ...(coat.utility ? [{ slot: coat.utility, group: 'utility' }] : []),
+    ...coat.combat.map((c) => ({ slot: c, group: 'combat' }))
+  ]
+}
+
+/** Slot 3 on its own, so the readout below stays a flat list of three optional pills. */
+function CoatSlotPill({ coat }: { coat: BladeCoatState }): React.JSX.Element | null {
+  const all = coatList(coat)
+  if (all.length === 0) return null
+  const detail = all
+    .map((c) => `${c.slot.poison} (${c.group}, applied ${formatDateTime(c.slot.sinceTs)})`)
+    .join(' · ')
+  return (
+    <ModifierSlot
+      slot={3}
+      value={all.map((c) => coatShortName(c.slot.poison)).join(' · ')}
+      color="#c46fd2"
+      tip={`Modifier 3 - blade coats, ${all.length} of a possible 4 (one utility poison plus one venom from each of the three combat lines): ${detail}`}
+    />
+  )
+}
+
+function StanceReadout({
+  stance,
+  poison
+}: {
+  stance: StanceState
+  poison: PoisonState
+}): React.JSX.Element | null {
+  const coat = poison.coat
+  if (!stance.stance && !stance.invocation && !hasCoat(coat)) return null
+  return (
+    <>
+      {stance.stance && <ModifierSlot slot={1} value={stance.stance} color={PALETTE.accent} />}
+      {stance.invocation && <ModifierSlot slot={2} value={stance.invocation} color={PALETTE.amber} />}
+      <CoatSlotPill coat={coat} />
+    </>
+  )
+}
+
+/** Any coat at all — utility OR a combat venom. The venoms count: they are three of the four
+ *  slots and they proc on every swing. */
+function hasCoat(coat: BladeCoatState | undefined): boolean {
+  return !!coat && (!!coat.utility || coat.combat.length > 0)
+}
+
+/**
+ * HEADLINE STAT: the subject line's payoff. Outgoing dps is what the Combat tab is for, so it
+ * gets the size and the accent; total and duration ride along dim, as the context that makes the
+ * rate mean something.
+ */
+function HeadlineStat({ seg }: { seg: SegmentView | null }): React.JSX.Element | null {
+  if (!seg) return null
+  return (
+    <Stack data-testid="headline-stat" direction="row" spacing={0.75} alignItems="baseline" sx={{ flexShrink: 0 }}>
+      <Typography
+        noWrap
+        sx={{
+          fontSize: 17.5,
+          fontWeight: 700,
+          lineHeight: 1.2,
+          color: 'primary.main',
+          fontVariantNumeric: 'tabular-nums'
+        }}
+      >
+        {formatRate(seg.outDps)}
+      </Typography>
+      <Typography variant="caption" noWrap sx={{ color: 'text.disabled', fontVariantNumeric: 'tabular-nums' }}>
+        {fmt(seg.outTotal)} · {fmtDur(seg.durationSec)}
+      </Typography>
+    </Stack>
+  )
+}
+
+/**
+ * LINE 1 — SUBJECT ("what am I looking at"). The scope toggle is fused tight against the
+ * encounter selector as ONE unit, because scope is not a peer of anything: it only decides what
+ * that selector may LIST. The selector HUGS its content (it used to flexGrow across the whole
+ * bar, which parked the dropdown caret at the far right, a screen away from the name it opens)
+ * and truncates instead of stretching. The line then ends, hard right, in the headline stat —
+ * the selected fight's dps, the one number this tab exists to show, at the size that claims it.
+ *
+ * That headline is also why the CLOSED trigger no longer prints the rate: it is the same number
+ * for the same fight, and showing it twice in one bar makes the reader check whether they differ.
+ * The MENU rows keep theirs — comparing pulls is the entire reason you open the list.
+ */
+function SubjectLine({
+  seg,
+  scope,
+  setScope,
+  opts,
+  selection,
+  setSelection,
+  loadMore,
+  capped,
+  hydrating,
+  now
+}: {
+  seg: SegmentView | null
+  scope: CombatScope
+  setScope: (s: CombatScope) => void
+  opts: ScopeOptions
+  selection: string
+  setSelection: (v: string) => void
+  loadMore: () => void
+  capped: boolean
+  hydrating: boolean
+  now: number
+}): React.JSX.Element {
+  return (
+    <Stack direction="row" spacing={1} alignItems="center" sx={{ minWidth: 0 }}>
+      {/* The subject unit: scope + selector share one bordered affordance, so the pair reads
+          as "which list, and which row of it" rather than as two independent controls. It is
+          capped so the caret stays next to the fight name; long names ellipsize. */}
+      <Stack
+        direction="row"
+        spacing={0.5}
+        alignItems="center"
+        sx={{
+          minWidth: 0,
+          maxWidth: 'min(560px, 55%)',
+          border: '1px solid',
+          borderColor: 'divider',
+          borderRadius: 1,
+          px: 0.5,
+          py: '2px'
+        }}
+      >
+        {/* SCOPE: an explicit choice — Fight never becomes Overall on its own. */}
+        <ToggleButtonGroup
+          size="small"
+          exclusive
+          data-testid="scope-toggle"
+          value={scope}
+          onChange={(_e: unknown, v: CombatScope | null) => v && setScope(v)}
+          sx={segmented('quiet')}
+        >
+          <ToggleButton value="fight">Fight</ToggleButton>
+          <ToggleButton value="overall">Overall</ToggleButton>
+        </ToggleButtonGroup>
+        {/* The encounter selector. Exactly ONE scope's rows are ever listed — the fight scope
+            shows no zone sessions and vice versa (dashboardData.scopeOptions is the single
+            filter) — and the open list is FROZEN against live snapshot ticks so a fight
+            finalizing mid-pull can't move the row under your pointer. See FightPicker's
+            header for the freeze + stale-response semantics. */}
+        <FightPicker
+          opts={opts}
+          scope={scope}
+          selection={selection}
+          onSelect={setSelection}
+          onLoadMore={loadMore}
+          capped={capped}
+          // While hydrating, the fight list is a churning replay artifact — don't invite a
+          // pick from it (the value stays on the head row and the list settles the moment the
+          // tail runs).
+          disabled={hydrating}
+          now={now}
+        />
+      </Stack>
+
+      <Box sx={{ flexGrow: 1, minWidth: 8 }} />
+
+      <HeadlineStat seg={seg} />
+    </Stack>
+  )
+}
+
+/** The view switch — the tab's navigation, and the only control wearing the accent. */
+function ViewSwitch({
+  view,
+  setView,
+  noTimeline
+}: {
+  view: 'dash' | 'timeline'
+  setView: (v: 'dash' | 'timeline') => void
+  noTimeline: boolean
+}): React.JSX.Element {
+  return (
+    /* The hover text sits on the GROUP, not on a span around the disabled button: wrapping
+       one child of a ToggleButtonGroup breaks the group's own first/last-child styling, and
+       the explanation belongs to the pair anyway. A native `title` rather than a popper
+       (JOS-143) — this is line 2 of the header and the fight COMBOBOX is line 1, so a card
+       that flipped to `top` for want of room below opened straight onto the picker trigger. */
+    <ToggleButtonGroup
+      size="small"
+      exclusive
+      data-testid="view-toggle"
+      value={view}
+      title={
+        noTimeline
+          ? "Timeline follows a single fight - it's kept for the live and recent encounters. The zone aggregate and older fights have no event ring."
+          : undefined
+      }
+      onChange={(_e: unknown, v: 'dash' | 'timeline' | null) => v && setView(v)}
+      sx={segmented('primary')}
+    >
+      <ToggleButton value="dash">Dashboard</ToggleButton>
+      <ToggleButton value="timeline" disabled={noTimeline}>
+        Timeline
+      </ToggleButton>
+    </ToggleButtonGroup>
+  )
+}
+
+/**
+ * The DIMENSION filter — dash only. It filters what one panel lists; it is not a mode, and it is
+ * emphatically not a scope: Fight/Overall keeps meaning exactly what it meant in all three.
+ *
+ * Healing joined the pair with P2 (docs/plans/combat-overlay-parity.md, owner ruling: "the combat
+ * panel lacks the overlay's HEAL functionality — parity"). It sits third because it is the least
+ * often wanted of the three, not because it is a lesser citizen — it renders from the same
+ * builder the floating heal overlays do. The testid keeps its old name: the headless harness
+ * asserts on it, and this control's JOB did not change.
+ */
+function DirectionFilter({
+  mode,
+  setMode
+}: {
+  mode: MeterMode
+  setMode: (m: MeterMode) => void
+}): React.JSX.Element {
+  return (
+    <>
+      <Divider orientation="vertical" flexItem sx={{ my: 0.25 }} />
+      <ToggleButtonGroup
+        size="small"
+        exclusive
+        data-testid="direction-toggle"
+        value={mode}
+        title="Which dimension the meter lists - damage out, damage in, or healing"
+        onChange={(_e: unknown, v: MeterMode | null) => v && setMode(v)}
+        sx={segmented('text')}
+      >
+        <ToggleButton value="out">Outgoing</ToggleButton>
+        <ToggleButton value="in">Incoming</ToggleButton>
+        <ToggleButton value="heal">Healing</ToggleButton>
+      </ToggleButtonGroup>
+    </>
+  )
+}
+
+/**
+ * The in-combat dot: state, not a control.
+ *
+ * The DOT is the signal; the words next to it are the label. Below `lg` they are dropped and the
+ * hover text carries them, because this is the cheapest ~50px on the lens line and at the 900px
+ * minimum window that line has no room to spare (three modifier pills now live at the end of it).
+ * A green dot that explains itself on hover is a fair trade for a header that stays one bar.
+ */
+function InCombatDot(): React.JSX.Element {
+  return (
+    <Stack direction="row" spacing={0.5} alignItems="center" title="In combat" sx={{ flexShrink: 0 }}>
+      <CircleIcon sx={{ fontSize: 8, color: 'success.main' }} />
+      <Typography variant="caption" noWrap sx={{ color: 'text.secondary', display: { xs: 'none', lg: 'block' } }}>
+        in combat
+      </Typography>
+    </Stack>
+  )
+}
+
+/** Is there any passive state at all? Decides whether the lens line grows its divider. */
+function hasPassiveStatus(snap: CombatSnapshot | null): boolean {
+  return (
+    !!snap?.stance?.stance || !!snap?.stance?.invocation || hasCoat(snap?.poison.coat) || !!snap?.inCombat
+  )
+}
+
+/**
+ * Everything past the lens line's divider is READ-ONLY state, not a control.
+ *
+ * It is also the only part of the bar that GROWS with the world (a third modifier slot arrived
+ * with blade coats; the values are log-supplied names of unbounded length), so it is the part
+ * that gives: one shrinkable group, `minWidth: 0`, whose pills ellipsize under pressure. The
+ * controls beside it never shrink — a half-word button is useless, an abbreviated readout is not.
+ */
+function PassiveStatus({ snap }: { snap: CombatSnapshot | null }): React.JSX.Element | null {
+  if (!hasPassiveStatus(snap)) return null
+  return (
+    <>
+      <Divider orientation="vertical" flexItem sx={{ my: 0.25 }} />
+      <Stack direction="row" spacing={0.5} alignItems="center" sx={{ minWidth: 0, overflow: 'hidden' }}>
+        {snap?.stance && <StanceReadout stance={snap.stance} poison={snap.poison} />}
+        {snap?.inCombat && <InCombatDot />}
+      </Stack>
+    </>
+  )
+}
+
+export interface CombatHeaderProps {
+  seg: SegmentView | null
+  snap: CombatSnapshot | null
+  scope: CombatScope
+  setScope: (s: CombatScope) => void
+  opts: ScopeOptions
+  selection: string
+  setSelection: (v: string) => void
+  loadMore: () => void
+  capped: boolean
+  hydrating: boolean
+  now: number
+  view: 'dash' | 'timeline'
+  setView: (v: 'dash' | 'timeline') => void
+  noTimeline: boolean
+  mode: MeterMode
+  setMode: (m: MeterMode) => void
+  /** WHOSE damage — the group model's scope, a different axis from Fight|Overall (which is
+   *  WHICH segment). Sits beside the direction filter because the two together are the sentence
+   *  the meter is answering: "outgoing damage, for my group". READ-ONLY here since JOS-115: the
+   *  choice lives in Preferences > Combat, this line only states which one is in force. */
+  meterScope: MeterScope
+  roster: RosterSnap
+}
+
+/**
+ * SUBJECT, then LENS. The bar used to be a single rank of five same-weight controls plus a raw
+ * Switch — a toolbar dump: nothing in it said what you were looking at, so the eye had to read
+ * every control to find out. It is now two explicit lines that answer two different questions,
+ * in the order you actually ask them (see SubjectLine for line 1).
+ *
+ * LINE 2 — LENS ("how am I looking at it"), left to right in decreasing consequence: the view
+ * switch (the tab's navigation, the only control wearing the accent), the direction filter (dash
+ * only), then right-aligned the purely passive readout — modifier slots and the in-combat dot,
+ * which are STATE, not controls. (The engine-combine pets chip that lived here was retired when
+ * the pet-nesting preference replaced it — eq.combat.petRow, Preferences > Combat.)
+ *
+ * The two lines are EXPLICIT rather than a wrapping row: at the 900px minimum window everything
+ * cannot fit on one line, and a wrap point that moves with the fight name is exactly the mess
+ * this replaces.
+ */
+export function CombatHeader(p: CombatHeaderProps): React.JSX.Element {
+  return (
+    <Paper
+      variant="outlined"
+      data-testid="combat-header"
+      sx={{ flexShrink: 0, px: 1.25, py: 0.75, bgcolor: 'rgba(255,255,255,0.015)' }}
+    >
+      {/* ── LINE 1: SUBJECT ── */}
+      <SubjectLine
+        seg={p.seg}
+        scope={p.scope}
+        setScope={p.setScope}
+        opts={p.opts}
+        selection={p.selection}
+        setSelection={p.setSelection}
+        loadMore={p.loadMore}
+        capped={p.capped}
+        hydrating={p.hydrating}
+        now={p.now}
+      />
+
+      {/* ── LINE 2: LENS + REFINEMENTS ── controls left, passive state right. It NEVER wraps:
+          wrapping turns content growth into HEIGHT, and this bar's whole contract is that it
+          stays two ranks (the headless harness measures it). Overflow is absorbed by the passive
+          readout instead, which shrinks and ellipsizes with its hover text intact. */}
+      <Stack direction="row" spacing={0.5} alignItems="center" flexWrap="nowrap" useFlexGap sx={{ mt: 0.5, minWidth: 0 }}>
+        <ViewSwitch view={p.view} setView={p.setView} noTimeline={p.noTimeline} />
+
+        {p.view === 'dash' && <DirectionFilter mode={p.mode} setMode={p.setMode} />}
+
+        {/* WHOSE damage (docs/plans/group-model.md §2). Only the two SOURCE dimensions are
+            scoped: the Incoming list is always "what is hitting You", and no roster changes
+            that. It STATES the scope and no longer offers it (JOS-115 — Preferences > Combat
+            owns the choice); the roster popover beside it is still a control, because a
+            mis-inferred group is corrected where its rows are missing. The readout stays
+            compact because this line never wraps — its two-rank height is a contract the
+            headless harness measures. */}
+        {p.view === 'dash' && p.mode !== 'in' && <ScopeStatus scope={p.meterScope} roster={p.roster} />}
+
+        <Box sx={{ flexGrow: 1, minWidth: 8 }} />
+
+        <PassiveStatus snap={p.snap} />
+      </Stack>
+    </Paper>
+  )
+}

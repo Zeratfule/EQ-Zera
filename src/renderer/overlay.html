@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!--
+      Same policy as index.html minus what this page cannot use (media-src: the overlay has no
+      sound bridge). Kept spelled out rather than shared, because a <meta> CSP cannot be
+      imported — the two pages must be read side by side, so they are written side by side.
+        script-src 'self'          no inline/eval; the hard stop on wiki/log-derived text.
+        style-src 'unsafe-inline'  REQUIRED twice over here: the transparent-window rules in
+                                   the <style> block below, and React's inline `style={{…}}`
+                                   is not affected but the block is. (No MUI/emotion in this
+                                   bundle — AGENTS.md keeps the overlay MUI-free.)
+        img-src eqimg:             item icons from the permanent cache; no `https:` (see
+                                   index.html / imageCache.ts).
+        connect-src 'self'         no fetch of its own; 'self' covers dev HMR's WebSocket.
+        object-src/frame-src/child-src/base-uri/form-action  all 'none'.
+    -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: eqimg:; font-src 'self' data:; connect-src 'self'; object-src 'none'; frame-src 'none'; child-src 'none'; base-uri 'none'; form-action 'none'"
+    />
+    <title>DPS Overlay</title>
+    <style>
+      /* Transparent window: the OS composites the game underneath. Element-level
+         rgba backgrounds (set in React) provide the translucent panel; the page
+         itself paints nothing. */
+      html,
+      body {
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        background: transparent;
+        overflow: hidden;
+        user-select: none;
+      }
+      /* The mount point every overlay KIND fills. It is NOT zoomed: the text
+         scale goes on the content pane inside each surface, so the chrome
+         always lays out against the real window (overlay/overlayScale.tsx).
+         PERCENTAGES, NOT 100vw/100vh: a viewport unit inside the scaled pane
+         is resolved against the window and then multiplied by the zoom in
+         force, so it would size itself larger than the pane it lives in. A
+         percentage resolves against the parent and fills it at any scale —
+         which is why html/body carry an explicit size above. */
+      #overlay-root {
+        width: 100%;
+        height: 100%;
+      }
+      /* Themed scrollbars — the SAME rules as the main app (theme.ts
+         MuiCssBaseline). This bundle is MUI-free by law, so there is no
+         CssBaseline to carry them and no way to import the theme's tokens;
+         the values are the resolved forms of `alpha(common.white, .22)` and
+         `alpha(primary.main, .55)` and must be updated together with theme.ts.
+
+         NOTE (this is the fix, and it reads like an omission if you don't know
+         the rule): there is deliberately NO `scrollbar-width` / `scrollbar-color`
+         here. In Blink those standard properties and the `::-webkit-scrollbar-*`
+         pseudo-elements are mutually exclusive — setting either one switches the
+         scroller to Chromium's native (Fluent) scrollbar and makes every rule
+         below dead code. That native bar paints edge-to-edge across its gutter,
+         which is what put the scrollbar hard against right-aligned content.
+         See the long comment in theme.ts. Do not add them back. */
+      *::-webkit-scrollbar {
+        width: 12px;
+        height: 12px;
+      }
+      *::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      /* Transparent border + content-box clip insets the visible thumb inside
+         the reserved gutter, so it sits off the content edge. */
+      *::-webkit-scrollbar-thumb {
+        background-color: rgba(255, 255, 255, 0.22);
+        border-radius: 12px;
+        border: 3px solid transparent;
+        background-clip: content-box;
+      }
+      *::-webkit-scrollbar-thumb:hover {
+        background-color: rgba(167, 139, 250, 0.55); /* PALETTE.accent */
+      }
+      *::-webkit-scrollbar-corner {
+        background: transparent;
+      }
+      *::-webkit-scrollbar-button {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="overlay-root"></div>
+    <script type="module" src="/src/overlay/main.tsx"></script>
+  </body>
+</html>

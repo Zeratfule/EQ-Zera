@@ -1,0 +1,2412 @@
+{
+ "class": "Shadow Knight",
+ "lines": [
+  {
+   "id": "sk-lifetap-direct",
+   "name": "Direct Lifetap line",
+   "category": "lifetap",
+   "sharedWith": [
+    "Necromancer"
+   ],
+   "members": [
+    {
+     "name": "Lifetap",
+     "level": 1,
+     "inDb": true,
+     "note": "Legends L1; live/eqresource and P99 both place it later (live 8, P99 9). Legends re-tiers the whole line downward."
+    },
+    {
+     "name": "Lifespike",
+     "level": 8,
+     "inDb": true,
+     "note": "live 15, P99 15"
+    },
+    {
+     "name": "Lifebite",
+     "level": 10,
+     "inDb": true,
+     "note": "42/42, 1.75 s cast, 35 mana, autogranted. ADDED BY THE GAME PATCH OF 2026-08-18 (JOS-439) - wiki pageid 60016, created 2026-08-18T15:42Z. No live or P99 counterpart exists; Legends invented this rung, so the re-tier notes the rest of this line carries have nothing to compare against."
+    },
+    {
+     "name": "Lifedraw",
+     "level": 15,
+     "inDb": true,
+     "note": "live 29, P99 30"
+    },
+    {
+     "name": "Siphon Life",
+     "level": 30,
+     "inDb": true,
+     "note": "live 51, P99 51 (Kunark, Overthere vendor). Legends drops it 21 levels."
+    },
+    {
+     "name": "Spirit Tap",
+     "level": 36,
+     "inDb": true,
+     "note": "live 55, P99 55. Largest single re-tier in the line (-19)."
+    },
+    {
+     "name": "Life Leech",
+     "level": 47,
+     "inDb": true,
+     "note": "live 47; P99 49 (quest reward). Level agrees with live."
+    },
+    {
+     "name": "Drain Spirit",
+     "level": 49,
+     "inDb": true,
+     "note": "live 57, P99 57"
+    },
+    {
+     "name": "Drain Soul",
+     "level": 60,
+     "inDb": true,
+     "note": "live 60, P99 60. Agrees."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict damage/heal progression, single-target instant lifetap; each entry supersedes the prior for efficiency at level. Exception: mana cost climbs steeply, so lower members (Lifespike, Lifedraw) stay in the book as cheap aggro/finishers well past their replacement level - classic SK practice keeps 2-3 taps memmed."
+   },
+   "missingOnLegends": [
+    {
+     "name": "Zevfeer's Bite",
+     "level": 62,
+     "note": "live L62 lifetap; above the Legends set in this dump"
+    },
+    {
+     "name": "Touch of Volatis",
+     "level": 62,
+     "note": "live L62 lifetap"
+    }
+   ],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [
+     {
+      "line": "Necromancer lifetap line (Lifetap/Lifespike/Lifedraw/Siphon Life/Drain Spirit)",
+      "detail": "Instant lifetaps are not buffs and occupy no buff slot, so an SK and a necromancer tapping the same mob never collide. Both parties are healed independently; the only interaction is the shared hit-point pool of the target and the aggro each tap generates."
+     },
+     {
+      "line": "All buff lines",
+      "detail": "No duration, no slot - stacking is not a concern."
+     }
+    ],
+    "notes": "P99 Buff_Lines has no entry for lifetaps because they are instant detrimentals with a self-heal component rather than buffs. The self-heal obeys normal heal-over-cap rules (no overheal credit). Aggro from a lifetap is the damage plus the heal, which is why SKs use them as taunt substitutes."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Shadow_Knight",
+    "https://spells.eqresource.com/spellsearch.php?level=1&range=greater&class=shd"
+   ]
+  },
+  {
+   "id": "sk-lifetap-dot",
+   "name": "Lifetap DoT (Vampiric Curse)",
+   "category": "lifetap-dot",
+   "sharedWith": [
+    "Necromancer"
+   ],
+   "members": [
+    {
+     "name": "Vampiric Curse",
+     "level": 57,
+     "inDb": true,
+     "note": "Legends and live agree at 57; P99 lists SK 57 (Kunark vendor). Legends effect text shows only the 21/tick damage - the returned-life half is folded into the tap flag, magnitude not exposed in the dump."
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Single member on Legends. Runs alongside the direct lifetap line rather than replacing it - it is a damage-over-time tap, cast once per fight and left up."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "DoT slot (per-caster, per-spell-name)"
+    ],
+    "conflicts": [
+     {
+      "line": "Vampiric Curse (another SK or necromancer on the same target)",
+      "class": "Shadow Knight / Necromancer",
+      "detail": "Identical spell name on one target does not stack - the later cast refreshes/overwrites the earlier and only the last caster is healed.",
+      "source": "https://spells.eqresource.com/spellsearch.php?level=1&range=greater&class=shd"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Disease DoT line (Disease Cloud/Heart Flutter/Asystole)",
+      "detail": "Differently-named DoTs occupy separate DoT slots on the target and all tick concurrently."
+     },
+     {
+      "line": "Blood fire DoT line (Heat Blood/Boil Blood)",
+      "detail": "Different name, different slot; stacks."
+     },
+     {
+      "line": "Darkness snare-DoT line",
+      "detail": "Stacks - the darkness line collides only on the movement-rate slot, not the DoT slot."
+     }
+    ],
+    "notes": "Classic DoT stacking is by spell identity, not by school: any two differently-named DoTs stack on a target. The practical SK limit is mana, not slots."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Shadow_Knight",
+    "https://spells.eqresource.com/spellsearch.php?level=1&range=greater&class=shd"
+   ]
+  },
+  {
+   "id": "sk-self-proc",
+   "name": "Self weapon-proc buff line (Vampiric Embrace -> Shroud of Death)",
+   "category": "self-buff-proc",
+   "sharedWith": [
+    "Necromancer"
+   ],
+   "members": [
+    {
+     "name": "Vampiric Embrace",
+     "level": 15,
+     "inDb": true,
+     "note": "Legends 15; live 22, P99 22. Legends drops it 7 levels - notable because it front-loads the SK proc tap."
+    },
+    {
+     "name": "Scream of Death",
+     "level": 37,
+     "inDb": true,
+     "note": "Legends and live agree at 37 (Luclin-era; absent from P99). Effect row in the Legends dump is \"Add Melee Proc:\" with an empty proc name - the proc reference does not resolve in the dump."
+    },
+    {
+     "name": "Shroud of Death",
+     "level": 55,
+     "inDb": true,
+     "note": "Legends, live and P99 all 55 (P99: Velious NPC drop). 20 min duration rather than permanent."
+    },
+    {
+     "name": "Shroud of Undeath",
+     "level": 55,
+     "inDb": true,
+     "note": "Same level and same proc as Shroud of Death, plus Icebone Skeletal Form illusion. P99: Chardok drop, Velious era. Sibling variant, not an upgrade."
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Not strict. Vampiric Embrace is permanent-duration while Shroud of Death/Undeath are 20 minutes, so the low-level member remains the fire-and-forget choice for long sessions. Shroud of Death and Shroud of Undeath are equal-level alternatives distinguished only by the skeletal illusion (which also carries the classic undead-faction / vendor-refusal side effects), so a player picks one, not both. Scream of Death sits between them but its proc is unidentified in the Legends dump - treat its position in the chain as provisional."
+   },
+   "missingOnLegends": [
+    {
+     "name": "Deathly Temptation",
+     "level": 58,
+     "note": "live L58; sits in the self-buff family though closer to the Dark Temptation ATK line"
+    }
+   ],
+   "stacking": {
+    "slots": [
+     "Proc buff slot (SPA 85 Add Proc - one per character)"
+    ],
+    "conflicts": [
+     {
+      "line": "Any other self proc buff in this line",
+      "class": "Shadow Knight",
+      "detail": "Only one Add-Proc buff can be active; casting Shroud of Death removes Vampiric Embrace and vice versa. Shroud of Death and Shroud of Undeath overwrite each other (same proc, different illusion).",
+      "source": "https://wiki.project1999.com/Shadow_Knight"
+     },
+     {
+      "line": "Bard proc songs / Enchanter Rampage-style proc buffs and weapon-imbue procs",
+      "class": "Bard / Enchanter",
+      "detail": "External Add-Proc buffs land in the same single slot and will displace the SK shroud. Innate weapon procs (from the item itself) are unaffected and continue to fire alongside.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Grim Aura (Attack Slot 1)",
+      "detail": "Different effect family - ATK buff and proc buff coexist."
+     },
+     {
+      "line": "Damage absorption line (Shieldskin/Steelskin/Diamondskin)",
+      "detail": "Independent slots."
+     },
+     {
+      "line": "Banshee Aura (Damage Shield Slot 1)",
+      "detail": "Independent slots."
+     }
+    ],
+    "notes": "P99 Buff_Lines does not tabulate proc buffs because they are not stat buffs, but the single-proc-slot rule is a hard classic mechanic: the last Add-Proc buff cast wins. Shroud of Undeath's Icebone Skeletal Form additionally occupies the illusion slot and will be cancelled by any other illusion."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Shadow_Knight",
+    "https://spells.eqresource.com/spellsearch.php?level=1&range=greater&class=shd"
+   ]
+  },
+  {
+   "id": "sk-darkness",
+   "name": "Darkness snare-DoT line",
+   "category": "snare-dot",
+   "sharedWith": [
+    "Necromancer"
+   ],
+   "members": [
+    {
+     "name": "Clinging Darkness",
+     "level": 11,
+     "inDb": true,
+     "note": "Legends 11; live 11; P99 15. Legends tracks live."
+    },
+    {
+     "name": "Engulfing Darkness",
+     "level": 20,
+     "inDb": true,
+     "note": "Legends 20; live 20; P99 22."
+    },
+    {
+     "name": "Dooming Darkness",
+     "level": 44,
+     "inDb": true,
+     "note": "Legends 44; live 44; P99 49."
+    },
+    {
+     "name": "Cascading Darkness",
+     "level": 59,
+     "inDb": true,
+     "note": "Legends, live and P99 all 59."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict on both axes - each step raises DoT magnitude and snare percentage (30% -> 40% -> 60% -> 60%) and lengthens duration. Exception: Dooming Darkness and Cascading Darkness both cap snare at 60%, so the cheaper Dooming Darkness stays the mana-efficient pull-snare; Cascading Darkness at 300 mana is a damage spell that happens to snare. Second exception: on a fleeing/feared mob you want the shortest, cheapest member you can land, so Clinging Darkness survives as a low-mana re-snare."
+   },
+   "missingOnLegends": [
+    {
+     "name": "Festering Darkness",
+     "level": 61,
+     "note": "live L61 continuation of the line"
+    },
+    {
+     "name": "Encroaching Darkness",
+     "level": null,
+     "note": "necromancer-side member; SK never received it"
+    }
+   ],
+   "stacking": {
+    "slots": [
+     "Movement rate slot (snare)",
+     "DoT slot (per spell name)"
+    ],
+    "conflicts": [
+     {
+      "line": "Any other snare (Druid Snare/Ensnare, Ranger Snare, Necromancer Darkness line, Bard selo-style movement debuffs)",
+      "class": "Druid / Ranger / Necromancer / Bard",
+      "detail": "Movement-rate modifiers do not stack; the classic rule is last-cast-wins on the movement slot, so a druid Ensnare landing after Dooming Darkness replaces the 60% with Ensnare's value. Coordinate snare duty on a group pull.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Own line",
+      "class": "Shadow Knight",
+      "detail": "Members overwrite one another - one darkness at a time per target per caster.",
+      "source": "https://wiki.project1999.com/Shadow_Knight"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "All differently-named DoTs",
+      "detail": "The DoT component occupies its own slot by spell name and ticks alongside Disease Cloud, Heart Flutter, Heat Blood, Vampiric Curse etc."
+     },
+     {
+      "line": "Root (Engulfing Roots / Paralyzing Earth)",
+      "detail": "Snare and root are distinct effects. Note the name collision: druid Engulfing Roots is unrelated to SK Engulfing Darkness."
+     }
+    ],
+    "notes": "The signature SK line and the reason SK tanks can hold a runner. Snare component is a movement-rate debuff, not a slow; it never conflicts with attack-speed slows (shaman/enchanter)."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Shadow_Knight",
+    "https://spells.eqresource.com/spellsearch.php?level=1&range=greater&class=shd"
+   ]
+  },
+  {
+   "id": "sk-fear",
+   "name": "Fear line (living targets)",
+   "category": "fear",
+   "sharedWith": [
+    "Necromancer"
+   ],
+   "members": [
+    {
+     "name": "Fear",
+     "level": 12,
+     "inDb": true,
+     "note": "Legends 12; live 12; P99 15. 18 sec."
+    },
+    {
+     "name": "Invoke Fear",
+     "level": 43,
+     "inDb": true,
+     "note": "Legends 43; live 43; P99 49. 42 sec."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict by duration and max level of target affected. Exception: Fear at 40 mana remains the cheap panic button versus Invoke Fear at 120 mana, and short fear is often preferred for fear-kiting in tight zones where a 42 second flee sends the mob into an adjacent camp."
+   },
+   "missingOnLegends": [
+    {
+     "name": "Soulless Fear",
+     "level": 56,
+     "note": "live L56 fear upgrade"
+    },
+    {
+     "name": "Soulless Panic",
+     "level": 61,
+     "note": "live L61 fear upgrade"
+    }
+   ],
+   "stacking": {
+    "slots": [
+     "Fear / mez-family control slot on target"
+    ],
+    "conflicts": [
+     {
+      "line": "Undead fear line (Spook the Dead / Panic the Dead)",
+      "class": "Shadow Knight",
+      "detail": "Same fear effect slot - recasting either line refreshes rather than layers. Undead fear is chosen for its far lower mana on undead, not for stacking.",
+      "source": "https://wiki.project1999.com/Shadow_Knight"
+     },
+     {
+      "line": "Enchanter mez / Bard lull",
+      "class": "Enchanter / Bard",
+      "detail": "Fear breaks mez and fear-running mobs drag adds; not a slot conflict so much as an incompatible control mode.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Darkness snare-DoT line",
+      "detail": "Snare + fear is the classic fear-kite combination; different slots, both hold."
+     }
+    ],
+    "notes": "Fear is level-capped by spell in classic - Fear and Invoke Fear will simply be resisted/unaffected above their target-level ceiling, which is the real reason to upgrade rather than the duration."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Shadow_Knight",
+    "https://spells.eqresource.com/spellsearch.php?level=1&range=greater&class=shd"
+   ]
+  },
+  {
+   "id": "sk-fear-undead",
+   "name": "Undead fear line",
+   "category": "fear",
+   "sharedWith": [
+    "Necromancer",
+    "Cleric",
+    "Paladin"
+   ],
+   "members": [
+    {
+     "name": "Spook the Dead",
+     "level": 20,
+     "inDb": true,
+     "note": "Legends 20; live 20; P99 22. 18 sec, undead only, 10 mana."
+    },
+    {
+     "name": "Panic the Dead",
+     "level": 54,
+     "inDb": true,
+     "note": "Legends, live and P99 all 54. 9 ticks (54 sec)."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict - Panic the Dead is longer and affects higher-level undead. Exception: Spook the Dead at 10 mana is one of the cheapest control spells the class owns and never leaves the book for undead-heavy zones."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Fear / control slot on target"
+    ],
+    "conflicts": [
+     {
+      "line": "Fear line (Fear / Invoke Fear)",
+      "class": "Shadow Knight",
+      "detail": "Same fear slot; refresh, not layer.",
+      "source": "https://wiki.project1999.com/Shadow_Knight"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Undead lull line (Numb the Dead / Rest the Dead)",
+      "detail": "Different effects (aggro-radius reduction vs flee) but mutually defeating in practice - fearing a lulled undead undoes the pacify."
+     }
+    ],
+    "notes": "This is the knight-side truncation of the cleric/paladin undead-control kit: SK gets the fear half, paladin gets the turn/root half."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Shadow_Knight",
+    "https://spells.eqresource.com/spellsearch.php?level=1&range=greater&class=shd"
+   ]
+  },
+  {
+   "id": "sk-lull-undead",
+   "name": "Undead lull / pacify line",
+   "category": "lull",
+   "sharedWith": [
+    "Necromancer",
+    "Cleric"
+   ],
+   "members": [
+    {
+     "name": "Numb the Dead",
+     "level": 9,
+     "inDb": true,
+     "note": "Legends 9; live 9; P99 15. Frenzy 15/30, Reaction 25/30, Lull."
+    },
+    {
+     "name": "Rest the Dead",
+     "level": 52,
+     "inDb": true,
+     "note": "Legends, live and P99 all 52 (P99: Kunark vendor). Frenzy/Reaction 1/45, Pacify + 1% memblur."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict - Rest the Dead is a true pacify with a far larger radius reduction. Exception: Numb the Dead's much lower mana and shorter cast make it the practical pull-assist at any level, and Rest the Dead's memblur component can be undesirable when you want the mob to stay linked to the puller."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Aggro-radius / pacify slot on target"
+    ],
+    "conflicts": [
+     {
+      "line": "Cleric Atone/Pacify line, Enchanter Lull line, Bard lull songs",
+      "class": "Cleric / Enchanter / Bard",
+      "detail": "All operate on the same reaction/frenzy radius modifiers on the NPC; the strongest active effect governs and re-application by a different class overwrites rather than adds.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [],
+    "notes": "Undead-only targeting; the SK version is the truncated necromancer kit (necromancer receives the same two spells earlier)."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Shadow_Knight",
+    "https://spells.eqresource.com/spellsearch.php?level=1&range=greater&class=shd"
+   ]
+  },
+  {
+   "id": "sk-disease-dot",
+   "name": "Disease DoT / debuff line",
+   "category": "dot",
+   "sharedWith": [
+    "Necromancer"
+   ],
+   "members": [
+    {
+     "name": "Disease Cloud",
+     "level": 5,
+     "inDb": true,
+     "note": "Legends 5; live 5; P99 9. 1/tick for 6 min plus a 5 HP hit on cast."
+    },
+    {
+     "name": "Heart Flutter",
+     "level": 36,
+     "inDb": true,
+     "note": "Legends 36; live 36; P99 39. Adds -STR and -AC to the disease tick."
+    },
+    {
+     "name": "Asystole",
+     "level": 60,
+     "inDb": true,
+     "note": "Legends, live and P99 all 60 (P99: Kunark, Overthere). -40 STR / -18 AC and 69/tick."
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Not strict. Disease Cloud is a 6-minute 1-damage-per-tick spell whose real job is pull aggro and disease-counter application, not damage - it is never replaced functionally by Heart Flutter or Asystole, which are expensive burst DoTs with debuff riders. Heart Flutter -> Asystole is a strict upgrade in every component."
+   },
+   "missingOnLegends": [
+    {
+     "name": "Plague",
+     "level": null,
+     "note": "necromancer-side continuation; SK never receives it in classic"
+    },
+    {
+     "name": "Ignite Blood",
+     "level": 61,
+     "note": "live L61 - listed under the Blood line but shares this disease/fire DoT role"
+    }
+   ],
+   "stacking": {
+    "slots": [
+     "DoT slot (per spell name)",
+     "STR debuff slot (Heart Flutter / Asystole rider)",
+     "AC debuff slot (Heart Flutter / Asystole rider)"
+    ],
+    "conflicts": [
+     {
+      "line": "STR debuff line (Siphon Strength / Wave of Enfeeblement)",
+      "class": "Shadow Knight",
+      "detail": "Heart Flutter and Asystole carry STR debuff riders that occupy the same STR-debuff slot as Siphon Strength and Wave of Enfeeblement; the larger value holds and the smaller is refused (\"your target is already affected\").",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "AC debuff line (Scream of Pain / Shadow Vortex / Shroud of Pain)",
+      "class": "Shadow Knight",
+      "detail": "Same collision on the AC-debuff slot: Asystole's -18 AC and Shroud of Pain's -18 AC contend, and landing the weaker one after the stronger is refused. Cast the AC transfer first if you want the caster-side recourse buff.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Shaman/Enchanter STR and AC debuffs (Weakness, Insidious Fever, Tashan-family)",
+      "class": "Shaman / Enchanter",
+      "detail": "Same debuff slots as above across classes.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Blood fire DoT line",
+      "detail": "Different spell names, separate DoT slots."
+     },
+     {
+      "line": "Darkness snare-DoT line",
+      "detail": "Separate DoT slot."
+     },
+     {
+      "line": "Lifetap DoT (Vampiric Curse)",
+      "detail": "Separate DoT slot."
+     }
+    ],
+    "notes": "The debuff riders are the load-bearing stacking hazard for this class: an SK who leads with Asystole locks out his own Shroud of Pain recourse buff for the duration."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Shadow_Knight",
+    "https://wiki.project1999.com/Buff_Lines",
+    "https://spells.eqresource.com/spellsearch.php?level=1&range=greater&class=shd"
+   ]
+  },
+  {
+   "id": "sk-blood-dot",
+   "name": "Blood fire-DoT line",
+   "category": "dot",
+   "sharedWith": [
+    "Necromancer"
+   ],
+   "members": [
+    {
+     "name": "Heat Blood",
+     "level": 28,
+     "inDb": true,
+     "note": "Legends 28; live 28; P99 30. 17/tick, 36 sec."
+    },
+    {
+     "name": "Boil Blood",
+     "level": 53,
+     "inDb": true,
+     "note": "Legends, live and P99 all 53 (P99: Kunark vendor). Legends dump shows 24/tick over 42 sec, which is far below the classic 72/tick figure P99 implies (504 total) - flagged as a magnitude discrepancy, not averaged."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict by classic magnitudes (Heat Blood 170 total -> Boil Blood 504 total). On the Legends numbers as dumped the upgrade is much weaker (24/tick vs 17/tick), so verify Boil Blood in-game before telling a player it replaces Heat Blood."
+   },
+   "missingOnLegends": [
+    {
+     "name": "Ignite Blood",
+     "level": 61,
+     "note": "live L61 - the third member of the Blood line"
+    }
+   ],
+   "stacking": {
+    "slots": [
+     "DoT slot (per spell name)"
+    ],
+    "conflicts": [
+     {
+      "line": "Necromancer Heat Blood / Boil Blood",
+      "class": "Necromancer",
+      "detail": "Same spell name on the same target does not stack regardless of caster class; the later cast refreshes.",
+      "source": "https://spells.eqresource.com/spellsearch.php?level=1&range=greater&class=shd"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Disease DoT line",
+      "detail": "Separate DoT slots."
+     },
+     {
+      "line": "Darkness snare-DoT line",
+      "detail": "Separate DoT slots."
+     }
+    ],
+    "notes": "Classified fire-based on P99 despite the necromantic flavour, so it is resisted by fire resistance - relevant when choosing between Heat Blood and Disease Cloud on a fire-resistant mob."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Shadow_Knight",
+    "https://spells.eqresource.com/spellsearch.php?level=1&range=greater&class=shd"
+   ]
+  },
+  {
+   "id": "sk-healblock-dot",
+   "name": "Life-negation DoT line (heal reduction) - likely Legends-custom",
+   "category": "dot",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Cancelling of Life",
+     "level": 18,
+     "inDb": true,
+     "note": "No such Shadow Knight spell at L18 on live (eqresource shows only Ward Undead at 18) and nothing of the name on P99. 11/tick plus Decrease Incoming Healing by 20%."
+    },
+    {
+     "name": "Negation of Life",
+     "level": 31,
+     "inDb": true,
+     "note": "No such Shadow Knight spell at L31 on live (eqresource shows only Shieldskin at 31). 20/tick plus Decrease Incoming Healing by 30%."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict within the pair - both damage and the heal-reduction percentage increase. Because neither spell exists in the classic corpus, the replacement judgement rests entirely on the Legends data."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "DoT slot (per spell name)",
+     "Incoming-healing modifier slot"
+    ],
+    "conflicts": [
+     {
+      "line": "Own line",
+      "class": "Shadow Knight",
+      "detail": "Cancelling of Life and Negation of Life both write the incoming-healing modifier; only one holds, and by classic slot convention the larger magnitude wins.",
+      "source": "Inferred from Legends data - no classic source exists"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "All classic SK DoTs",
+      "detail": "Different spell names occupy different DoT slots."
+     }
+    ],
+    "notes": "Decrease Incoming Healing is a modern-era SPA that has no classic-era analogue in the SK book. Treat this whole line as Legends-custom content and do not annotate it with classic sources."
+   },
+   "sources": [
+    "https://spells.eqresource.com/spellsearch.php?level=1&range=greater&class=shd"
+   ]
+  },
+  {
+   "id": "sk-spear-dd",
+   "name": "Disease direct-damage line (Spike/Spear)",
+   "category": "direct-damage",
+   "sharedWith": [
+    "Necromancer"
+   ],
+   "members": [
+    {
+     "name": "Spike of Disease",
+     "level": 1,
+     "inDb": true,
+     "note": "Legends 1; live 1. Luclin-era low-level nuke, absent from P99 entirely."
+    },
+    {
+     "name": "Spear of Disease",
+     "level": 34,
+     "inDb": true,
+     "note": "Legends 34; live 34. Absent from P99 (Luclin)."
+    },
+    {
+     "name": "Spear of Pain",
+     "level": 48,
+     "inDb": true,
+     "note": "Legends 48; live 48. Absent from P99 (Luclin)."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict damage progression (15 -> 251 -> 325). Exception: Spike of Disease is the SK's only sub-30 non-tap nuke and its trivial mana cost keeps it useful for pulling and for finishing runners long after Spear of Disease is available."
+   },
+   "missingOnLegends": [
+    {
+     "name": "Spear of Plague",
+     "level": 54,
+     "note": "live L54 - the fourth member of the line"
+    }
+   ],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [
+     {
+      "line": "Everything",
+      "detail": "Instant direct damage, no duration, no slot."
+     }
+    ],
+    "notes": "This entire line is Luclin content, which is why it has no Project 1999 representation. Its presence confirms the Legends spell set is the modern/live SK book rather than the classic one."
+   },
+   "sources": [
+    "https://spells.eqresource.com/spellsearch.php?level=1&range=greater&class=shd"
+   ]
+  },
+  {
+   "id": "sk-undead-dd",
+   "name": "Undead direct-damage line (Ward/Expulse/Dismiss/Expel)",
+   "category": "direct-damage",
+   "sharedWith": [
+    "Cleric",
+    "Paladin",
+    "Necromancer"
+   ],
+   "members": [
+    {
+     "name": "Ward Undead",
+     "level": 18,
+     "inDb": true,
+     "note": "Legends 18; live 18; P99 22."
+    },
+    {
+     "name": "Expulse Undead",
+     "level": 39,
+     "inDb": true,
+     "note": "Legends 39; live 39; P99 49."
+    },
+    {
+     "name": "Dismiss Undead",
+     "level": 49,
+     "inDb": true,
+     "note": "Legends 49; live 49; P99 49."
+    },
+    {
+     "name": "Expel Undead",
+     "level": 55,
+     "inDb": true,
+     "note": "Legends, live and P99 all 55 (P99: Kunark vendor)."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict damage progression (41 -> 94 -> 162 -> 273 on classic magnitudes). Exception: mana-per-damage barely improves across the line, so the cheap early members remain the efficient choice on low-hitpoint undead; only the level cap of each spell forces the upgrade."
+   },
+   "missingOnLegends": [
+    {
+     "name": "Deny Undead",
+     "level": 62,
+     "note": "live L62 continuation"
+    }
+   ],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [
+     {
+      "line": "Everything",
+      "detail": "Instant direct damage, no slot."
+     }
+    ],
+    "notes": "This is the knight-side truncation of the cleric undead-nuke kit, mirroring how Paladin receives the cleric line at delayed levels. SK gets it at Ward Undead 18 versus cleric's earlier access."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Shadow_Knight",
+    "https://spells.eqresource.com/spellsearch.php?level=1&range=greater&class=shd"
+   ]
+  },
+  {
+   "id": "sk-scythe",
+   "name": "Scythe undead nuke line",
+   "category": "direct-damage",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Scythe of Darkness",
+     "level": 47,
+     "inDb": true,
+     "note": "Legends 47; live 47. Luclin-era, absent from P99. 346 damage undead-only - more than double Dismiss Undead at level 49."
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Only one member on Legends. Parallel to, not part of, the Ward/Expulse/Dismiss/Expel line - it interleaves at 47 with far higher damage, so it supersedes Dismiss Undead (49) on damage while the older line stays cheaper."
+   },
+   "missingOnLegends": [
+    {
+     "name": "Scythe of Death",
+     "level": 54,
+     "note": "live L54 - the second member; its absence leaves Legends SKs with a single Scythe"
+    }
+   ],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [
+     {
+      "line": "Everything",
+      "detail": "Instant direct damage, no slot."
+     }
+    ],
+    "notes": "Luclin content; keeping it separate from the classic undead line matters because a player comparing \"best undead nuke at 47\" will otherwise be told Expulse Undead."
+   },
+   "sources": [
+    "https://spells.eqresource.com/spellsearch.php?level=1&range=greater&class=shd"
+   ]
+  },
+  {
+   "id": "sk-pet",
+   "name": "Skeleton pet line",
+   "category": "pet",
+   "sharedWith": [
+    "Necromancer"
+   ],
+   "members": [
+    {
+     "name": "Leering Corpse",
+     "level": 7,
+     "inDb": true,
+     "note": "Legends 7; live 7; P99 9 (pet lvl 3-5). Legends dump: level 5 pet."
+    },
+    {
+     "name": "Bone Walk",
+     "level": 14,
+     "inDb": true,
+     "note": "Legends 14; live 14; P99 15 (pet 6-7). Legends: level 9 pet - higher than the P99 classic range."
+    },
+    {
+     "name": "Convoke Shadow",
+     "level": 22,
+     "inDb": true,
+     "note": "Legends 22; live 22; P99 22 (pet 9-11). Legends: level 11 pet, top of the classic range."
+    },
+    {
+     "name": "Restless Bones",
+     "level": 30,
+     "inDb": true,
+     "note": "Legends 30; live 30; P99 30 (pet 12-16). Legends: level 16 pet."
+    },
+    {
+     "name": "Animate Dead",
+     "level": 38,
+     "inDb": true,
+     "note": "Legends 38; live 38; P99 39 (pet 15-19). Legends: level 19 pet - dual-wields with weapons."
+    },
+    {
+     "name": "Summon Dead",
+     "level": 46,
+     "inDb": true,
+     "note": "Legends 46; live 46; P99 49 (pet 22-25). Legends: level 25 pet."
+    },
+    {
+     "name": "Malignant Dead",
+     "level": 52,
+     "inDb": true,
+     "note": "Legends, live and P99 all 52 (P99: Kunark, Overthere). Level 33 pet, fast regen, innate dual wield."
+    },
+    {
+     "name": "Cackling Bones",
+     "level": 58,
+     "inDb": true,
+     "note": "Legends, live and P99 all 58 (P99: Kunark vendor). Level 37 pet with a lifetap proc."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict - each summon produces a strictly higher pet level with better innate abilities, and you only ever hold one pet. Exception worth annotating: the Legends dump lists a single fixed pet level per spell (5/9/11/16/19/25/33/37) where classic rolls a range (e.g. 3-5, 12-16). If that is accurate it removes the classic \"re-summon for a max-level pet\" behaviour entirely, which is a meaningful play difference."
+   },
+   "missingOnLegends": [
+    {
+     "name": "Invoke Death",
+     "level": null,
+     "note": "necromancer-side pet; SK never receives it"
+    },
+    {
+     "name": "Minion of Shadows",
+     "level": null,
+     "note": "necromancer quest pet, necromancer-only"
+    }
+   ],
+   "stacking": {
+    "slots": [
+     "Pet slot (one pet per caster)"
+    ],
+    "conflicts": [
+     {
+      "line": "Own line",
+      "class": "Shadow Knight",
+      "detail": "Summoning a new skeleton dismisses the existing pet immediately - there is no confirmation and no way to hold two.",
+      "source": "https://wiki.project1999.com/Shadow_Knight"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Pet melee buff (Strengthen Death)",
+      "detail": "Pet buffs apply to the current pet and are lost when it is replaced."
+     },
+     {
+      "line": "Tiny Companion",
+      "detail": "Cosmetic size reduction, reapplied per pet."
+     }
+    ],
+    "notes": "SK pets are the truncated necromancer line: the necromancer gets each tier substantially earlier and continues past Cackling Bones. The SK pet is a damage-add and a body-blocker, not a tank."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Shadow_Knight",
+    "https://spells.eqresource.com/spellsearch.php?level=1&range=greater&class=shd"
+   ]
+  },
+  {
+   "id": "sk-pet-melee-buff",
+   "name": "Pet melee buff line",
+   "category": "pet-buff",
+   "sharedWith": [
+    "Necromancer"
+   ],
+   "members": [
+    {
+     "name": "Strengthen Death",
+     "level": 29,
+     "inDb": true,
+     "note": "Legends 29; live 29; P99 29 (Velious era, East Commonlands vendor). +20% attack speed, +5 STR, +1 AC, 60 min."
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Single member on Legends. Nothing supersedes it below 60."
+   },
+   "missingOnLegends": [
+    {
+     "name": "Augment Death",
+     "level": 60,
+     "note": "live L60 - the upgrade; its absence leaves the L29 buff as the SK's only pet haste for the whole game"
+    }
+   ],
+   "stacking": {
+    "slots": [
+     "Haste (Primary)",
+     "STR buff slot",
+     "AC buff slot"
+    ],
+    "conflicts": [
+     {
+      "line": "Shaman/Enchanter haste cast on the pet (Quickness, Celerity, Augmentation, Alacrity)",
+      "class": "Shaman / Enchanter",
+      "detail": "Haste (Primary) is a single slot per P99 Buff_Lines; a shaman Celerity on the SK pet displaces Strengthen Death's 20% and is strictly better. Do not recast Strengthen Death over a group haste.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Any external STR or AC buff on the pet",
+      "class": "Shaman / Cleric / Enchanter",
+      "detail": "The +5 STR and +1 AC riders write the normal STR and AC buff slots and are trivially outclassed by any real buff, which will refuse or overwrite them.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Item haste worn by the pet (weapons)",
+      "detail": "Spell haste and item haste are separate systems per the P99 Haste Guide."
+     }
+    ],
+    "notes": "Because haste is one slot, the practical annotation is: Strengthen Death is the SK's self-sufficient pet haste and should be skipped whenever a shaman or enchanter is in group."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Shadow_Knight",
+    "https://wiki.project1999.com/Buff_Lines"
+   ]
+  },
+  {
+   "id": "sk-str-debuff",
+   "name": "Strength debuff / transfer line",
+   "category": "debuff",
+   "sharedWith": [
+    "Necromancer"
+   ],
+   "members": [
+    {
+     "name": "Siphon Strength",
+     "level": 6,
+     "inDb": true,
+     "note": "Legends 6; live 6; P99 9. Single target -5 to -10 STR. On live it carries a Siphon Strength Recourse that gives the caster +10 STR for 6 min; the Legends dump does not show that recourse (see the ATK line note)."
+    },
+    {
+     "name": "Wave of Enfeeblement",
+     "level": 27,
+     "inDb": true,
+     "note": "Legends 27; live 27; P99 30. PBAE -11 to -15 STR, 4 min. Not a single-target replacement."
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Not strict. Wave of Enfeeblement is a point-blank AE and Siphon Strength is single target with a caster recourse - different tools. On a single mob Siphon Strength stays correct; Wave of Enfeeblement is for multi-mob melee where the STR reduction cuts incoming damage across the pile."
+   },
+   "missingOnLegends": [
+    {
+     "name": "Abduction of Strength",
+     "level": 52,
+     "note": "live L52 - the single-target upgrade; without it Siphon Strength never improves"
+    }
+   ],
+   "stacking": {
+    "slots": [
+     "STR debuff slot on target"
+    ],
+    "conflicts": [
+     {
+      "line": "Disease DoT line riders (Heart Flutter -20 STR, Asystole -40 STR)",
+      "class": "Shadow Knight",
+      "detail": "Same STR-debuff slot. Asystole's -40 STR blocks Siphon Strength and Wave of Enfeeblement outright for its duration.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Shaman Weakness line, Enchanter Enfeeblement line",
+      "class": "Shaman / Enchanter",
+      "detail": "Shared STR-debuff slot across classes; strongest holds.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "AC debuff line",
+      "detail": "STR and AC are separate debuff slots."
+     },
+     {
+      "line": "ATK debuff line",
+      "detail": "ATK and STR are separate debuff slots - both can be down on the same mob."
+     }
+    ],
+    "notes": "STR reduction lowers NPC melee damage in classic; it is the SK's self-mitigation debuff and pairs with the ATK line rather than duplicating it."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Shadow_Knight",
+    "https://wiki.project1999.com/Buff_Lines",
+    "https://spells.eqresource.com/spellsearch.php?level=1&range=greater&class=shd",
+    "https://www.spells.eqresource.com/spells.php?id=2463"
+   ]
+  },
+  {
+   "id": "sk-atk-debuff",
+   "name": "Attack debuff / transfer line (Despair -> Scream of Hate -> Shroud of Hate)",
+   "category": "debuff",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Despair",
+     "level": 9,
+     "inDb": true,
+     "note": "Legends 9; live 9. Luclin content, absent from P99. -5 ATK, 6 min."
+    },
+    {
+     "name": "Scream of Hate",
+     "level": 15,
+     "inDb": true,
+     "note": "Legends 15; live 15. Luclin, absent from P99. -8 ATK, 10 min."
+    },
+    {
+     "name": "Shroud of Hate",
+     "level": 35,
+     "inDb": true,
+     "note": "Legends 35; live 35; P99 lists it at SK 39 (Velious vendor). -20 ATK, 10 min, transfers the ATK to the caster."
+    },
+    {
+     "name": "siphon strength recourse",
+     "level": 39,
+     "inDb": true,
+     "note": "DATA DISCREPANCY: this is the caster-side recourse buff, +20 ATK self for 10 min, which exactly matches P99's \"Shroud of Hate Recourse\" (Attack Slot 7, Shadow Knight 39). The live spell actually named Siphon Strength Recourse (eqresource id 2463) is a +10 STR / 6 min self buff belonging to Siphon Strength, not this. Legends appears to have mislabelled the Shroud of Hate recourse with the Siphon Strength recourse name, and the level field (39) matches P99's Shroud of Hate rather than Legends' own L35 Shroud of Hate."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict on magnitude (-5 -> -8 -> -20) and duration. Exception: only Shroud of Hate carries the caster recourse, so Despair and Scream of Hate are pure debuffs with no self benefit and are dropped from the book as soon as Shroud of Hate is available."
+   },
+   "missingOnLegends": [
+    {
+     "name": "Torrent of Hate",
+     "level": 54,
+     "note": "live L54 - the AE version of the ATK transfer"
+    },
+    {
+     "name": "Shadow Voice",
+     "level": 57,
+     "note": "live L57"
+    },
+    {
+     "name": "Shroud of Pain Recourse / Shadow Vortex Recourse",
+     "level": null,
+     "note": "see the AC line - Legends exposes only one of the three recourse buffs"
+    }
+   ],
+   "stacking": {
+    "slots": [
+     "Attack (Slot 7) - caster-side recourse buff",
+     "ATK debuff slot on target"
+    ],
+    "conflicts": [
+     {
+      "line": "Attack (Slot 7)",
+      "class": "Shadow Knight",
+      "detail": "Per P99 Buff_Lines, Attack Slot 7 holds exactly one entry: Shroud of Hate Recourse +20 (Self-only, Shadow Knight 39). Nothing else in the game competes for this slot, so the SK recourse is effectively uncontested.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Enchanter/Shaman ATK debuffs on the target",
+      "class": "Enchanter / Shaman",
+      "detail": "The target-side ATK reduction shares the normal ATK debuff slot; strongest holds.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Grim Aura (Attack Slot 1)",
+      "detail": "Different slot - Grim Aura +10 and the Shroud of Hate recourse +20 add for +30 ATK. This is the single most useful SK self-buff stack and should be annotated as such."
+     },
+     {
+      "line": "Bard Jonthan's Provocation / Inspiration (Attack Layer 2, Slot 3 & 4)",
+      "detail": "Layer 2 is independent of Layer 1 slots; bard ATK songs add on top of both Grim Aura and the recourse."
+     },
+     {
+      "line": "STR debuff line",
+      "detail": "Separate target-side slot."
+     }
+    ],
+    "notes": "Load-bearing: P99 Buff_Lines Attack (Slot 1) = Grim Aura, Attack (Slot 7) = Shroud of Hate Recourse. They stack. Attack Slot 1 is contested (Firefist, Yaulp IV, Strength of Nature, Celestial Tranquility) but Slot 7 is SK-exclusive."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Buff_Lines",
+    "https://wiki.project1999.com/Shroud_of_Hate_Recourse",
+    "https://spells.eqresource.com/spellsearch.php?level=1&range=greater&class=shd",
+    "https://www.spells.eqresource.com/spells.php?id=2463"
+   ]
+  },
+  {
+   "id": "sk-ac-debuff",
+   "name": "Armor Class debuff / transfer line (Scream of Pain -> Shadow Vortex -> Shroud of Pain)",
+   "category": "debuff",
+   "sharedWith": [
+    "Necromancer"
+   ],
+   "members": [
+    {
+     "name": "Scream of Pain",
+     "level": 23,
+     "inDb": true,
+     "note": "Legends 23; live 23. Luclin, absent from P99. -5 AC, 10 min."
+    },
+    {
+     "name": "Shadow Vortex",
+     "level": 37,
+     "inDb": true,
+     "note": "Legends 37; live 37; P99 39 (also Necromancer 20 for the recourse). -9 to -12 AC, transfers AC to caster."
+    },
+    {
+     "name": "Shroud of Pain",
+     "level": 50,
+     "inDb": true,
+     "note": "Legends 50; live 50; P99 50 (Velious, NPC drop). -15 to -18 AC, transfers AC to caster."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict on magnitude and on the size of the caster recourse (+12 -> +18 AC). Exception: Shroud of Pain is a drop on P99/classic rather than a vendor spell, so Shadow Vortex remains the practical member for many characters; and against AC-immune or heavily debuffed targets the recourse is the only reason to cast, making the cheaper Shadow Vortex preferable."
+   },
+   "missingOnLegends": [
+    {
+     "name": "Shadow Vortex Recourse",
+     "level": 39,
+     "note": "AC Slot 7 +12 self buff on P99 (Necromancer 20, Shadow Knight 39). Not present in the Legends dump even though the equivalent ATK recourse is."
+    },
+    {
+     "name": "Shroud of Pain Recourse",
+     "level": 50,
+     "note": "AC Slot 7 +18 self buff on P99 (Shadow Knight 50). Not present in the Legends dump."
+    },
+    {
+     "name": "Torrent of Pain",
+     "level": 56,
+     "note": "live L56 - the AE version of the AC transfer"
+    }
+   ],
+   "stacking": {
+    "slots": [
+     "AC (Slot 7) - caster-side recourse buff",
+     "AC debuff slot on target"
+    ],
+    "conflicts": [
+     {
+      "line": "AC (Slot 7)",
+      "class": "Shadow Knight / Necromancer",
+      "detail": "P99 Buff_Lines AC (Slot 7) contains only Shroud of Pain Recourse +18 (SK 50) and Shadow Vortex Recourse +12 (Necro 20, SK 39, also proc on Cazic Quill and Twisted Oaken Staff). The two overwrite each other; nothing else in the game uses Slot 7.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Asystole / Heart Flutter AC riders",
+      "class": "Shadow Knight",
+      "detail": "Target-side AC debuff slot is shared with the disease DoT line riders (Asystole -18 AC). Landing Asystole first will block Shroud of Pain and therefore deny you the recourse buff.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Enchanter/Magician AC debuffs",
+      "class": "Enchanter / Magician",
+      "detail": "Shared target-side AC debuff slot; strongest holds.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "AC (Slot 4) buffs - Spirit Armor, Aegis line, Umbra, Phantom Armor, Guardian",
+      "detail": "AC Slot 7 is independent of Slot 4. A cleric Aegis (+34, Slot 4) and the SK's own Shroud of Pain Recourse (+18, Slot 7) both apply. Spirit Armor (Cleric 19 / Necromancer 16 / Paladin 30) is the Slot 4 anchor from the prior wave - note that Legends SK does NOT receive Spirit Armor."
+     },
+     {
+      "line": "AC (Slot 1), (Slot 2), (Slot 3) buffs",
+      "detail": "All independent of Slot 7."
+     },
+     {
+      "line": "ATK debuff line recourse (Attack Slot 7)",
+      "detail": "AC Slot 7 and Attack Slot 7 are different tables entirely; both recourses can be up together."
+     }
+    ],
+    "notes": "The recourse buffs are the reason this line matters to an SK tank. Legends exposing the ATK recourse as a listed spell but not the two AC recourses is an inconsistency in the Legends spell data worth surfacing to the owner."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Buff_Lines",
+    "https://wiki.project1999.com/Shadow_Knight",
+    "https://spells.eqresource.com/spellsearch.php?level=1&range=greater&class=shd"
+   ]
+  },
+  {
+   "id": "sk-terror",
+   "name": "Terror hate line (instant aggro)",
+   "category": "aggro",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Terror of Darkness",
+     "level": 33,
+     "inDb": true,
+     "note": "Legends 33; live 33 (Allakhazam spell 1221). 20 mana, ~200 hate. Luclin content, absent from P99."
+    },
+    {
+     "name": "Terror of Shadows",
+     "level": 42,
+     "inDb": true,
+     "note": "Legends 42; live 42 (Allakhazam spell 1222). 40 mana, ~400 hate."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict by hate value: 200 -> 400 -> (450 Terror of Death) -> (Terror of Terris). Exception, and it is the important one: hate-per-mana is flat-to-worse up the line (200/20 = 10.0 hate per mana for Terror of Darkness versus 400/40 = 10.0 for Terror of Shadows, and 450/45 = 10.0 for Terror of Death), so the lower member is never wasteful - it is the correct cast when you need a small top-up or are mana-starved. The upgrade buys burst, not efficiency."
+   },
+   "missingOnLegends": [
+    {
+     "name": "Terror of Death",
+     "level": 53,
+     "note": "live L53, 45 mana, 450 hate (Allakhazam spell 1223). Its absence leaves a 17-level gap between Terror of Shadows and anything better."
+    },
+    {
+     "name": "Terror of Terris",
+     "level": 59,
+     "note": "live L59 continuation"
+    },
+    {
+     "name": "Terror of Discord",
+     "level": 63,
+     "note": "post-60 - out of range but noted as the line continuation"
+    }
+   ],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [
+     {
+      "line": "Voice aggro-multiplier line",
+      "detail": "Terrors add a flat hate amount to the caster; Voice buffs multiply another player's generated hate. Entirely different mechanisms - an SK casts terrors on the mob and Voice on the tank (or on himself)."
+     },
+     {
+      "line": "Taunt skill",
+      "detail": "Terrors add hate but, unlike Taunt, are unresistable and do not fail; they place the caster above the current top of the hate list and then add. Both can be used in the same fight."
+     }
+    ],
+    "notes": "ORDERING BY TAUNT VALUE, ascending: Terror of Darkness (200) < Terror of Shadows (400) < Terror of Death (450, absent on Legends) < Terror of Terris. The terrors are instant detrimental spells with no duration and therefore no buff slot - there is no stacking table for them."
+   },
+   "sources": [
+    "https://everquest.allakhazam.com/db/spell.html?spell=1223",
+    "https://everquest.allakhazam.com/db/spell.html?spell=1221",
+    "https://everquest.allakhazam.com/db/spell.html?spell=1222",
+    "https://spells.eqresource.com/spellsearch.php?level=1&range=greater&class=shd"
+   ]
+  },
+  {
+   "id": "sk-voice",
+   "name": "Voice aggro-multiplier line",
+   "category": "aggro-buff",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Voice of Darkness",
+     "level": 39,
+     "inDb": true,
+     "note": "Legends 39; live 39 (Allakhazam spell 1225). Increase Agro Multiplier by 2% (spell value 102), 10 min, single friendly or self."
+    },
+    {
+     "name": "Voice of Shadows",
+     "level": 46,
+     "inDb": true,
+     "note": "Legends 46; live 46. Increase Agro Multiplier by 4% (value 104), 10 min."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict - a straight percentage increase on the same effect and duration. No exception: there is no reason to keep Voice of Darkness once Voice of Shadows is available, mana costs are close and the buff is cast once per 10 minutes."
+   },
+   "missingOnLegends": [
+    {
+     "name": "Voice of Death",
+     "level": 55,
+     "note": "live L55 - next multiplier tier"
+    },
+    {
+     "name": "Voice of Terris",
+     "level": 60,
+     "note": "live L60 - top of the line at 60"
+    }
+   ],
+   "stacking": {
+    "slots": [
+     "Aggro multiplier slot (single, on the buffed player)"
+    ],
+    "conflicts": [
+     {
+      "line": "Own line",
+      "class": "Shadow Knight",
+      "detail": "Voice of Shadows overwrites Voice of Darkness on the same target - one aggro multiplier at a time.",
+      "source": "https://everquest.allakhazam.com/db/spell.html?spell=1225"
+     },
+     {
+      "line": "Another Shadow Knight's Voice buff",
+      "class": "Shadow Knight",
+      "detail": "Two SKs cannot layer multipliers on the same tank; the last/strongest holds.",
+      "source": "https://everquest.allakhazam.com/db/spell.html?spell=1225"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Terror hate line",
+      "detail": "Different mechanism - flat hate versus multiplier."
+     },
+     {
+      "line": "All stat and resist buffs",
+      "detail": "The aggro multiplier occupies no stat slot."
+     }
+    ],
+    "notes": "Luclin content, so there is no P99 Buff_Lines entry. Cast on the tank (or self when tanking); the multiplier applies to hate the buffed player generates, which makes it worth more on a warrior with high DPS than on the SK himself."
+   },
+   "sources": [
+    "https://everquest.allakhazam.com/db/spell.html?spell=1225",
+    "https://spells.eqresource.com/spellsearch.php?level=1&range=greater&class=shd"
+   ]
+  },
+  {
+   "id": "sk-grim-aura",
+   "name": "Grim Aura (self ATK buff)",
+   "category": "self-buff",
+   "sharedWith": [
+    "Necromancer"
+   ],
+   "members": [
+    {
+     "name": "Grim Aura",
+     "level": 16,
+     "inDb": true,
+     "note": "Legends 16; live 16; P99 22 (Velious era). Necromancer gets it at 4. +5 to +10 ATK, permanent duration, self only."
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Single member - never upgraded. Permanent duration means it is cast once and forgotten."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Attack (Slot 1)"
+    ],
+    "conflicts": [
+     {
+      "line": "Attack (Slot 1) occupants",
+      "class": "Druid / Ranger / Cleric / Paladin",
+      "detail": "Slot 1 holds Celestial Tranquility +40 (click), Strength of Nature +25 (Ranger 51), Yaulp IV +16 (Cleric 53 / Paladin 60), Firefist +10 (Druid 9 / Ranger 22) and Grim Aura +10 (Necromancer 4 / Shadow Knight 22 on P99). Only one applies. A druid Firefist on an SK is a wash (+10 either way); anything above +10 displaces Grim Aura and is an improvement.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Grim Aura clickies",
+      "class": "items",
+      "detail": "Hand of Shadow, Reaper's Ring, Shrunken Goblin Skull Earring and Sword of Pain all cast Grim Aura and contend for the same Slot 1 - the item version is identical, not additive.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Attack (Slot 7) - Shroud of Hate Recourse +20",
+      "detail": "The core SK ATK stack: Grim Aura (Slot 1) + Shroud of Hate Recourse (Slot 7) = +30 ATK from the SK's own book."
+     },
+     {
+      "line": "Attack (Slot 2) - Illusion: Werewolf / Spirit Wolf",
+      "detail": "Enchanter illusions are Slot 2 and add on top."
+     },
+     {
+      "line": "Attack (Slot 3) - Avatar, wolf forms, Aura of Battle",
+      "detail": "Shaman Avatar +100 is Slot 3 and stacks with Grim Aura."
+     },
+     {
+      "line": "Attack (Slot 4) - Visions of Grandeur (Enchanter 60)",
+      "detail": "Independent slot."
+     },
+     {
+      "line": "Attack (Layer 2, Slot 3 & 4) - bard Jonthan's songs",
+      "detail": "Layer 2 is fully independent of Layer 1."
+     }
+    ],
+    "notes": "Legends places Grim Aura at 16 (matching live) rather than P99's 22 - another confirmation that Legends tracks the modern spell table."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Buff_Lines",
+    "https://spells.eqresource.com/spellsearch.php?level=1&range=greater&class=shd"
+   ]
+  },
+  {
+   "id": "sk-dark-temptation",
+   "name": "Dark Temptation (self ATK buff with hitpoint cost)",
+   "category": "self-buff",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Dark Temptation",
+     "level": 32,
+     "inDb": true,
+     "note": "Legends 32; live 32. Luclin, absent from P99. +25 ATK with a 3 HP per tick self-drain, permanent duration."
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Single member on Legends. Not an upgrade of Grim Aura - see stacking; whether the two coexist is the open question for this line."
+   },
+   "missingOnLegends": [
+    {
+     "name": "Deathly Temptation",
+     "level": 58,
+     "note": "live L58 - the upgrade"
+    }
+   ],
+   "stacking": {
+    "slots": [
+     "Attack (slot unknown - Luclin-era, not covered by P99 Buff_Lines)"
+    ],
+    "conflicts": [
+     {
+      "line": "Grim Aura (Attack Slot 1)",
+      "class": "Shadow Knight",
+      "detail": "UNRESOLVED. Dark Temptation post-dates the P99 Buff_Lines table so no classic slot assignment exists. If it were placed in Attack Slot 1 it would simply replace Grim Aura (+25 vs +10) and Grim Aura would become dead; if it occupies a distinct slot the pair gives +35 before the Shroud of Hate recourse. Flagged as an open question rather than guessed.",
+      "source": "No source - gap in P99 coverage"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Attack (Slot 7) - Shroud of Hate Recourse",
+      "detail": "Slot 7 is SK-exclusive and unaffected regardless of where Dark Temptation lands."
+     }
+    ],
+    "notes": "The self-drain (3 HP/tick, permanent) makes this a combat-only buff in practice; classic SKs would not run a permanent HP drain while medding."
+   },
+   "sources": [
+    "https://spells.eqresource.com/spellsearch.php?level=1&range=greater&class=shd"
+   ]
+  },
+  {
+   "id": "sk-absorb",
+   "name": "Damage absorption (skin) line",
+   "category": "self-buff-absorb",
+   "sharedWith": [
+    "Necromancer",
+    "Wizard"
+   ],
+   "members": [
+    {
+     "name": "Shieldskin",
+     "level": 31,
+     "inDb": true,
+     "note": "Legends 31; live 31; P99 34 (Necromancer 16, Wizard 16). +55 damage absorbed."
+    },
+    {
+     "name": "Steelskin",
+     "level": 56,
+     "inDb": true,
+     "note": "Legends 56; live 56; P99 56 (Necromancer 34, Wizard 34). +230 absorbed."
+    },
+    {
+     "name": "Diamondskin",
+     "level": 59,
+     "inDb": true,
+     "note": "Legends 59; live 59; P99 59 (Necromancer 44, Wizard 44). +394 absorbed."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict - each absorbs strictly more and lasts longer (36 min -> 72 min -> 90 min). Exception: mana cost triples across the line while the SK is usually taking far more than 394 damage per fight, so the lower members remain reasonable when you only need to cover a pull."
+   },
+   "missingOnLegends": [
+    {
+     "name": "Manaskin",
+     "level": 52,
+     "note": "necromancer/wizard-only (+600) - SK never receives it"
+    },
+    {
+     "name": "Leechcurse Discipline",
+     "level": 60,
+     "note": "live L60 discipline, a different mitigation mechanism"
+    }
+   ],
+   "stacking": {
+    "slots": [
+     "Damage Absorption (Primary)"
+    ],
+    "conflicts": [
+     {
+      "line": "Damage Absorption (Primary)",
+      "class": "Enchanter / Necromancer / Wizard",
+      "detail": "The Primary absorb slot holds one effect: Barrier of Force +800 (click), Rune V +700 (Ench 52), Manaskin +600 (Necro/Wiz 52), Rune IV +394 / Diamondskin +394, Rune III +230 / Steelskin +230, Rune II +118 / Leatherskin +118, Rune I +55 / Shieldskin +55. An enchanter Rune on the SK displaces his own skin buff and vice versa - the higher value should be kept.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Damage Absorption (Berserker) - Bedlam, Berserker Spirit, Berserker Strength",
+      "detail": "Enchanter berserker-line absorbs are a separate slot and add to the skin buffs."
+     },
+     {
+      "line": "Damage Absorption (Shield of Song) - Bard 49",
+      "detail": "Separate slot, +20 (+56 with instrument)."
+     },
+     {
+      "line": "Damage Absorption (March) - Nillipus' March of the Wee, Bard 52",
+      "detail": "Separate slot."
+     },
+     {
+      "line": "Harmshield",
+      "detail": "Different mechanism (invulnerability), no slot conflict."
+     }
+    ],
+    "notes": "Per P99, maximum stacked absorption for a non-berserker-buffed character is +1139 (Rune V + Bedlam + Shield of Song + March). An SK contributes at most Diamondskin's 394 to that total."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Buff_Lines",
+    "https://wiki.project1999.com/Shadow_Knight",
+    "https://spells.eqresource.com/spellsearch.php?level=1&range=greater&class=shd"
+   ]
+  },
+  {
+   "id": "sk-damage-shield",
+   "name": "Banshee Aura (self damage shield)",
+   "category": "self-buff",
+   "sharedWith": [
+    "Necromancer"
+   ],
+   "members": [
+    {
+     "name": "Banshee Aura",
+     "level": 54,
+     "inDb": true,
+     "note": "Legends 54; live 54; P99 54 (Kunark, Overthere - Necromancer gets it at 16). +9 to +12 damage shield, permanent, self only."
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Single member, never upgraded for SK."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Damage Shield (Slot 1)"
+    ],
+    "conflicts": [
+     {
+      "line": "Damage Shield (Slot 1)",
+      "class": "Magician / Druid / Ranger / Enchanter / Wizard",
+      "detail": "Slot 1 is crowded: Aegis of Ro +33 (Mag 60), Cadeau of Flame +33 (Mag 56), Shield of Blades +32 (Dru 58), Shield of Lava +25 (Mag 49), Shield of Thorns +24 (Dru 49), Barrier of Combustion +20 (Mag 39), Inferno Shield +15 (Mag 29), Shield of Brambles +12 (Dru 29) and Banshee Aura +12 (Necro 16 / SK 54). Any magician or druid DS on the SK displaces Banshee Aura and is almost always larger - Banshee Aura is a solo buff.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Damage Shield (Slot 2) - Kilva's Skin of Flame, O'Keil's Flickering Flame, Frostreaver's Blessing, Call of Earth",
+      "detail": "Independent slot; a Kilva's potion +31 stacks on top of Banshee Aura."
+     },
+     {
+      "line": "Damage Shield (Slot 3) - druid/ranger self \"coat\" line (Thorncoat, Bladecoat)",
+      "detail": "Independent slot - but self-only, so not available to an SK."
+     },
+     {
+      "line": "Damage Shield (Layer 2, Slot 1) - bard Psalm of Cooling / Psalm of Warmth",
+      "detail": "Layer 2 stacks with everything in Layer 1."
+     }
+    ],
+    "notes": "Damage shields generate their own aggro on every melee hit taken, which is why an SK tank values a DS beyond the damage - it is passive threat."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Buff_Lines",
+    "https://wiki.project1999.com/Shadow_Knight",
+    "https://spells.eqresource.com/spellsearch.php?level=1&range=greater&class=shd"
+   ]
+  },
+  {
+   "id": "sk-invuln",
+   "name": "Harmshield (invulnerability)",
+   "category": "self-buff",
+   "sharedWith": [
+    "Necromancer"
+   ],
+   "members": [
+    {
+     "name": "Harmshield",
+     "level": 50,
+     "inDb": true,
+     "note": "Legends 50; live 50. Necromancer receives it at 34. Absent from the P99 SK list, which stops the SK short of Harmshield entirely - a Luclin-era grant to the class. 3 ticks of invulnerability at a 20 HP cost."
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Single member. Nothing in the SK book supersedes an invulnerability effect."
+   },
+   "missingOnLegends": [
+    {
+     "name": "Deflection Discipline",
+     "level": 59,
+     "note": "live L59 - a different mitigation mechanism at a similar role"
+    }
+   ],
+   "stacking": {
+    "slots": [
+     "Invulnerability slot"
+    ],
+    "conflicts": [
+     {
+      "line": "Divine Aura / Divine Barrier (Cleric)",
+      "class": "Cleric",
+      "detail": "Same invulnerability mechanic; no reason and no ability to layer them.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Damage absorption line",
+      "detail": "Different slot; the absorb buff simply is not consumed while invulnerable."
+     }
+    ],
+    "notes": "Classic invulnerability also prevents the caster from acting offensively and does not stop damage-over-time already ticking. P99 not listing Harmshield for SK is a real era difference, not an omission - flag it if the annotation is meant to describe classic behaviour."
+   },
+   "sources": [
+    "https://spells.eqresource.com/spellsearch.php?level=1&range=greater&class=shd",
+    "https://wiki.project1999.com/Shadow_Knight"
+   ]
+  },
+  {
+   "id": "sk-feign-death",
+   "name": "Feign Death line",
+   "category": "utility",
+   "sharedWith": [
+    "Necromancer",
+    "Monk"
+   ],
+   "members": [
+    {
+     "name": "Feign Death",
+     "level": 24,
+     "inDb": true,
+     "note": "Legends 24; live 24; P99 30. 60 mana."
+    },
+    {
+     "name": "Death Peace",
+     "level": 60,
+     "inDb": true,
+     "note": "Legends 60; live 60. Necromancer receives it at 54. Absent from the P99 SK list."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict - Death Peace is the improved feign with a lower failure profile. Exception: Feign Death is much cheaper and instant-cast in practice, so it stays memmed; Death Peace is the \"must not fail\" version for raid splits."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [
+     {
+      "line": "Monk Feign Death skill",
+      "class": "Monk",
+      "detail": "Same mechanic, no stacking - a spell feign and a skill feign are alternate routes to the same state.",
+      "source": "https://wiki.project1999.com/Shadow_Knight"
+     }
+    ],
+    "stacksWith": [],
+    "notes": "Feign is instantaneous state, not a buff; nothing to stack. Legends granting Feign Death at 24 versus P99's 30 matches live."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Shadow_Knight",
+    "https://spells.eqresource.com/spellsearch.php?level=1&range=greater&class=shd"
+   ]
+  },
+  {
+   "id": "sk-invis-undead",
+   "name": "Invisibility versus Undead line",
+   "category": "utility-buff",
+   "sharedWith": [
+    "Necromancer",
+    "Cleric",
+    "Paladin"
+   ],
+   "members": [
+    {
+     "name": "Invisibility versus Undead",
+     "level": 4,
+     "inDb": true,
+     "note": "Legends 4; live 4; P99 9. 27 min, Single Friendly or Self. NOTE: the Legends dump contains TWO level-4 entries whose names differ only in the capitalisation of \"versus\"/\"Versus\" - this one carries the explicit \"Invisibility versus Undead\" effect and a \"Single Friendly (or Self)\" target."
+    },
+    {
+     "name": "Invisibility Versus Undead",
+     "level": 4,
+     "inDb": true,
+     "note": "DUPLICATE ENTRY. Same level, same 27 minute duration, but its effect row reads \"Invisibility(1)\" and its target is plain \"Single\". Almost certainly a duplicate/legacy row in the Legends spell table rather than a second spell - the two should be de-duplicated before shipping the annotation."
+    },
+    {
+     "name": "Improved Invisibility to Undead",
+     "level": 61,
+     "inDb": true,
+     "note": "Legends 61; live 61. 10 min, self only. Absent from P99 (Luclin)."
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Not strict. Improved Invisibility to Undead is self-only and lasts 10 minutes versus the base spell's 27 minutes on any friendly target, so the low-level version is retained for buffing other players and for long duration. \"Improved\" refers to reliability against higher-level undead, not to duration or targeting."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Invisibility versus Undead slot"
+    ],
+    "conflicts": [
+     {
+      "line": "Own line",
+      "class": "Shadow Knight",
+      "detail": "One IVU effect at a time; recasting refreshes.",
+      "source": "https://wiki.project1999.com/Shadow_Knight"
+     },
+     {
+      "line": "Cleric/Paladin/Necromancer Invisibility versus Undead",
+      "class": "Cleric / Paladin / Necromancer",
+      "detail": "Identical spell across classes - overwrites rather than layers.",
+      "source": "https://wiki.project1999.com/Shadow_Knight"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Gather Shadows (ordinary invisibility)",
+      "detail": "Ordinary invisibility and invisibility-versus-undead are separate effects in classic and both can be active; the practical caveat is that any action or the expiry of either will still break the other's protection independently."
+     }
+    ],
+    "notes": "The duplicate row is the load-bearing data finding for this line - a UI that lists both will show the same spell twice at level 4."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Shadow_Knight",
+    "https://spells.eqresource.com/spellsearch.php?level=1&range=greater&class=shd"
+   ]
+  },
+  {
+   "id": "sk-invis",
+   "name": "Gather Shadows (self invisibility)",
+   "category": "utility-buff",
+   "sharedWith": [
+    "Necromancer"
+   ],
+   "members": [
+    {
+     "name": "Gather Shadows",
+     "level": 30,
+     "inDb": true,
+     "note": "Legends 30; live 30; P99 30. 20 min, self only."
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Single member. The SK never gets an improved or castable-on-others invisibility."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Invisibility slot"
+    ],
+    "conflicts": [
+     {
+      "line": "Enchanter/Magician/Druid Invisibility, Invisibility Cloak items",
+      "class": "Enchanter / Magician / Druid",
+      "detail": "One invisibility effect at a time; recast overwrites.",
+      "source": "https://wiki.project1999.com/Shadow_Knight"
+     },
+     {
+      "line": "See Invisible (Deadeye)",
+      "class": "Shadow Knight",
+      "detail": "Not a slot conflict, but note that Deadeye grants See Invisible to the caster and does not reveal his own invisibility.",
+      "source": "https://wiki.project1999.com/Shadow_Knight"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Invisibility versus Undead line",
+      "detail": "Separate effects, both can be up."
+     },
+     {
+      "line": "Bobbing Corpse levitate",
+      "detail": "Independent."
+     }
+    ],
+    "notes": "Self-only, which is why an SK cannot invis a group for a corpse run - Summon Corpse fills that role instead."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Shadow_Knight",
+    "https://spells.eqresource.com/spellsearch.php?level=1&range=greater&class=shd"
+   ]
+  },
+  {
+   "id": "sk-vision",
+   "name": "Vision line (Deadeye / Shadow Sight)",
+   "category": "utility-buff",
+   "sharedWith": [
+    "Necromancer"
+   ],
+   "members": [
+    {
+     "name": "Deadeye",
+     "level": 17,
+     "inDb": true,
+     "note": "Legends 17; live 17; P99 22. See Invisible + Infravision, permanent, self."
+    },
+    {
+     "name": "Shadow Sight",
+     "level": 40,
+     "inDb": true,
+     "note": "Legends 40; live 40; P99 49. Ultravision, permanent, self."
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "NOT strict, and this is the exception worth annotating. Shadow Sight upgrades the night-vision component (Infravision -> Ultravision) but drops See Invisible entirely. A Legends SK who replaces Deadeye with Shadow Sight loses the ability to see invisible mobs and players. Deadeye should be kept alongside, not replaced - if the two occupy separate slots (they use distinct SPAs: See Invisible, Infravision, Ultravision), both can be maintained."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "See Invisible slot",
+     "Night vision slot (Infravision / Ultravision)"
+    ],
+    "conflicts": [
+     {
+      "line": "Own line (night vision component)",
+      "class": "Shadow Knight",
+      "detail": "Infravision and Ultravision write the same night-vision state; Ultravision is the stronger and supersedes. Deadeye's See Invisible is on a separate slot and survives.",
+      "source": "https://wiki.project1999.com/Shadow_Knight"
+     },
+     {
+      "line": "Shaman/Enchanter/Druid vision buffs (Serpent Sight, Plainsight, Wolf Form ultravision)",
+      "class": "Shaman / Enchanter / Druid",
+      "detail": "Same night-vision and see-invisible slots across classes; strongest/last holds.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Gather Shadows",
+      "detail": "Independent."
+     }
+    ],
+    "notes": "Both are permanent duration and free to maintain, so the correct annotation is \"cast both\", not \"Shadow Sight replaces Deadeye\"."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Shadow_Knight",
+    "https://spells.eqresource.com/spellsearch.php?level=1&range=greater&class=shd"
+   ]
+  },
+  {
+   "id": "sk-cold-resist",
+   "name": "Cold resistance line",
+   "category": "resist-buff",
+   "sharedWith": [
+    "Cleric",
+    "Druid",
+    "Ranger",
+    "Shaman"
+   ],
+   "members": [
+    {
+     "name": "Endure Cold",
+     "level": 10,
+     "inDb": true,
+     "note": "Legends 10; live 10; P99 15. +11 to +20 CR, 27 min, single friendly or self."
+    },
+    {
+     "name": "Resist Cold",
+     "level": 35,
+     "inDb": true,
+     "note": "Legends 35; live 35; P99 39. +39 to +40 CR, 36 min."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict - double the resistance and a longer duration on the same slot. Exception: Endure Cold at 20 mana versus Resist Cold at 50 mana matters when buffing a full group before a Velious zone-in."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Cold Resistance (Primary)"
+    ],
+    "conflicts": [
+     {
+      "line": "Cold Resistance (Primary)",
+      "class": "Cleric / Druid / Ranger / Shaman",
+      "detail": "One entry holds: Circle of Summer +45 (Druid 52), Resist Cold +40 (Cleric 34 / Druid 24 / Ranger 49 / Shaman 29), Endure Cold +20. A druid Circle of Summer displaces the SK's Resist Cold. Note that P99 Buff_Lines omits Shadow Knight from the Endure/Resist Cold class lists even though the P99 Shadow Knight page grants both - treat the omission as a wiki gap, not evidence SK lacks them.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Elemental Armor (Magician 44 / Wizard 44), Aura of White Petals",
+      "detail": "The Flower/Armor group is a separate slot and adds to the Primary resist buff."
+     },
+     {
+      "line": "Bard Psalm of Warmth (Layer 2)",
+      "detail": "Independent layer, +70 base / +196 with instrument."
+     },
+     {
+      "line": "Aura of Heat potions",
+      "detail": "Separate potion slot, +5 / +15 / +25."
+     }
+    ],
+    "notes": "Maximum stacked cold resistance per P99 is +95 for most classes; the SK contributes only the +40 Primary component."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Buff_Lines",
+    "https://wiki.project1999.com/Shadow_Knight",
+    "https://spells.eqresource.com/spellsearch.php?level=1&range=greater&class=shd"
+   ]
+  },
+  {
+   "id": "sk-disease-resist",
+   "name": "Disease resistance line (truncated)",
+   "category": "resist-buff",
+   "sharedWith": [
+    "Cleric",
+    "Druid",
+    "Necromancer",
+    "Paladin",
+    "Shaman"
+   ],
+   "members": [
+    {
+     "name": "Endure Disease",
+     "level": 26,
+     "inDb": true,
+     "note": "Legends 26; live 26; P99 30. +18 to +20 DR, 27 min. P99 Buff_Lines explicitly lists Shadow Knight 30 for this spell."
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Single member - the line is truncated for SK. Every other class that gets Endure Disease also gets Resist Disease; the SK does not, on Legends, on live, or on P99."
+   },
+   "missingOnLegends": [
+    {
+     "name": "Resist Disease",
+     "level": null,
+     "note": "P99 grants it to Cleric 39, Druid 44, Necromancer 34, Paladin 51 and Shaman 34 - but not Shadow Knight. This is a genuine class truncation, not a Legends omission."
+    }
+   ],
+   "stacking": {
+    "slots": [
+     "Disease Resistance (Primary)"
+    ],
+    "conflicts": [
+     {
+      "line": "Disease Resistance (Primary)",
+      "class": "Cleric / Druid / Necromancer / Paladin / Shaman",
+      "detail": "Aura of Black Petals +50 (click), Talisman of Jasinth +45 (Shaman 51), Resist Disease +40, Endure Disease +20, Resistant Skin +15 (Wizard 12). One holds - the SK's +20 is the floor of the slot and is displaced by any of the others.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Bard Psalm of Vitality (Layer 2)",
+      "detail": "+70 base / +196 with instrument, independent."
+     },
+     {
+      "line": "Aura of Antibody potions, Aloe Sweat",
+      "detail": "Separate item slot."
+     }
+    ],
+    "notes": "Note the SK is also a disease-DoT class (Disease Cloud, Heart Flutter, Asystole), so an SK buffing Endure Disease on a group is buffing against his own school - relevant only in PvP or charm scenarios."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Buff_Lines",
+    "https://wiki.project1999.com/Shadow_Knight",
+    "https://spells.eqresource.com/spellsearch.php?level=1&range=greater&class=shd"
+   ]
+  },
+  {
+   "id": "sk-cure-disease",
+   "name": "Cure Disease",
+   "category": "cure",
+   "sharedWith": [
+    "Cleric",
+    "Druid",
+    "Paladin",
+    "Shaman",
+    "Necromancer"
+   ],
+   "members": [
+    {
+     "name": "Cure Disease",
+     "level": 19,
+     "inDb": true,
+     "note": "Legends 19; live 19. Absent from the P99 SK list - a Luclin-era grant. Decrease Disease Counter by 4, single friendly or self."
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Single member. The SK never receives a stronger disease cure (no Counteract Disease, no Cure Disease upgrades)."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [
+     {
+      "line": "Everything",
+      "detail": "Instant counter removal, no slot."
+     }
+    ],
+    "notes": "Removes 4 disease counters, which is enough for low-level disease DoTs but not for Kunark-era ones. Its absence from P99 is an era difference, not an omission."
+   },
+   "sources": [
+    "https://spells.eqresource.com/spellsearch.php?level=1&range=greater&class=shd",
+    "https://wiki.project1999.com/Shadow_Knight"
+   ]
+  },
+  {
+   "id": "sk-corpse-summon",
+   "name": "Corpse summoning line",
+   "category": "utility",
+   "sharedWith": [
+    "Necromancer"
+   ],
+   "members": [
+    {
+     "name": "Summon Corpse",
+     "level": 51,
+     "inDb": true,
+     "note": "DISCREPANCY: Legends places it at 51; live/eqresource places it at 35; P99 lists it at SK 51 (Velious, drop in Splitpaw). Legends matches P99 here rather than live - the only line in the whole book where that happens. 700 mana, same zone only."
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Single member on Legends."
+   },
+   "missingOnLegends": [
+    {
+     "name": "Lesser Summon Corpse",
+     "level": 12,
+     "note": "live L12 - the low-level version; without it a Legends SK has no corpse recovery until 51"
+    },
+    {
+     "name": "Conjure Corpse",
+     "level": 57,
+     "note": "live L57 - the upgrade"
+    },
+    {
+     "name": "Summon Companion",
+     "level": 52,
+     "note": "P99 SK 52 (Velious vendor) - summons the pet to the caster. Present on P99 and on live, absent from the Legends dump."
+    }
+   ],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [
+     {
+      "line": "Everything",
+      "detail": "Instant utility, no slot."
+     }
+    ],
+    "notes": "The 700 mana cost and same-zone restriction are the classic constraints; this is the SK's single most socially valuable spell."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Shadow_Knight",
+    "https://spells.eqresource.com/spellsearch.php?level=1&range=greater&class=shd"
+   ]
+  },
+  {
+   "id": "sk-dispel",
+   "name": "Dispel line (truncated)",
+   "category": "utility",
+   "sharedWith": [
+    "Necromancer",
+    "Cleric",
+    "Enchanter",
+    "Magician",
+    "Wizard"
+   ],
+   "members": [
+    {
+     "name": "Cancel Magic",
+     "level": 36,
+     "inDb": true,
+     "note": "Legends 36; live 36; P99 39. Removes up to 2 effects."
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Single member on Legends - the line is truncated one step early."
+   },
+   "missingOnLegends": [
+    {
+     "name": "Nullify Magic",
+     "level": 58,
+     "note": "P99 SK 58 (Kunark vendor) and live L58. Present in both classic and modern sources but absent from the Legends dump - a real gap."
+    }
+   ],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [
+     {
+      "line": "Everything",
+      "detail": "Instant, no slot."
+     }
+    ],
+    "notes": "Cancel Magic strips from the top of the buff stack downward and will happily remove your group's buffs if mis-targeted."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Shadow_Knight",
+    "https://spells.eqresource.com/spellsearch.php?level=1&range=greater&class=shd"
+   ]
+  },
+  {
+   "id": "sk-breath-lev",
+   "name": "Water breathing / Bobbing Corpse line",
+   "category": "utility-buff",
+   "sharedWith": [
+    "Necromancer"
+   ],
+   "members": [
+    {
+     "name": "Breath of the Dead",
+     "level": 45,
+     "inDb": true,
+     "note": "Legends 45; live 45; P99 49. Water Breathing only, permanent, self."
+    },
+    {
+     "name": "Bobbing Corpse",
+     "level": 55,
+     "inDb": true,
+     "note": "Legends, live and P99 all 55 (P99: Kunark, Overthere). Water Breathing + Levitate + 40 Poison Resist, 63 min, self. The SK's truncated version of the necromancer's Dead Man Floating (Necromancer 44)."
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Not strict. Bobbing Corpse subsumes the water-breathing function and adds levitate and poison resist, but it is 63 minutes where Breath of the Dead is permanent, and 100 mana versus 45. For a long underwater excavation the permanent buff is correct; Bobbing Corpse is the travel/raid buff. Also: levitate is prohibited in some zones and will drop, so keeping Breath of the Dead separately memmed has a real use."
+   },
+   "missingOnLegends": [
+    {
+     "name": "Dead Man Floating",
+     "level": 44,
+     "note": "Necromancer-only in classic (+70 PR); the SK receives the weaker Bobbing Corpse instead. Not a Legends omission."
+    }
+   ],
+   "stacking": {
+    "slots": [
+     "Water Breathing slot",
+     "Levitate slot",
+     "Poison Resistance (Dead Man Floating slot)"
+    ],
+    "conflicts": [
+     {
+      "line": "Own line (water breathing component)",
+      "class": "Shadow Knight",
+      "detail": "Bobbing Corpse and Breath of the Dead both write the water-breathing state; the later cast holds and losing Bobbing Corpse to a zone-based levitate strip can take the water breathing with it.",
+      "source": "https://wiki.project1999.com/Shadow_Knight"
+     },
+     {
+      "line": "Levitate / Levitation / Spirit of Scale",
+      "class": "Druid / Shaman / Enchanter / Wizard",
+      "detail": "One levitate at a time; recast overwrites.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Enduring Breath (Druid / Shaman / Enchanter / Wizard)",
+      "class": "Druid / Shaman / Enchanter / Wizard",
+      "detail": "Same water-breathing slot.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Poison Resistance (Primary) - Resist Poison, Endure Poison, Talisman of Shadoo",
+      "detail": "P99 Buff_Lines gives Dead Man Floating its own poison-resistance column separate from Primary, Flower, Psalm and Item. Bobbing Corpse's +40 PR therefore ADDS to a shaman Talisman of Shadoo (+45) and to Resist Poison (+40) rather than contending with them - a genuinely useful and easily missed stack."
+     },
+     {
+      "line": "Bard Psalm of Purity",
+      "detail": "Layer 2 poison resist, independent."
+     }
+    ],
+    "notes": "The Dead Man Floating poison-resistance slot is the load-bearing stacking fact here: it is one of the few resist buffs in the game that is additive with the Primary resist line."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Buff_Lines",
+    "https://wiki.project1999.com/Shadow_Knight",
+    "https://spells.eqresource.com/spellsearch.php?level=1&range=greater&class=shd"
+   ]
+  },
+  {
+   "id": "sk-heal",
+   "name": "Dark Empathy (transfer heal)",
+   "category": "heal",
+   "sharedWith": [
+    "Necromancer"
+   ],
+   "members": [
+    {
+     "name": "Dark Empathy",
+     "level": 21,
+     "inDb": true,
+     "note": "Legends 21; live 21; P99 22. Transfers 30 hitpoints from caster to target, single target, 20 mana."
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Single member. The SK never receives a real heal - this is the whole of his healing kit and it costs his own hitpoints."
+   },
+   "missingOnLegends": [
+    {
+     "name": "Dark Pact",
+     "level": null,
+     "note": "necromancer-side life-transfer continuation; SK does not receive it"
+    }
+   ],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [
+     {
+      "line": "Everything",
+      "detail": "Instant heal, no slot."
+     }
+    ],
+    "notes": "Pairs with the lifetap line in practice: tap the mob, then transfer to the pet or a group member. The 30-point magnitude never scales, so it becomes irrelevant past the twenties except as a pet top-up."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Shadow_Knight",
+    "https://spells.eqresource.com/spellsearch.php?level=1&range=greater&class=shd"
+   ]
+  }
+ ],
+ "standalone": [
+  {
+   "name": "Sense the Dead",
+   "level": 2,
+   "category": "utility",
+   "note": "Locate nearest undead, self, 5 mana. Legends 2; live 2; P99 9. No upgrade in the SK book at any level; necromancer shares the same single-spell utility.",
+   "sources": [
+    "https://wiki.project1999.com/Shadow_Knight",
+    "https://spells.eqresource.com/spellsearch.php?level=1&range=greater&class=shd"
+   ]
+  },
+  {
+   "name": "Locate Corpse",
+   "level": 9,
+   "category": "utility",
+   "note": "Find a lost corpse. Legends 9; live 3; P99 9 - Legends matches P99 here, one of the few. Distinct from Summon Corpse (which moves the corpse); Locate only reports the zone. No upgrade.",
+   "sources": [
+    "https://wiki.project1999.com/Shadow_Knight",
+    "https://spells.eqresource.com/spellsearch.php?level=1&range=greater&class=shd"
+   ]
+  },
+  {
+   "name": "Shadow Step",
+   "level": 13,
+   "category": "utility",
+   "note": "Short random self-teleport. Legends 13; live 13; P99 15. No upgrade for SK (the necromancer/wizard translocation lines are not shared). Occasionally used to break a bad pathing position or escape a wall.",
+   "sources": [
+    "https://wiki.project1999.com/Shadow_Knight",
+    "https://spells.eqresource.com/spellsearch.php?level=1&range=greater&class=shd"
+   ]
+  },
+  {
+   "name": "Tiny Companion",
+   "level": 19,
+   "category": "pet-utility",
+   "note": "Cosmetic 50% pet size reduction, cast on pet. Legends 19; live 19; absent from P99 (Luclin). Not part of the pet summon line and not a buff - it must be recast on each new pet. No upgrade.",
+   "sources": [
+    "https://spells.eqresource.com/spellsearch.php?level=1&range=greater&class=shd"
+   ]
+  },
+  {
+   "name": "Blood of Pain",
+   "level": 41,
+   "category": "dot",
+   "note": "Legends 41; live 41. Luclin, absent from P99. 56-65 damage per tick over 36 seconds. UNLINKED BY MAGNITUDE: it out-damages Boil Blood (L53) per tick in the Legends data and does not fit the Heat Blood -> Boil Blood progression, nor does it carry the disease line's debuff riders. Left standalone deliberately rather than forced into the Blood line - the name similarity is not sufficient evidence.",
+   "sources": [
+    "https://spells.eqresource.com/spellsearch.php?level=1&range=greater&class=shd"
+   ]
+  },
+  {
+   "name": "Word of Spirit",
+   "level": 45,
+   "category": "direct-damage",
+   "note": "Point-blank AE magic direct damage, 97-104 per target, 133 mana. Legends 45; live 45; P99 49. The SK's only AE nuke below 60. The live continuations are the Torrent line (Torrent of Hate 54, Torrent of Pain 56, Torrent of Fatigue 58), none of which are on Legends, so it stands alone.",
+   "sources": [
+    "https://wiki.project1999.com/Shadow_Knight",
+    "https://spells.eqresource.com/spellsearch.php?level=1&range=greater&class=shd"
+   ]
+  }
+ ],
+ "unlinked": [],
+ "openQuestions": [
+  "Duplicate row: the Legends dump contains both \"Invisibility versus Undead\" and \"Invisibility Versus Undead\" at level 4, differing only in capitalisation and in how the effect is rendered (\"Invisibility versus Undead\" + Single Friendly, versus \"Invisibility(1)\" + Single). Is this two spells on the server or one row duplicated in the export? A UI grouping by name will show the level-4 slot twice.",
+  "Mislabelled recourse: \"siphon strength recourse\" (L39, +20 ATK, 10 min, self) matches P99's Shroud of Hate Recourse (Attack Slot 7, SK 39) exactly. The live spell genuinely named Siphon Strength Recourse (eqresource 2463) is +10 STR for 6 minutes and belongs to Siphon Strength. Which spell does the Legends row actually fire from - Siphon Strength (L6) or Shroud of Hate (L35)? And why is its level 39 when Legends' Shroud of Hate is 35?",
+  "Missing AC recourses: Legends exposes the ATK recourse as a listed spell but not Shadow Vortex Recourse (+12 AC, AC Slot 7) or Shroud of Pain Recourse (+18 AC, AC Slot 7), both of which P99 documents. Are those effects present on Legends but simply not enumerated in the class spell list, or do the AC transfers not grant a caster buff on this server?",
+  "Legends-custom line: Cancelling of Life (L18) and Negation of Life (L31) do not exist in the live Shadow Knight book at any level and have no P99 entry. Their \"Decrease Incoming Healing\" component is a modern SPA with no classic analogue. Confirm with the server operators whether these are custom content before annotating them with classic line membership.",
+  "Dark Temptation slot: Dark Temptation (L32, +25 ATK, permanent, with a 3 HP/tick self-drain) post-dates P99 Buff_Lines, so no slot assignment exists. Does it share Attack Slot 1 with Grim Aura (in which case Grim Aura is dead content from 32 onward) or occupy a distinct slot (in which case the SK self-ATK total is +35 before the Shroud of Hate recourse)? This changes the buff advice materially.",
+  "Boil Blood magnitude: the Legends dump gives Boil Blood 24 damage per tick over 42 seconds (~168 total) where P99 documents 504 total (72/tick). If the Legends figure is correct, Boil Blood at L53 is barely an upgrade over Heat Blood at L28, and Blood of Pain (L41, 56-65/tick) is the strongest sustained DoT the class has below 57. Worth verifying in game.",
+  "Pet levels: the Legends dump lists a single fixed pet level per summon (5/9/11/16/19/25/33/37) where classic rolls a range (Leering Corpse 3-5, Restless Bones 12-16 etc.). If the fixed values are real, the classic \"re-summon until you get a max pet\" behaviour does not exist on Legends and pet guides should say so.",
+  "Summon Corpse level: Legends places it at 51, matching P99, where live/eqresource places it at 35. This is the only spell in the entire book where Legends follows P99 over live - is it an intentional re-tier or an artefact?"
+ ],
+ "sources": [
+  {
+   "url": "https://wiki.project1999.com/Shadow_Knight",
+   "note": "Project 1999 Wiki - Shadow Knight class page. Full classic (Classic/Kunark/Velious) SK spell table with levels, mana, magnitudes, school, vendor location and era. Primary authority for classic line membership. Fetched with relaxed TLS verification (the wiki serves an incomplete certificate chain)."
+  },
+  {
+   "url": "https://wiki.project1999.com/Buff_Lines",
+   "note": "Project 1999 Wiki - Buff_Lines. The slot-based stacking authority: AC Slots 1/2/3/4/7/8/9 and Layer 2, Attack Slots 1/2/3/4/5/7/12, Damage Shield Slots 1-4, Damage Absorption (Primary/Berserker/Song/March), Haste (Primary), and the resistance tables. All slot assignments in this file trace to it."
+  },
+  {
+   "url": "https://spells.eqresource.com/spellsearch.php?level=1&range=greater&class=shd",
+   "note": "EQ Resource spell search, class=shd, levels 1+. The modern/live Shadow Knight spell table by level. Used to establish that Legends tracks live levels rather than P99 levels, and to enumerate the Luclin-era spells P99 does not carry."
+  },
+  {
+   "url": "https://everquest.allakhazam.com/db/spell.html?spell=1223",
+   "note": "Allakhazam - Terror of Death (spell 1223). Confirms SK 53, 45 mana, 450 hate, unresistable, places caster above the top of the hate list. Establishes the hate ordering for the Terror line."
+  },
+  {
+   "url": "https://everquest.allakhazam.com/db/spell.html?spell=1221",
+   "note": "Allakhazam - Terror of Darkness (spell 1221), SK 33, 20 mana, 200 hate."
+  },
+  {
+   "url": "https://everquest.allakhazam.com/db/spell.html?spell=1222",
+   "note": "Allakhazam - Terror of Shadows (spell 1222), SK 42, 40 mana, 400 hate."
+  },
+  {
+   "url": "https://everquest.allakhazam.com/db/spell.html?spell=1225",
+   "note": "Allakhazam - Voice of Darkness (spell 1225). SK 39 aggro multiplier buff; establishes the Voice line as a multiplier cast on a friendly target."
+  },
+  {
+   "url": "https://www.spells.eqresource.com/spells.php?id=2463",
+   "note": "EQ Resource - Siphon Strength Recourse (id 2463). +10 STR, 6 min, self, flagged \"not a player spell\". Used to establish that the Legends row named \"siphon strength recourse\" (+20 ATK, 10 min) is NOT this spell."
+  },
+  {
+   "url": "https://wiki.project1999.com/Shroud_of_Hate_Recourse",
+   "note": "Project 1999 Wiki - Shroud of Hate Recourse. Attack Slot 7, +20 ATK, self-only, Shadow Knight 39 - the actual match for the Legends \"siphon strength recourse\" row."
+  }
+ ]
+}

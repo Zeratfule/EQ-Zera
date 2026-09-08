@@ -1,0 +1,569 @@
+# Build the Windows installer; PUBLISH ONLY ON TAGS.
+#
+# The old model published a GitHub prerelease on EVERY push to main, stamped
+# `<base>-main.<run_number>`. That filled the Releases list with dozens of
+# auto-builds that sort lexicographically (main.9 above main.31), and half of
+# them predate the eq-tools → everquest-companion rename, so their assets carry
+# the dead name. Publishing is now an explicit human act:
+#
+#   push to `main`      → typecheck + test + build the installer as a CI
+#                         ARTIFACT only. Nothing is published; no tag, no
+#                         release, no update-feed movement.
+#
+#   push tag `v*`       → the ONE publish path: a full (non-prerelease) GitHub
+#                         Release. The version is stamped FROM THE TAG (CI-only
+#                         rewrite of package.json, never committed), so a tag
+#                         can never ship a mismatched package.json version and
+#                         "remember to bump after tagging" is no longer a rule.
+#
+# THOSE TWO PATHS ARE TWO SEPARATE JOBS, and that split is a SECURITY boundary,
+# not cosmetics. GITHUB_TOKEN permissions are per-job and static — they cannot be
+# made conditional inside a job — so a single job covering both paths had to hold
+# `contents: write` on every main-branch push. That handed a writable repo token
+# to `npm ci` plus the whole build (600+ packages of third-party code) on a path
+# that publishes nothing. Now:
+#
+#   job `build`   (non-tag refs) → permissions: contents: read   [no write anywhere]
+#   job `release` (tag refs)     → permissions: contents: write  [the publish path]
+#
+# The `if:` guards are mutually exclusive, so exactly one job runs per event and
+# total CI time is unchanged. The prelude steps are duplicated on purpose: a
+# reusable workflow would re-introduce a shared surface across the boundary and
+# buy nothing at this size. Keep the two preludes in sync.
+#
+# UPDATE-CHANNEL CONTINUITY (do not remove the main.yml bridge): every install
+# to date polls the 'main' channel feed (main.yml) — the app's default channel.
+# A stable release natively writes only latest.yml, so without a bridge every
+# existing install would silently stop updating forever. After publishing, we
+# upload a COPY of latest.yml as main.yml on the same release: semver puts
+# `X.Y.Z` above `X.Y.Z-main.N`, so main-channel installs step up to the stable
+# build on their next check. (The channel lives in the FILENAME, not the yml
+# body — a byte copy is the whole bridge.)
+#
+# electron-builder publishes via GITHUB_TOKEN (publish block in
+# electron-builder.yml). Azure Trusted Signing stays inert until the 6 AZURE_*
+# repo secrets exist; args are conditional below.
+#
+# ACTION PINNING: every `uses:` is pinned to a full 40-char commit SHA, with the
+# floating tag it resolved to in the trailing comment. A tag like `@v4` is a
+# MUTABLE pointer — whoever controls the action repo (or anyone who compromises
+# it) can repoint it at new code that then runs inside this job, with this job's
+# token. A SHA cannot be repointed. When bumping, re-resolve with:
+#   gh api repos/<owner>/<action>/git/ref/tags/<tag> --jq .object.sha
+# and update BOTH the SHA and the comment.
+#
+# UNTRUSTED INPUT: nothing here interpolates `${{ }}` into a `run:` body. The tag
+# name reaches pwsh as the ENV VAR $env:GITHUB_REF_NAME, which is a value, not
+# source text — `${{ github.ref_name }}` pasted into a script would be substituted
+# BEFORE the shell parses it and could inject commands. On a tag push ref_name is
+# only settable by someone who can already push a tag (a repo writer), so this is
+# defence in depth rather than a hole; the release job additionally validates the
+# tag against a semver regex before using it.
+
+name: build
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  workflow_dispatch:
+
+# Least privilege at the top: no job gets a token scope it does not name.
+# The repo default is already "read", but stating it here means a newly added
+# job cannot silently inherit write from a future settings change.
+permissions: {}
+
+jobs:
+  # =========================================================================
+  # NON-TAG REFS: verify + build. Read-only token. Publishes NOTHING.
+  # =========================================================================
+  build:
+    if: ${{ !startsWith(github.ref, 'refs/tags/v') }}
+    runs-on: windows-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        # persist-credentials:false keeps the job's token out of the runner's
+        # git config. Nothing here pushes; the release job talks to GitHub via
+        # the GH_TOKEN env var, not via git credentials.
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4 (v4.4.0)
+        with:
+          persist-credentials: false
+
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4 (v4.4.0)
+        with:
+          # 24 = the dev machine's major. NOT 20: `node --test tests/*.test.mts`
+          # relies on the runner's own glob expansion (pwsh/cmd don't expand), which
+          # Node's test runner only does from v21 — on 20 the literal pattern is
+          # "not found" and CI fails before it ever runs a test.
+          node-version: 24
+          cache: npm
+
+      # `.npmrc` sets ignore-scripts=true, so this installs 600+ packages
+      # WITHOUT executing any of their install hooks. See .npmrc for the full
+      # rationale and for why exactly one package needs its hook run by hand.
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Electron binary
+        run: npm run deps:electron
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      # ESLint: type-aware correctness + the FACTORING limits (complexity,
+      # nesting, file/function length, parameter count). Green today because
+      # eslint.ratchet.mjs suppresses the existing violations per file — that
+      # file ONLY SHRINKS, so this step failing means new debt, not old debt.
+      # See eslint.config.mjs and lint-worklist.md.
+      - name: Lint
+        run: npm run lint
+
+      # Unit + golden-window tests. tests/fixtures/*.log are committed (scrubbed),
+      # so the fixture-backed golden windows run here too; only the full-log tests
+      # (which need the real, growing game log) skip in CI.
+      - name: Test
+        run: npm test
+
+      # THE ENGINE THE INSTALLER CARRIES (JOS-473). The `engine` job below builds
+      # DEBUG and tests it; a packaged app ships RELEASE, so the packaging jobs
+      # build their own. It runs HERE as well as in `release` for one reason: the
+      # artifact this job uploads is the installer people actually test, and an
+      # artifact that is structurally different from a release build (no
+      # resources/engine/zengine.exe) verifies the wrong thing. A missing binary
+      # is only a WARNING to electron-builder's extraResources, so the failure
+      # would be silent — `npm run build:engine` asserts the binary exists.
+      #
+      # The toolchain is NOT chosen here: engine/rust-toolchain.toml pins it and
+      # rustup honours the file (see the `engine` job for why that pin matters).
+      - name: Build the engine (release)
+        run: |
+          rustup show active-toolchain
+          npm run build:engine
+
+      # UNSIGNED on purpose, and NO AZURE_* env: this job verifies + produces a CI
+      # artifact, it publishes nothing, so it has no business holding the signing
+      # secrets (least privilege — same reasoning as its read-only token). The
+      # win.signtoolOptions.sign hook (scripts/azure-sign.cjs) self-skips without
+      # AZURE_SIGNING_ENDPOINT. This step previously carried a stale copy of the
+      # pre-hook azureSignOptions args from the job split, which invoked the
+      # UNQUOTED Invoke-TrustedSigning path and failed on the space in
+      # "EQ Legends Companion.exe" — that broke EVERY main-branch push from the
+      # moment the secrets existed. Signing lives in the release job only.
+      - name: Build installer
+        shell: pwsh
+        run: |
+          npm run build
+          npx electron-builder --win --publish never
+
+      - name: Upload installer artifact (CI record)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4 (v4.6.2)
+        with:
+          name: installer
+          path: |
+            release/**/*.exe
+            release/**/*.blockmap
+            release/**/*.yml
+          if-no-files-found: warn
+
+      # SOURCEMAPS (JOS-100) — a WORKFLOW ARTIFACT, deliberately not a release asset.
+      #
+      # An `errorReport` names a bundle position (`out/renderer/assets/index-a1b2.js:1:48213`).
+      # Turning that into `src/renderer/…/CombatView.tsx:214:9` needs the map for THAT EXACT
+      # BUILD — a map from any other commit resolves to a plausible wrong line — so the maps
+      # have to be kept, keyed by what identifies the build, for as long as reports about it
+      # can arrive. `scripts/symbolicate.mts` is what consumes them.
+      #
+      # WHY NOT A RELEASE ASSET: a release asset is public and permanent. A published `.map`
+      # is the entire source tree, which for THIS repo is already public and therefore not a
+      # leak — but it is also not a download anybody asked for, it would sit in the release
+      # list next to the installer inviting confusion about what to install, and the day this
+      # tree gains one closed dependency the decision would have to be unwound retroactively,
+      # which for a published artifact is not possible. An artifact is private to the repo,
+      # expires on its own, and is exactly as available to the person triaging as a release
+      # asset would be.
+      #
+      # 90 DAYS is the maximum a public repo may set, and the useful minimum: the fleet
+      # auto-updates within days, so reports naming a version older than that are rare — and
+      # the honest answer for one is "the maps for that build are gone", not a wrong line.
+      - name: Upload sourcemaps (private, for symbolicating error reports)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4 (v4.6.2)
+        with:
+          name: sourcemaps-main-${{ github.run_number }}
+          path: out/**/*.map
+          retention-days: 90
+          if-no-files-found: warn
+
+  # =========================================================================
+  # THE ENGINE (engine/, JOS-459 phase 0). Its own job, on every ref.
+  #
+  # WHY A SEPARATE JOB rather than steps bolted onto `build`: this is a
+  # different toolchain with a different cache, it has nothing to say about
+  # the installer, and running it in parallel means the Rust checks cost no
+  # wall clock. It is also the only job here with no `if:` guard — the two
+  # jobs above are mutually exclusive by ref, but the wire contract has to
+  # verify on a tag exactly as much as on a push, because a tag is what ships.
+  #
+  # WHAT IT PROVES, and it is not just "it compiles":
+  #   * `cargo test` runs the STALENESS suite, which regenerates
+  #     crates/protocol/src/generated.rs from protocol/schema and diffs every
+  #     byte. A schema edit that landed without `npm run gen:protocol` is red
+  #     here. (`npm test` in the build job catches the same drift by digest,
+  #     without needing a toolchain — see tests/protocolSchema.test.mts.)
+  #   * …and the fixture suite, which round-trips the four worked moments from
+  #     docs/plans/data-server.md through the generated Rust types. The same
+  #     bytes are round-tripped through the TypeScript types in `npm test`, so
+  #     a shape only one language can express fails on the side that cannot.
+  #   * …and the FACTORING RATCHET (JOS-523), which is why this job now installs
+  #     Node as well as Rust. It is the engine's half of the discipline the
+  #     TypeScript has had since 2026-08-03 — complexity 12, 400 code lines per
+  #     file, 100 per function — and it lives here rather than in `build`
+  #     because this is the lane that owns the engine and the only one with no
+  #     `if:` guard, so a tag is measured exactly as a push is.
+  #
+  # The toolchain version is NOT chosen here: engine/rust-toolchain.toml pins
+  # it, and rustup honours that file automatically. That pin is load-bearing —
+  # generation ends in rustfmt, so two rustfmt versions disagreeing about a
+  # line break would fail the staleness test on a schema nobody touched.
+  # =========================================================================
+  engine:
+    runs-on: windows-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4 (v4.4.0)
+        with:
+          persist-credentials: false
+
+      # NODE, IN THE RUST JOB. The factoring ratchet below is a .mts script run
+      # through tsx, so it needs node_modules. No `npm run deps:electron` here,
+      # unlike the two installer jobs: nothing in this lane imports electron, so
+      # the ~190 MB download would be a minute spent on a binary nobody opens.
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4 (v4.4.0)
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # THE FACTORING RATCHET (JOS-523). Complexity 12 / 400 code lines per file
+      # / 100 per function over engine/crates, frozen at today's debt by
+      # engine/factoring-baseline.json. Green today because that register lists
+      # the current violations; RED means new debt, or an old one that grew.
+      # It runs BEFORE the toolchain work because it is the cheapest opinion in
+      # the job and there is no reason to compile Rust to find out a file got
+      # longer. See scripts/checkRustFactoring.mts for the ratchet's contract
+      # and scripts/rustFactoring.mts for how the three numbers are counted.
+      - name: Factoring ratchet
+        run: npm run check:rust-factoring
+
+      # rustup ships on the GitHub Windows image; this installs whatever
+      # engine/rust-toolchain.toml names, with the components it lists.
+      - name: Install the pinned toolchain
+        working-directory: engine
+        run: |
+          rustup show active-toolchain
+          rustc --version
+          cargo --version
+
+      # The registry index, the downloaded crate sources, and the build
+      # directory. Keyed on the lockfile: a dependency bump invalidates it,
+      # nothing else does.
+      - name: Cache cargo
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4 (v4.3.0)
+        with:
+          path: |
+            ~/.cargo/registry/index
+            ~/.cargo/registry/cache
+            ~/.cargo/git/db
+            engine/target
+          key: cargo-${{ runner.os }}-${{ hashFiles('engine/Cargo.lock', 'engine/rust-toolchain.toml') }}
+          restore-keys: cargo-${{ runner.os }}-
+
+      - name: Format
+        working-directory: engine
+        run: cargo fmt --all --check
+
+      # `-D warnings` on purpose: the generated file allows clippy wholesale
+      # inside itself (generated code is not reviewable debt), so everything
+      # this gate sees is code a person wrote.
+      - name: Clippy
+        working-directory: engine
+        run: cargo clippy --all-targets --all-features -- -D warnings
+
+      - name: Test
+        working-directory: engine
+        run: cargo test --workspace
+
+      # THE PERFORMANCE BUDGET (owner ruling 3, JOS-501) — the equivalence oracle's successor.
+      #
+      # `oracle:rust-fold` compared two implementations of the fold and the cutover left one, so
+      # what gates performance now is the engine measuring ITSELF through the same `perf.snapshot`
+      # machinery the in-app panel reads, against a committed ceiling.
+      #
+      # RELEASE, and that is the whole reason this is a step of its own rather than part of the
+      # workspace test above: a debug fold is roughly an order of magnitude slower, so a budget
+      # measured on one would be measuring the profile instead of the code. It is also the
+      # regression the floor most wants to catch — the e2e harness built debug for two releases and
+      # `bosses-week` could not fold the owner's log in 900 s because of it (JOS-501 fixed that too).
+      #
+      # THE CORPUS IS GENERATED, NOT COMMITTED. The engine's real corpus is the owner's game log,
+      # which never enters git; the deterministic generator in the test produces the same bytes on
+      # every machine, so a red here is a regression rather than a difference of input. The G3 tier
+      # — the owner's real 209 MB fixture — is deliberately NOT here: it is gitignored, absent on
+      # every runner, and its goal is a claim about a machine. That one is `npm run budget:g3`, run
+      # by the integrator at the release cut and recorded in the release notes.
+      #
+      # `--nocapture` so the numbers appear in the job log even when the step is green: a budget
+      # that only speaks when it fails gives nobody a trend to look at.
+      - name: Performance budget (release)
+        working-directory: engine
+        run: cargo test --release -p zengine --test budget the_synthetic -- --nocapture
+
+  # =========================================================================
+  # TAG REFS ONLY: the publish path. The ONLY job that holds a write token.
+  # =========================================================================
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: windows-latest
+    permissions:
+      contents: write # create/update the GitHub Release + upload its assets
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4 (v4.4.0)
+        with:
+          persist-credentials: false
+
+      - name: Setup Node
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4 (v4.4.0)
+        with:
+          node-version: 24 # see the build job for why not 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Electron binary
+        run: npm run deps:electron
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      # See the build job for what this gate is and why it is green.
+      - name: Lint
+        run: npm run lint
+
+      - name: Test
+        run: npm test
+
+      # A tag may not ship without release notes: the app's What's new panel reads committed
+      # source, so a missing entry is silence rather than a crash. See the script's header.
+      - name: Check release notes
+        run: node --import tsx scripts/check-release-notes.mjs $env:GITHUB_REF_NAME
+        shell: pwsh
+
+      # --- Stamp the version from the tag ------------------------------------
+      # CI-only rewrite (never committed): the tag IS the version. A v1.2.3 push
+      # builds 1.2.3 regardless of what package.json says, so the two cannot drift.
+      #
+      # The regex is a GUARD, not decoration: everything downstream derives file
+      # paths and a `gh release` target from this string. Rejecting anything that
+      # is not `vMAJOR.MINOR.PATCH[-prerelease][+build]` makes a typo'd or hostile
+      # tag fail loudly here instead of producing a `release/<junk>/` path miss or
+      # a surprising `npm version` argument.
+      - name: Stamp version from tag
+        shell: pwsh
+        run: |
+          $tag = $env:GITHUB_REF_NAME
+          if ($tag -notmatch '^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?(\+[0-9A-Za-z.-]+)?$') {
+            throw "refusing to build: tag '$tag' is not a vMAJOR.MINOR.PATCH semver tag"
+          }
+          $ver = $tag -replace '^v', ''
+          npm version --no-git-tag-version --allow-same-version $ver
+          Write-Host "Stamped version from tag: $ver"
+
+      # THE ENGINE THE INSTALLER CARRIES (JOS-473) — the release binary, built
+      # before packaging because electron-builder copies it out of
+      # engine/target/release as an extraResource. See the identical step in the
+      # `build` job for the whole argument; it is duplicated for the same reason
+      # the rest of the prelude is (the two jobs are a security boundary), and it
+      # needs no secret of its own: the SIGNING happens inside the packaging step
+      # below, which already holds the AZURE_* env.
+      - name: Build the engine (release)
+        run: |
+          rustup show active-toolchain
+          npm run build:engine
+
+      # --- Build + publish as a DRAFT ----------------------------------------
+      # Azure Trusted Signing (inert until the AZURE_* secrets exist) — see the
+      # build job for the secret list. The engine binary is signed by the SAME
+      # hook, on the same run: app-builder-lib routes every `.exe` copied by a
+      # DIRECTORY extraResources matcher through win.signtoolOptions.sign (the
+      # mechanism, and why the matcher must be a directory, is annotated in
+      # electron-builder.yml and pinned by tests/enginePackaging.test.mts).
+      - name: Build installer
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+          AZURE_SIGNING_ENDPOINT: ${{ secrets.AZURE_SIGNING_ENDPOINT }}
+          AZURE_SIGNING_ACCOUNT: ${{ secrets.AZURE_SIGNING_ACCOUNT }}
+          AZURE_SIGNING_PROFILE: ${{ secrets.AZURE_SIGNING_PROFILE }}
+        run: |
+          npm run build
+          # Signing is driven by electron-builder.yml's win.signtoolOptions.sign hook
+          # (scripts/azure-sign.cjs), NOT azureSignOptions: the built-in path
+          # splices file paths into pwsh -Command unquoted and dies on our
+          # space-bearing exe name ("File not found: ...\EQ" — the v0.1.8
+          # failure). The hook self-activates on the AZURE_* env below; here we
+          # only pre-install the TrustedSigning module it invokes.
+          if ($env:AZURE_TENANT_ID) {
+            Install-Module -Name TrustedSigning -Force -Scope CurrentUser -Repository PSGallery
+            Write-Host "Code signing: Azure Artifact Signing enabled (custom hook)."
+          } else {
+            Write-Host "Code signing: skipped (no Azure secrets configured)."
+          }
+          # --publish NEVER: electron-builder only BUILDS here; the bridge step below
+          # owns every upload and the atomic flip. It used to publish a draft itself
+          # (channel=latest, releaseType=draft), until electron-builder 26's GitHub
+          # publisher exited without awaiting its uploads — the v0.3.1 release went
+          # live missing the versioned installer and latest.yml (the feed 404'd for
+          # every updating client; repaired by hand from the CI artifact, 2026-08-04).
+          # One uploader, ours, means upload completion is something this workflow
+          # can actually assert instead of assume.
+          npx electron-builder --win --publish never
+
+      # --- main-channel bridge + checksums, then publish ATOMICALLY -----------
+      # See the header comment. latest.yml and main.yml differ only by filename;
+      # the copy lets every existing main-channel install update to this stable
+      # build instead of stalling forever. The release is still a DRAFT here —
+      # every asset lands on it, and only then does it flip live, so no client
+      # can ever resolve the tag and miss a file it needs.
+      - name: Bridge main-channel feed + checksums + publish release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          $ver = $env:GITHUB_REF_NAME -replace '^v', ''
+          $src = "release/$ver/latest.yml"
+          if (-not (Test-Path $src)) { throw "expected feed file not found: $src" }
+
+          # THE DRAFT IS OURS. electron-builder no longer publishes anything (see the
+          # build step); this step creates the draft, uploads EVERY asset, verifies the
+          # count, and only then flips live. `--verify-tag` refuses a typo'd name;
+          # the create is idempotent for re-runs (an existing release is fine).
+          gh release create $env:GITHUB_REF_NAME --draft --verify-tag --title $env:GITHUB_REF_NAME --notes "" 2>$null
+          if ($LASTEXITCODE -ne 0) { Write-Host "release already exists - continuing (re-run)" }
+
+          $exeVersioned = "release/$ver/everquest-companion-Setup-$ver.exe"
+          if (-not (Test-Path $exeVersioned)) { throw "expected installer not found: $exeVersioned" }
+          gh release upload $env:GITHUB_REF_NAME $exeVersioned "$exeVersioned.blockmap" $src --clobber
+          if ($LASTEXITCODE -ne 0) { throw "upload of versioned installer/blockmap/latest.yml failed" }
+
+          Copy-Item $src main.yml
+          gh release upload $env:GITHUB_REF_NAME main.yml --clobber
+
+          # STABLE-NAMED INSTALLER COPY (the website's permanent download link).
+          # The native asset carries the version in its filename, so
+          # /releases/latest/download/<name> can't be hard-coded anywhere. A
+          # byte copy named `everquest-companion-Setup.exe` gives the landing
+          # page (site/index.html) a link that never needs editing:
+          #   https://github.com/jmoyers/everquest-companion/releases/latest/download/everquest-companion-Setup.exe
+          # It is uploaded HERE, to the still-DRAFT release, for the same reason
+          # main.yml is: the release must appear ATOMICALLY with every asset a
+          # client (or the site) can resolve, or a download mid-publish 404s.
+          # Not fed to electron-updater — the feed files still point at the
+          # versioned asset + its .blockmap, so differential updates are unaffected.
+          $exe = "release/$ver/everquest-companion-Setup-$ver.exe"
+          if (-not (Test-Path $exe)) { throw "expected installer not found: $exe" }
+          Copy-Item $exe everquest-companion-Setup.exe
+          gh release upload $env:GITHUB_REF_NAME everquest-companion-Setup.exe --clobber
+
+          # SHA256SUMS.txt — an INDEPENDENT integrity check for humans.
+          # The auto-updater already verifies every download against the sha512
+          # in latest.yml, but a person clicking the website's Download button
+          # gets no such check: they are trusting GitHub's TLS and GitHub's
+          # storage, full stop. This file lets them verify out of band
+          # (`sha256sum -c SHA256SUMS.txt`, or
+          # `certutil -hashfile <exe> SHA256` on Windows) against a value they
+          # can also read from the release page or the public build log.
+          # Written ASCII/no-BOM with the two-space separator so GNU
+          # `sha256sum -c` accepts it verbatim.
+          $items = @(
+            @{ Path = $exe;                            Name = "everquest-companion-Setup-$ver.exe" },
+            @{ Path = "$exe.blockmap";                 Name = "everquest-companion-Setup-$ver.exe.blockmap" },
+            @{ Path = "everquest-companion-Setup.exe"; Name = "everquest-companion-Setup.exe" },
+            @{ Path = $src;                            Name = "latest.yml" },
+            @{ Path = "main.yml";                      Name = "main.yml" }
+          )
+          $lines = foreach ($i in $items) {
+            if (Test-Path -LiteralPath $i.Path) {
+              "$((Get-FileHash -Algorithm SHA256 -LiteralPath $i.Path).Hash.ToLower())  $($i.Name)"
+            } else {
+              Write-Host "SHA256SUMS: skipping missing $($i.Path)"
+            }
+          }
+          Set-Content -Path SHA256SUMS.txt -Value $lines -Encoding ascii
+          Get-Content SHA256SUMS.txt | Write-Host
+          gh release upload $env:GITHUB_REF_NAME SHA256SUMS.txt --clobber
+
+          # A tag WITH a prerelease component (vX.Y.Z-name.N) publishes as a PRERELEASE
+          # and must NOT take the `latest` marker: releases/latest backs the site's
+          # permanent download link AND the app's stable update resolution, both of
+          # which must only ever see stable tags. (The v0.1.5-main.1 rescue tag is why
+          # this branch exists: 0.1.1-0.1.4 installs resolve tags by prerelease
+          # component and need one matching 'main' to escape onto — see updater.ts
+          # applyChannel for the full story.)
+          # BEFORE the flip: the release must hold every asset a client can resolve.
+          # This is the assertion the v0.3.1 incident was missing — the old publisher
+          # "succeeded" with two assets absent and the flip went ahead anyway.
+          $assets = (gh release view $env:GITHUB_REF_NAME --json assets --jq '.assets[].name') -split "`n" | Where-Object { $_ }
+          $required = @(
+            "everquest-companion-Setup-$ver.exe",
+            "everquest-companion-Setup-$ver.exe.blockmap",
+            "everquest-companion-Setup.exe",
+            "latest.yml", "main.yml", "SHA256SUMS.txt"
+          )
+          $missing = $required | Where-Object { $assets -notcontains $_ }
+          if ($missing) { throw "refusing to publish: missing assets: $($missing -join ', ')" }
+
+          if ($env:GITHUB_REF_NAME -match '-') {
+            gh release edit $env:GITHUB_REF_NAME --draft=false --prerelease
+          } else {
+            gh release edit $env:GITHUB_REF_NAME --draft=false --latest
+          }
+          Write-Host "main.yml + stable-named installer + SHA256SUMS bridged; $env:GITHUB_REF_NAME published atomically"
+
+      - name: Upload installer artifact (CI record)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4 (v4.6.2)
+        with:
+          name: installer
+          path: |
+            release/**/*.exe
+            release/**/*.blockmap
+            release/**/*.yml
+            SHA256SUMS.txt
+          if-no-files-found: warn
+
+      # THE ONE THAT MATTERS (JOS-100). Keyed by the TAG, because the tag is the version an
+      # `errorReport` carries — so "which maps do I need for v0.11.0" is answered by the name of
+      # the artifact rather than by matching run numbers to releases. The long note on the same
+      # step in the `build` job above says why this is an artifact and not a release asset.
+      #
+      # Deliberately NOT gated on the signing secrets or on anything else: a release whose maps
+      # were skipped is a release whose crashes cannot be read, and that would be discovered
+      # months later by somebody trying to read one.
+      - name: Upload sourcemaps (private, for symbolicating error reports)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4 (v4.6.2)
+        with:
+          name: sourcemaps-${{ github.ref_name }}
+          path: out/**/*.map
+          retention-days: 90
+          if-no-files-found: warn

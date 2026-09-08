@@ -1,0 +1,221 @@
+appId: com.eqzera.app
+productName: EQ Zera
+copyright: Copyright © 2026 EQ Zera contributors. Based on everquest-companion, Copyright © 2026 Josh Moyers (FSL-1.1-MIT).
+
+directories:
+  buildResources: build
+  output: release/${version}
+
+# electron-vite bundles main/preload/renderer into out/. Ship that plus the
+# externalized production dependencies (electron-store, chokidar, …).
+files:
+  - out/**
+  - package.json
+  # THE WIKI ART SHIPS (JOS-198). 780 files, 3.75 MB — 751 item icons and 29 boss portraits,
+  # committed to the repo so this list is all that is needed and no build step touches a wiki.
+  # Named EXPLICITLY rather than `resources/**`: the soundpack directories beside it are
+  # gitignored, self-provisioned at runtime, and up to hundreds of MB on a dev machine, so a
+  # broad glob would put whatever a developer happened to have downloaded into the installer.
+  # `asarUnpack: resources/**` below then moves this out of the archive; src/main/bundledImages.ts
+  # probes both addresses.
+  - resources/wiki-images/**
+  # THE SHIPPED SOUND PACK (EQ Zera): original, synthesized by scripts/gen-sounds.mts and
+  # committed, so it ships like the wiki art does - named explicitly, for the same reason.
+  - resources/soundpacks/eq-zera-console/**
+  - '!**/node_modules/*/{CHANGELOG.md,README.md,README,readme.md,readme}'
+  # `map` IN THIS LIST IS LOAD-BEARING SINCE JOS-100, and was incidental before it. The build
+  # now EMITS sourcemaps (electron.vite.config.ts turns `sourcemap` on for all three bundles, so
+  # `scripts/symbolicate.mts` can read an error report's frames), and this exclusion is the only
+  # thing keeping ~6 MB of them out of every installer. They are kept as a private CI artifact
+  # instead; `tests/symbolicate.test.mts` pins this line so it cannot be tidied away.
+  - '!**/*.{o,obj,map,ts,tsx}'
+  # onnxruntime-node ships PREBUILT binaries for every platform it supports in one npm
+  # package — 184 MB on disk, of which this Windows-x64-only app can use 33 MB. Without these
+  # excludes the installer carries macOS dylibs and Linux .so files it can never load. Keep
+  # the list in sync with `win.target.arch` above; a future arm64 target needs its line back.
+  - '!node_modules/onnxruntime-node/bin/napi-v3/{darwin,linux}/**'
+  - '!node_modules/onnxruntime-node/bin/napi-v3/win32/arm64/**'
+  # native-reg (JOS-184, the in-process registry reads that replaced `reg.exe`/`wmic` in
+  # discovery) ships prebuilt N-API binaries for all three Windows architectures in one tarball.
+  # Same reasoning as onnxruntime above: this build is win/x64 only, so the other two are ~1 MB
+  # of binary the app can never load. A future arm64 target needs the ia32 line only.
+  - '!node_modules/native-reg/prebuilds/win32-{arm64,ia32}/**'
+  # koffi (JOS-182, the presence watcher's Win32 surface) is the same story again, and the most
+  # lopsided of the three: 18 prebuilt N-API binaries in one tarball, 28.7 MB unpacked, of which
+  # this Windows-x64-only app can load exactly one. Keep in sync with `win.target.arch` too.
+  - '!node_modules/koffi/build/koffi/!(win32_x64)/**'
+  # And koffi's SOURCES, which ship in the same tarball so `cnoke` can build a prebuild for a
+  # platform it has none for. We never build one — `.npmrc` ignores install scripts and the
+  # win32_x64 binary above is the one we load — so the C++, the vendored node-api headers and
+  # the docs are 4 MB of installer that can never be read.
+  - '!node_modules/koffi/{src,vendor,doc,lib}/**'
+  # DirectML.dll (18.5 MB) is NOT excludable, and that was MEASURED, not assumed. This app
+  # never asks for the DirectML execution provider — Kokoro runs on CPU on purpose, because it
+  # is a background alert reader on a machine that is also running EverQuest — so dropping the
+  # DLL looks free. It is not: onnxruntime.dll STATICALLY imports it, so the binding fails to
+  # load at all and `speech:say` answers 'engine-not-installed' forever (verified: dist:dir
+  # with the exclusion, then a real synthesis in the packed app — zero wavs produced). It has
+  # to ship. Do not re-litigate this without repeating that experiment.
+
+# THE ENGINE SHIPS (JOS-473, data-server phase 3). `engine/crates/zengine` is a Rust process the
+# app supervises (src/main/dataServer/engineHost.ts); `npm run build:engine` produces the RELEASE
+# binary and the two `dist` scripts run it before electron-builder. Until this block existed a
+# packaged build probed `resourcesPath/engine/zengine.exe`, found nothing, and logged an absence —
+# the honest state, and now the wrong one.
+#
+# WHY `extraResources` AND NOT `files`: this lands OUTSIDE the asar, beside it under `resources/`,
+# which is where `engineBinaryCandidates` (engineProtocol.ts) probes first among the packaged
+# candidates. A native executable cannot be launched from inside an asar at all, so the archive
+# was never an option — and because it never enters the archive there is no `asarUnpack` entry to
+# add. `tests/enginePackaging.test.mts` pins this destination against the resolver's own candidate
+# list, so a rename on either side is a red test rather than a silent "no engine here".
+#
+# A DIRECTORY WITH A FILTER, NOT A FILE PATH, AND THAT IS THE SIGNING DECISION (ruling 16: the
+# engine joins the code-signing set like any shipped executable). Measured in app-builder-lib 26,
+# `fileMatcher.copyFiles`: a matcher whose `from` is a FILE is copied with `copyOrLinkFile` and
+# NEVER sees the sign transformer; only the DIRECTORY branch is handed
+# `WinPackager.createTransformerForExtraFiles`, which wraps every `.exe` it copies so that
+# `signIf(dest)` runs on the packaged copy — i.e. `from: engine/target/release/zengine.exe` would
+# ship a working but UNSIGNED engine inside a signed installer, and nothing would say so. The
+# filter is what keeps the rest of cargo's release directory (deps/, build/, incremental/, the
+# .pdb) out: `createFilter` prunes non-matching directories before walking them.
+#
+# ONE COST OF THE DIRECTORY SHAPE, KNOWN AND ACCEPTED: the asar-integrity pass (`asar/integrity.ts`
+# computeData) walks this same `from` with `matcherFilter(file, stats) || stats.isDirectory()` — the
+# `||` means the filter prunes FILES but never DIRECTORIES, so that pass stats everything under
+# `engine/target/release` (191 files here; it grows with a developer's build history) to find the one
+# file it keeps. Bounded and cheap today. If a release tree ever gets big enough to be felt, the
+# answer is to stage the binary into a directory of its own rather than to make this a file matcher,
+# which would silently unsign it.
+#
+# THE SIGNED COPY IS A COPY. That same transformer disables hard-linking whenever it is present
+# (`FileCopier.copy`), so signing writes to the file under `release/` and never reaches back into
+# `engine/target/release/` — a local `dist` cannot leave a mutated binary in the cargo tree.
+#
+# A MISSING BINARY IS A WARNING HERE, NOT AN ERROR ("file source doesn't exist", then carry on),
+# which would ship an installer with no engine and no failure. That is why `scripts/build-engine.mts`
+# asserts the binary exists after cargo returns, and why the packaging CI steps run it.
+extraResources:
+  - from: engine/target/release
+    to: engine
+    filter:
+      - zengine.exe
+
+asarUnpack:
+  - resources/**
+  # The FIRST native module in the tree (voice alerts, docs/plans/voice-alerts.md W3), and the
+  # only one that needs more than its own binary unpacked. A .node
+  # cannot be dlopen'd from inside an asar, and neither can the onnxruntime.dll it links
+  # against — and the DLL must stay in the SAME directory as the binding, so unpacking the
+  # whole bin/ dir is the only arrangement that works. electron-builder auto-unpacks *.node
+  # but NOT the sibling .dll, which is exactly the failure this line exists to prevent.
+  - node_modules/onnxruntime-node/bin/**
+  # native-reg's prebuilt binding (JOS-184). electron-builder auto-unpacks `*.node`, so this line
+  # is belt and braces rather than load-bearing — but node-gyp-build READS this directory
+  # (readdirSync) to choose a build before requiring it, and an explicit entry keeps the whole
+  # directory on disk rather than relying on that one auto-rule. Nothing sits beside the binding.
+  - node_modules/native-reg/prebuilds/**
+  # koffi's prebuilt binding (JOS-182), and the same belt to the same braces for the same reason:
+  # its loader does an `fs.existsSync` on the path before it `require`s it, and naming the
+  # directory means the probe and the load see one real file rather than relying on the asar
+  # shim to agree with itself about a path it is rewriting.
+  - node_modules/koffi/build/**
+
+# npmRebuild defaults to TRUE, which makes electron-builder shell out to
+# @electron/rebuild -> node-gyp against the whole production tree at package
+# time — a compile-and-execute path wired into every build, which is exactly the
+# kind of step `.npmrc`'s ignore-scripts is there to close.
+#
+# THE TREE NOW HAS THREE NATIVE MODULES (onnxruntime-node, voice alerts W3;
+# native-reg, JOS-184's in-process registry reads; and koffi, JOS-182's in-process
+# Win32 surface for the presence watcher), and this still stays false. It is the ABI
+# question that decides, not the presence of a .node file: onnxruntime-node ships
+# PREBUILT binaries under bin/napi-v3, native-reg under prebuilds/win32-x64 and koffi
+# under build/koffi/<platform>, i.e. all three target N-API, which is ABI-STABLE
+# ACROSS NODE AND ELECTRON VERSIONS by definition. There is nothing to rebuild — the
+# shipped binary is the binary Electron loads. (Verified end to end: `npm run
+# dist:dir` + launching the packed app + a real synthesis, with ignore-scripts on and
+# npmRebuild off.)
+#
+# THE TWO OF THEM ARRIVED TOGETHER FOR ONE REASON: between them, JOS-182 and JOS-184
+# took every child-process launch out of the shipped app. `powershell.exe` (presence),
+# `reg.exe` and `wmic` (discovery) were the app's largest antivirus-heuristic
+# triggers and its most common outright failures on locked-down machines. What
+# replaced them is native code called in-process, which is what every other Windows
+# program does to ask the same questions.
+#
+# native-reg DOES carry a binding.gyp and a .cc, which is not a contradiction: they
+# are the SOURCE its maintainer prebuilds from, reached only by the `install` hook
+# (`node-gyp-build-optional`) that `.npmrc`'s ignore-scripts never runs. At require
+# time `node-gyp-build` picks the prebuilt binary out of prebuilds/ and never compiles.
+#
+# Its `postinstall` is likewise a non-issue under `.npmrc ignore-scripts=true`:
+# that script's ONLY job is downloading the Linux/x64 CUDA execution-provider
+# binaries, and it exits 0 immediately on any other platform. Every CPU binary,
+# Windows included, is inside the npm tarball.
+#
+# A future native dependency that ships node-gyp sources instead of N-API
+# prebuilds would need this flipped back to true (or an explicit
+# `electron-builder install-app-deps`), or it would ship built against the wrong ABI.
+npmRebuild: false
+
+# Auto-update + release hosting: electron-updater pulls from GitHub Releases of
+# this repo. The CI workflows (.github/workflows) publish here; the app reads
+# latest*.yml from the same owner/repo. `channel` is per-release (main vs latest).
+# EQ Zera fork: NO publish block. Without one electron-builder writes no app-update.yml and
+# the updater (held disabled in src/main/updater.ts AUTO_UPDATE_DISABLED) has no feed to read.
+# To re-enable self-updates later, add `publish: { provider: github, owner: <you>, repo: <repo> }`
+# and flip that constant.
+
+win:
+  target:
+    - target: nsis
+      arch:
+        - x64
+  # Brand the exe + installer with our generated mark (scripts/gen-icon.mts).
+  icon: build/icon.ico
+  # We sign+edit the exe so it carries the icon + version metadata (rcedit). This
+  # needs winCodeSign extracted into the electron-builder cache; on Windows that
+  # requires either Developer Mode (symlink privilege) OR the manual cache-seed
+  # workaround (see scripts/seed-wincodesign.ps1). CI builds are SIGNED via Azure
+  # Artifact Signing (account jmoyers-eqtools, profile eq-companion-public — the
+  # azureSignOptions args are injected by build.yml when the AZURE_* secrets
+  # exist); local `npm run dist` builds stay unsigned.
+  signAndEditExecutable: true
+  # `sign` and `publisherName` MOVED UNDER signtoolOptions in electron-builder 26 —
+  # they are no longer valid keys directly on `win` and the build refuses to start
+  # ("configuration.win should be one of these: null") if they are left there.
+  # Behaviour is unchanged: app-builder-lib reads the hook and the publisher name
+  # out of signtoolOptions and feeds the same computedPublisherName into
+  # PublishManager, which is what writes publisherName into app-update.yml.
+  #
+  # NOTE the schema's one exclusion: signtoolOptions cannot be combined with
+  # azureSignOptions. We were never going to — see the hook rationale below.
+  signtoolOptions:
+    # CUSTOM SIGN HOOK (not azureSignOptions): the built-in Azure path splices file
+    # paths into a pwsh -Command string UNQUOTED, so our space-bearing exe name
+    # ("EQ Legends Companion.exe") splits and signing fails with "File not found:
+    # ...\EQ" (upstream: @electron/windows-sign#45). The hook passes paths as real
+    # arguments instead. It self-skips when the AZURE_* env is absent, so local
+    # dist builds stay unsigned; CI injects the env and signs.
+    sign: scripts/azure-sign.cjs
+    # UPDATE SIGNATURE VERIFICATION (do not remove): electron-updater's
+    # NsisUpdater.verifySignature SKIPS all checking when publisherName is null —
+    # a signed build alone protects nothing on the update path. This name must
+    # exactly match the certificate subject CN (Azure profile eq-companion-public).
+    # With it set, every downloaded update must carry a valid Authenticode
+    # signature from this publisher or it is rejected before install.
+    publisherName: EQ Zera
+
+# One-click installer (Discord model): double-click installs per-user under
+# %LOCALAPPDATA%\Programs (no UAC prompt), then launches. Friendly for friends
+# who don't want an install wizard. Uninstall keeps app data (settings/logs).
+nsis:
+  oneClick: true
+  perMachine: false
+  runAfterFinish: true
+  deleteAppDataOnUninstall: false
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: EQ Zera
+  artifactName: eq-zera-Setup-${version}.${ext}

@@ -1,0 +1,3561 @@
+{
+ "class": "Enchanter",
+ "lines": [
+  {
+   "id": "enc-mez-single",
+   "name": "Mesmerize line (single-target mez)",
+   "category": "Crowd control",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Mesmerize",
+     "level": 2,
+     "inDb": true,
+     "note": "Mez cap L55, 4 ticks (24s)"
+    },
+    {
+     "name": "Enthrall",
+     "level": 13,
+     "inDb": true,
+     "note": "Mez cap L55, 8 ticks (48s)"
+    },
+    {
+     "name": "Entrance",
+     "level": 30,
+     "inDb": true,
+     "note": "Mez cap L55, 1.2 min (72s)"
+    },
+    {
+     "name": "Dazzle",
+     "level": 47,
+     "inDb": true,
+     "note": "Mez cap L55, 1.6 min (96s)"
+    },
+    {
+     "name": "Glamour of Kintaz",
+     "level": 54,
+     "inDb": true,
+     "note": "Mez cap L57 - the ONLY sub-59 mez that lands on L56-57 mobs; also 30% memblur; only 30s"
+    },
+    {
+     "name": "Rapture",
+     "level": 59,
+     "inDb": true,
+     "note": "Mez cap L61; 40% memblur; only 24s and a 24s recast - raid-tier, not a general upgrade"
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Strict by duration/mana-efficiency through Dazzle (L47): each of Mesmerize -> Enthrall -> Entrance -> Dazzle is a straight duration upgrade at the same L55 target cap, so lower ranks are fully superseded. It STOPS being strict at the top: Glamour of Kintaz (cap 57) and Rapture (cap 61) raise the level cap but SHORTEN duration (30s / 24s) and cost 275/425 mana vs Dazzle 125. Enchanters keep Dazzle memmed alongside them - Dazzle for <=55 targets, Glamour/Rapture only when the target is 56+. Rapture additionally has a 24s recast so it cannot chain-mez. Legends effect strings encode the caps directly: Mesmerize/Enthrall/Entrance/Dazzle/Mesmerization/Fascination all read \"Mesmerize (2/55)\", Glamour of Kintaz \"(2/57)\", Rapture \"(2/61)\" - agreeing exactly with the P99 cheatsheet Max-lvl column."
+   },
+   "missingOnLegends": [
+    "Ancient: Eternal Rapture (live L60 ancient mez)"
+   ],
+   "stacking": {
+    "slots": [
+     "Mesmerize (SPA 31)"
+    ],
+    "conflicts": [
+     {
+      "line": "Any other mez",
+      "class": "Enchanter/Bard/Necromancer",
+      "detail": "Mez does not stack with itself - recasting refreshes/overwrites. Landing a second mez on a mezzed mob just resets the timer.",
+      "source": "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Memblur line",
+      "detail": "Every enchanter mez carries a 1% memblur rider (Glamour 30%, Rapture 40%); a separate Memory Blur cast still applies."
+     }
+    ],
+    "notes": "Mez breaks on damage. All mezzes are Magic-resist checked, which is why the Tash line is cast first."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet",
+    "https://everquest.allakhazam.com/db/spelllist.html?type=enc&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "enc-mez-ae",
+   "name": "AE mez line (Mesmerization / Fascination)",
+   "category": "Crowd control",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Mesmerization",
+     "level": 16,
+     "inDb": true,
+     "note": "Targeted AE, cap L55, 24s"
+    },
+    {
+     "name": "Entrancing Lights",
+     "level": 30,
+     "inDb": true,
+     "note": "PBAE, cap L55 but only 6s - a panic/\"get off me\" AE, not the Mesmerization upgrade"
+    },
+    {
+     "name": "Fascination",
+     "level": 52,
+     "inDb": true,
+     "note": "Targeted AE, cap L55, 36s, 200 mana"
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Mesmerization -> Fascination is a strict upgrade (same 55 cap, 24s -> 36s). Entrancing Lights is NOT in that chain: it is point-blank AE with a 6-second duration, kept as an emergency break rather than replaced. Legends level 30 for Entrancing Lights and 52 for Fascination match Allakhazam exactly."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Mesmerize (SPA 31)"
+    ],
+    "conflicts": [
+     {
+      "line": "Single-target mez line",
+      "class": "Enchanter",
+      "detail": "Same effect slot; an AE mez landing on an already-mezzed mob overwrites the single-target timer (usually downward).",
+      "source": "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet"
+     }
+    ],
+    "stacksWith": [],
+    "notes": "AE mez aggros everything in radius that resists - the classic reason Tash-then-AE-mez is the pull order."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet",
+    "https://everquest.allakhazam.com/db/spelllist.html?type=enc&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "enc-charm",
+   "name": "Charm line",
+   "category": "Crowd control",
+   "sharedWith": [
+    "Necromancer (undead charm)",
+    "Druid (animal charm)"
+   ],
+   "members": [
+    {
+     "name": "Charm",
+     "level": 11,
+     "inDb": true,
+     "note": "Charm up to L25"
+    },
+    {
+     "name": "Beguile",
+     "level": 23,
+     "inDb": true,
+     "note": "up to L37"
+    },
+    {
+     "name": "Cajoling Whispers",
+     "level": 37,
+     "inDb": true,
+     "note": "up to L46"
+    },
+    {
+     "name": "Allure",
+     "level": 46,
+     "inDb": true,
+     "note": "up to L51"
+    },
+    {
+     "name": "Boltran's Agacerie",
+     "level": 53,
+     "inDb": true,
+     "note": "up to L53; 400 mana, shorter duration (7 min on P99) - a cap raiser, not an efficiency upgrade"
+    },
+    {
+     "name": "Dictate",
+     "level": 60,
+     "inDb": true,
+     "note": "up to L58; 750 mana, 48s duration, 5 min recast - raid tool"
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Strict through Allure (L46): each step raises the charmable level cap while keeping ~16-20 min duration, so the lower rank is dead weight. Breaks at the top - Boltran's Agacerie (7 min) and especially Dictate (48s, 5 min recast, 750 mana) trade duration/efficiency for cap. A L60 enchanter still casts Allure for anything <=51."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Charm (SPA 22)"
+    ],
+    "conflicts": [
+     {
+      "line": "Necromancer Dominate Undead line / Druid Beguile Animals line",
+      "class": "Necromancer, Druid",
+      "detail": "One charm per mob; recharming overwrites.",
+      "source": "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Haste line, AC line, Rune line, Str line",
+      "detail": "A charmed pet takes normal enchanter buffs; haste on a charmed mob is the core of enchanter soloing."
+     }
+    ],
+    "notes": "Charm is Magic-checked; Tash first. Charm break = the mob is instantly hostile with full aggro."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet",
+    "https://everquest.allakhazam.com/db/spelllist.html?type=enc&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "enc-memblur-single",
+   "name": "Memory Blur line (single target)",
+   "category": "Crowd control",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Memory Blur",
+     "level": 10,
+     "inDb": true,
+     "note": "10% blur chance"
+    },
+    {
+     "name": "Reoccurring Amnesia",
+     "level": 45,
+     "inDb": true,
+     "note": "25%; 24s duration effect (re-fires), 24s recast"
+    },
+    {
+     "name": "Memory Flux",
+     "level": 55,
+     "inDb": true,
+     "note": "30%; 350 mana"
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Blur rates rise (10% -> 25% -> 30%) but mana rises faster (40 -> 100 -> 350) and Reoccurring Amnesia carries a 24s recast. Memory Blur stays memmed at 60 as the cheap spam-blur; Memory Flux is the \"must land now\" blur. P99 wiki flags the published blur percentages as disputed."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Memblur (SPA 63)"
+    ],
+    "conflicts": [],
+    "stacksWith": [
+     {
+      "line": "Mez line",
+      "detail": "Mez already carries a 1% blur; a dedicated blur on top is independent."
+     }
+    ],
+    "notes": "Blur is a chance roll, not a buff - no slot contention. Failure is silent, which is why enchanters chain-cast it."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet",
+    "https://everquest.allakhazam.com/db/spelllist.html?type=enc&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "enc-memblur-ae",
+   "name": "AE memblur line (Mind Wipe / Blanket of Forgetfulness)",
+   "category": "Crowd control",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Mind Wipe",
+     "level": 36,
+     "inDb": true,
+     "note": "Targeted AE, 15%"
+    },
+    {
+     "name": "Blanket of Forgetfulness",
+     "level": 46,
+     "inDb": true,
+     "note": "Targeted AE; Legends shows two 20% memblur components (P99 lists an effective 36%)"
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Blanket of Forgetfulness strictly supersedes Mind Wipe (higher rate, same targeting)."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Memblur (SPA 63)"
+    ],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "Chance roll per mob in radius; no slot contention."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet",
+    "https://everquest.allakhazam.com/db/spelllist.html?type=enc&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "enc-lull",
+   "name": "Lull / pacify line",
+   "category": "Crowd control",
+   "sharedWith": [
+    "Cleric (Pacify line)",
+    "Druid (Harmony)",
+    "Paladin",
+    "Bard (Selo's Chants)"
+   ],
+   "members": [
+    {
+     "name": "Lull",
+     "level": 1,
+     "inDb": true,
+     "note": "Aggro radius reduced to 15"
+    },
+    {
+     "name": "Soothe",
+     "level": 6,
+     "inDb": true,
+     "note": "radius 10; adds true Pacify component"
+    },
+    {
+     "name": "Calm",
+     "level": 18,
+     "inDb": true,
+     "note": "radius 5"
+    },
+    {
+     "name": "Pacify",
+     "level": 35,
+     "inDb": true,
+     "note": "radius 1"
+    },
+    {
+     "name": "Wake of Tranquility",
+     "level": 51,
+     "inDb": true,
+     "note": "Targeted AE version, radius 1, 300 mana - group-pull tool, not a single-target upgrade"
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict for the single-target chain: each step shrinks the residual aggro radius (15 -> 10 -> 5 -> 1) at higher mana. Wake of Tranquility is the AE sibling of Pacify (same radius 1), kept alongside Pacify rather than replacing it - 300 mana per cast. Legends levels (1/6/18/35/51) match Allakhazam; P99 classic runs 1/9/20/39/51."
+   },
+   "missingOnLegends": [
+    "Pacification (live L62)"
+   ],
+   "stacking": {
+    "slots": [
+     "Reaction Radius / Frenzy Radius (SPA 44/45)"
+    ],
+    "conflicts": [
+     {
+      "line": "Cleric/Druid/Paladin pacify lines",
+      "class": "Cleric, Druid, Paladin",
+      "detail": "Same effect family; a weaker lull landing on a mob already lulled by a stronger one is wasted/overwrites.",
+      "source": "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet"
+     }
+    ],
+    "stacksWith": [],
+    "notes": "Resisted lulls aggro the mob - the standard failure mode. All are Magic-checked."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet",
+    "https://everquest.allakhazam.com/db/spelllist.html?type=enc&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "enc-root",
+   "name": "Root line",
+   "category": "Crowd control",
+   "sharedWith": [
+    "Druid",
+    "Cleric",
+    "Shaman",
+    "Necromancer",
+    "Wizard",
+    "Magician",
+    "Ranger"
+   ],
+   "members": [
+    {
+     "name": "Root",
+     "level": 6,
+     "inDb": true,
+     "note": "48s"
+    },
+    {
+     "name": "Instill",
+     "level": 25,
+     "inDb": true,
+     "note": "96s. Legends/live name; the P99 cheatsheet spells the same L29 root 'Enstill'. Legends row has no parsed effects but the 1m36s duration matches root exactly."
+    },
+    {
+     "name": "Immobilize",
+     "level": 39,
+     "inDb": true,
+     "note": "60s, faster cast (1.75s), 80 mana"
+    },
+    {
+     "name": "Paralyzing Earth",
+     "level": 45,
+     "inDb": true,
+     "note": "3 min"
+    },
+    {
+     "name": "Fetter",
+     "level": 58,
+     "inDb": true,
+     "note": "3 min, 75 mana, 1.75s cast - best on every axis"
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Not strict in the middle. Immobilize (L39) is SHORTER than Instill (60s vs 96s) but casts in 1.75s vs 2.5s - it is the emergency/interrupt root, not a duration upgrade. Fetter (L58) is strictly better than everything (3 min, 75 mana, 1.75s). Note Legends L25 for Instill matches Allakhazam; P99 classic has it at 29."
+   },
+   "missingOnLegends": [
+    "Greater Fetter (live L61)"
+   ],
+   "stacking": {
+    "slots": [
+     "Root (SPA 99)"
+    ],
+    "conflicts": [
+     {
+      "line": "All other root lines",
+      "class": "Druid/Cleric/Shaman/Necro/Wizard/Magician/Ranger",
+      "detail": "One root per mob; recast overwrites the timer.",
+      "source": "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Slow line",
+      "detail": "Root and slow are different effects and coexist."
+     }
+    ],
+    "notes": "Root breaks on damage (chance per hit). Magic-checked."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet",
+    "https://everquest.allakhazam.com/db/spelllist.html?type=enc&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "enc-fear",
+   "name": "Fear line",
+   "category": "Crowd control",
+   "sharedWith": [
+    "Necromancer",
+    "Shadow Knight",
+    "Cleric",
+    "Druid"
+   ],
+   "members": [
+    {
+     "name": "Fear",
+     "level": 3,
+     "inDb": true,
+     "note": "18s"
+    },
+    {
+     "name": "Chase the Moon",
+     "level": 16,
+     "inDb": true,
+     "note": "36s (6 ticks)"
+    },
+    {
+     "name": "Invoke Fear",
+     "level": 35,
+     "inDb": true,
+     "note": "42s"
+    },
+    {
+     "name": "Trepidation",
+     "level": 56,
+     "inDb": true,
+     "note": "36s, 200 mana - level cap raiser"
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Duration climbs to Invoke Fear then drops slightly at Trepidation; the real progression is the (undocumented in this DB) max-level check. Trepidation is kept for high-level targets, Invoke Fear for everything else. Rarely used by enchanters outside of soloing - feared mobs train."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Fear (SPA 23)"
+    ],
+    "conflicts": [
+     {
+      "line": "Necromancer/SK fear lines",
+      "class": "Necromancer, Shadow Knight",
+      "detail": "Same effect; overwrites.",
+      "source": "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet"
+     }
+    ],
+    "stacksWith": [],
+    "notes": "Magic-checked."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet",
+    "https://everquest.allakhazam.com/db/spelllist.html?type=enc&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "enc-color-stun",
+   "name": "Color line (PBAE stun)",
+   "category": "Crowd control",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Color Flux",
+     "level": 3,
+     "inDb": true,
+     "note": "4s stun, radius 20"
+    },
+    {
+     "name": "Color Shift",
+     "level": 20,
+     "inDb": true,
+     "note": "6s stun, radius 25"
+    },
+    {
+     "name": "Color Skew",
+     "level": 43,
+     "inDb": true,
+     "note": "8s stun, radius 30"
+    },
+    {
+     "name": "Color Slant",
+     "level": 52,
+     "inDb": true,
+     "note": "8s stun + 100 mana drain, radius 35, 125 mana"
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict: each step adds stun duration and radius. Color Slant adds a mana drain rider. All are capped at L55 targets per P99. Legends levels 3/20/43/52 vs P99 4/20/44/52."
+   },
+   "missingOnLegends": [
+    "Color Cloud (live L63)"
+   ],
+   "stacking": {
+    "slots": [
+     "Stun (SPA 21)"
+    ],
+    "conflicts": [
+     {
+      "line": "Any other stun",
+      "class": "All",
+      "detail": "Stun timers do not add; the longer remaining stun wins.",
+      "source": "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet"
+     }
+    ],
+    "stacksWith": [],
+    "notes": "Unresistable stun below the level cap - the classic enchanter \"oh no\" button and the basis of AE-stun-tanking."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet",
+    "https://everquest.allakhazam.com/db/spelllist.html?type=enc&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "enc-ranged-stun",
+   "name": "Ranged/spin stun line",
+   "category": "Crowd control",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Whirl Till You Hurl",
+     "level": 9,
+     "inDb": true,
+     "note": "SpinStun, up to 2 ticks"
+    },
+    {
+     "name": "Dyn's Dizzying Draught",
+     "level": 28,
+     "inDb": true,
+     "note": "SpinStun + AC/AGI debuff + 50 mana/tick drain; 35s recast"
+    },
+    {
+     "name": "Largarn`s Lamentation",
+     "level": 55,
+     "inDb": true,
+     "note": "8s stun + 75 mana drain, 24s recast. Legends spells it with a backtick."
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Not a clean chain. Dyn's Dizzying Draught has a 35s recast so it cannot replace Whirl Till You Hurl as a spammable stun; Largarn's Lamentation is a mana-drain-first spell that happens to stun. All three coexist in a L60 spellbook for different jobs."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Stun (SPA 21)",
+     "Mana drain (SPA 15)"
+    ],
+    "conflicts": [
+     {
+      "line": "Color line",
+      "class": "Enchanter",
+      "detail": "Stun component shares the stun timer.",
+      "source": "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet"
+     }
+    ],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet",
+    "https://everquest.allakhazam.com/db/spelllist.html?type=enc&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "enc-nuke",
+   "name": "Chaos/Dementia nuke line (stunning DD)",
+   "category": "Damage",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Chaotic Feedback",
+     "level": 7,
+     "inDb": true,
+     "note": "43-48"
+    },
+    {
+     "name": "Sanity Warp",
+     "level": 16,
+     "inDb": true,
+     "note": "88-95"
+    },
+    {
+     "name": "Chaos Flux",
+     "level": 21,
+     "inDb": true,
+     "note": "143-150"
+    },
+    {
+     "name": "Anarchy",
+     "level": 32,
+     "inDb": true,
+     "note": "273-288"
+    },
+    {
+     "name": "Discordant Mind",
+     "level": 43,
+     "inDb": true,
+     "note": "508-528"
+    },
+    {
+     "name": "Dementia",
+     "level": 54,
+     "inDb": true,
+     "note": "615-675"
+    },
+    {
+     "name": "Dementing Visions",
+     "level": 58,
+     "inDb": true,
+     "note": "775 on Legends. Note: this is the one member with NO stun component - the line loses its stun rider at the top."
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Strict on damage and on mana-per-damage all the way up (0.94 -> 0.37 mp/dmg). The one exception is at the very top: every member through Dementia carries a \"Stun for 0.0 seconds\" rider (a real interrupt), and Dementing Visions drops it. Enchanters who nuke for interrupts keep Dementia memmed past 58. Legends 7/16/21/32/43/54/58 matches Allakhazam; P99 runs 8/16/24/34/44/54."
+   },
+   "missingOnLegends": [
+    "Ancient: Chaotic Visions (live L60)"
+   ],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "Instant damage - no buff slot. Magic-checked."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet",
+    "https://everquest.allakhazam.com/db/spelllist.html?type=enc&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "enc-dot",
+   "name": "Suffocation DoT line",
+   "category": "Damage",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Shallow Breath",
+     "level": 1,
+     "inDb": true,
+     "note": "Legends L1; 3 ticks, no per-tick component parsed - the newbie stub of the line"
+    },
+    {
+     "name": "Suffocating Sphere",
+     "level": 4,
+     "inDb": true,
+     "note": "10 initial / 8 per tick"
+    },
+    {
+     "name": "Choke",
+     "level": 11,
+     "inDb": true,
+     "note": "18-20 initial / 12 per tick"
+    },
+    {
+     "name": "Suffocate",
+     "level": 26,
+     "inDb": true,
+     "note": "34-65 initial / 11 per tick, 1.8 min"
+    },
+    {
+     "name": "Gasping Embrace",
+     "level": 47,
+     "inDb": true,
+     "note": "50 initial / 33 per tick, 2 min"
+    },
+    {
+     "name": "Asphyxiate",
+     "level": 59,
+     "inDb": true,
+     "note": "50 initial / 45 per tick, 2 min, ~950 total"
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict - each step improves both total damage and mana-per-damage (0.59 -> 0.26). Every member also carries the same STR/AGI debuff rider, which does NOT stack with itself, so overwriting a running DoT with the next rank is safe. Enchanter DoTs are a poor damage source; the line is mostly used for the debuff and for pulling."
+   },
+   "missingOnLegends": [
+    "Strangle (live L62)"
+   ],
+   "stacking": {
+    "slots": [
+     "Damage over time (SPA 0 negative)",
+     "STR debuff rider",
+     "AGI debuff rider"
+    ],
+    "conflicts": [
+     {
+      "line": "Itself",
+      "class": "Enchanter",
+      "detail": "Two ranks cannot run on one mob - the newer cast replaces the older.",
+      "source": "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet"
+     },
+     {
+      "line": "STR debuff line (Weaken...Weakness)",
+      "class": "Enchanter",
+      "detail": "The DoTs' STR/AGI rider competes with the dedicated STR debuff line; the larger value normally holds and the weaker cast is refused.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet",
+    "https://everquest.allakhazam.com/db/spelllist.html?type=enc&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "enc-mana-drain",
+   "name": "Mana drain line (Mana Sieve / Theft of Thought)",
+   "category": "Damage",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Mana Sieve",
+     "level": 30,
+     "inDb": true,
+     "note": "Instant, drains 214-370 target mana, no return"
+    },
+    {
+     "name": "Theft of Thought",
+     "level": 50,
+     "inDb": true,
+     "note": "Drains 346-400 AND transfers it to the caster; 25 mana, 2 min recast"
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Theft of Thought is strictly better per cast (cheaper, returns the mana) but has a 120s recast; Mana Sieve stays memmed as the spammable drain when the goal is stripping a caster mob rather than gaining mana."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Mana drain (SPA 15)"
+    ],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "Instant effects - no slot contention."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet",
+    "https://everquest.allakhazam.com/db/spelllist.html?type=enc&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "enc-mana-dot",
+   "name": "Mana-drain-over-time line (Wandering Mind / Torment of Argli)",
+   "category": "Damage",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Wandering Mind",
+     "level": 38,
+     "inDb": true,
+     "note": "-6 target mana/tick, +6 caster mana/tick recourse; 5 mana to cast, 150s recast - the classic enchanter mana battery"
+    },
+    {
+     "name": "Torment of Argli",
+     "level": 56,
+     "inDb": true,
+     "note": "-35 mana/tick + HP damage + INT/WIS drain; 150 mana, 10s recast"
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Different jobs, not an upgrade chain. Wandering Mind is a nearly-free self-sustain tap (5 mana, 150s recast) with a caster recourse; Torment of Argli is a 150-mana offensive drain with no return. Both stay memmed."
+   },
+   "missingOnLegends": [
+    "Torment of Scio (live L63)"
+   ],
+   "stacking": {
+    "slots": [
+     "Mana drain over time (SPA 15)",
+     "INT/WIS debuff (Torment of Argli only)"
+    ],
+    "conflicts": [
+     {
+      "line": "Curse of the Simple Mind",
+      "class": "Enchanter",
+      "detail": "Torment of Argli's INT/WIS drain occupies the same debuff family as Curse of the Simple Mind.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [],
+    "notes": "Wandering Mind is a target debuff plus a self recourse buff - the recourse regen is its own effect and stacks with Clarity-line regen."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet",
+    "https://everquest.allakhazam.com/db/spelllist.html?type=enc&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "enc-slow",
+   "name": "Slow line (Deeds line)",
+   "category": "Debuff",
+   "sharedWith": [
+    "Shaman (Slow line)",
+    "Bard (Selo's Consonant Chain / haste-reduction songs)"
+   ],
+   "members": [
+    {
+     "name": "Languid Pace",
+     "level": 9,
+     "inDb": true,
+     "note": "18-30%"
+    },
+    {
+     "name": "Tepid Deeds",
+     "level": 23,
+     "inDb": true,
+     "note": "32-50%"
+    },
+    {
+     "name": "Shiftless Deeds",
+     "level": 41,
+     "inDb": true,
+     "note": "49-65%"
+    },
+    {
+     "name": "Forlorn Deeds",
+     "level": 57,
+     "inDb": true,
+     "note": "67-70%, 225 mana"
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict - each is a bigger attack-speed reduction at the same 3 min duration. Enchanter slows top out at 70% vs shaman 75% (Turgur's Insects), so on P99/classic a shaman slow is preferred when both are present."
+   },
+   "missingOnLegends": [
+    "Dreary Deeds (live L65)"
+   ],
+   "stacking": {
+    "slots": [
+     "Attack speed (SPA 11, negative)"
+    ],
+    "conflicts": [
+     {
+      "line": "Shaman slow line (Drowsy -> Turgur's Insects)",
+      "class": "Shaman",
+      "detail": "Same attack-speed slot. The stronger slow holds; a weaker slow cast over a stronger one is refused (\"your spell did not take hold\").",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Bard slow songs",
+      "class": "Bard",
+      "detail": "Also attack-speed negative; does not add to a spell slow.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Cripple line",
+      "detail": "Slow (attack speed) and Cripple (STR/AGI/AC) are separate slots and are the standard pair on a raid mob."
+     },
+     {
+      "line": "Tash line",
+      "detail": "Different slot entirely (magic resist)."
+     }
+    ],
+    "notes": "Slow is the enchanter's single most valuable group contribution below the level where a shaman out-slows them."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet",
+    "https://wiki.project1999.com/Buff_Lines"
+   ]
+  },
+  {
+   "id": "enc-tash",
+   "name": "Tash line (magic resist debuff)",
+   "category": "Debuff",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Tashina",
+     "level": 2,
+     "inDb": true,
+     "note": "Legends L2, matching Allakhazam. Absent from the P99 cheatsheet's Tash table entirely - classic P99 starts the line at Tashan L4. Legends shows Tashina with Tashan's exact magnitudes (9@L4 to 13@L8); Allakhazam gives Tashina -6 (L2) to -18 (L9). DISCREPANCY - see openQuestions."
+    },
+    {
+     "name": "Tashan",
+     "level": 4,
+     "inDb": true,
+     "note": "-9 to -13 MR; 10 mana, 1.0s cast - never leaves the spellbook"
+    },
+    {
+     "name": "Tashani",
+     "level": 18,
+     "inDb": true,
+     "note": "-20 to -23 MR"
+    },
+    {
+     "name": "Tashania",
+     "level": 41,
+     "inDb": true,
+     "note": "-31 to -33 MR"
+    },
+    {
+     "name": "Tashanian",
+     "level": 57,
+     "inDb": true,
+     "note": "-37 to -39 MR (P99 lists to -41)"
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict on magnitude. The practical caveat is mana: Tashan is 10 mana at 1.0s cast vs Tashanian 40 mana, and because the MR debuff is what makes mez/charm land, enchanters often cast the CHEAP one on trash and the big one on named. All ranks are unresistable, which is the whole point of the line."
+   },
+   "missingOnLegends": [
+    "Howl of Tashan (live L61)"
+   ],
+   "stacking": {
+    "slots": [
+     "Magic resist (SPA 46, negative)"
+    ],
+    "conflicts": [
+     {
+      "line": "Itself",
+      "class": "Enchanter",
+      "detail": "Ranks overwrite; a weaker Tash over a stronger one is refused.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Shaman Malo line (Malaise -> Malosini)",
+      "detail": "CONFIRMED STACKING: the shaman Malo line is a separate resist-debuff slot from Tash. Tash + Malo together is the standard raid resist-strip and the two magnitudes ADD."
+     },
+     {
+      "line": "Enchanter Cripple line and Slow line",
+      "detail": "Entirely different stats."
+     }
+    ],
+    "notes": "Tash is unresistable, so it is always cast first in a CC opener. This is the enchanter debuff that most directly multiplies the rest of the class kit."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet",
+    "https://wiki.project1999.com/Buff_Lines",
+    "https://everquest.allakhazam.com/db/spelllist.html?type=enc&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "enc-tash-ae",
+   "name": "Wind of Tashani line (AE magic resist debuff)",
+   "category": "Debuff",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Wind of Tashani",
+     "level": 55,
+     "inDb": true,
+     "note": "Targeted AE, -23 MR"
+    },
+    {
+     "name": "Wind of Tashani",
+     "level": 55,
+     "inDb": true,
+     "note": "DUPLICATE ROW in the Legends DB - identical name, level and effects. Almost certainly one spell double-listed."
+    },
+    {
+     "name": "Wind of Tishanian",
+     "level": 60,
+     "inDb": true,
+     "note": "Targeted AE, -40 MR. Allakhazam spells this \"Wind of Tashanian\"; the P99 cheatsheet spells the L55 one \"Wind of Tishani\". Legends has swapped the i/a between the two ranks."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict: -23 MR -> -40 MR, same targeting."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Magic resist (SPA 46, negative)"
+    ],
+    "conflicts": [
+     {
+      "line": "Tash line (single target)",
+      "class": "Enchanter",
+      "detail": "Same slot as single-target Tash - the AE will overwrite a weaker single Tash and vice versa.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Shaman Malo line",
+      "detail": "Separate slot; adds."
+     }
+    ],
+    "notes": ""
+   },
+   "sources": [
+    "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet",
+    "https://everquest.allakhazam.com/db/spelllist.html?type=enc&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "enc-str-debuff",
+   "name": "Strength debuff line (Weaken -> Weakness)",
+   "category": "Debuff",
+   "sharedWith": [
+    "Shaman",
+    "Necromancer"
+   ],
+   "members": [
+    {
+     "name": "Weaken",
+     "level": 1,
+     "inDb": true,
+     "note": "-10 to -15 STR"
+    },
+    {
+     "name": "Enfeeblement",
+     "level": 4,
+     "inDb": true,
+     "note": "-18 to -20 STR, -3 AC"
+    },
+    {
+     "name": "Ebbing Strength",
+     "level": 9,
+     "inDb": true,
+     "note": "-21 to -25 STR"
+    },
+    {
+     "name": "Feckless Might",
+     "level": 19,
+     "inDb": true,
+     "note": "-26 to -30 STR"
+    },
+    {
+     "name": "Insipid Weakness",
+     "level": 34,
+     "inDb": true,
+     "note": "-35 to -51 STR"
+    },
+    {
+     "name": "Weakness",
+     "level": 42,
+     "inDb": true,
+     "note": "-59 to -65 STR"
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict on magnitude. In practice the whole line is superseded in group play by the Cripple line (Disempower/Listless Power/Incapacitate/Cripple), which debuffs STR *and* AGI *and* AC in one cast - the pure-STR line is a low-level filler."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "STR (SPA 4, negative)"
+    ],
+    "conflicts": [
+     {
+      "line": "Cripple line",
+      "class": "Enchanter",
+      "detail": "Both write the STR debuff slot; the larger STR reduction holds and the other cast is refused. Casting Weakness on a Crippled mob does nothing.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Suffocation DoT line",
+      "class": "Enchanter",
+      "detail": "DoT STR/AGI riders share this slot.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet",
+    "https://wiki.project1999.com/Buff_Lines"
+   ]
+  },
+  {
+   "id": "enc-cripple",
+   "name": "Cripple line (STR/AGI/AC debuff)",
+   "category": "Debuff",
+   "sharedWith": [
+    "Shaman (Cripple)"
+   ],
+   "members": [
+    {
+     "name": "Disempower",
+     "level": 16,
+     "inDb": true,
+     "note": "-STA/-STR/-AC"
+    },
+    {
+     "name": "Listless Power",
+     "level": 25,
+     "inDb": true,
+     "note": "-AGI/-STR/-AC"
+    },
+    {
+     "name": "Incapacitate",
+     "level": 40,
+     "inDb": true,
+     "note": "-49 to -55 AGI/STR, -22 to -30 AC"
+    },
+    {
+     "name": "Cripple",
+     "level": 53,
+     "inDb": true,
+     "note": "-DEX/-AGI/-STR/-AC; the raid-standard damage mitigator"
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict - each rank increases every component. Cripple adds a DEX component the lower ranks lack. Together with slow this is the enchanter's melee-damage mitigation package."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "STR (negative)",
+     "AGI (negative)",
+     "AC (negative)",
+     "DEX (negative, Cripple only)",
+     "STA (negative, Disempower only)"
+    ],
+    "conflicts": [
+     {
+      "line": "Shaman Cripple",
+      "class": "Shaman",
+      "detail": "Same spell name/effect family on shaman; does not stack.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Enchanter STR debuff line",
+      "class": "Enchanter",
+      "detail": "Shares the STR debuff slot - do not follow Cripple with Weakness.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Slow line",
+      "detail": "Different slot (attack speed). Slow + Cripple is the standard pair."
+     },
+     {
+      "line": "Tash line",
+      "detail": "Different slot (resists)."
+     }
+    ],
+    "notes": ""
+   },
+   "sources": [
+    "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet",
+    "https://wiki.project1999.com/Buff_Lines"
+   ]
+  },
+  {
+   "id": "enc-haste",
+   "name": "Haste line (Quickness -> Wonderous Rapidity)",
+   "category": "Buff",
+   "sharedWith": [
+    "Shaman (Quickness/Alacrity/Celerity)",
+    "Ranger (Haste)",
+    "Bard (Jonthan's / Vilia's / Verses)",
+    "Items (Speed of the Shissar, Sandals of Alacrity, haste potions)"
+   ],
+   "members": [
+    {
+     "name": "Quickness",
+     "level": 15,
+     "inDb": true,
+     "note": "+28-30%"
+    },
+    {
+     "name": "Alacrity",
+     "level": 21,
+     "inDb": true,
+     "note": "+34-40%"
+    },
+    {
+     "name": "Augmentation",
+     "level": 28,
+     "inDb": true,
+     "note": "+22-28% BUT also +AGI and +AC and 27 min duration - a utility buff, weaker haste than Alacrity"
+    },
+    {
+     "name": "Celerity",
+     "level": 39,
+     "inDb": true,
+     "note": "+47-50%"
+    },
+    {
+     "name": "Swift Like The Wind",
+     "level": 47,
+     "inDb": true,
+     "note": "+60%"
+    },
+    {
+     "name": "Swift Like The Wind",
+     "level": 49,
+     "inDb": true,
+     "note": "DUPLICATE ROW in the Legends DB (identical +60% effect). L47 matches Allakhazam, L49 matches P99 classic - looks like both level records got imported."
+    },
+    {
+     "name": "Aanya's Quickening",
+     "level": 53,
+     "inDb": true,
+     "note": "+64%, 24 min"
+    },
+    {
+     "name": "Augment",
+     "level": 56,
+     "inDb": true,
+     "note": "+43-45% plus +AGI/+AC - the Augmentation upgrade, still not the top haste"
+    },
+    {
+     "name": "Wonderous Rapidity",
+     "level": 58,
+     "inDb": true,
+     "note": "+70% - the spell-haste ceiling"
+    },
+    {
+     "name": "Visions of Grandeur",
+     "level": 60,
+     "inDb": true,
+     "note": "+58% haste plus +40 AGI/+25 DEX/+20 ATK, 42 min - LOWER haste than Wonderous Rapidity, taken for the stat package and duration"
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "NOT strict, and this is the single most misread enchanter line. Two sub-branches share one slot: the pure-haste chain (Quickness -> Alacrity -> Celerity -> Swift Like The Wind -> Aanya's Quickening -> Wonderous Rapidity) and the utility chain (Augmentation -> Augment -> Visions of Grandeur) which trades ~15-25% haste for AGI/AC/DEX/ATK and much longer duration. A L60 enchanter keeps Wonderous Rapidity (70% for the main melee) AND Visions of Grandeur (58% + stats, 42 min, cheap upkeep) memmed at the same time. Because they share the Haste (Primary) slot they CANNOT both be on one target."
+   },
+   "missingOnLegends": [
+    "Speed of the Brood (live L60)",
+    "Speed of Vallon (live L62)",
+    "Vallon's Quickening (live L65)"
+   ],
+   "stacking": {
+    "slots": [
+     "Haste (Primary)"
+    ],
+    "conflicts": [
+     {
+      "line": "Shaman haste (Quickness/Alacrity/Celerity)",
+      "class": "Shaman",
+      "detail": "Identical spells on shaman - same slot, no stacking. Shaman Celerity is +50%, capped below enchanter top-end.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Ranger Haste (+50%)",
+      "class": "Ranger",
+      "detail": "Haste (Primary).",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Bard haste songs (Jonthan's Inspiration +63%, Vilia's Chorus +45%, Verses of Victory +30%, Anthem De Arms +10%, McVaxius' Berserker Crescendo +23%)",
+      "class": "Bard",
+      "detail": "All Haste (Primary). A bard singing Jonthan's Inspiration on a target already under Wonderous Rapidity gains nothing.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Item haste (Speed of the Shissar +66%, Graveyard Dust +65%, Dance of the Blade +55%, Flurry potions, Illusion: Werewolf +40%)",
+      "class": "Items",
+      "detail": "Also Haste (Primary) - clicky/potion haste does NOT stack with enchanter haste. Note Illusion: Werewolf carries +40% haste in this same slot.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Worn item haste",
+      "class": "Items",
+      "detail": "CAVEAT: \"worn\" haste (the % on an equipped item, e.g. a haste belt) is a DIFFERENT system from spell haste and does stack up to the overall haste cap - see the P99 Haste Guide. Only spell/clicky-cast haste is in this slot.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Bard Composition of Ervaj (+10%) / Melody of Ervaj (+5%)",
+      "detail": "The Haste (\"Ervaj\"/v2) slot is separate. Wonderous Rapidity +70% plus Composition of Ervaj +10% = +80%, the documented spell-haste maximum."
+     },
+     {
+      "line": "AC line, AC Slot 4",
+      "detail": "Augmentation/Augment write AC Slot 3, not Slot 4, so Augment and Umbra both apply."
+     },
+     {
+      "line": "Shaman Agility line",
+      "detail": "Augmentation/Augment/Visions of Grandeur AGI sits in the \"Agility (Speed Augmentation)\" slot, separate from the shaman Agility (Primary) line - both apply."
+     }
+    ],
+    "notes": "Slot names verbatim from P99 Buff Lines: \"Haste (Primary)\" and \"Haste (Ervaj/v2)\". Max spell haste = +80%."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Buff_Lines",
+    "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet",
+    "https://everquest.allakhazam.com/db/spelllist.html?type=enc&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "enc-mana-regen",
+   "name": "Clarity line (mana regeneration)",
+   "category": "Buff",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Breeze",
+     "level": 14,
+     "inDb": true,
+     "note": "+2 mana/tick, single target"
+    },
+    {
+     "name": "Clarity",
+     "level": 26,
+     "inDb": true,
+     "note": "+4 to +7 mana/tick, single target"
+    },
+    {
+     "name": "Boon of the Clear Mind",
+     "level": 42,
+     "inDb": true,
+     "note": "+6 to +9 mana/tick, GROUP. Legends L42 = Allakhazam; P99 classic has it at 52."
+    },
+    {
+     "name": "Clarity II",
+     "level": 54,
+     "inDb": true,
+     "note": "+11 mana/tick, single target"
+    },
+    {
+     "name": "Gift of Pure Thought",
+     "level": 59,
+     "inDb": true,
+     "note": "+11 mana/tick, GROUP - \"group C2\""
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Magnitude is strict (2 -> 7 -> 9 -> 11 -> 11) but targeting is NOT, so lower ranks stay in the book. Boon of the Clear Mind (group, +9) is worse per-person than Clarity II (single, +11), so a L54-58 enchanter alternates: C2 on the casters who matter, BoCM on the group. Gift of Pure Thought finally makes the group version equal to the single version and retires both. Breeze survives only as the level-14-to-26 stopgap. NOTE the Legends retier: Boon of the Clear Mind at 42 instead of the classic 52 hands enchanters group mana regen ten levels early - the largest gameplay-affecting level difference in the class."
+   },
+   "missingOnLegends": [
+    "Koadic's Endless Intellect (live L60, group, the true capstone of this line - present on live Allakhazam at 60 but ABSENT from the Legends DB)",
+    "Voice of Quellious (live L65)"
+   ],
+   "stacking": {
+    "slots": [
+     "Mana Regeneration (Clarity)"
+    ],
+    "conflicts": [
+     {
+      "line": "Itself - every member of this line",
+      "class": "Enchanter",
+      "detail": "Breeze, Clarity, Boon of the Clear Mind, Clarity II and Gift of Pure Thought ALL occupy the single \"Mana Regeneration (Clarity)\" slot. Only one can be on a character. Casting group BoCM over someone's Clarity II strips them down to +9 - the classic raid-buff griefing accident.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Gift line (Gift of Magic / Gift of Insight / Gift of Brilliance)",
+      "detail": "Separate slot: \"Mana Regeneration (Gift)\". Gift of Insight +1/tick and Gift of Brilliance +2/tick ADD on top of Clarity II. This is the enchanter stacking their own two regen buffs on one target."
+     },
+     {
+      "line": "Bard Cassindra's Chorus of Clarity (L32) / Cassindra's Chant of Clarity (L20)",
+      "detail": "Separate slot: \"Mana Regeneration (Chorus)\". Chorus is +7 base, and because it is a burst-per-pulse rather than a duration buff a bard who manually re-pulses it every 3s delivers an effective +14/tick. Multiple bards STACK with each other on this - each extra bard pulsing adds another +14. Unaffected by instruments/Puretone."
+     },
+     {
+      "line": "Bard Cantata of Replenishment (L55) / Cantata of Soothing (L34)",
+      "detail": "Separate slot: \"Mana Regeneration (Cantata)\". +13/tick. Stacks with Chorus AND with Clarity - one bard can run Cantata while another pulses Chorus."
+     },
+     {
+      "line": "Druid Protection of the Glades (L60)",
+      "detail": "Separate slot: \"Mana Regeneration (Protection of the Glades)\". +6/tick."
+     },
+     {
+      "line": "Necromancer Lich line (Dark Pact -> Demi Lich)",
+      "detail": "Separate slot: \"Mana Regeneration (Lich)\", self-only, +2 to +31/tick at an HP cost. Stacks with everything above."
+     },
+     {
+      "line": "Self-only caster regen (Wizard/Necro Manaskin +1, Barrier of Force click +3)",
+      "detail": "Separate slot: \"Mana Regeneration (Self-Only)\"."
+     },
+     {
+      "line": "Item mana regen (\"Flowing Thought\" worn items)",
+      "detail": "P99 Buff Lines gives Flowing Thought its OWN column in the mana-regen table (+8 for wizard/necro, +6 druid), separate from every spell slot, and excludes it from the spell maximum - i.e. worn FT mana regen stacks on top of Clarity, Gift, Cantata and Chorus. Meditation (the skill, +21) is likewise a separate bucket."
+     }
+    ],
+    "notes": "THE MANA-REGEN ANSWER: there are seven independent mana-regen buckets - Clarity (enchanter), Gift (enchanter), Chorus (bard), Cantata (bard), Protection of the Glades (druid), Lich (necro), Self-Only, plus non-spell Meditation and worn Flowing Thought. Everything across buckets ADDS; nothing within a bucket does. P99 documents the practical ceiling for a Magician/Enchanter as +46/tick with one bard (6 PotG + 11 Clarity II + 2 Gift of Brilliance + 13 Cantata + 14 pulsed Chorus), and notes each ADDITIONAL bard pulsing Chorus adds another +14 with no cap - four extra bards is +56 more. Legends caveat: with Koadic's Endless Intellect missing, the Clarity bucket tops out at +11 (Clarity II / Gift of Pure Thought)."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Buff_Lines",
+    "https://wiki.project1999.com/Cassindra's_Chorus_of_Clarity",
+    "https://www.project1999.com/forums/archive/index.php/t-261031.html",
+    "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet"
+   ]
+  },
+  {
+   "id": "enc-gift",
+   "name": "Gift line (max mana + small regen)",
+   "category": "Buff",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Gift of Magic",
+     "level": 34,
+     "inDb": true,
+     "note": "+50 max mana, NO regen component"
+    },
+    {
+     "name": "Gift of Insight",
+     "level": 55,
+     "inDb": true,
+     "note": "+100 max mana, +1 mana/tick"
+    },
+    {
+     "name": "Gift of Brilliance",
+     "level": 60,
+     "inDb": true,
+     "note": "+150 max mana, +2 mana/tick"
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict on both components. All three are Velious-era additions (marked \"Vel\" on the P99 cheatsheet)."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Mana (Primary)",
+     "Mana Regeneration (Gift)"
+    ],
+    "conflicts": [
+     {
+      "line": "Itself",
+      "class": "Enchanter",
+      "detail": "One Gift at a time - \"Mana (Primary)\" holds all three and there is no other class in it.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Clarity line",
+      "detail": "CONFIRMED: distinct slot (\"Mana Regeneration (Gift)\" vs \"(Clarity)\"). Gift of Brilliance +2/tick sits on top of Clarity II +11/tick for +13 from the enchanter alone."
+     },
+     {
+      "line": "Druid Mask of the Hunter / Form of the Howler",
+      "detail": "Those druid self-buffs ARE in the Gift slot (+3 / +2) - a druid running Mask of the Hunter will refuse Gift of Brilliance's regen component."
+     }
+    ],
+    "notes": "Gift of Magic gives max mana only, so it contributes to \"Mana (Primary)\" but contributes 0 to the regen table."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Buff_Lines",
+    "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet"
+   ]
+  },
+  {
+   "id": "enc-ac",
+   "name": "Shield/Umbra AC line (Haze -> Umbra)",
+   "category": "Buff",
+   "sharedWith": [
+    "Cleric (Holy Armor -> Aegis / Bulwark of Faith)",
+    "Shaman (Scale Skin -> Shroud of the Spirits)",
+    "Magician (Phantom Leather -> Phantom Armor)",
+    "Necromancer (Spirit Armor)",
+    "Paladin"
+   ],
+   "members": [
+    {
+     "name": "Haze",
+     "level": 3,
+     "inDb": true,
+     "note": "+3 to +4 AC"
+    },
+    {
+     "name": "Mist",
+     "level": 10,
+     "inDb": true,
+     "note": "+6 to +7"
+    },
+    {
+     "name": "Cloud",
+     "level": 17,
+     "inDb": true,
+     "note": "+9 to +10"
+    },
+    {
+     "name": "Obscure",
+     "level": 27,
+     "inDb": true,
+     "note": "+12 to +13"
+    },
+    {
+     "name": "Shade",
+     "level": 37,
+     "inDb": true,
+     "note": "+15 to +16"
+    },
+    {
+     "name": "Shadow",
+     "level": 48,
+     "inDb": true,
+     "note": "+19"
+    },
+    {
+     "name": "Umbra",
+     "level": 57,
+     "inDb": true,
+     "note": "+29 - the highest non-cleric single-target AC buff in the slot"
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict - magnitude and duration both rise monotonically (12 min at Haze to 99 min at Umbra). Nothing keeps a lower rank memmed."
+   },
+   "missingOnLegends": [
+    "Shield of Maelin (live L64)"
+   ],
+   "stacking": {
+    "slots": [
+     "AC (Slot 4)"
+    ],
+    "conflicts": [
+     {
+      "line": "Cleric AC line (Holy Armor +6, Spirit Armor +13, Guard +19, Armor of Faith +25, Shield of Words +31, Aegis +34, Bulwark of Faith +37)",
+      "class": "Cleric",
+      "detail": "Same AC Slot 4. Cleric Bulwark of Faith (+37) and Aegis (+34) both beat Umbra (+29) - if a cleric is buffing, the enchanter AC buff is wasted.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Shaman AC line (Scale Skin -> Turtle Skin -> Protect -> Shifting Shield -> Guardian -> Shroud of the Spirits +28)",
+      "class": "Shaman",
+      "detail": "AC Slot 4. Shroud of the Spirits +28 is a near-tie with Umbra +29.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Magician Phantom line (Phantom Leather -> Phantom Armor +22)",
+      "class": "Magician",
+      "detail": "AC Slot 4.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Cleric Aegolism",
+      "class": "Cleric",
+      "detail": "Aegolism (+54 AC) occupies \"AC (Slot 1 & 4)\" - it takes BOTH slots, so it blocks the enchanter AC line AND the cleric/druid HP-AC line at once.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Cleric/Druid HP+AC line (Courage -> Heroism, Skin Like Wood -> Protection of the Glades)",
+      "detail": "AC Slot 1 - stacks with Umbra."
+     },
+     {
+      "line": "Self-shielding line (Minor Shielding -> Shield of the Magi)",
+      "detail": "AC Slot 2 - the enchanter's own self-buff stacks with their own Umbra."
+     },
+     {
+      "line": "Augmentation / Augment",
+      "detail": "AC Slot 3 - the haste-line AC rider stacks with Umbra."
+     },
+     {
+      "line": "Bard Guardian Rhythms / Niv's Harmonic / Jonthan's Whistling Warsong",
+      "detail": "Layer-2 AC slots - all stack."
+     }
+    ],
+    "notes": "Slot name verbatim: \"AC (Slot 4)\". This is the same slot the prior wave identified."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Buff_Lines",
+    "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet"
+   ]
+  },
+  {
+   "id": "enc-self-shielding",
+   "name": "Shielding line (self-only HP/AC/MR)",
+   "category": "Buff",
+   "sharedWith": [
+    "Magician",
+    "Necromancer",
+    "Wizard"
+   ],
+   "members": [
+    {
+     "name": "Minor Shielding",
+     "level": 1,
+     "inDb": true,
+     "note": "+10 HP, +4 AC"
+    },
+    {
+     "name": "Lesser Shielding",
+     "level": 6,
+     "inDb": true,
+     "note": "+30 HP, +9 AC"
+    },
+    {
+     "name": "Shielding",
+     "level": 16,
+     "inDb": true,
+     "note": "+50 HP, +18 AC, +12 MR"
+    },
+    {
+     "name": "Major Shielding",
+     "level": 23,
+     "inDb": true,
+     "note": "+75 HP, +23 AC, +14 MR"
+    },
+    {
+     "name": "Greater Shielding",
+     "level": 31,
+     "inDb": true,
+     "note": "+100 HP, +29 AC, +16 MR"
+    },
+    {
+     "name": "Arch Shielding",
+     "level": 40,
+     "inDb": true,
+     "note": "+150 HP, +35 AC, +20 MR"
+    },
+    {
+     "name": "Shield of the Magi",
+     "level": 54,
+     "inDb": true,
+     "note": "+250 HP, +42 AC, +24 MR"
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict on every component and on duration (27 min -> 90 min). Self-only for all four INT-caster classes."
+   },
+   "missingOnLegends": [
+    "Shield of the Arcane (live L61)",
+    "Shield of Maelin (live L64)"
+   ],
+   "stacking": {
+    "slots": [
+     "AC (Slot 2)",
+     "HP (Shielding / Talisman)",
+     "Magic Resistance (Magic Shield)"
+    ],
+    "conflicts": [
+     {
+      "line": "Shaman Talisman line (Talisman of Tnarg -> Focus of Spirit)",
+      "class": "Shaman",
+      "detail": "Shares the HP (Shielding/Talisman) slot. Shaman Focus of Spirit (+405 HP) beats Shield of the Magi (+250) - the HP component is refused, and on P99 that means the whole spell may not land.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Druid *coat line (Thistlecoat -> Bladecoat)",
+      "class": "Druid",
+      "detail": "Shares AC (Slot 2). Bladecoat +37 AC vs Shield of the Magi +42.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Cleric Armor of Protection, Cleric/Paladin Yaulp line",
+      "class": "Cleric, Paladin",
+      "detail": "AC (Slot 2).",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Enchanter Group Resist Magic / Resist Magic",
+      "class": "Enchanter",
+      "detail": "NO conflict - see stacksWith. The Shielding MR is in \"Magic Shield\", a separate slot from MR (Primary).",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Resist Magic line",
+      "detail": "Shielding MR is slot \"Magic Shield\"; Resist Magic/Group Resist Magic are \"Magic Resistance (Primary)\". Both apply - this is why Enchanter/Mage/Necro/Wizard have a higher MR ceiling (+275) than every other class (+251)."
+     },
+     {
+      "line": "Umbra AC line",
+      "detail": "AC Slot 2 vs Slot 4."
+     },
+     {
+      "line": "Cleric/Druid HP lines",
+      "detail": "HP (Primary) vs HP (Shielding/Talisman) - Aegolism/Symbol stack with Shield of the Magi."
+     }
+    ],
+    "notes": "Slot names verbatim: \"AC (Slot 2)\", \"HP (Shielding / Talisman)\", \"Magic Resistance (Magic Shield)\"."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Buff_Lines",
+    "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet"
+   ]
+  },
+  {
+   "id": "enc-rune",
+   "name": "Rune line (damage absorption)",
+   "category": "Buff",
+   "sharedWith": [
+    "Necromancer (Shieldskin -> Manaskin)",
+    "Wizard (Shieldskin -> Manaskin)",
+    "Shadow Knight"
+   ],
+   "members": [
+    {
+     "name": "Rune I",
+     "level": 13,
+     "inDb": true,
+     "note": "27-55 absorbed, 36 min"
+    },
+    {
+     "name": "Rune II",
+     "level": 22,
+     "inDb": true,
+     "note": "71-118, 54 min"
+    },
+    {
+     "name": "Rune III",
+     "level": 33,
+     "inDb": true,
+     "note": "168-230, 72 min"
+    },
+    {
+     "name": "Rune IV",
+     "level": 40,
+     "inDb": true,
+     "note": "305-394, 90 min"
+    },
+    {
+     "name": "Rune V",
+     "level": 52,
+     "inDb": true,
+     "note": "620-700, 110 min"
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict on absorption and duration. Runes are consumed by melee damage, so an enchanter re-casts constantly while soloing."
+   },
+   "missingOnLegends": [
+    "Arcane Rune (live L61)",
+    "Rune of Zebuxoruk / Rune of the Scale (live L61)"
+   ],
+   "stacking": {
+    "slots": [
+     "Damage Absorption (Primary)"
+    ],
+    "conflicts": [
+     {
+      "line": "Necromancer/Wizard skin line (Shieldskin +55, Leatherskin +118, Steelskin +230, Diamondskin +394, Manaskin +600)",
+      "class": "Necromancer, Wizard, Shadow Knight",
+      "detail": "IDENTICAL magnitudes to Rune I-IV - these are the same spells under different names in one slot. Rune V (+700) beats Manaskin (+600).",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Rampage (enchanter STR line)",
+      "class": "Enchanter",
+      "detail": "IMPORTANT AND EASY TO MISS: Rampage carries +90 Damage Absorption in the SAME \"Damage Absorption (Primary)\" slot as the Rune line. Casting Rampage on a target running Rune IV/V overwrites a 394/700-point rune with a 90-point one (or is refused). Never Rampage a runed target.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Barrier of Force (Staff of the Four click, +800)",
+      "class": "Items",
+      "detail": "Damage Absorption (Primary) - the only thing that beats Rune V.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Berserker line (Berserker Strength +50, Berserker Spirit +200, Bedlam +350)",
+      "detail": "Separate slot: \"Damage Absorption (Berserker)\". Bedlam +350 stacks on top of Rune V +700."
+     },
+     {
+      "line": "Bard Shield of Song (+56) / Nillipus' March of the Wee (+33)",
+      "detail": "Separate slots."
+     },
+     {
+      "line": "Ward/Guard of Alendar",
+      "detail": "Those mitigate SPELL damage (a different mechanic from the melee rune) - see that line."
+     }
+    ],
+    "notes": "Slot name verbatim: \"Damage Absorption (Primary)\". The Rampage collision is the load-bearing finding here."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Buff_Lines",
+    "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet"
+   ]
+  },
+  {
+   "id": "enc-str-buff",
+   "name": "Strength buff line (Strengthen -> Berserker Spirit)",
+   "category": "Buff",
+   "sharedWith": [
+    "Shaman (Strength line)",
+    "Druid (Strength of Earth -> Girdle of Karana)",
+    "Ranger"
+   ],
+   "members": [
+    {
+     "name": "Strengthen",
+     "level": 1,
+     "inDb": true,
+     "note": "+5 to +10 STR, 27 min"
+    },
+    {
+     "name": "Rampage",
+     "level": 38,
+     "inDb": true,
+     "note": "+29 to +42 STR, +79 to +90 damage absorb, -20 AGI, ~5 min"
+    },
+    {
+     "name": "Berserker Spirit",
+     "level": 47,
+     "inDb": true,
+     "note": "+40 STR, +200 damage absorb, -20 AGI, 5 min"
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Strict on STR, but the line changes character: Strengthen is a 27-minute pure-STR buff with no downside, while Rampage and Berserker Spirit are ~5-minute combat buffs that DEBUFF AGILITY by 20 and (critically) overwrite the Rune slot. A shaman in the group makes the whole line moot - shaman Strength is +67 vs Berserker Spirit +40."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Strength (Primary)",
+     "Damage Absorption (Primary) [Rampage]",
+     "Damage Absorption (Berserker) [Berserker Spirit]"
+    ],
+    "conflicts": [
+     {
+      "line": "Shaman Strength line (Spirit Strength -> Maniacal Strength +68)",
+      "class": "Shaman",
+      "detail": "Strength (Primary). Shaman out-buffs enchanter STR at every tier from 29 up.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Druid Strength of Earth -> Girdle of Karana (+42)",
+      "class": "Druid",
+      "detail": "Strength (Primary).",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Enchanter Rune line",
+      "class": "Enchanter",
+      "detail": "Rampage's +90 absorb is in Damage Absorption (Primary) with the Runes - it will clobber a real rune. Berserker Spirit's +200 absorb is in the separate Berserker slot and does NOT.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Berserker Strength / Bedlam",
+      "class": "Enchanter",
+      "detail": "Berserker Spirit shares \"Damage Absorption (Berserker)\" with Berserker Strength (+50) and Bedlam (+350) - only one of those three absorbs at a time.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Bard Anthem De Arms / Chant of Battle / Jonthan's",
+      "detail": "Strength (Anthem) - separate slot, +98 possible."
+     },
+     {
+      "line": "Illusion: Werewolf (+30 STR) / Illusion: Earth Elemental (+10 STR)",
+      "detail": "Strength (Illusion) - separate slot, stacks with Strength (Primary)."
+     },
+     {
+      "line": "Cleric/Paladin Yaulp line",
+      "detail": "Strength (Short Duration: Yaulp) - separate."
+     }
+    ],
+    "notes": "Slot name verbatim: \"Strength (Primary)\". Confirms the prior wave's anchor."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Buff_Lines",
+    "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet"
+   ]
+  },
+  {
+   "id": "enc-berserker",
+   "name": "Berserker line (short-duration STR + damage absorb)",
+   "category": "Buff",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Berserker Strength",
+     "level": 19,
+     "inDb": true,
+     "note": "+20 to +25 STR, +30 to +50 absorb, -AGI, 3 min"
+    },
+    {
+     "name": "Bedlam",
+     "level": 58,
+     "inDb": true,
+     "note": "+50 STR, +350 absorb, -25 AGI, ~7 min"
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict. Bedlam is Berserker Strength scaled up on every axis."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Strength (Short Duration: Bedlam)",
+     "Damage Absorption (Berserker)"
+    ],
+    "conflicts": [
+     {
+      "line": "Berserker Spirit",
+      "class": "Enchanter",
+      "detail": "Shares the Damage Absorption (Berserker) slot with both members - only one Berserker absorb at a time.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Itself",
+      "class": "Enchanter",
+      "detail": "Bedlam replaces Berserker Strength.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Shaman/Druid Strength (Primary)",
+      "detail": "P99 files Berserker Strength and Bedlam in \"Strength (Short Duration: Bedlam)\", NOT Strength (Primary) - so Bedlam's +50 STR stacks on top of shaman Maniacal Strength +68. (Berserker Spirit does NOT - it is in Strength (Primary).) This asymmetry is real and is exactly what the P99 max-STR table relies on."
+     },
+     {
+      "line": "Rune line",
+      "detail": "Damage Absorption (Berserker) is separate from Damage Absorption (Primary) - Bedlam +350 sits on top of Rune V +700."
+     }
+    ],
+    "notes": "Slot names verbatim: \"Strength (Short Duration: Bedlam)\", \"Damage Absorption (Berserker)\"."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Buff_Lines",
+    "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet"
+   ]
+  },
+  {
+   "id": "enc-cha",
+   "name": "Charisma line",
+   "category": "Buff",
+   "sharedWith": [
+    "Shaman (Spirit of Snake -> Unfailing Reverence)"
+   ],
+   "members": [
+    {
+     "name": "Sympathetic Aura",
+     "level": 18,
+     "inDb": true,
+     "note": "+16 to +18 CHA"
+    },
+    {
+     "name": "Radiant Visage",
+     "level": 31,
+     "inDb": true,
+     "note": "+27 to +30"
+    },
+    {
+     "name": "Adorning Grace",
+     "level": 46,
+     "inDb": true,
+     "note": "+40, 72 min"
+    },
+    {
+     "name": "Overwhelming Splendor",
+     "level": 56,
+     "inDb": true,
+     "note": "+50, 81 min"
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict on magnitude and duration."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Charisma (Primary)"
+    ],
+    "conflicts": [
+     {
+      "line": "Shaman CHA line (Spirit of Snake +15, Alluring Aura +23, Glamour +32, Charisma +40, Talisman of the Serpent +40, Unfailing Reverence +55)",
+      "class": "Shaman",
+      "detail": "Charisma (Primary) - the two class lines INTERLEAVE by magnitude in one slot exactly as the prior wave found. Shaman Unfailing Reverence (+55) tops enchanter Overwhelming Splendor (+50).",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Bard Solon's Charismatic Concord",
+      "detail": "Charisma (Bard Song) - separate slot, +45 base / +126 with max instrument. Stacks for a +176 total."
+     },
+     {
+      "line": "Potion of Antibody (Aura of Antibody)",
+      "detail": "Charisma (Potion) - separate."
+     }
+    ],
+    "notes": "Slot name verbatim: \"Charisma (Primary)\". CHA matters for charm resist and vendor prices."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Buff_Lines",
+    "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet"
+   ]
+  },
+  {
+   "id": "enc-int-wis",
+   "name": "INT/WIS line (Insight -> Enlightenment)",
+   "category": "Buff",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Insight",
+     "level": 35,
+     "inDb": true,
+     "note": "WIS-weighted: +10 to +14 WIS, +5 to +8 INT"
+    },
+    {
+     "name": "Brilliance",
+     "level": 41,
+     "inDb": true,
+     "note": "INT-weighted: +12 to +14 INT, +6 to +8 WIS"
+    },
+    {
+     "name": "Enlightenment",
+     "level": 57,
+     "inDb": true,
+     "note": "+20 to +22 to BOTH"
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "NOT strict between Insight and Brilliance - they are a matched pair, not an upgrade. P99 files them in two tables: Intelligence (Primary) ranks them Enlightenment 22 > Brilliance 14 > Insight 9, while Wisdom (Enchanter) ranks them Enlightenment 22 > Insight 14 > Brilliance 7. So you cast Insight on WIS casters (cleric/druid/shaman/paladin/ranger) and Brilliance on INT casters (wizard/mage/necro/enchanter/SK/bard) until Enlightenment at 57 makes both obsolete at once."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Intelligence (Primary)",
+     "Wisdom (Enchanter)"
+    ],
+    "conflicts": [
+     {
+      "line": "Itself",
+      "class": "Enchanter",
+      "detail": "All three write both slots - Insight and Brilliance cannot both be on a target, since each would need to lose to the other in one of the two slots.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Bard Cassindra's Elegy",
+      "detail": "Slots \"Intelligence (Elegy)\" and \"Wisdom (Elegy)\" - separate. +16 base / +44 with max instrument to BOTH, on top of Enlightenment. The bard song is worth double the enchanter buff."
+     },
+     {
+      "line": "Shaman Form of the Great Bear",
+      "detail": "Wisdom (Illusion, Shaman Self-Only) - separate."
+     }
+    ],
+    "notes": "Enchanter is the ONLY source in \"Intelligence (Primary)\" and \"Wisdom (Enchanter)\" - no cross-class contention at all."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Buff_Lines",
+    "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet"
+   ]
+  },
+  {
+   "id": "enc-magic-resist",
+   "name": "Magic resist buff line",
+   "category": "Buff",
+   "sharedWith": [
+    "Cleric",
+    "Druid",
+    "Shaman",
+    "Paladin"
+   ],
+   "members": [
+    {
+     "name": "Endure Magic",
+     "level": 17,
+     "inDb": true,
+     "note": "+20 MR"
+    },
+    {
+     "name": "Resist Magic",
+     "level": 37,
+     "inDb": true,
+     "note": "+40 MR"
+    },
+    {
+     "name": "Group Resist Magic",
+     "level": 48,
+     "inDb": true,
+     "note": "+54 to +55 MR, GROUP - the best magic resist buff in classic"
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict; Group Resist Magic also converts the line to a group cast, which is why it is an enchanter raid staple."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Magic Resistance (Primary)"
+    ],
+    "conflicts": [
+     {
+      "line": "Cleric/Druid/Shaman/Paladin Resist Magic and Endure Magic",
+      "class": "Cleric, Druid, Shaman, Paladin",
+      "detail": "Same spells, same slot. Enchanter Group Resist Magic (+55) is the top of the slot for everyone.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Aura of Blue Petals (Blue Flower of Functionality click, +50)",
+      "class": "Items",
+      "detail": "Magic Resistance (Primary).",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Bard Psalm of Mystic Shielding (+70 / +196) and the Rhythms",
+      "detail": "Slot \"Psalm\" - separate and much larger."
+     },
+     {
+      "line": "Self-shielding line (Shielding -> Shield of the Magi, +12 to +24 MR)",
+      "detail": "Slot \"Magic Shield\" - separate. Enchanter/Mage/Necro/Wizard therefore reach +275 MR vs +251 for everyone else."
+     },
+     {
+      "line": "Null Potions",
+      "detail": "Slot \"Potion\" - separate."
+     }
+    ],
+    "notes": "Slot name verbatim: \"Magic Resistance (Primary)\"."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Buff_Lines",
+    "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet"
+   ]
+  },
+  {
+   "id": "enc-alendar",
+   "name": "Alendar line (spell-damage mitigation)",
+   "category": "Buff",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Ward of Alendar",
+     "level": 29,
+     "inDb": true,
+     "note": "Mitigate spell damage 20%, 460 total absorbed"
+    },
+    {
+     "name": "Guard of Alendar",
+     "level": 44,
+     "inDb": true,
+     "note": "Mitigate spell damage 20%, 700 total absorbed"
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict on the absorb pool."
+   },
+   "missingOnLegends": [
+    "Protection of Alendar (live L55)",
+    "Bulwark of Alendar (live L63)"
+   ],
+   "stacking": {
+    "slots": [
+     "Mitigate Spell Damage (SPA 296/298 family)"
+    ],
+    "conflicts": [
+     {
+      "line": "Itself",
+      "class": "Enchanter",
+      "detail": "Guard replaces Ward.",
+      "source": "https://everquest.allakhazam.com/db/spelllist.html?type=enc&level=1&opt=And+Higher&action=search"
+     },
+     {
+      "line": "Wizard/Necromancer Manasink",
+      "class": "Wizard, Necromancer",
+      "detail": "P99 files Manasink (+250) under \"Damage Absorption, Magic (Manasink)\" - its own slot, so it does NOT conflict with the Alendar spells; noted here because the two are often confused.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Rune line",
+      "detail": "Runes absorb MELEE damage (Damage Absorption (Primary)); the Alendar spells mitigate SPELL damage. Different mechanics, both apply."
+     },
+     {
+      "line": "Bard Shield of Song / Psalm of Mystic Shielding / Niv's Melody of Preservation",
+      "detail": "Those bard spell-absorb songs each have their own slot per P99 (\"Song Shield\", \"Psalm\", \"Melody\")."
+     }
+    ],
+    "notes": "NOT CLASSIC. Ward of Alendar (L29, 24 adventure points, Bloodstone) and Guard of Alendar (L44, 72 AP, Jasper) are LDoN adventure-merchant spells and appear nowhere on P99. Legends has them at their live levels. Stacking here is inferred from the live effect type, not from a classic source - flagged in openQuestions."
+   },
+   "sources": [
+    "https://everquest.allakhazam.com/db/spelllist.html?type=enc&level=1&opt=And+Higher&action=search",
+    "https://everquest.allakhazam.com/db/item.html?item=23769",
+    "https://everquest.allakhazam.com/db/item.html?item=23515"
+   ]
+  },
+  {
+   "id": "enc-visage-aggro",
+   "name": "Visage line (aggro modification)",
+   "category": "Buff",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Haunting Visage",
+     "level": 26,
+     "inDb": true,
+     "note": "+5% aggro multiplier on the target, 36s"
+    },
+    {
+     "name": "Calming Visage",
+     "level": 36,
+     "inDb": true,
+     "note": "-5% aggro multiplier on the target, 36s"
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Opposites, not an upgrade chain. Haunting Visage is cast on the tank to help them hold aggro; Calming Visage on the healer/nuker to shed it. Both stay memmed. 36-second duration and high mana make them boss-fight tools only."
+   },
+   "missingOnLegends": [
+    "Horrifying Visage (live L56, the Haunting upgrade)",
+    "Glamorous Visage (live L58, the Calming upgrade)",
+    "Beguiling Visage (live L54)"
+   ],
+   "stacking": {
+    "slots": [
+     "Aggro multiplier (SPA 192 family)"
+    ],
+    "conflicts": [
+     {
+      "line": "Each other",
+      "class": "Enchanter",
+      "detail": "Same slot with opposite sign - do not land both on one target.",
+      "source": "https://everquest.allakhazam.com/db/spelllist.html?type=enc&level=1&opt=And+Higher&action=search"
+     }
+    ],
+    "stacksWith": [],
+    "notes": "NOT CLASSIC - absent from the P99 cheatsheet; these are post-classic (LDoN/PoP-era) enchanter spells. Legends levels 26/36 match Allakhazam exactly."
+   },
+   "sources": [
+    "https://everquest.allakhazam.com/db/spelllist.html?type=enc&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "enc-casting-level",
+   "name": "Intellectual line (effective casting level)",
+   "category": "Buff",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Intellectual Advancement",
+     "level": 11,
+     "inDb": true,
+     "note": "+3 effective casting level"
+    },
+    {
+     "name": "Intellectual Superiority",
+     "level": 17,
+     "inDb": true,
+     "note": "+6 effective casting level"
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict - +3 then +6, same 27 min duration."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Increase Effective Casting Level (SPA 192/\"spell level\" family)"
+    ],
+    "conflicts": [
+     {
+      "line": "Itself",
+      "class": "Enchanter",
+      "detail": "Superiority replaces Advancement.",
+      "source": "https://everquest.allakhazam.com/db/spelllist.html?type=enc&level=1&opt=And+Higher&action=search"
+     }
+    ],
+    "stacksWith": [],
+    "notes": "NOT CLASSIC - absent from P99 entirely. Live Allakhazam has Intellectual Advancement at ENC/12 and Intellectual Superiority at ENC/17; Legends has 11/17. This is a post-classic buff that raises the effective level used for spell scaling - a real power difference on a \"classic\" server, since it inflates level-scaled spell effects."
+   },
+   "sources": [
+    "https://everquest.allakhazam.com/db/spelllist.html?type=enc&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "enc-dispel",
+   "name": "Dispel line (Cancel Magic line)",
+   "category": "Utility",
+   "sharedWith": [
+    "Magician",
+    "Wizard",
+    "Necromancer",
+    "Cleric",
+    "Druid",
+    "Shaman",
+    "Paladin",
+    "Shadow Knight"
+   ],
+   "members": [
+    {
+     "name": "Taper Enchantment",
+     "level": 1,
+     "inDb": true,
+     "note": "Cancel Magic(0) - reduces the timer of 1 effect rather than removing it"
+    },
+    {
+     "name": "Cancel Magic",
+     "level": 7,
+     "inDb": true,
+     "note": "Cancel Magic(1) - 1 effect"
+    },
+    {
+     "name": "Strip Enchantment",
+     "level": 22,
+     "inDb": true,
+     "note": "4x Cancel Magic(1) - 4 effects at low dispel strength"
+    },
+    {
+     "name": "Nullify Magic",
+     "level": 28,
+     "inDb": true,
+     "note": "2x Cancel Magic(4) - fewer effects but much higher dispel strength"
+    },
+    {
+     "name": "Pillage Enchantment",
+     "level": 42,
+     "inDb": true,
+     "note": "4x Cancel Magic(4)"
+    },
+    {
+     "name": "Recant Magic",
+     "level": 53,
+     "inDb": true,
+     "note": "4x Cancel Magic(9) - highest dispel strength in the line"
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "NOT strict at the Strip/Nullify crossover. Strip Enchantment (L22) removes 4 effects at strength 1; Nullify Magic (L28) removes only 2 but at strength 4. Against high-level buffs Nullify lands where Strip bounces; against a stack of weak buffs Strip clears more. Both stay memmed until Pillage Enchantment (L42) gets 4 effects AND strength 4, which finally makes both obsolete. Recant Magic (L53) is a pure strength upgrade."
+   },
+   "missingOnLegends": [
+    "Wuggan's Appraisal / Discombobulation / Extrication line (live L13-L34) - a separate enchanter dispel/inspection family entirely absent from Legends"
+   ],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "Instant, no slot."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet",
+    "https://everquest.allakhazam.com/db/spelllist.html?type=enc&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "enc-faction",
+   "name": "Faction line",
+   "category": "Utility",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Alliance",
+     "level": 8,
+     "inDb": true,
+     "note": "+100 faction"
+    },
+    {
+     "name": "Benevolence",
+     "level": 20,
+     "inDb": true,
+     "note": "+200"
+    },
+    {
+     "name": "Collaboration",
+     "level": 50,
+     "inDb": true,
+     "note": "+300"
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict. Temporary faction boost for vendor/quest access; does not persist."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Faction (SPA 60)"
+    ],
+    "conflicts": [
+     {
+      "line": "Itself",
+      "class": "Enchanter",
+      "detail": "One faction buff at a time.",
+      "source": "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet"
+     }
+    ],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet",
+    "https://everquest.allakhazam.com/db/spelllist.html?type=enc&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "enc-invis",
+   "name": "Invisibility line",
+   "category": "Utility",
+   "sharedWith": [
+    "Magician",
+    "Wizard",
+    "Necromancer",
+    "Druid",
+    "Bard"
+   ],
+   "members": [
+    {
+     "name": "Invisibility",
+     "level": 4,
+     "inDb": true,
+     "note": "Breaks randomly"
+    },
+    {
+     "name": "Improved Invisibility",
+     "level": 50,
+     "inDb": true,
+     "note": "Self-only, does NOT randomly break, but only 10 min"
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Not strict: Improved Invisibility is self-only and shorter (10 min vs up to 20), so plain Invisibility stays memmed for buffing other people. Improved Invis is the safe one for the caster personally."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Invisibility (SPA 12)"
+    ],
+    "conflicts": [
+     {
+      "line": "Invisibility versus Undead",
+      "class": "Enchanter",
+      "detail": "Different invis type but the same visibility slot in practice - casting one drops the other.",
+      "source": "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet"
+     },
+     {
+      "line": "Druid/Bard/Wizard invis",
+      "class": "Druid, Bard, Wizard",
+      "detail": "Same effect.",
+      "source": "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Levitate",
+      "detail": "Independent."
+     }
+    ],
+    "notes": "Invis drops on any offensive action."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet",
+    "https://everquest.allakhazam.com/db/spelllist.html?type=enc&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "enc-ivu",
+   "name": "Invisibility versus Undead",
+   "category": "Utility",
+   "sharedWith": [
+    "Cleric",
+    "Paladin",
+    "Necromancer",
+    "Shadow Knight"
+   ],
+   "members": [
+    {
+     "name": "Invisibility versus Undead",
+     "level": 14,
+     "inDb": true,
+     "note": "Lowercase-v row in the Legends DB"
+    },
+    {
+     "name": "Invisibility Versus Undead",
+     "level": 14,
+     "inDb": true,
+     "note": "DUPLICATE ROW - same spell, same level, capital-V spelling, effect parsed as \"Invisibility(1)\" instead of the named effect. A DB import artifact, not a second spell."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Single spell; no upgrade in the enchanter book."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Invisibility versus Undead (SPA 28)"
+    ],
+    "conflicts": [
+     {
+      "line": "Invisibility line",
+      "class": "Enchanter",
+      "detail": "Casting normal invis over IVU replaces it.",
+      "source": "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet"
+     }
+    ],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet",
+    "https://everquest.allakhazam.com/db/spelllist.html?type=enc&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "enc-night-vision",
+   "name": "Vision line (Serpent Sight -> Leviathan Eyes)",
+   "category": "Utility",
+   "sharedWith": [
+    "Shaman",
+    "Necromancer",
+    "Druid",
+    "Magician",
+    "Wizard"
+   ],
+   "members": [
+    {
+     "name": "Serpent Sight",
+     "level": 10,
+     "inDb": true,
+     "note": "Infravision"
+    },
+    {
+     "name": "Ultravision",
+     "level": 27,
+     "inDb": true,
+     "note": "Ultravision - strictly better night vision"
+    },
+    {
+     "name": "Leviathan Eyes",
+     "level": 44,
+     "inDb": true,
+     "note": "Ultravision + See Invisible + Water Breathing in one 36 min buff"
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict: Infravision -> Ultravision -> Ultravision+SeeInvis+WaterBreathing. Leviathan Eyes retires Serpent Sight, Ultravision, See Invisible and Enduring Breath in one slot-efficient cast, which is why it is the enchanter's permanent utility buff at 44+."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Infravision / Ultravision (SPA 42/43)"
+    ],
+    "conflicts": [
+     {
+      "line": "Itself and other classes' night-vision buffs",
+      "class": "Shaman, Necromancer, Druid, Magician, Wizard",
+      "detail": "One vision buff at a time; Ultravision overwrites Infravision.",
+      "source": "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet"
+     },
+     {
+      "line": "Illusion: Dark Elf / Illusion: Ogre",
+      "class": "Enchanter",
+      "detail": "Those illusions carry their own night vision.",
+      "source": "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet"
+     }
+    ],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet",
+    "https://everquest.allakhazam.com/db/spelllist.html?type=enc&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "enc-bind-sight",
+   "name": "Bind Sight line (remote vision)",
+   "category": "Utility",
+   "sharedWith": [
+    "Wizard",
+    "Magician",
+    "Necromancer",
+    "Druid"
+   ],
+   "members": [
+    {
+     "name": "Bind Sight",
+     "level": 8,
+     "inDb": true,
+     "note": "See through the target's eyes"
+    },
+    {
+     "name": "Shifting Sight",
+     "level": 20,
+     "inDb": true,
+     "note": "Bind Sight + Infravision"
+    },
+    {
+     "name": "Cast Sight",
+     "level": 32,
+     "inDb": true,
+     "note": "Bind Sight + Ultravision, 150 min"
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict - each adds better vision to the remote view and much longer duration."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Bind Sight (SPA 51)"
+    ],
+    "conflicts": [
+     {
+      "line": "Itself",
+      "class": "Enchanter",
+      "detail": "One bind sight at a time.",
+      "source": "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet"
+     }
+    ],
+    "stacksWith": [],
+    "notes": "The classic enchanter scouting/pulling-intel tool."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet",
+    "https://everquest.allakhazam.com/db/spelllist.html?type=enc&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "enc-stamina",
+   "name": "Stamina restore line",
+   "category": "Utility",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Invigor",
+     "level": 24,
+     "inDb": true,
+     "note": "-35 stamina loss, 3 ticks"
+    },
+    {
+     "name": "Extinguish Fatigue",
+     "level": 44,
+     "inDb": true,
+     "note": "-90 stamina loss, instant"
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict. Largely irrelevant once fatigue stopped mattering, but classic-era it kept melee swinging."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Stamina loss (SPA 8)"
+    ],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet",
+    "https://everquest.allakhazam.com/db/spelllist.html?type=enc&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "enc-pets",
+   "name": "Animation line (pets)",
+   "category": "Pet",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Pendril's Animation",
+     "level": 1,
+     "inDb": true,
+     "note": "Level 1 animation"
+    },
+    {
+     "name": "Juli's Animation",
+     "level": 2,
+     "inDb": true,
+     "note": "Level 5"
+    },
+    {
+     "name": "Mircyl's Animation",
+     "level": 7,
+     "inDb": true,
+     "note": "Level 9"
+    },
+    {
+     "name": "Kilan's Animation",
+     "level": 9,
+     "inDb": true,
+     "note": "Level 11"
+    },
+    {
+     "name": "Shalee's Animation",
+     "level": 14,
+     "inDb": true,
+     "note": "Level 16"
+    },
+    {
+     "name": "Sisna's Animation",
+     "level": 17,
+     "inDb": true,
+     "note": "Level 19"
+    },
+    {
+     "name": "Sagar's Animation",
+     "level": 22,
+     "inDb": true,
+     "note": "Level 22"
+    },
+    {
+     "name": "Uleen's Animation",
+     "level": 29,
+     "inDb": true,
+     "note": "Level 25"
+    },
+    {
+     "name": "Boltran's Animation",
+     "level": 31,
+     "inDb": true,
+     "note": "Level 28"
+    },
+    {
+     "name": "Aanya's Animation",
+     "level": 37,
+     "inDb": true,
+     "note": "Level 31"
+    },
+    {
+     "name": "Yegoreff's Animation",
+     "level": 41,
+     "inDb": true,
+     "note": "Level 34"
+    },
+    {
+     "name": "Kintaz's Animation",
+     "level": 48,
+     "inDb": true,
+     "note": "Level 39"
+    },
+    {
+     "name": "Zumaik`s Animation",
+     "level": 55,
+     "inDb": true,
+     "note": "Level 43-ish (\"Animation13\"); Kunark L50+ mob drop, not vendor-sold. Legends spells it with a backtick."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict by pet level. The enchanter animation is a weak dagger-wielding pet used mainly as a mana battery target for Wandering Mind, an extra body, and a source of pet aggro; enchanters overwhelmingly prefer a CHARMED mob over any animation from the 20s onward. Note the \"daggers\" count varies per rank (P99 cheatsheet) - a cosmetic/dps quirk, not a tier."
+   },
+   "missingOnLegends": [
+    "Aeldorb's Animation (live L62)"
+   ],
+   "stacking": {
+    "slots": [
+     "Summon Pet (SPA 33)"
+    ],
+    "conflicts": [
+     {
+      "line": "Itself / a charmed pet",
+      "class": "Enchanter",
+      "detail": "One pet at a time - summoning an animation while charming is impossible; the charm and the pet occupy the same pet slot.",
+      "source": "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet"
+     }
+    ],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet",
+    "https://everquest.allakhazam.com/db/spelllist.html?type=enc&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "enc-enchant-metal",
+   "name": "Enchant metal line",
+   "category": "Utility",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Enchant Clay",
+     "level": 7,
+     "inDb": true,
+     "note": "Legends L7 (Allakhazam L8)"
+    },
+    {
+     "name": "Enchant Silver",
+     "level": 7,
+     "inDb": true,
+     "note": null
+    },
+    {
+     "name": "Enchant Electrum",
+     "level": 14,
+     "inDb": true,
+     "note": null
+    },
+    {
+     "name": "Enchant Gold",
+     "level": 24,
+     "inDb": true,
+     "note": null
+    },
+    {
+     "name": "Enchant Platinum",
+     "level": 32,
+     "inDb": true,
+     "note": null
+    },
+    {
+     "name": "Enchant: Velium",
+     "level": 44,
+     "inDb": true,
+     "note": "Legends prints a colon; Allakhazam is \"Enchant Velium\""
+    },
+    {
+     "name": "Enchant Steel",
+     "level": 46,
+     "inDb": true,
+     "note": "Legends L46; Allakhazam L46, P99 L49"
+    },
+    {
+     "name": "Enchant Mithril",
+     "level": 48,
+     "inDb": true,
+     "note": null
+    },
+    {
+     "name": "Enchant: Adamantite",
+     "level": 48,
+     "inDb": true,
+     "note": "Legends prints a colon"
+    },
+    {
+     "name": "Enchant Brellium",
+     "level": 49,
+     "inDb": true,
+     "note": null
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Not an upgrade chain at all - each spell enchants a DIFFERENT metal for tradeskill/cultural armor recipes. None replaces another; all ten stay usable at 60. Grouped as a line only because they are one mechanical family."
+   },
+   "missingOnLegends": [
+    "Greater Mass Enchant Silver/Clay/Electrum/Gold/Platinum/Velium (live L11-L44)",
+    "Mass Enchant Velium (live L44)",
+    "Mass Enchant Steel / Mithril / Adamantite / Brellium (live L49)"
+   ],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "Item summon; no slot."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet",
+    "https://everquest.allakhazam.com/db/spelllist.html?type=enc&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "enc-mass-enchant-metal",
+   "name": "Mass Enchant metal line",
+   "category": "Utility",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Mass Enchant Silver",
+     "level": 7,
+     "inDb": true,
+     "note": null
+    },
+    {
+     "name": "Mass Enchant Clay",
+     "level": 8,
+     "inDb": true,
+     "note": null
+    },
+    {
+     "name": "Mass Enchant Electrum",
+     "level": 14,
+     "inDb": true,
+     "note": null
+    },
+    {
+     "name": "Mass Enchant Gold",
+     "level": 24,
+     "inDb": true,
+     "note": null
+    },
+    {
+     "name": "Mass Enchant Platinum",
+     "level": 32,
+     "inDb": true,
+     "note": null
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Per-metal x5 versions of the base enchants; not upgrades of each other. Post-classic: the Mass line does not exist on P99 at all, but is real on live (Allakhazam) at these exact levels, and Legends matches live. Legends stops at Platinum - the live Mass Velium/Steel/Mithril/Adamantite/Brellium and the whole \"Greater Mass\" tier are missing."
+   },
+   "missingOnLegends": [
+    "Mass Enchant Velium (L44)",
+    "Mass Enchant Steel / Mithril / Adamantite / Brellium (L49)",
+    "Greater Mass Enchant * (L11-L44)"
+   ],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://everquest.allakhazam.com/db/spelllist.html?type=enc&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "enc-mana-vials",
+   "name": "Mana vial line (summoned mana potions)",
+   "category": "Utility",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Thicken Mana",
+     "level": 11,
+     "inDb": true,
+     "note": "Vial of Viscous Mana; Pearl + Poison Vial"
+    },
+    {
+     "name": "Crystallize Mana",
+     "level": 19,
+     "inDb": true,
+     "note": "Vial of Cloudy Mana; Peridot"
+    },
+    {
+     "name": "Clarify Mana",
+     "level": 27,
+     "inDb": true,
+     "note": "Vial of Clear Mana; Emerald"
+    },
+    {
+     "name": "Distill Mana",
+     "level": 38,
+     "inDb": true,
+     "note": "Vial of Distilled Mana; 2x Sapphire"
+    },
+    {
+     "name": "Purify Mana",
+     "level": 45,
+     "inDb": true,
+     "note": "Vial of Purified Mana; 4x Ruby"
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict by vial potency, but the reagent cost escalates brutally (Pearl -> 4x Ruby) and the cast cost goes 200 -> 1000 mana, so lower ranks stay economically useful. Enchanters make these for wizards/clerics, not usually for themselves."
+   },
+   "missingOnLegends": [
+    "Greater Mass Thicken/Crystallize/Clarify/Distill Mana (live L17-L59)"
+   ],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet",
+    "https://everquest.allakhazam.com/db/spelllist.html?type=enc&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "enc-mass-mana-vials",
+   "name": "Mass mana vial line",
+   "category": "Utility",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Mass Thicken Mana",
+     "level": 11,
+     "inDb": true,
+     "note": null
+    },
+    {
+     "name": "Mass Crystallize Mana",
+     "level": 20,
+     "inDb": true,
+     "note": null
+    },
+    {
+     "name": "Mass Clarify Mana",
+     "level": 29,
+     "inDb": true,
+     "note": null
+    },
+    {
+     "name": "Mass Distill Mana",
+     "level": 39,
+     "inDb": true,
+     "note": null
+    },
+    {
+     "name": "Mass Purify Mana",
+     "level": 47,
+     "inDb": true,
+     "note": null
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "x5 versions of the corresponding vial; strict in the same order. Post-classic (absent from P99, present on live at these levels)."
+   },
+   "missingOnLegends": [
+    "Greater Mass * Mana (live)"
+   ],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://everquest.allakhazam.com/db/spelllist.html?type=enc&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "enc-illusion-racial",
+   "name": "Racial illusion line",
+   "category": "Illusion",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Illusion: Human",
+     "level": 2,
+     "inDb": true,
+     "note": null
+    },
+    {
+     "name": "Illusion: Half Elf",
+     "level": 3,
+     "inDb": true,
+     "note": null
+    },
+    {
+     "name": "Illusion: Wood Elf",
+     "level": 5,
+     "inDb": true,
+     "note": null
+    },
+    {
+     "name": "Illusion: Gnome",
+     "level": 8,
+     "inDb": true,
+     "note": "The famous one - lets you see through certain walls/into rooms; also the standard \"shrink yourself\" for tight spaces"
+    },
+    {
+     "name": "Illusion: Dark Elf",
+     "level": 10,
+     "inDb": true,
+     "note": "Ultravision"
+    },
+    {
+     "name": "Illusion: High Elf",
+     "level": 11,
+     "inDb": true,
+     "note": null
+    },
+    {
+     "name": "Illusion: Erudite",
+     "level": 12,
+     "inDb": true,
+     "note": null
+    },
+    {
+     "name": "Illusion: Halfling",
+     "level": 12,
+     "inDb": true,
+     "note": null
+    },
+    {
+     "name": "Illusion: Dwarf",
+     "level": 13,
+     "inDb": true,
+     "note": null
+    },
+    {
+     "name": "Illusion: Barbarian",
+     "level": 15,
+     "inDb": true,
+     "note": "Grants Slam"
+    },
+    {
+     "name": "Illusion: Ogre",
+     "level": 17,
+     "inDb": true,
+     "note": "Night vision + Slam; the \"ogre = cannot be stunned from the front\" body type is the raid-relevant one"
+    },
+    {
+     "name": "Illusion: Troll",
+     "level": 18,
+     "inDb": true,
+     "note": "+1 HP/tick regen + Slam"
+    },
+    {
+     "name": "Illusion: Iksar",
+     "level": 20,
+     "inDb": true,
+     "note": "Kunark-era"
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "NOT a replacement chain in any sense - these are thirteen parallel cosmetic/faction tools ordered only by the level they are learnable. Level order does NOT imply power order: Illusion: Gnome (L8) and Illusion: Ogre (L17) are the two that stay in a level-60 spellbook, for wall-clipping and for body-type respectively. Enchanters keep whichever races give them vendor faction in the zones they use."
+   },
+   "missingOnLegends": [
+    "Illusion: Froglok",
+    "Illusion: Drakkin (live L30)",
+    "the enormous live illusion catalogue (100+ mob illusions at L1)"
+   ],
+   "stacking": {
+    "slots": [
+     "Illusion (SPA 58)"
+    ],
+    "conflicts": [
+     {
+      "line": "Every other illusion",
+      "class": "Enchanter",
+      "detail": "One illusion at a time - any new illusion replaces the current one, including the elemental/creature illusions and Boon of the Garou.",
+      "source": "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "All normal buffs",
+      "detail": "Illusions do not occupy stat slots except where they carry a stat rider (see Illusion: Troll regen, Illusion: Ogre vision)."
+     }
+    ],
+    "notes": "Illusion changes vendor faction and NPC reaction - the primary practical use. P99 notes Illusion: Gnome \"See through walls!\"."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet",
+    "https://everquest.allakhazam.com/db/spelllist.html?type=enc&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "enc-illusion-elemental",
+   "name": "Elemental illusion line",
+   "category": "Illusion",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Illusion: Earth Elemental",
+     "level": 21,
+     "inDb": true,
+     "note": "+10 STR"
+    },
+    {
+     "name": "Illusion: Water Elemental",
+     "level": 28,
+     "inDb": true,
+     "note": "Water Breathing"
+    },
+    {
+     "name": "Illusion: Air Elemental",
+     "level": 29,
+     "inDb": true,
+     "note": "Levitate"
+    },
+    {
+     "name": "Illusion: Fire Elemental",
+     "level": 33,
+     "inDb": true,
+     "note": "+9 to +16 Damage Shield"
+    },
+    {
+     "name": "Illusion: Air Elemental",
+     "level": 45,
+     "inDb": true,
+     "note": "ANOMALY: a second row with the same name at L45 whose illusion is \"Illusion: Imp\", not elemental. Either a Legends-custom imp illusion mislabelled, or a bad DB row. Not present on Allakhazam or P99 at L45."
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Not upgrades - four different riders (STR / water breathing / levitate / damage shield). All four stay memmed situationally; Fire Elemental for the free damage shield is the one with real combat value, Air Elemental for free levitation."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Illusion (SPA 58)",
+     "Damage Shield (Slot 2) [Fire Elemental]",
+     "Strength (Illusion) [Earth Elemental]"
+    ],
+    "conflicts": [
+     {
+      "line": "Every other illusion",
+      "class": "Enchanter",
+      "detail": "One illusion at a time.",
+      "source": "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Feedback / all other damage shields",
+      "detail": "Illusion: Fire Elemental's +16 DS is in \"Damage Shield (Slot 2)\" while Feedback and the mage/druid DS lines are Slot 1 - they ADD. A self-buffed enchanter can run Fire Elemental DS + a mage Cadeau of Flame simultaneously."
+     },
+     {
+      "line": "Shaman/Druid Strength (Primary)",
+      "detail": "Illusion: Earth Elemental's +10 STR is in \"Strength (Illusion)\" - separate slot, stacks with shaman Strength."
+     }
+    ],
+    "notes": "Slot names verbatim from P99 Buff Lines: \"Damage Shield (Slot 2)\", \"Strength (Illusion)\"."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Buff_Lines",
+    "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet",
+    "https://everquest.allakhazam.com/db/spelllist.html?type=enc&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "enc-illusion-undead",
+   "name": "Undead illusion line",
+   "category": "Illusion",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Illusion: Skeleton",
+     "level": 24,
+     "inDb": true,
+     "note": null
+    },
+    {
+     "name": "Illusion: Dry Bone",
+     "level": 37,
+     "inDb": true,
+     "note": "+25 Fire Resist"
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Dry Bone is the same skeleton model with a +25 fire resist rider - a strict upgrade."
+   },
+   "missingOnLegends": [
+    "Illusion: Iksar Skeleton and the rest of the live undead illusion catalogue"
+   ],
+   "stacking": {
+    "slots": [
+     "Illusion (SPA 58)",
+     "Fire Resistance"
+    ],
+    "conflicts": [
+     {
+      "line": "Every other illusion",
+      "class": "Enchanter",
+      "detail": "One illusion at a time.",
+      "source": "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet"
+     }
+    ],
+    "stacksWith": [],
+    "notes": "Skeleton form gives undead body type - relevant to some NPC aggro checks and to invis-versus-undead interactions."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet",
+    "https://everquest.allakhazam.com/db/spelllist.html?type=enc&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "enc-illusion-beast",
+   "name": "Wolf/werewolf illusion line",
+   "category": "Illusion",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Illusion: Spirit Wolf",
+     "level": 38,
+     "inDb": true,
+     "note": "+15 ATK, +10 Cold Resist"
+    },
+    {
+     "name": "Boon of the Garou",
+     "level": 40,
+     "inDb": true,
+     "note": "Werewolf form castable on OTHERS (or pets): lifetap proc, +30 ATK, +100 DEX. The only illusion in the book that is a group-member buff."
+    },
+    {
+     "name": "Illusion: Werewolf",
+     "level": 42,
+     "inDb": true,
+     "note": "Self-only: P99 lists +45 ATK, +40% HASTE, +30 STR - a real combat self-buff"
+    },
+    {
+     "name": "Illusion: Scaled Wolf",
+     "level": 44,
+     "inDb": true,
+     "note": "Chokidai form (Luclin-era). No stat rider in the Legends DB. Not on P99."
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Not a chain. Boon of the Garou (L40) is the only one castable on other people and is a genuine melee buff (lifetap proc + 100 DEX); Illusion: Werewolf (L42) is the self-only version with haste and STR; Illusion: Scaled Wolf (L44) is cosmetic. A L60 enchanter uses Boon of the Garou on a melee and Illusion: Werewolf on themselves - neither replaces the other because their targets differ."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Illusion (SPA 58)",
+     "Haste (Primary) [Illusion: Werewolf]",
+     "Strength (Illusion) [Illusion: Werewolf]",
+     "Dexterity (Illusion) [Boon of the Garou]"
+    ],
+    "conflicts": [
+     {
+      "line": "Every other illusion",
+      "class": "Enchanter",
+      "detail": "One illusion at a time.",
+      "source": "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet"
+     },
+     {
+      "line": "Haste line",
+      "class": "Enchanter/Shaman/Bard/Items",
+      "detail": "IMPORTANT: Illusion: Werewolf's +40% haste sits in \"Haste (Primary)\" alongside Wonderous Rapidity, Aanya's Quickening etc. Self-buffing Werewolf onto a hasted enchanter is a downgrade, and casting Wonderous Rapidity on a werewolf-formed player replaces the illusion haste.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Shaman Dexterity (Primary) line",
+      "detail": "Boon of the Garou's +100 DEX is in \"Dexterity (Illusion)\" - separate slot, adds on top of shaman Mortal Deftness +60. This is why the P99 max-DEX table reaches +296."
+     },
+     {
+      "line": "Shaman/Druid Strength (Primary)",
+      "detail": "Illusion: Werewolf STR is in \"Strength (Illusion)\"."
+     }
+    ],
+    "notes": "Slot names verbatim: \"Dexterity (Illusion)\", \"Strength (Illusion)\", \"Haste (Primary)\". P99 puts Boon of the Garou at L44 and Illusion: Werewolf at L44; Legends has 40 and 42, matching live."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Buff_Lines",
+    "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet",
+    "https://everquest.allakhazam.com/db/spelllist.html?type=enc&level=1&opt=And+Higher&action=search"
+   ]
+  },
+  {
+   "id": "enc-illusion-object",
+   "name": "Object illusion line",
+   "category": "Illusion",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Minor Illusion",
+     "level": 1,
+     "inDb": true,
+     "note": "Illusion: 142 (an object). Carries a -7000% movement penalty - you cannot walk while wearing it. The classic door-blocking / hiding trick."
+    },
+    {
+     "name": "Illusion: Tree",
+     "level": 15,
+     "inDb": true,
+     "note": "Illusion: 143 plus a self-Root. Same idea, better model."
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Both immobilize the caster by design (Minor Illusion via a -7000% movement debuff, Illusion: Tree via an outright Root). Illusion: Tree is prettier and more concealing outdoors; neither is an upgrade of the other in any mechanical sense."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Illusion (SPA 58)",
+     "Movement (Minor Illusion)",
+     "Root (Illusion: Tree)"
+    ],
+    "conflicts": [
+     {
+      "line": "Every other illusion",
+      "class": "Enchanter",
+      "detail": "One illusion at a time.",
+      "source": "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet"
+     }
+    ],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet",
+    "https://everquest.allakhazam.com/db/spelllist.html?type=enc&level=1&opt=And+Higher&action=search"
+   ]
+  }
+ ],
+ "standalone": [
+  {
+   "name": "True North",
+   "level": 1,
+   "inDb": true,
+   "category": "Utility",
+   "note": "Points the caster north. Universal caster utility, no line."
+  },
+  {
+   "name": "Reclaim Energy",
+   "level": 1,
+   "inDb": true,
+   "category": "Pet",
+   "note": "Dismisses the pet and refunds part of the summon mana. Never upgraded - one spell for all 13 animation ranks."
+  },
+  {
+   "name": "Gate",
+   "level": 4,
+   "inDb": true,
+   "category": "Utility",
+   "note": "Teleport to bind point. Shared across all casters; no enchanter upgrade."
+  },
+  {
+   "name": "Sentinel",
+   "level": 5,
+   "inDb": true,
+   "category": "Utility",
+   "note": "Places a proximity alarm at a spot (Free Target AE). Never upgraded. Legends L5 = Allakhazam L5; P99 has it at 8."
+  },
+  {
+   "name": "Eye of Confusion",
+   "level": 5,
+   "inDb": true,
+   "category": "Crowd control",
+   "note": "Blindness, 18s. A one-member line - enchanters get no blind upgrade at all, unlike necromancers/shadow knights."
+  },
+  {
+   "name": "See Invisible",
+   "level": 6,
+   "inDb": true,
+   "category": "Utility",
+   "note": "Folded into Leviathan Eyes (L44), which is why it has no upgrade of its own."
+  },
+  {
+   "name": "Bind Affinity",
+   "level": 12,
+   "inDb": true,
+   "category": "Utility",
+   "note": "Sets a bind point. Shared across casters; no upgrade."
+  },
+  {
+   "name": "Enduring Breath",
+   "level": 12,
+   "inDb": true,
+   "category": "Utility",
+   "note": "Water breathing, consumes Fish Scales. Superseded in practice by Leviathan Eyes (L44) and, on live, by Everlasting Breath (L51) which Legends lacks."
+  },
+  {
+   "name": "Levitate",
+   "level": 15,
+   "inDb": true,
+   "category": "Utility",
+   "note": "Consumes a Bat Wing. On live the reagent-free \"Levitation\" arrives at L51; Legends does not have it, so enchanters here keep paying bat wings forever."
+  },
+  {
+   "name": "Identify",
+   "level": 16,
+   "inDb": true,
+   "category": "Utility",
+   "note": "Item identification. Never upgraded."
+  },
+  {
+   "name": "Tiny Companion",
+   "level": 19,
+   "inDb": true,
+   "category": "Pet",
+   "note": "Shrinks the pet 50%. Cosmetic/pathing utility; one spell, no line."
+  },
+  {
+   "name": "Feedback",
+   "level": 25,
+   "inDb": true,
+   "category": "Buff",
+   "note": "Damage shield +11. The enchanter's ONLY damage shield - no upgrade exists. Occupies \"Damage Shield (Slot 1)\" with the magician Shield of Fire/Lava/Cadeau line and the druid Shield of Thistles line, so a mage DS (+33) makes it worthless. It DOES stack with Illusion: Fire Elemental (+16, Slot 2) and with bard Psalm of Warmth (Layer 2 Slot 1)."
+  },
+  {
+   "name": "Curse of the Simple Mind",
+   "level": 26,
+   "inDb": true,
+   "category": "Debuff",
+   "note": "INT/WIS debuff, -15 to -20. Single-member line; the only other enchanter INT/WIS drain is the rider on Torment of Argli (L56), which shares the slot."
+  },
+  {
+   "name": "Gravity Flux",
+   "level": 36,
+   "inDb": true,
+   "category": "Damage",
+   "note": "Targeted AE that tosses everything up and deals fall damage on landing. Unique mechanic with no upgrade in the enchanter book (live adds Uproar at 63). Indoors it does nothing - the toss needs headroom."
+  },
+  {
+   "name": "Summon Companion",
+   "level": 43,
+   "inDb": true,
+   "category": "Pet",
+   "note": "Teleports the pet to the caster. Does NOT work on charmed pets, which is exactly when an enchanter most wants it."
+  },
+  {
+   "name": "Bounce",
+   "level": 43,
+   "inDb": true,
+   "category": "Buff",
+   "note": "Self-only, 40% chance to reflect a spell, 12s duration, 2 min recast. NOT CLASSIC - absent from P99; Allakhazam has it at ENC/43 (Legends matches). Its live upgrade \"Reflect\" (L58) is missing from Legends. Own effect slot; nothing else in the enchanter book reflects."
+  }
+ ],
+ "unlinked": [],
+ "openQuestions": [
+  "Tashina (Legends L2): the Legends DB gives it Tashan's exact magnitudes (-9 @L4 to -13 @L8), but Allakhazam gives Tashina -6 (L2) to -18 (L9) - i.e. a WEAKER floor and a HIGHER ceiling than Tashan. If Allakhazam is right, Tashina out-scales Tashan by L9 and the line order Tashina->Tashan is wrong at high level. P99 omits Tashina from the Tash table entirely (classic P99 starts at Tashan L4). Needs a direct look at the Legends spell data to decide whether the magnitude was copied from Tashan by mistake.",
+  "Legends 'Instill' (L25) vs P99 'Enstill' (L29): Allakhazam has 'Instill' at ENC/25, so Legends is following live naming. The Legends row has NO parsed effects at all - only a 1m36s duration - so the Root effect is inferred from the duration matching Enstill/Instill exactly. Worth confirming the effect list is genuinely empty in the source data rather than a parse failure.",
+  "Four duplicate rows in the input (239 rows, 235 distinct spells): 'Wind of Tashani' L55 twice (byte-identical), 'Swift Like The Wind' at both L47 (live level) and L49 (P99 classic level), 'Invisibility versus Undead'/'Invisibility Versus Undead' both at L14 with different effect encodings, and 'Illusion: Air Elemental' at both L29 (elemental) and L45 (whose illusion id is 'Imp'). The L45 Air Elemental is the only one that might be a genuinely distinct spell - it is not on Allakhazam or P99 at that level.",
+  "Ward/Guard of Alendar stacking is INFERRED, not sourced. They are LDoN adventure-point spells and appear nowhere in the P99 Buff Lines tables, so the claim that their spell-damage mitigation is a separate slot from the melee Rune line rests on the effect type (Mitigate Spell Damage vs Absorb Damage), not on a classic stacking source.",
+  "Legends is missing Koadic's Endless Intellect (live ENC/60) even though it carries the rest of the live Clarity line including Gift of Pure Thought at 59. If that is deliberate, the Clarity slot caps at +11/tick on Legends; if it is a data gap, the mana-regen ceiling changes for every caster on the server. This is the single most consequential absence found.",
+  "The DB reports Legends 'Wonderous Rapidity' (Allakhazam spells it 'Wondrous Rapidity') and 'Wind of Tishanian' (Allakhazam: 'Wind of Tashanian'). Purely cosmetic unless something keys off exact names.",
+  "Rune I-IV effect strings in the Legends DB are unparsed ('UNKNOWN CALC 111 base 27 max 55 attrib Absorb Damage'). The base/max numbers match P99 exactly, so the values are right, but a consumer of this DB cannot read them without handling calc 111-114."
+ ],
+ "sources": [
+  "https://wiki.project1999.com/Buff_Lines",
+  "https://wiki.project1999.com/Enchanter_Spells_Cheatsheet",
+  "https://everquest.allakhazam.com/db/spelllist.html?type=enc&level=1&opt=And+Higher&action=search",
+  "https://everquest.allakhazam.com/db/spelllist.html?type=enc&level=37&opt=And+Higher&action=search",
+  "https://wiki.project1999.com/Cassindra's_Chorus_of_Clarity",
+  "https://www.project1999.com/forums/archive/index.php/t-261031.html",
+  "https://everquest.allakhazam.com/db/item.html?item=23769",
+  "https://everquest.allakhazam.com/db/item.html?item=23515",
+  "https://everquest.allakhazam.com/db/spell.html?spell=676",
+  "https://everquest.allakhazam.com/db/spell.html?spell=4099"
+ ]
+}

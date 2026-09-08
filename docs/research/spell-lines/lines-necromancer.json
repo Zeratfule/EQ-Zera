@@ -1,0 +1,1267 @@
+{
+  "class": "Necromancer",
+  "lines": [
+    {
+      "id": "nec-lich",
+      "name": "Lich (mana conversion)",
+      "category": "buff-self",
+      "sharedWith": [],
+      "members": [
+        { "name": "Dark Pact", "level": 6, "inDb": true, "note": "-2 HP/tick, +2 mana/tick. P99 level 8." },
+        { "name": "Allure of Death", "level": 18, "inDb": true, "note": "-5 HP/tick, +4 mana/tick. P99 level 20." },
+        { "name": "Call of Bones", "level": 31, "inDb": true, "note": "-10 HP/tick, +8 mana/tick, adds bleached-skeleton illusion + ultravision. P99 level 34." },
+        { "name": "Lich", "level": 48, "inDb": true, "note": "-22 HP/tick, +20 mana/tick, bloody-skeleton illusion. P99 level 49." },
+        { "name": "Arch Lich", "level": 60, "inDb": true, "note": "-20 HP/tick, +20 mana/tick, spectre illusion + see invis. Velious drop. Sidegrade to Demi Lich: same mana, far cheaper HP." },
+        { "name": "Demi Lich", "level": 60, "inDb": true, "note": "-48 HP/tick, +31 mana/tick. Highest mana return, highest HP cost." }
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "Strictly ascending through Lich, then splits. Arch Lich (20 mana / -20 HP) and Demi Lich (31 mana / -48 HP) are a deliberate choice, not an upgrade: Arch Lich is the sustainable/low-HP-pool option, Demi Lich the max-throughput option. Lower ranks stay useful when HP regen cannot cover the drain (classic 'lich you can afford' rule), so no rank is ever obsolete in practice."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "slots": ["Mana Regeneration (Lich)"],
+        "conflicts": [
+          { "line": "Lich line (self)", "class": "Necromancer", "detail": "All six occupy the single 'Mana Regeneration (Lich)' line; only one can be up. Casting a different rank replaces the active one.", "source": "https://wiki.project1999.com/Buff_Lines#Mana_Regeneration_.28Lich.29" },
+          { "line": "Illusion buffs", "class": "any", "detail": "Call of Bones / Lich / Arch Lich / Demi Lich carry an illusion component, so they collide with any other illusion (Enchanter illusions, Form of the X, gnomework illusions) the way illusions normally do.", "source": "Legends spell data (Illusion: 60 / Illusion: 85 slots) + https://wiki.project1999.com/Buff_Lines (illusions tracked separately)" }
+        ],
+        "stacksWith": [
+          { "line": "Mana Regeneration (Clarity)", "detail": "Clarity / Clarity II / Boon of the Clear Mind / Gift of Pure Thought / Breeze - separate slot, fully additive." },
+          { "line": "Mana Regeneration (Cantata / Chorus / Gift / Protection of the Glades)", "detail": "Bard Cantata of Replenishment, Cassindra's Chorus of Clarity, Enchanter Gift of Brilliance, Druid Protection of the Glades all stack with Lich." },
+          { "line": "Mana Regeneration (Self-Only)", "detail": "Manaskin's +1 mana/tick is a different slot and stacks with the Lich line (P99 explicitly tables Necromancer +67 mana regen with Demi Lich + Manaskin + everything else)." },
+          { "line": "HP Regeneration (all slots)", "detail": "The HP drain is a separate effect slot, not part of any HP-regen buff line. It does not block, and is not blocked by, Regeneration/Chloroplast/Regrowth, Hymn of Restoration, worn regen or Iksar innate regen - the values simply sum arithmetically. This is the classic 'regen offsets lich' interaction and is why the P99 Necromancer page tables Iksar-vs-non-Iksar HP regen under Lich." }
+        ],
+        "notes": "PRIORITY FINDING: the Lich line's HP drain and the game's HP-regeneration buff lines are independent - they net out numerically rather than overwriting each other. P99's Buff_Lines page lists Necromancer max HP regen (+129) and the Lich mana slot separately, and gives a '(Necromancer w/ Lich)' mana row of +67 that includes Demi Lich's +31 alongside every other mana-regen line. The drain is applied every tick regardless of current HP and will kill an unbuffed necro at low HP (hence Harmshield/Quivering Veil and lifetap discipline)."
+      },
+      "sources": [
+        "https://wiki.project1999.com/Buff_Lines",
+        "https://wiki.project1999.com/Necromancer"
+      ]
+    },
+    {
+      "id": "nec-dot-darkness",
+      "name": "Darkness (magic DoT + snare)",
+      "category": "dot",
+      "sharedWith": ["Shadow Knight"],
+      "members": [
+        { "name": "Clinging Darkness", "level": 4, "inDb": true, "note": "5/tick, -24% to -30% movement." },
+        { "name": "Engulfing Darkness", "level": 11, "inDb": true, "note": "11/tick, -40%. P99 level 12." },
+        { "name": "Dooming Darkness", "level": 27, "inDb": true, "note": "20/tick, -49% to -60%. P99 level 29." },
+        { "name": "Cascading Darkness", "level": 47, "inDb": true, "note": "72/tick, -60%. P99 level 49." },
+        { "name": "Devouring Darkness", "level": 59, "inDb": true, "note": "107/tick, -69% to -70%. Fewer ticks than Cascading (13 vs 16), so lower total damage - cast for the snare, not the DPM." }
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "Snare magnitude and damage ascend, but Cascading Darkness (3.84 DPM, 16 ticks, 1152 total) beats Devouring Darkness (3.48 DPM, 13 ticks) on efficiency, so Cascading stays in the book at 59. Lower ranks remain the cheap fear-kite snare."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "slots": [],
+        "conflicts": [
+          { "line": "Darkness", "class": "Necromancer", "detail": "Same-line DoTs never stack with each other; a higher rank overwrites a lower, and a lower will not land over a higher.", "source": "https://wiki.project1999.com/Necromancer_Spell_Lines" },
+          { "line": "Darkness", "class": "Shadow Knight", "detail": "Shadow Knights get Clinging / Engulfing / Dooming / Cascading Darkness - same line, so a necro and an SK cannot both have a Darkness DoT on the same mob in the classic/Velious ruleset.", "source": "https://wiki.project1999.com/Shadow_Knight" },
+          { "line": "Torment of Shadows (necro epic click)", "class": "Necromancer", "detail": "Scythe of the Shadowed Soul's click (75/tick, 16 ticks, snare) is explicitly on the Darkness DoT line and will not stack with any Darkness spell.", "source": "https://wiki.project1999.com/Necromancer_Spell_Lines#Epic_Click_.28Magic.29" }
+        ],
+        "stacksWith": [
+          { "line": "All other necro DoT lines", "detail": "Disease, Fire, Poison, Life Drain, Muscle and Splurt all stack alongside a Darkness DoT." },
+          { "line": "Other classes' DoT lines", "detail": "Different spell lines from any class stack (shaman poison/disease, druid fire/poison, wizard, enchanter)." }
+        ],
+        "notes": "The snare component follows the same rule as any other movement debuff - a stronger snare from another class (Ranger/Druid Ensnare, Snare) is a different line and can overwrite the movement effect independently of the DoT."
+      },
+      "sources": [
+        "https://wiki.project1999.com/Necromancer_Spell_Lines",
+        "https://wiki.project1999.com/Sesserdrix%27s_All_in_One_Necromancer_Strategy_Guide"
+      ]
+    },
+    {
+      "id": "nec-dot-disease",
+      "name": "Disease DoT (Cloud/Scourge/Plague)",
+      "category": "dot",
+      "sharedWith": ["Shadow Knight"],
+      "members": [
+        { "name": "Disease Cloud", "level": 1, "inDb": true, "note": "5 initial + 1/tick for 30-60 ticks. Classic pull/aggro tool." },
+        { "name": "Infectious Cloud", "level": 15, "inDb": true, "note": "Targeted AE version, 20 initial + 5/tick, 21 ticks. P99 level 16." },
+        { "name": "Scourge", "level": 35, "inDb": true, "note": "40 initial + 24/tick, 21 ticks. P99 level 39." },
+        { "name": "Plague", "level": 52, "inDb": true, "note": "60 initial + 55/tick, 22 ticks. 4.23 DPM." }
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "Damage ascends strictly, but Disease Cloud is never retired (10 mana, 30-60 tick duration, best pull/aggro-tag tool in the game) and Infectious Cloud is the only AE member. All four have a direct-damage component that can break root."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "slots": [],
+        "conflicts": [
+          { "line": "Disease DoT", "class": "Necromancer", "detail": "Same line - Scourge overwrites Infectious Cloud, Plague overwrites Scourge, and an inferior member will not land over a superior one.", "source": "https://wiki.project1999.com/Necromancer_Spell_Lines" },
+          { "line": "Disease Cloud", "class": "Shadow Knight", "detail": "Shadow Knights share Disease Cloud, so the line collides across the two classes at the low end.", "source": "https://wiki.project1999.com/Shadow_Knight" }
+        ],
+        "stacksWith": [
+          { "line": "Muscle (Heart Flutter / Asystole / Cessation of Cor)", "detail": "Also disease-based but a SEPARATE line - a necro can run Plague and Cessation of Cor on the same mob simultaneously. Damage type does not determine the line; the spell line does." },
+          { "line": "All other necro DoT lines", "detail": "Darkness, Fire, Poison, Life Drain, Splurt all stack alongside." },
+          { "line": "Shaman/Druid disease DoTs", "detail": "Different lines (e.g. shaman Affliction/Sicken line), so they stack." }
+        ],
+        "notes": "Long durations mean the tabled DPM is deceptively high - the P99 line table flags that these usually get clipped."
+      },
+      "sources": ["https://wiki.project1999.com/Necromancer_Spell_Lines"]
+    },
+    {
+      "id": "nec-dot-fire",
+      "name": "Fire DoT (Heat Blood line)",
+      "category": "dot",
+      "sharedWith": ["Shadow Knight"],
+      "members": [
+        { "name": "Heat Blood", "level": 10, "inDb": true, "note": "17/tick. P99 level 12." },
+        { "name": "Boil Blood", "level": 28, "inDb": true, "note": "24/tick, 16-21 ticks. P99 level 29." },
+        { "name": "Ignite Blood", "level": 47, "inDb": true, "note": "56/tick, 21 ticks, 4.7 DPM. P99 level 49." },
+        { "name": "Pyrocruor", "level": 58, "inDb": true, "note": "111/tick, 19 ticks, 5.27 DPM - the necro's most efficient non-Splurt DoT." }
+      ],
+      "replacement": {
+        "strict": true,
+        "note": "Clean ascending chain in damage, DPM and duration. All members carry a -100 fire resist modifier. Only reason to keep a lower rank is mana budget at low level."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "slots": [],
+        "conflicts": [
+          { "line": "Fire DoT", "class": "Necromancer", "detail": "Same line. The Sept 2002 patch note that allowed same-spell stacking across casters explicitly kept inferior members blocked: 'Heat Blood, being an inferior spell, will still not stack' with Boil Blood.", "source": "https://www.project1999.com/forums/archive/index.php/t-169115.html (quoting the 2002-09-04 live patch notes)" },
+          { "line": "Heat Blood / Boil Blood", "class": "Shadow Knight", "detail": "Shadow Knights get Heat Blood and Boil Blood - the line is shared.", "source": "https://wiki.project1999.com/Shadow_Knight" }
+        ],
+        "stacksWith": [
+          { "line": "All other necro DoT lines", "detail": "Fire DoT + Splurt + Disease is the classic long-fight stack." },
+          { "line": "Wizard/Druid/Magician fire DoTs", "detail": "Different lines, so they stack (e.g. druid Immolate line, wizard fire DoTs)." }
+        ],
+        "notes": ""
+      },
+      "sources": [
+        "https://wiki.project1999.com/Necromancer_Spell_Lines",
+        "https://www.project1999.com/forums/archive/index.php/t-169115.html"
+      ]
+    },
+    {
+      "id": "nec-dot-poison",
+      "name": "Poison DoT (Poison Bolt / Venom of the Snake line)",
+      "category": "dot",
+      "sharedWith": [],
+      "members": [
+        { "name": "Poison Bolt", "level": 4, "inDb": true, "note": "6 initial + 5/tick." },
+        { "name": "Venom of the Snake", "level": 34, "inDb": true, "note": "40 initial + 59/tick, 7-8 ticks." },
+        { "name": "Chilling Embrace", "level": 36, "inDb": true, "note": "40/tick for 16 ticks, no DD component - the root-safe member. Velious NPC drop. P99 level 39." },
+        { "name": "Envenomed Bolt", "level": 50, "inDb": true, "note": "Big DD component + 146/tick (Legends lists 351/tick), 8 ticks. P99/Kunark level 51." }
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "Damage ascends, but Chilling Embrace is a sidegrade held for root-rotting: it is the only member with no direct-damage component, so it will not break root. Poison Bolt / Venom / Envenomed Bolt all have an initial DD that can break root."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "slots": [],
+        "conflicts": [
+          { "line": "Poison DoT", "class": "Necromancer", "detail": "Same line - members overwrite/block each other, including Chilling Embrace vs Venom of the Snake.", "source": "https://wiki.project1999.com/Necromancer_Spell_Lines#Poison" }
+        ],
+        "stacksWith": [
+          { "line": "All other necro DoT lines", "detail": "Poison + Fire + Disease + Darkness + Splurt is the standard full stack." },
+          { "line": "Shaman poison DoTs", "detail": "Tainted Breath / Envenomed Breath line is a different line and stacks." }
+        ],
+        "notes": "Legends' Envenomed Bolt shows 351/tick vs the classic 146/tick - a magnitude discrepancy, flagged rather than averaged."
+      },
+      "sources": ["https://wiki.project1999.com/Necromancer_Spell_Lines"]
+    },
+    {
+      "id": "nec-dot-lifedrain",
+      "name": "Life Drain (Leach / Vampiric Curse line)",
+      "category": "dot",
+      "sharedWith": ["Shadow Knight"],
+      "members": [
+        { "name": "Leach", "level": 9, "inDb": true, "note": "8/tick drain-and-heal. Legends carries TWO rows for Leach (L9 and L12); P99 has a single Leach at 12." },
+        { "name": "Leach", "level": 12, "inDb": true, "note": "Duplicate DB row (7-9 ticks variant). Same base name = same line member." },
+        { "name": "Vampiric Curse", "level": 29, "inDb": true, "note": "21/tick for 9 ticks, heals caster each tick." },
+        { "name": "Auspice", "level": 45, "inDb": true, "note": "30/tick, 'Return 100% of damage as HP'. Live (Legacy of Ykesha) quest spell, absent from P99. Player reports on Allakhazam say it does not stack with Bond of Death, i.e. it is on this line." },
+        { "name": "Bond of Death", "level": 49, "inDb": true, "note": "80/tick for 9 ticks." },
+        { "name": "Vexing Mordinia", "level": 57, "inDb": true, "note": "122/tick (P99 tables 111/tick and flags the discrepancy), 10 ticks damage / 9 ticks healing - a known bug/asymmetry." }
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "Ascending in damage and healing throughput. Auspice sits between Vampiric Curse and Bond of Death on level but is a group-flavoured variant on live; treat as same-line. These are the mana-efficient heal: better HP-per-mana than the instant lifetaps, but delivered over 9-10 ticks."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "slots": [],
+        "conflicts": [
+          { "line": "Life Drain", "class": "Necromancer", "detail": "Same line - Auspice explicitly reported as not stacking with Bond of Death.", "source": "https://everquest.allakhazam.com/db/spell.html?spell=3702 (player comments)" },
+          { "line": "Vampiric Curse", "class": "Shadow Knight", "detail": "Shadow Knights get Vampiric Curse, so the line is shared at that rank.", "source": "https://wiki.project1999.com/Shadow_Knight" }
+        ],
+        "stacksWith": [
+          { "line": "All other necro DoT lines", "detail": "Runs alongside Fire/Poison/Disease/Darkness/Splurt." },
+          { "line": "Instant lifetap line", "detail": "Instant lifetaps are direct-damage spells, not DoTs - they stack freely with an active Life Drain DoT." }
+        ],
+        "notes": "All members carry a -200 magic resist modifier, making this the hardest-to-resist necro DoT line."
+      },
+      "sources": [
+        "https://wiki.project1999.com/Necromancer_Spell_Lines#Life_Drain_.28Magic.29",
+        "https://wiki.project1999.com/Sesserdrix%27s_All_in_One_Necromancer_Strategy_Guide"
+      ]
+    },
+    {
+      "id": "nec-dot-muscle",
+      "name": "Muscle (disease DoT + STR/AC debuff)",
+      "category": "dot",
+      "sharedWith": ["Shadow Knight"],
+      "members": [
+        { "name": "Heart Flutter", "level": 13, "inDb": true, "note": "12/tick, -STR/-AC. P99 level 16." },
+        { "name": "Asystole", "level": 40, "inDb": true, "note": "69/tick, -37 to -40 STR, -16 to -18 AC. P99 level 44." },
+        { "name": "Cessation of Cor", "level": 56, "inDb": true, "note": "100/tick for 11 ticks, -50 STR, -19 to -21 AC. 4.4 DPM, no DD component - the premier root-rot DoT." }
+      ],
+      "replacement": {
+        "strict": true,
+        "note": "Strict upgrade in damage and debuff magnitude. No member has a direct-damage component, so the whole line is root-safe."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "slots": [],
+        "conflicts": [
+          { "line": "Muscle", "class": "Necromancer", "detail": "Same line.", "source": "https://wiki.project1999.com/Necromancer_Spell_Lines#Muscle_.28Disease.29" },
+          { "line": "Heart Flutter / Asystole", "class": "Shadow Knight", "detail": "Shadow Knights share Heart Flutter and Asystole.", "source": "https://wiki.project1999.com/Shadow_Knight" },
+          { "line": "STR debuff lines", "class": "Shaman/Enchanter/Necromancer", "detail": "The -STR component may collide with other strength debuffs (necro Siphon Strength / Enfeeblement line, shaman Cripple/Weaken line) even though the DoT damage is on its own line. Unverified against a slot table - treat as open.", "source": "" }
+        ],
+        "stacksWith": [
+          { "line": "Disease DoT (Disease Cloud/Scourge/Plague)", "detail": "PRIORITY: the Muscle line is disease-based but is a DIFFERENT line from the Disease DoT line, so Plague and Cessation of Cor stack on the same target. Damage type does not define the stacking line." },
+          { "line": "All other necro DoT lines", "detail": "Fire, Poison, Darkness, Life Drain, Splurt." }
+        ],
+        "notes": ""
+      },
+      "sources": ["https://wiki.project1999.com/Necromancer_Spell_Lines#Muscle_.28Disease.29"]
+    },
+    {
+      "id": "nec-dot-splurt",
+      "name": "Splurt (magic ramping DoT)",
+      "category": "dot",
+      "sharedWith": [],
+      "members": [
+        { "name": "Splurt", "level": 51, "inDb": true, "note": "11 damage on tick 1, +12 per tick for 17 ticks to a final 203. 1819 total for 240 mana = 7.58 DPM, the highest-DPM DoT in classic EQ. -100 MR." }
+      ],
+      "replacement": { "strict": false, "note": "Single-member line; nothing replaces it in the classic/Kunark set." },
+      "missingOnLegends": [],
+      "stacking": {
+        "slots": [],
+        "conflicts": [],
+        "stacksWith": [
+          { "line": "Every other necro DoT line", "detail": "Splurt is its own line and is the anchor of the full-stack long-fight rotation (Splurt + Pyrocruor + Plague + Cessation of Cor + a Darkness snare)." }
+        ],
+        "notes": "Only pays off if it runs its full 17 ticks - clipping it destroys the DPM advantage."
+      },
+      "sources": ["https://wiki.project1999.com/Necromancer_Spell_Lines#Splurt_.28Magic.29"]
+    },
+    {
+      "id": "nec-dot-heal-reduction",
+      "name": "Life Cancellation (healing-reduction DoT) - likely Legends-custom",
+      "category": "dot",
+      "sharedWith": [],
+      "members": [
+        { "name": "Cancelling of Life", "level": 8, "inDb": true, "note": "11/tick, -20% incoming healing, 1 min." },
+        { "name": "Negation of Life", "level": 18, "inDb": true, "note": "20/tick, -30% incoming healing, 1 min 30 s." },
+        { "name": "Cessation of Life", "level": 37, "inDb": true, "note": "72/tick, -35% incoming healing, 1 min 36 s." }
+      ],
+      "replacement": {
+        "strict": true,
+        "note": "Clean ascending chain in damage, debuff strength and duration - reads as a purpose-built three-tier line."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "slots": [],
+        "conflicts": [
+          { "line": "Life Cancellation", "class": "Necromancer", "detail": "Assumed same-line replacement by naming and effect pattern; no classic source exists to confirm.", "source": "" }
+        ],
+        "stacksWith": [
+          { "line": "All classic necro DoT lines", "detail": "Assumed - a new line stacks with existing ones. Needs in-game verification on Legends." }
+        ],
+        "notes": "No spell named 'Cancelling of Life', 'Negation of Life' or 'Cessation of Life' exists in the Allakhazam Necromancer list (searched 'of Life', type=nec, level 1 and higher: only Spook the Dead, Panic the Dead and the level-77 Anathema of Life ranks return). The 'Decrease Incoming Healing' effect is also a modern SPA. High confidence this is a Legends-custom line."
+      },
+      "sources": ["https://everquest.allakhazam.com/db/spelllist.html?name=of+Life&type=nec&level=1&opt=And+Higher&action=search"]
+    },
+    {
+      "id": "nec-lifetap",
+      "name": "Lifetap (instant drain)",
+      "category": "lifetap",
+      "sharedWith": ["Shadow Knight"],
+      "members": [
+        { "name": "Lifetap", "level": 1, "inDb": true, "note": "4-6." },
+        { "name": "Lifespike", "level": 3, "inDb": true, "note": "7-12. P99 level 4." },
+        { "name": "Lifebite", "level": 8, "inDb": true, "note": "42/42, 1.75 s cast, 35 mana, autogranted. ADDED BY THE GAME PATCH OF 2026-08-18 (JOS-439) - wiki pageid 60016, created 2026-08-18T15:42Z, so no earlier scrape could have seen it. It has no P99 or live counterpart: Legends invented this rung. Owner log evidence at research time: 288 begins-casting, 246 damage lines, 251 heals, 9 resists, 10 interrupts, 4 fizzles." },
+        { "name": "Lifedraw", "level": 12, "inDb": true, "note": "39-45." },
+        { "name": "Siphon Life", "level": 20, "inDb": true, "note": "65-75." },
+        { "name": "Spirit Tap", "level": 26, "inDb": true, "note": "132-150. P99 level 29." },
+        { "name": "Drain Spirit", "level": 39, "inDb": true, "note": "207-226." },
+        { "name": "Drain Soul", "level": 48, "inDb": true, "note": "332-338. P99 level 49." },
+        { "name": "Deflux", "level": 54, "inDb": true, "note": "310-330. LOWER damage than Drain Soul but a 3.0 s cast vs 6.1 s - the emergency fast tap. Sidegrade, not upgrade." },
+        { "name": "Touch of Night", "level": 59, "inDb": true, "note": "720." },
+        { "name": "Gangrenous Touch of Zum`uul", "level": 60, "inDb": true, "note": "720, disease-based (-150 disease resist) rather than magic. Sidegrade to Touch of Night for magic-resistant mobs." },
+        { "name": "Trucidation", "level": 60, "inDb": true, "note": "1100, 15-minute recast, consumes an Essence Emerald. Emergency-only." }
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "Strictly ascending through Drain Soul, then branches: Deflux trades damage for cast speed, Gangrenous Touch trades resist type, Trucidation is a reagent-gated long-recast panic button. All four top-end taps stay in the book simultaneously."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "slots": [],
+        "conflicts": [],
+        "stacksWith": [
+          { "line": "Everything", "detail": "Instant direct-damage-plus-heal spells with no duration - no buff slot, no stacking interaction. They coexist with any DoT, including the Life Drain DoT line." }
+        ],
+        "notes": "All magic-based members carry -200 MR. Shadow Knights share the early ranks (Lifetap, Lifespike, Lifedraw, Siphon Life, Spirit Tap, Drain Spirit, Drain Soul) but since these are instants there is no cross-class stacking issue."
+      },
+      "sources": ["https://wiki.project1999.com/Necromancer_Spell_Lines#Lifetaps"]
+    },
+    {
+      "id": "nec-undead-nuke",
+      "name": "Undead direct damage (Ward/Expulse/Banish)",
+      "category": "nuke",
+      "sharedWith": ["Shadow Knight", "Cleric", "Paladin (thematically)"],
+      "members": [
+        { "name": "Ward Undead", "level": 6, "inDb": true, "note": "35-41. P99 level 8." },
+        { "name": "Expulse Undead", "level": 19, "inDb": true, "note": "88-94, -50 MR. P99 level 20." },
+        { "name": "Dismiss Undead", "level": 28, "inDb": true, "note": "140-162. P99 level 29." },
+        { "name": "Expel Undead", "level": 38, "inDb": true, "note": "261-273. P99 level 39." },
+        { "name": "Banish Undead", "level": 46, "inDb": true, "note": "585. P99 level 49." },
+        { "name": "Exile Undead", "level": 57, "inDb": true, "note": "675-725." },
+        { "name": "Banishment of Shadows", "level": 60, "inDb": true, "note": "Destroy Target (up to level 51 undead), 750 mana, consumes a Star Ruby, 2-minute recast. Terminal member but a special-case tool, not a nuke." }
+      ],
+      "replacement": {
+        "strict": true,
+        "note": "Strictly ascending damage and DPM through Exile Undead. Banishment of Shadows is a different kind of spell (instant destroy, reagent + long recast) appended to the top of the line."
+      },
+      "missingOnLegends": [],
+      "stacking": { "slots": [], "conflicts": [], "stacksWith": [], "notes": "Instant nukes - no stacking interactions." },
+      "sources": ["https://wiki.project1999.com/Necromancer_Spell_Lines#Single-Target_Nukes"]
+    },
+    {
+      "id": "nec-poison-nuke",
+      "name": "Poison direct damage (Shock of Poison / Torbas)",
+      "category": "nuke",
+      "sharedWith": [],
+      "members": [
+        { "name": "Shock of Poison", "level": 21, "inDb": true, "note": "146-160. P99 level 24." },
+        { "name": "Torbas Acid Blast", "level": 32, "inDb": true, "note": "207-220. Allakhazam name 'Torbas' Acid Blast', NEC 32 on live - Legends matches live, P99 has it at 34." },
+        { "name": "Torbas Poison Blast", "level": 49, "inDb": true, "note": "466. Allakhazam 'Torbas' Poison Blast', NEC 49 on live. Not on P99 (post-classic)." }
+      ],
+      "replacement": { "strict": true, "note": "Ascending all-target poison nuke chain. These are the necro's only non-undead, non-plant single-target nukes below the Bones line." },
+      "missingOnLegends": [
+        "Torbas' Venom Blast (NEC 54 on live) - the next rank is absent from the Legends set."
+      ],
+      "stacking": { "slots": [], "conflicts": [], "stacksWith": [], "notes": "Instant nukes." },
+      "sources": ["https://everquest.allakhazam.com/db/spelllist.html?name=Torbas&type=nec&level=1&opt=And+Higher&action=search"]
+    },
+    {
+      "id": "nec-bones-nuke",
+      "name": "Bones nukes (Ignite/Incinerate/Chill/Conglaciation)",
+      "category": "nuke",
+      "sharedWith": [],
+      "members": [
+        { "name": "Ignite Bones", "level": 42, "inDb": true, "note": "494-500 fire + applies a skeleton illusion to the target. P99 level 44." },
+        { "name": "Incinerate Bones", "level": 42, "inDb": true, "note": "Same damage as Ignite Bones, WITHOUT the illusion side effect. Chardok-revamp drop; the 'clean' version." },
+        { "name": "Chill Bones", "level": 55, "inDb": true, "note": "505-515 cold + skeleton illusion." },
+        { "name": "Conglaciation of Bone", "level": 55, "inDb": true, "note": "500 cold, no illusion. The Chardok-revamp 'clean' twin of Chill Bones." }
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "Two parallel pairs, not one chain: Ignite Bones -> Chill Bones (illusion versions) and Incinerate Bones -> Conglaciation of Bone (no-illusion versions). Within a level the twins are damage-identical; the choice is whether you want the target wearing a skeleton illusion. Resist type also changes (fire at 42, cold at 55), so both tiers stay useful against resistant mobs."
+      },
+      "missingOnLegends": [],
+      "stacking": { "slots": [], "conflicts": [], "stacksWith": [], "notes": "Instant nukes. The applied skeleton illusion on the target is a debuff-side illusion and is why the no-illusion twins exist." },
+      "sources": ["https://wiki.project1999.com/Necromancer_Spell_Lines#Single-Target_Nukes"]
+    },
+    {
+      "id": "nec-pbae",
+      "name": "Word of ... (PBAE nuke)",
+      "category": "nuke",
+      "sharedWith": ["Shadow Knight (Word of Spirit)"],
+      "members": [
+        { "name": "Word of Shadow", "level": 20, "inDb": true, "note": "52-58 PBAE." },
+        { "name": "Word of Spirit", "level": 27, "inDb": true, "note": "97-104 PBAE. P99 level 29." },
+        { "name": "Word of Souls", "level": 36, "inDb": true, "note": "147-155 PBAE. P99 level 39." }
+      ],
+      "replacement": { "strict": true, "note": "Ascending; all three are mana-inefficient (0.6-0.9 DPM) and exist for pull-clearing rather than damage." },
+      "missingOnLegends": [],
+      "stacking": { "slots": [], "conflicts": [], "stacksWith": [], "notes": "" },
+      "sources": ["https://wiki.project1999.com/Necromancer_Spell_Lines#Point-Blank_Area_Effect"]
+    },
+    {
+      "id": "nec-plant-nuke",
+      "name": "Plant direct damage (Defoliate line)",
+      "category": "nuke",
+      "sharedWith": ["Druid (Defoliate)"],
+      "members": [
+        { "name": "Defoliate", "level": 29, "inDb": true, "note": "198-210 to plants. NOT a Necromancer spell on live or P99 - Allakhazam's NEC list returns only Defoliation. Defoliate is a Druid spell; this looks like a Legends-added lower tier." },
+        { "name": "Defoliation", "level": 52, "inDb": true, "note": "645-725 to plants. Kunark, NEC 52 on both live and P99." }
+      ],
+      "replacement": { "strict": true, "note": "Ascending plant-only nuke." },
+      "missingOnLegends": [],
+      "stacking": { "slots": [], "conflicts": [], "stacksWith": [], "notes": "" },
+      "sources": ["https://everquest.allakhazam.com/db/spelllist.html?name=Defoliat&type=nec&level=1&opt=And+Higher&action=search"]
+    },
+    {
+      "id": "nec-fear",
+      "name": "Fear (all targets)",
+      "category": "cc",
+      "sharedWith": ["Shadow Knight (Fear)"],
+      "members": [
+        { "name": "Fear", "level": 2, "inDb": true, "note": "3 ticks. P99 level 4." },
+        { "name": "Invoke Fear", "level": 30, "inDb": true, "note": "7 ticks. P99 level 34." },
+        { "name": "Trepidation", "level": 56, "inDb": true, "note": "6 ticks, -25 MR - the resist modifier, not the duration, is the upgrade." }
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "Duration is not monotonic (Invoke Fear 7 ticks > Trepidation 6 ticks); Trepidation wins on resist modifier and is the fear-kiting spell at 56+. Fear at level 2 stays as the cheap opener."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "slots": [],
+        "conflicts": [
+          { "line": "Fear (undead)", "class": "Necromancer", "detail": "The undead-only fears are the same effect on the same target; only one fear can be active on a mob at a time.", "source": "https://wiki.project1999.com/Necromancer_Spell_Lines#Fear_Spells_.28Magic.29" }
+        ],
+        "stacksWith": [],
+        "notes": "Fear is the core of the necro's signature solo method; a landed fear plus a Darkness snare is the fear-kite."
+      },
+      "sources": ["https://wiki.project1999.com/Necromancer_Spell_Lines#Fear_Spells_.28Magic.29"]
+    },
+    {
+      "id": "nec-fear-undead",
+      "name": "Fear (undead only)",
+      "category": "cc",
+      "sharedWith": ["Cleric", "Shadow Knight", "Paladin"],
+      "members": [
+        { "name": "Spook the Dead", "level": 10, "inDb": true, "note": "1-3 ticks, 10 mana. P99 level 12." },
+        { "name": "Panic the Dead", "level": 25, "inDb": true, "note": "9 ticks, 50 mana - the longest fear the class gets. P99 level 29." },
+        { "name": "Dread of Night", "level": 51, "inDb": true, "note": "8 ticks, -25 MR." }
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "Panic the Dead (9 ticks, 50 mana) is longer AND cheaper than Dread of Night (8 ticks, 100 mana); Dread of Night only wins on the resist modifier. Panic the Dead is never retired."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "slots": [],
+        "conflicts": [
+          { "line": "Fear (all targets)", "class": "Necromancer", "detail": "Same effect on target - one fear at a time.", "source": "https://wiki.project1999.com/Necromancer_Spell_Lines#Fear_Spells_.28Magic.29" }
+        ],
+        "stacksWith": [],
+        "notes": "P99 tabulates all six fears in one table; they are split here only by target restriction."
+      },
+      "sources": ["https://wiki.project1999.com/Necromancer_Spell_Lines#Fear_Spells_.28Magic.29"]
+    },
+    {
+      "id": "nec-root",
+      "name": "Root / Paralyze",
+      "category": "cc",
+      "sharedWith": ["Enchanter", "Druid", "Wizard", "Shadow Knight (Root)"],
+      "members": [
+        { "name": "Hungry Earth", "level": 16, "inDb": true, "note": "Undead-only root (8 ticks) with a 26-75 damage component. Research spell. P99 lists it in both the nuke and root tables." },
+        { "name": "Root", "level": 34, "inDb": true, "note": "2-8 ticks, 30 mana, breaks randomly and on direct damage." },
+        { "name": "Paralyzing Earth", "level": 46, "inDb": true, "note": "30 ticks, 100 mana - the root-rot workhorse. Breaks on direct damage but not randomly. P99 level 49." },
+        { "name": "Instill", "level": 53, "inDb": true, "note": "Legends DB row carries no effects; this is 'Enstill' on P99/Allakhazam - 12-16 tick root, 60 mana, breaks randomly and on DD. NAME DISCREPANCY: Legends 'Instill' vs classic 'Enstill'." },
+        { "name": "Immobilize", "level": 58, "inDb": true, "note": "10 ticks, 80 mana, breaks on DD but not randomly. Shorter than Paralyzing Earth - a fast-cast (1.75 s) root, not an upgrade." }
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "Not a replacement chain at all above Root. Paralyzing Earth (30 ticks) remains the longest root the class ever gets; Enstill/Instill and Immobilize are shorter and exist for cast speed and mana. Necros carry two or three roots simultaneously and pick by needed duration."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "slots": [],
+        "conflicts": [
+          { "line": "Root", "class": "any", "detail": "Only one root effect can hold a mob; recasting refreshes/replaces. Root and snare are different effects and DO coexist.", "source": "https://wiki.project1999.com/Necromancer_Spell_Lines#Root_Spells_.28Magic.29" }
+        ],
+        "stacksWith": [
+          { "line": "Darkness snare", "detail": "Snare and root are separate effects and can both be on a mob." }
+        ],
+        "notes": "Root-rot rotation depends on DoT choice: the DD-carrying DoTs (Poison Bolt/Venom/Envenomed Bolt, Disease Cloud line, Ignite Bones) can break root; the Muscle line and Chilling Embrace cannot."
+      },
+      "sources": ["https://wiki.project1999.com/Necromancer_Spell_Lines#Root_Spells_.28Magic.29"]
+    },
+    {
+      "id": "nec-charm-undead",
+      "name": "Charm Undead",
+      "category": "cc",
+      "sharedWith": ["Shadow Knight (Dominate Undead)", "Cleric (Dominate/Beguile Undead)"],
+      "members": [
+        { "name": "Dominate Undead", "level": 18, "inDb": true, "note": "Up to level 32. P99 level 20." },
+        { "name": "Beguile Undead", "level": 31, "inDb": true, "note": "Up to level 46. P99 level 34." },
+        { "name": "Cajole Undead", "level": 47, "inDb": true, "note": "Up to level 51. P99 level 49." },
+        { "name": "Thrall of Bones", "level": 54, "inDb": true, "note": "Up to level 53." },
+        { "name": "Enslave Death", "level": 60, "inDb": true, "note": "Up to level 55 but only 5 ticks - a very-hard-to-resist short charm, not a general upgrade." }
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "Level cap ascends strictly, but Enslave Death's 5-tick duration makes it a burst/emergency charm rather than a replacement for Thrall of Bones' ~17-20 minutes."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "slots": [],
+        "conflicts": [
+          { "line": "Charm", "class": "any", "detail": "One charm per target; a charm attempt on an already-charmed mob replaces it.", "source": "" }
+        ],
+        "stacksWith": [],
+        "notes": "Charmed undead coexist with a summoned skeleton pet on P99-era rules only in the sense that charm is not the pet slot - but practical control differs. Not slot-based."
+      },
+      "sources": ["https://wiki.project1999.com/Necromancer"]
+    },
+    {
+      "id": "nec-lull-undead",
+      "name": "Lull / Pacify Undead",
+      "category": "cc",
+      "sharedWith": ["Cleric", "Paladin", "Shadow Knight (Rest the Dead)"],
+      "members": [
+        { "name": "Numb the Dead", "level": 2, "inDb": true, "note": "Lull, 2 minutes. P99 level 4." },
+        { "name": "Rest the Dead", "level": 23, "inDb": true, "note": "Pacify + memblur, 3 minutes, wider radius. P99 level 24." }
+      ],
+      "replacement": { "strict": true, "note": "Rest the Dead supersedes Numb the Dead on radius, duration and effect strength." },
+      "missingOnLegends": [],
+      "stacking": { "slots": [], "conflicts": [], "stacksWith": [], "notes": "" },
+      "sources": ["https://wiki.project1999.com/Necromancer"]
+    },
+    {
+      "id": "nec-slow-undead",
+      "name": "Undead slow (Shackle)",
+      "category": "debuff",
+      "sharedWith": [],
+      "members": [
+        { "name": "Shackle of Bone", "level": 17, "inDb": true, "note": "-20% melee haste, 2 min 30 s. Real live spell (Allakhazam 2542, Luclin-era Echo Caverns vendor batch). Not on P99." },
+        { "name": "Shackle of Spirit", "level": 38, "inDb": true, "note": "-10% melee haste in the Legends DB - WEAKER than the level-17 member. Almost certainly a data error; the higher-level Shackle should be the stronger slow." }
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "Should be a strict upgrade; the Legends magnitudes invert it. Flagged rather than corrected."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "slots": [],
+        "conflicts": [
+          { "line": "Slow", "class": "Shaman/Enchanter/Beastlord", "detail": "Melee-haste debuffs are a single slot in practice - a necro Shackle will collide with (and be far weaker than) a shaman/enchanter slow.", "source": "" }
+        ],
+        "stacksWith": [],
+        "notes": "Luclin-era addition; P99 has no necro slow at all."
+      },
+      "sources": ["https://everquest.allakhazam.com/db/spell.html?spell=2542"]
+    },
+    {
+      "id": "nec-str-debuff",
+      "name": "Strength debuff (Siphon Strength / Enfeeblement)",
+      "category": "debuff",
+      "sharedWith": ["Shadow Knight"],
+      "members": [
+        { "name": "Siphon Strength", "level": 1, "inDb": true, "note": "-5 to -10 STR, single target." },
+        { "name": "Wave of Enfeeblement", "level": 9, "inDb": true, "note": "-11 to -15 STR, PBAE. P99 level 12." },
+        { "name": "Surge of Enfeeblement", "level": 32, "inDb": true, "note": "-22 to -30 STR, PBAE, 6 minutes. P99 level 34." }
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "Magnitude ascends, but Siphon Strength is single-target and the Enfeeblement pair is PBAE - a targeting sidegrade, not a pure replacement."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "slots": [],
+        "conflicts": [
+          { "line": "Muscle DoT (-STR component)", "class": "Necromancer", "detail": "Heart Flutter / Asystole / Cessation of Cor also debuff STR and likely collide with this line's STR component.", "source": "" },
+          { "line": "Cripple / Weaken", "class": "Shaman/Enchanter", "detail": "Other STR debuffs likely share the slot; the stronger one wins.", "source": "" }
+        ],
+        "stacksWith": [],
+        "notes": "Not tabulated on P99 Buff_Lines (that page covers beneficial buffs only), so slot assignment here is inference, flagged as open."
+      },
+      "sources": ["https://wiki.project1999.com/Necromancer"]
+    },
+    {
+      "id": "nec-scent",
+      "name": "Scent of ... (fire/poison/disease resist debuff)",
+      "category": "debuff",
+      "sharedWith": [],
+      "members": [
+        { "name": "Scent of Dusk", "level": 10, "inDb": true, "note": "-7 to -9 FR/PR/DR. P99 level 12." },
+        { "name": "Scent of Shadow", "level": 21, "inDb": true, "note": "-14 to -18. P99 level 24." },
+        { "name": "Scent of Darkness", "level": 37, "inDb": true, "note": "-24 to -27. P99 level 39." },
+        { "name": "Scent of Terris", "level": 52, "inDb": true, "note": "-33 to -36, quest spell (Vaean the Night, Overthere)." }
+      ],
+      "replacement": { "strict": true, "note": "Clean ascending resist-debuff chain, identical effect shape at each tier." },
+      "missingOnLegends": [],
+      "stacking": {
+        "slots": [],
+        "conflicts": [
+          { "line": "Scent", "class": "Necromancer", "detail": "Same line - a lower Scent will not land over a higher one.", "source": "" },
+          { "line": "Malo / Malosini", "class": "Shaman/Magician", "detail": "Shaman Malaise/Malo line is a different line and (classically) stacks with Scent, which is why necro+shaman resist-debuff stacking was a known raid combo. Not slot-verified here.", "source": "" }
+        ],
+        "stacksWith": [],
+        "notes": "Every member applies poison counters, so a cure-poison strips them."
+      },
+      "sources": ["https://wiki.project1999.com/Necromancer"]
+    },
+    {
+      "id": "nec-shadow-vortex",
+      "name": "Shadow Vortex (AC drain + self AC recourse)",
+      "category": "debuff",
+      "sharedWith": ["Shadow Knight"],
+      "members": [
+        { "name": "Shadow Vortex", "level": 19, "inDb": true, "note": "-9 to -12 AC on the target; the drained AC is granted to the caster as a recourse. P99 level 20." }
+      ],
+      "replacement": { "strict": false, "note": "Single member; no higher rank in the classic set." },
+      "missingOnLegends": [],
+      "stacking": {
+        "slots": ["AC (Slot 7)"],
+        "conflicts": [
+          { "line": "AC (Slot 7)", "class": "Shadow Knight", "detail": "The self-buff half ('Shadow Vortex Recourse', +12 AC) sits in AC Slot 7 together with Shadow Knight's Shroud of Pain Recourse (+18 AC) - the two do not stack.", "source": "https://wiki.project1999.com/Buff_Lines#AC_.28Slot_7.29" }
+        ],
+        "stacksWith": [
+          { "line": "AC (Slot 2) - Shielding line", "detail": "Shadow Vortex Recourse stacks with the necro's own Shielding/Shield of the Magi AC." },
+          { "line": "AC (Slot 4) - Spirit Armor line", "detail": "Stacks with Spirit Armor, cleric Aegis, enchanter Umbra etc." },
+          { "line": "AC (Slot 1)", "detail": "Stacks with cleric/druid skin lines." }
+        ],
+        "notes": "LOAD-BEARING: this is one of only two spells in the game in AC Slot 7. The +12 AC self-recourse is a real, separately-stacking AC source for necromancers and is easy to miss because it is a detrimental spell."
+      },
+      "sources": ["https://wiki.project1999.com/Buff_Lines#AC_.28Slot_7.29"]
+    },
+    {
+      "id": "nec-shielding",
+      "name": "Shielding (self HP / AC / MR)",
+      "category": "buff-self",
+      "sharedWith": ["Enchanter", "Magician", "Wizard"],
+      "members": [
+        { "name": "Minor Shielding", "level": 1, "inDb": true, "note": "+10 HP, +4 AC (max-level values per P99)." },
+        { "name": "Lesser Shielding", "level": 8, "inDb": true, "note": "+30 HP, +9 AC." },
+        { "name": "Shielding", "level": 16, "inDb": true, "note": "+50 HP, +18 AC, +12 MR - MR component starts here." },
+        { "name": "Major Shielding", "level": 24, "inDb": true, "note": "+75 HP, +23 AC, +14 MR." },
+        { "name": "Greater Shielding", "level": 33, "inDb": true, "note": "+100 HP, +29 AC, +16 MR. P99 level 34." },
+        { "name": "Arch Shielding", "level": 41, "inDb": true, "note": "+150 HP, +35 AC, +20 MR. P99 level 44." },
+        { "name": "Shield of the Magi", "level": 54, "inDb": true, "note": "+250 HP, +42 AC, +24 MR." }
+      ],
+      "replacement": { "strict": true, "note": "Textbook strict chain - every stat ascends at every tier. Self-only for all four INT casters." },
+      "missingOnLegends": [],
+      "stacking": {
+        "slots": ["AC (Slot 2)", "HP (Shielding / Talisman)", "Magic Resistance (Magic Shield)"],
+        "conflicts": [
+          { "line": "AC (Slot 2)", "class": "Druid/Ranger", "detail": "Thistlecoat / Barbcoat / Bramblecoat / Spikecoat / Thorncoat / Bladecoat occupy AC Slot 2 - they do not stack with the Shielding line.", "source": "https://wiki.project1999.com/Buff_Lines#AC_.28Slot_2.29" },
+          { "line": "AC (Slot 2)", "class": "Cleric/Paladin", "detail": "Armor of Protection and the Yaulp line are also AC Slot 2.", "source": "https://wiki.project1999.com/Buff_Lines#AC_.28Slot_2.29" },
+          { "line": "HP (Shielding / Talisman)", "class": "Shaman", "detail": "Talisman of Tnarg / Altuna / Kragg and Focus of Spirit share the HP slot with the Shielding line - a shaman HP talisman and Shield of the Magi do not stack.", "source": "https://wiki.project1999.com/Buff_Lines#HP_.28Shielding_.2F_Talisman.29" }
+        ],
+        "stacksWith": [
+          { "line": "AC (Slot 1)", "detail": "Cleric Courage->Heroism and Druid Skin Like Wood->Protection of the Glades stack with Shielding's AC." },
+          { "line": "AC (Slot 4)", "detail": "Spirit Armor (the necro's own), cleric Aegis, enchanter Umbra, shaman Guardian all stack with Shielding's AC." },
+          { "line": "HP (Primary)", "detail": "Cleric Symbol line and the AC-and-HP skin lines stack with Shielding's HP." },
+          { "line": "Magic Resistance (Primary)", "detail": "Resist Magic / Group Resist Magic stack with the Magic Shield MR from Shielding." }
+        ],
+        "notes": "Aegolism is the exception to watch: it is listed as AC Slot 1 AND 4, so it blocks Spirit Armor but NOT the Shielding line's Slot 2 AC. Its HP is in HP (Primary), so Aegolism + Shield of the Magi HP do stack."
+      },
+      "sources": ["https://wiki.project1999.com/Buff_Lines"]
+    },
+    {
+      "id": "nec-skin-rune",
+      "name": "Skin (damage absorption / rune)",
+      "category": "buff-self",
+      "sharedWith": ["Wizard", "Shadow Knight (Shieldskin/Steelskin/Diamondskin)"],
+      "members": [
+        { "name": "Shieldskin", "level": 14, "inDb": true, "note": "Absorbs 27-55. Consumes a Cat's Eye Agate. P99 level 16." },
+        { "name": "Leatherskin", "level": 22, "inDb": true, "note": "Absorbs 71-118. Consumes a bloodstone. P99 level 24." },
+        { "name": "Steelskin", "level": 32, "inDb": true, "note": "Absorbs 168-230. Consumes a jasper. P99 level 34." },
+        { "name": "Diamondskin", "level": 43, "inDb": true, "note": "Absorbs 305-394. Consumes a peridot. P99 level 44." },
+        { "name": "Manaskin", "level": 52, "inDb": true, "note": "Absorbs 521-600 AND +1 mana/tick. Consumes a peridot. Top of the line." }
+      ],
+      "replacement": { "strict": true, "note": "Strictly ascending absorption; Manaskin adds a mana-regen rider on top. All are self-only and reagent-consuming." },
+      "missingOnLegends": [],
+      "stacking": {
+        "slots": ["Damage Absorption (Primary)", "Mana Regeneration (Self-Only) [Manaskin only]"],
+        "conflicts": [
+          { "line": "Damage Absorption (Primary)", "class": "Enchanter", "detail": "Rune I-V share the slot with the entire Skin line - an enchanter's Rune V (700) and a necro's Manaskin (600) cannot both be up. Rampage (90) is also in this slot.", "source": "https://wiki.project1999.com/Buff_Lines#Damage_Absorption_.28Primary.29" },
+          { "line": "Damage Absorption (Primary)", "class": "Shadow Knight/Wizard", "detail": "SK Shieldskin/Steelskin/Diamondskin and Wizard Shieldskin->Manaskin are literally the same spells - same slot.", "source": "https://wiki.project1999.com/Buff_Lines#Damage_Absorption_.28Primary.29" },
+          { "line": "Mana Regeneration (Self-Only)", "class": "any", "detail": "Manaskin's +1 mana/tick shares a slot with Barrier of Force (Staff of the Four click).", "source": "https://wiki.project1999.com/Buff_Lines#Mana_Regeneration_.28Self-Only.29" }
+        ],
+        "stacksWith": [
+          { "line": "Damage Absorption (Berserker)", "detail": "Enchanter Bedlam / Berserker Spirit / Berserker Strength stack with the Skin line." },
+          { "line": "Damage Absorption (Shield of Song / March)", "detail": "Bard Shield of Song and Nillipus' March of the Wee stack." },
+          { "line": "Damage Absorption, Magic", "detail": "Song Shield / Psalm / Melody / Manasink are a separate magic-absorb family and stack." },
+          { "line": "Mana Regeneration (Lich)", "detail": "Manaskin's mana regen stacks with Demi Lich / Arch Lich / Lich." }
+        ],
+        "notes": "Legends' Manaskin row carries an explicit stacking blocker in its data: 'Block new spell if slot 5 is effect Mana and < 20'. That is the live-style block field and is worth surfacing verbatim in the DB rather than reinterpreting."
+      },
+      "sources": ["https://wiki.project1999.com/Buff_Lines#Damage_Absorption_.28Primary.29"]
+    },
+    {
+      "id": "nec-spirit-armor",
+      "name": "Spirit Armor (AC Slot 4)",
+      "category": "buff-group",
+      "sharedWith": ["Cleric", "Paladin"],
+      "members": [
+        { "name": "Spirit Armor", "level": 16, "inDb": true, "note": "+11 to +13 AC, single friendly or self, 36 min. Cleric 19 / Necromancer 16 / Paladin 30; also on Proc: Shieldstorm." }
+      ],
+      "replacement": { "strict": false, "note": "Single member - the necromancer never gets a higher AC-slot-4 buff. It is the necro's only castable-on-others armor buff." },
+      "missingOnLegends": [],
+      "stacking": {
+        "slots": ["AC (Slot 4)"],
+        "conflicts": [
+          { "line": "AC (Slot 4)", "class": "Cleric", "detail": "Holy Armor, Guard, Armor of Faith, Shield of Words, Aegis, Bulwark of Faith - all AC Slot 4, none stack with Spirit Armor. Aegolism (Slot 1 & 4) also blocks it.", "source": "https://wiki.project1999.com/Buff_Lines#AC_.28Slot_4.29" },
+          { "line": "AC (Slot 4)", "class": "Enchanter", "detail": "Haze / Mist / Cloud / Obscure / Shade / Shadow / Umbra.", "source": "https://wiki.project1999.com/Buff_Lines#AC_.28Slot_4.29" },
+          { "line": "AC (Slot 4)", "class": "Shaman", "detail": "Scale Skin / Turtle Skin / Protect / Shifting Shield / Guardian / Shroud of the Spirits.", "source": "https://wiki.project1999.com/Buff_Lines#AC_.28Slot_4.29" },
+          { "line": "AC (Slot 4)", "class": "Magician", "detail": "Phantom Leather / Chain / Plate / Armor.", "source": "https://wiki.project1999.com/Buff_Lines#AC_.28Slot_4.29" }
+        ],
+        "stacksWith": [
+          { "line": "AC (Slot 2) - Shielding line", "detail": "A necro can run Shield of the Magi and Spirit Armor together." },
+          { "line": "AC (Slot 1)", "detail": "Cleric Resolution/Heroism, Druid Skin Like Nature etc." },
+          { "line": "AC (Slot 7)", "detail": "Shadow Vortex Recourse." },
+          { "line": "AC (Slot 3 / 8 / 9 / bard layer 2)", "detail": "Call of Earth, Augment, Celestial Tranquility, Song of the Deep Seas, bard rhythms." }
+        ],
+        "notes": "Confirms the prior wave's anchor: necro Spirit Armor is AC Slot 4, shared with the cleric Aegis family. In practice a grouped necro's Spirit Armor is overwritten by any cleric/enchanter/shaman armor buff worth having."
+      },
+      "sources": ["https://wiki.project1999.com/Buff_Lines#AC_.28Slot_4.29"]
+    },
+    {
+      "id": "nec-banshee-aura",
+      "name": "Banshee Aura (damage shield)",
+      "category": "buff-self",
+      "sharedWith": ["Shadow Knight"],
+      "members": [
+        { "name": "Banshee Aura", "level": 15, "inDb": true, "note": "+9 to +12 damage shield, permanent duration, research/Kunark vendor. P99 level 16, SK 54." }
+      ],
+      "replacement": { "strict": false, "note": "Single member; the necro never gets a second damage shield." },
+      "missingOnLegends": [],
+      "stacking": {
+        "slots": ["Damage Shield (Slot 1)"],
+        "conflicts": [
+          { "line": "Damage Shield (Slot 1)", "class": "Magician", "detail": "Shield of Fire -> Cadeau of Flame / Aegis of Ro all sit in DS Slot 1; a mage damage shield overwrites Banshee Aura.", "source": "https://wiki.project1999.com/Buff_Lines#Damage_Shield_.28Slot_1.29" },
+          { "line": "Damage Shield (Slot 1)", "class": "Druid/Ranger", "detail": "Shield of Thistles -> Legacy of Thorn line.", "source": "https://wiki.project1999.com/Buff_Lines#Damage_Shield_.28Slot_1.29" },
+          { "line": "Damage Shield (Slot 1)", "class": "Enchanter/Wizard", "detail": "Feedback, O'Keil's Radiation.", "source": "https://wiki.project1999.com/Buff_Lines#Damage_Shield_.28Slot_1.29" }
+        ],
+        "stacksWith": [
+          { "line": "Damage Shield (Slot 2)", "detail": "Kilva's Skin of Flame, Illusion: Fire Elemental, Frostreaver's Blessing." },
+          { "line": "Damage Shield (Slot 3)", "detail": "Druid coats." },
+          { "line": "Damage Shield (Slot 4)", "detail": "Thorny Shield." },
+          { "line": "Damage Shield (Layer 2)", "detail": "Bard Psalm of Warmth / Cooling and McVaxius' Rousing Rondo." }
+        ],
+        "notes": ""
+      },
+      "sources": ["https://wiki.project1999.com/Buff_Lines#Damage_Shield_.28Slot_1.29"]
+    },
+    {
+      "id": "nec-grim-aura",
+      "name": "Grim Aura (attack)",
+      "category": "buff-self",
+      "sharedWith": ["Shadow Knight"],
+      "members": [
+        { "name": "Grim Aura", "level": 3, "inDb": true, "note": "+5 to +10 ATK, permanent, self only. P99 level 4; SK 22; also on several clickies (Hand of Shadow, Reaper's Ring, Shrunken Goblin Skull Earring, Sword of Pain)." }
+      ],
+      "replacement": { "strict": false, "note": "Single member. Mostly relevant because the clicky versions are handed to melee." },
+      "missingOnLegends": [],
+      "stacking": {
+        "slots": ["Attack (Slot 1)"],
+        "conflicts": [
+          { "line": "Attack (Slot 1)", "class": "Druid/Ranger", "detail": "Firefist (+10) shares Attack Slot 1 with Grim Aura.", "source": "https://wiki.project1999.com/Buff_Lines#Attack_.28Slot_1.29" },
+          { "line": "Attack (Slot 1)", "class": "Ranger/Cleric/Monk-item", "detail": "Strength of Nature (+25), Yaulp IV (+16), Celestial Tranquility (+40) are all Attack Slot 1 and overwrite Grim Aura.", "source": "https://wiki.project1999.com/Buff_Lines#Attack_.28Slot_1.29" }
+        ],
+        "stacksWith": [
+          { "line": "Attack (Slot 2)", "detail": "Call of the Predator, Illusion: Werewolf." },
+          { "line": "Attack (Slot 3)", "detail": "Avatar, wolf forms, Aura of Battle." },
+          { "line": "Attack (Slot 4/5/7/12)", "detail": "Visions of Grandeur, Frostreaver's Blessing, Shroud of Hate Recourse, Dance of the Blade." },
+          { "line": "Attack (Worn / bard layer 2)", "detail": "Seething Fury, Rage of Tallon, McVaxius' Rousing Rondo." }
+        ],
+        "notes": ""
+      },
+      "sources": ["https://wiki.project1999.com/Buff_Lines#Attack_.28Slot_1.29"]
+    },
+    {
+      "id": "nec-dmf",
+      "name": "Dead Man Floating",
+      "category": "buff-group",
+      "sharedWith": [],
+      "members": [
+        { "name": "Dead Man Floating", "level": 41, "inDb": true, "note": "Single target. Water Breathing(2) + See Invisible(1) + Levitate(2) + 64-70 poison resist. Research spell. P99 level 44." },
+        { "name": "Dead Men Floating", "level": 45, "inDb": true, "note": "Group version, 69-75 poison resist. Classic-2.0 NPC drop. P99 level 49." }
+      ],
+      "replacement": { "strict": true, "note": "Group version supersedes the single-target one outright (same components, slightly higher poison resist)." },
+      "missingOnLegends": [],
+      "stacking": {
+        "slots": ["Poison Resistance (Dead Man Floating)"],
+        "conflicts": [
+          { "line": "Poison Resistance (Dead Man Floating)", "class": "Necromancer", "detail": "The two members share the slot with each other and with nothing else in the game - DMF has its OWN poison-resist heading on P99 Buff_Lines.", "source": "https://wiki.project1999.com/Buff_Lines#Dead_Man_Floating" }
+        ],
+        "stacksWith": [
+          { "line": "Poison Resistance (Primary)", "detail": "Talisman of Shadoo, Resist Poison, Endure Poison, Resistant Skin all stack with DMF's +70." },
+          { "line": "Poison Resistance (Flower / Psalm / Item)", "detail": "Aura of Green Petals, bard Psalm of Purity, Aura of Purity potions all stack. DMF is a full +70 on top of everything - it is a component of the game's maximum poison resist (+361)." }
+        ],
+        "notes": "PRIORITY - COMPONENT BREAKDOWN: (1) Poison resist - own slot, stacks with all other poison-resist lines, the single largest reason to cast it. (2) Levitate(2) - functionally the same as any levitation; overlaps with druid/shaman/wizard Levitate and with items. (3) See Invisible(1) - overlaps with Deadeye's see-invis and with See Invisible from other sources. (4) Water Breathing(2) - makes the necro's own Breath of the Dead redundant. P99's Buff_Lines page only tracks stat effects, so it lists DMF under Poison Resistance ONLY; the levitate / see-invis / water-breathing components are not slot-tabled anywhere authoritative and their interaction with other levitate/see-invis buffs is an open question."
+      },
+      "sources": ["https://wiki.project1999.com/Buff_Lines#Poison_Resistance"]
+    },
+    {
+      "id": "nec-resist-cold",
+      "name": "Cold resistance",
+      "category": "resist-buff",
+      "sharedWith": ["Cleric", "Druid", "Ranger", "Shaman", "Shadow Knight"],
+      "members": [
+        { "name": "Endure Cold", "level": 3, "inDb": true, "note": "+11 to +20 CR. P99 level 4." },
+        { "name": "Resist Cold", "level": 24, "inDb": true, "note": "+39 to +40 CR." }
+      ],
+      "replacement": { "strict": true, "note": "Resist Cold strictly supersedes Endure Cold." },
+      "missingOnLegends": [],
+      "stacking": {
+        "slots": ["Cold Resistance (Primary)"],
+        "conflicts": [
+          { "line": "Cold Resistance (Primary)", "class": "Druid/Cleric/Shaman/Ranger", "detail": "Circle of Summer (+45), Resist Cold (+40), Endure Cold (+20) are one line - the biggest wins.", "source": "https://wiki.project1999.com/Buff_Lines#Cold_Resistance" }
+        ],
+        "stacksWith": [
+          { "line": "Cold Resistance (Flower/Armor)", "detail": "Aura of White Petals, Elemental Armor." },
+          { "line": "Cold Resistance (Bard)", "detail": "Psalm of Warmth." },
+          { "line": "Cold Resistance (Potion)", "detail": "Aura of Heat potions." }
+        ],
+        "notes": "P99's Buff_Lines Cold Resistance section omits Necromancer from the class list for Endure/Resist Cold, but the P99 Necromancer spell list does grant them (levels 4 and 24). Treat the omission as a wiki gap, not a class difference."
+      },
+      "sources": [
+        "https://wiki.project1999.com/Buff_Lines#Cold_Resistance",
+        "https://wiki.project1999.com/Necromancer"
+      ]
+    },
+    {
+      "id": "nec-resist-disease",
+      "name": "Disease resistance",
+      "category": "resist-buff",
+      "sharedWith": ["Cleric", "Druid", "Paladin", "Shaman", "Shadow Knight (Endure Disease)"],
+      "members": [
+        { "name": "Endure Disease", "level": 11, "inDb": true, "note": "+18 to +20 DR. P99 level 12." },
+        { "name": "Resist Disease", "level": 31, "inDb": true, "note": "+40 DR. P99 level 34." }
+      ],
+      "replacement": { "strict": true, "note": "Strict upgrade." },
+      "missingOnLegends": [],
+      "stacking": {
+        "slots": ["Disease Resistance (Primary)"],
+        "conflicts": [
+          { "line": "Disease Resistance (Primary)", "class": "Shaman", "detail": "Talisman of Jasinth (+45) shares the line and beats Resist Disease (+40).", "source": "https://wiki.project1999.com/Buff_Lines#Disease_Resistance" },
+          { "line": "Disease Resistance (Primary)", "class": "any", "detail": "Aura of Black Petals (+50) is also in this line.", "source": "https://wiki.project1999.com/Buff_Lines#Disease_Resistance" }
+        ],
+        "stacksWith": [
+          { "line": "Disease Resistance (Psalm)", "detail": "Bard Psalm of Vitality." },
+          { "line": "Disease Resistance (Item)", "detail": "Aura of Antibody potions, Aloe Sweat." }
+        ],
+        "notes": ""
+      },
+      "sources": ["https://wiki.project1999.com/Buff_Lines#Disease_Resistance"]
+    },
+    {
+      "id": "nec-invis",
+      "name": "Invisibility (living)",
+      "category": "buff-self",
+      "sharedWith": [],
+      "members": [
+        { "name": "Gather Shadows", "level": 7, "inDb": true, "note": "Self-only invisibility, 20 min. P99 level 8." },
+        { "name": "Skin of the Shadow", "level": 55, "inDb": true, "note": "Invisibility + ultravision + 115% magnification (extended sight range). Overthere quest. ONLY works at night." }
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "Skin of the Shadow is night-only, so Gather Shadows is never retired. Skin of the Shadow also folds in the Shadow Sight ultravision effect."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "slots": [],
+        "conflicts": [
+          { "line": "Invisibility", "class": "any", "detail": "Invisibility effects overwrite each other; only one invis is up at a time. Casting or being cast on with another invis replaces it.", "source": "" }
+        ],
+        "stacksWith": [
+          { "line": "Invisibility versus Undead", "detail": "Living-invis and undead-invis are separate effects and can both be up (the classic double-invis pull setup)." }
+        ],
+        "notes": "Invisibility is not a stat buff, so P99 Buff_Lines does not tabulate it; treatment here is from standard classic behaviour."
+      },
+      "sources": ["https://wiki.project1999.com/Necromancer"]
+    },
+    {
+      "id": "nec-invis-undead",
+      "name": "Invisibility versus Undead",
+      "category": "buff-group",
+      "sharedWith": ["Cleric", "Paladin", "Shadow Knight", "Enchanter (IVU variants)"],
+      "members": [
+        { "name": "Invisibility versus Undead", "level": 1, "inDb": true, "note": "Single friendly or self, 27 min." },
+        { "name": "Invisibility Versus Undead", "level": 1, "inDb": true, "note": "DUPLICATE DB ROW (different capitalisation, 'Invisibility(1)' effect text, targetType Single). Same spell - a data-hygiene issue on Legends, not a second line member." },
+        { "name": "Improved Invis vs Undead", "level": 50, "inDb": true, "note": "10 min, self. Velious NPC drop; P99 calls it 'Improved Invis to Undead'." },
+        { "name": "Improved Invisibility to Undead", "level": 50, "inDb": true, "note": "DUPLICATE DB ROW of the level-50 spell under the long name. Same spell." }
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "The level-50 version is 'improved' (harder to break / better undead evasion) but has a SHORTER duration (10 min vs 27 min) and is self-only, so the level-1 version stays in the book for buffing others and for long pulls."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "slots": [],
+        "conflicts": [
+          { "line": "Invisibility versus Undead", "class": "any", "detail": "One IVU effect at a time; recasting refreshes.", "source": "" }
+        ],
+        "stacksWith": [
+          { "line": "Invisibility (living)", "detail": "IVU and normal invis coexist." }
+        ],
+        "notes": "Legends carries FOUR rows for what are really two spells. Recommend collapsing the duplicate pairs in the DB."
+      },
+      "sources": ["https://wiki.project1999.com/Necromancer"]
+    },
+    {
+      "id": "nec-vision",
+      "name": "Vision buffs (Deadeye / Shadow Sight)",
+      "category": "buff-self",
+      "sharedWith": ["Shadow Knight"],
+      "members": [
+        { "name": "Deadeye", "level": 5, "inDb": true, "note": "See Invisible + Infravision, permanent. P99 level 8." },
+        { "name": "Shadow Sight", "level": 22, "inDb": true, "note": "Ultravision, permanent. P99 level 24." }
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "NOT a replacement pair. Deadeye grants see-invisible (which Shadow Sight lacks); Shadow Sight upgrades infravision to ultravision. Both are commonly kept up, and Skin of the Shadow (55) supplies the ultravision half."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "slots": [],
+        "conflicts": [
+          { "line": "Vision", "class": "any", "detail": "Infravision and ultravision are the same underlying night-vision effect; ultravision wins. See-invisible is separate.", "source": "" }
+        ],
+        "stacksWith": [
+          { "line": "Dead Man Floating", "detail": "DMF also grants See Invisible(1) - redundant with Deadeye rather than additive." }
+        ],
+        "notes": "Not stat buffs, so untabulated on P99 Buff_Lines."
+      },
+      "sources": ["https://wiki.project1999.com/Necromancer"]
+    },
+    {
+      "id": "nec-invuln",
+      "name": "Invulnerability (Harmshield)",
+      "category": "buff-self",
+      "sharedWith": [],
+      "members": [
+        { "name": "Harmshield", "level": 20, "inDb": true, "note": "3 ticks of total damage immunity, costs 20 HP on cast. Research spell. Cannot attack or cast while up." },
+        { "name": "Quivering Veil of Xarn", "level": 58, "inDb": true, "note": "Same 3-tick invulnerability but HEALS 150 on cast instead of costing 20 HP, and is cheaper per second of safety. Kunark NPC drop." }
+      ],
+      "replacement": { "strict": true, "note": "Quivering Veil is strictly better (heal instead of cost) at the same duration. Harmshield is kept only until 58." },
+      "missingOnLegends": [],
+      "stacking": {
+        "slots": [],
+        "conflicts": [
+          { "line": "Invulnerability", "class": "any", "detail": "Only one invulnerability effect at a time; nothing else stacks meaningfully during it.", "source": "" }
+        ],
+        "stacksWith": [],
+        "notes": "The classic necro survival trick: Harmshield/QVoX to survive a Lich drain spike or a train, since damage-over-time and melee are both nullified."
+      },
+      "sources": ["https://wiki.project1999.com/Necromancer"]
+    },
+    {
+      "id": "nec-heal-instant",
+      "name": "Self-cost instant heal (Empathy)",
+      "category": "heal",
+      "sharedWith": ["Shadow Knight (Dark Empathy)"],
+      "members": [
+        { "name": "Dark Empathy", "level": 6, "inDb": true, "note": "Caster loses 30 HP, target gains 30. P99 level 8." },
+        { "name": "Corporeal Empathy", "level": 43, "inDb": true, "note": "215 for 215. Velious NPC drop. P99 level 44." }
+      ],
+      "replacement": { "strict": true, "note": "Straight magnitude upgrade of the same 1:1 HP transfer." },
+      "missingOnLegends": [],
+      "stacking": { "slots": [], "conflicts": [], "stacksWith": [], "notes": "Instant heals - no buff slot." },
+      "sources": ["https://wiki.project1999.com/Necromancer"]
+    },
+    {
+      "id": "nec-heal-hot",
+      "name": "Self-cost heal over time (Shadow Compact / Pact / Bond)",
+      "category": "heal",
+      "sharedWith": [],
+      "members": [
+        { "name": "Shadow Compact", "level": 17, "inDb": true, "note": "Target healed 20/tick for 4 ticks at the caster's HP cost. 10 mana. P99 level 20." },
+        { "name": "Pact of Shadow", "level": 44, "inDb": true, "note": "80/tick for 4 ticks (P99: caster loses 45/tick, target gains 81/tick - a net HP profit). 10 mana." },
+        { "name": "Shadowbond", "level": 54, "inDb": true, "note": "125/tick for 4 ticks. 10 mana. Quest spell (Vaean the Night)." }
+      ],
+      "replacement": { "strict": true, "note": "Ascending throughput, identical shape and 10-mana cost throughout. The necro's mana-free group heal - HP is the resource, refilled with lifetaps." },
+      "missingOnLegends": [],
+      "stacking": {
+        "slots": [],
+        "conflicts": [
+          { "line": "Self-cost HoT", "class": "Necromancer", "detail": "Same line - recasting refreshes; a lower rank will not land over a higher one on the same target.", "source": "" }
+        ],
+        "stacksWith": [
+          { "line": "HP Regeneration buff lines", "detail": "These are heal-over-time spells, not regen buffs, and are additive with Regeneration/Chloroplast etc." }
+        ],
+        "notes": "The 'necro as backup healer' loop: Shadowbond the tank at 10 mana, then lifetap yourself back up. Interacts with the Lich drain - both are HP outflow at the same time."
+      },
+      "sources": ["https://wiki.project1999.com/Necromancer"]
+    },
+    {
+      "id": "nec-pet-heal",
+      "name": "Pet heal (Mend/Renew Bones)",
+      "category": "heal",
+      "sharedWith": [],
+      "members": [
+        { "name": "Mend Bones", "level": 7, "inDb": true, "note": "33-50 to pet, plus 10 disease/poison/curse counters. P99 level 8." },
+        { "name": "Renew Bones", "level": 26, "inDb": true, "note": "154-175 to pet, plus counters. Research spell. P99 level 29." }
+      ],
+      "replacement": { "strict": true, "note": "Straight magnitude upgrade; identical cure rider." },
+      "missingOnLegends": [],
+      "stacking": { "slots": [], "conflicts": [], "stacksWith": [], "notes": "Instant heals - no slot interaction." },
+      "sources": ["https://wiki.project1999.com/Necromancer"]
+    },
+    {
+      "id": "nec-cure-disease",
+      "name": "Cure Disease",
+      "category": "heal",
+      "sharedWith": ["Cleric", "Shaman", "Druid", "Paladin"],
+      "members": [
+        { "name": "Cure Disease", "level": 13, "inDb": true, "note": "Removes 4 disease counters. P99 level 16." },
+        { "name": "Counteract Disease", "level": 36, "inDb": true, "note": "Removes 8 disease counters. P99 level 39." }
+      ],
+      "replacement": { "strict": true, "note": "Counter-strength upgrade." },
+      "missingOnLegends": [],
+      "stacking": { "slots": [], "conflicts": [], "stacksWith": [], "notes": "" },
+      "sources": ["https://wiki.project1999.com/Necromancer"]
+    },
+    {
+      "id": "nec-twitch",
+      "name": "Twitch (mana transfer / Subversion)",
+      "category": "mana",
+      "sharedWith": [],
+      "members": [
+        { "name": "Rapacious Subvention", "level": 21, "inDb": true, "note": "Gives target 60 mana at a cost of 200 to the caster. P99 level 24. Legends carries this row twice (21 and 24)." },
+        { "name": "Rapacious Subvention", "level": 24, "inDb": true, "note": "DUPLICATE DB ROW at the P99 level. Same spell." },
+        { "name": "Covetous Subversion", "level": 43, "inDb": true, "note": "100 mana for 300. P99 level 44." },
+        { "name": "Sedulous Subversion", "level": 56, "inDb": true, "note": "150 mana for 400. Kunark NPC drop." }
+      ],
+      "replacement": {
+        "strict": true,
+        "note": "Efficiency improves at each tier (30% -> 33% -> 37.5% transfer). Lower ranks are retired once the higher is available."
+      },
+      "missingOnLegends": [],
+      "stacking": { "slots": [], "conflicts": [], "stacksWith": [], "notes": "Instant mana transfer - no buff slot. P99's Buff_Lines page explicitly excludes 'twitch' spells from its tables." },
+      "sources": ["https://wiki.project1999.com/Necromancer", "https://wiki.project1999.com/Buff_Lines"]
+    },
+    {
+      "id": "nec-pet-skeleton",
+      "name": "Summon pet (skeleton line)",
+      "category": "pet",
+      "sharedWith": ["Shadow Knight (early ranks)"],
+      "members": [
+        { "name": "Cavorting Bones", "level": 1, "inDb": true, "note": "Pet level 1-2, warrior." },
+        { "name": "Leering Corpse", "level": 4, "inDb": true, "note": "Pet 3-5." },
+        { "name": "Bone Walk", "level": 8, "inDb": true, "note": "Pet 7-9; gains Bash/Kick." },
+        { "name": "Convoke Shadow", "level": 12, "inDb": true, "note": "Pet 7-11; magic-hits 11+." },
+        { "name": "Restless Bones", "level": 16, "inDb": true, "note": "Pet 12-16." },
+        { "name": "Animate Dead", "level": 20, "inDb": true, "note": "Pet 15-19; double attack, dual wield at 19+." },
+        { "name": "Haunting Corpse", "level": 24, "inDb": true, "note": "Pet 18-22. Research spell." },
+        { "name": "Summon Dead", "level": 29, "inDb": true, "note": "Pet 21-25." },
+        { "name": "Invoke Shadow", "level": 33, "inDb": true, "note": "Pet 25-29. P99 level 34." },
+        { "name": "Malignant Dead", "level": 39, "inDb": true, "note": "Pet 29-33; dual wield 33+, fast regen." },
+        { "name": "Cackling Bones", "level": 44, "inDb": true, "note": "Pet 33-37; gains a lifetap proc (11)." },
+        { "name": "Invoke Death", "level": 48, "inDb": true, "note": "Pet 37-41; 42 lifetap. The classic top warrior pet. P99 level 49." },
+        { "name": "Minion of Shadows", "level": 53, "inDb": true, "note": "Skeleton ROGUE, pet 39-43; backstab 147-171, no bash/kick. Quest spell - a sidegrade, not an upgrade." },
+        { "name": "Servant of Bones", "level": 56, "inDb": true, "note": "Skeleton MONK, pet 40-44; flying kick, no bash. Sidegrade." },
+        { "name": "Emissary of Thule", "level": 59, "inDb": true, "note": "SPECTRE warrior, pet 43-47, ~2700 HP, immune to fear. Terminal member." }
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "Strict pet-level ascent through Invoke Death (48). Above that the line branches by pet CLASS: Minion of Shadows (rogue/backstab, best burst on a rooted mob), Servant of Bones (monk/flying kick), Emissary of Thule (spectre warrior, most HP, fear-immune). All three plus Invoke Death stay memorised situationally. Only the Emissary is fear-immune, which matters for fear-kiting groups. The Encyclopedia Necrotheurgia focus adds +1 pet level for spells 46-60."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "slots": [],
+        "conflicts": [
+          { "line": "Pet", "class": "Necromancer", "detail": "One summoned pet at a time - casting a new pet spell requires dismissing/Reclaiming the old one (the new summon simply fails or the old is lost).", "source": "https://wiki.project1999.com/Necromancer_Spell_Lines#Pet_Spells" }
+        ],
+        "stacksWith": [],
+        "notes": "Bone Chips are the reagent for every rank; the level 49+ pets also consume a Peridot."
+      },
+      "sources": ["https://wiki.project1999.com/Necromancer_Spell_Lines#Pet_Spells"]
+    },
+    {
+      "id": "nec-pet-haste",
+      "name": "Pet haste/STR/AC buff (Death line)",
+      "category": "pet-buff",
+      "sharedWith": [],
+      "members": [
+        { "name": "Focus Death", "level": 11, "inDb": true, "note": "+15% attack speed, +20 STR, +2 AC. Real live spell (Allakhazam 2541, Luclin-era Echo Caverns vendor). Absent from P99 - the lowest tier the classic set does not have." },
+        { "name": "Intensify Death", "level": 23, "inDb": true, "note": "+22% to +30% attack speed, +26 to +33 STR, +6 to +8 AC. Research spell. P99 level 24." },
+        { "name": "Augment Death", "level": 35, "inDb": true, "note": "+49% to +55% attack speed, +39 to +45 STR, +10 to +12 AC. P99 level 39." },
+        { "name": "Augmentation of Death", "level": 55, "inDb": true, "note": "+65% attack speed, +52 to +55 STR, +14 to +15 AC. Velious NPC drop. Note: 17.5 min duration vs 60 min for the lower ranks." }
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "Every stat ascends, but Augmentation of Death's duration drops from 60 minutes to ~17.5, so the 60-minute Augment Death is still worth casting when you will not be refreshing. Otherwise a clean chain."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "slots": ["Haste (Primary) [on the pet]"],
+        "conflicts": [
+          { "line": "Haste (Primary)", "class": "Enchanter/Shaman", "detail": "A pet buffed with an enchanter/shaman haste (Alacrity, Celerity, Quickness, Swift Like The Wind) and the Death line share the primary haste slot - the stronger wins. Enchanter haste generally beats the necro's own on a pet.", "source": "https://wiki.project1999.com/Buff_Lines#Haste_.28Primary.29" }
+        ],
+        "stacksWith": [
+          { "line": "Haste (Ervaj/v2)", "detail": "Bard Composition/Melody of Ervaj is a second haste slot and stacks." }
+        ],
+        "notes": "The STR and AC riders travel with the haste spell, so they are gained or lost together when a stronger haste overwrites."
+      },
+      "sources": [
+        "https://wiki.project1999.com/Buff_Lines#Haste_.28Primary.29",
+        "https://everquest.allakhazam.com/db/spell.html?spell=2541"
+      ]
+    },
+    {
+      "id": "nec-pet-illusion",
+      "name": "Pet illusion (Form of ... Bone)",
+      "category": "pet-buff",
+      "sharedWith": [],
+      "members": [
+        { "name": "Form of Chilled Bone", "level": 16, "inDb": true, "note": "Illusion (race #802) on the pet, 120 min." },
+        { "name": "Form of Bleached Bone", "level": 44, "inDb": true, "note": "Same effect shape, higher tier. Real live spell (Allakhazam 9988). Neither member exists on P99." }
+      ],
+      "replacement": { "strict": false, "note": "Cosmetic pet illusions; the higher rank is not mechanically better in the Legends data (identical effect text). Treat as a cosmetic pair." },
+      "missingOnLegends": [],
+      "stacking": {
+        "slots": [],
+        "conflicts": [
+          { "line": "Pet illusion", "class": "Necromancer", "detail": "One illusion on the pet at a time.", "source": "" }
+        ],
+        "stacksWith": [],
+        "notes": "Post-classic (Luclin+) additions; no P99 equivalent."
+      },
+      "sources": ["https://everquest.allakhazam.com/db/spell.html?spell=9988"]
+    },
+    {
+      "id": "nec-pet-graft",
+      "name": "Pet sensory grafts",
+      "category": "pet-buff",
+      "sharedWith": [],
+      "members": [
+        { "name": "Sight Graft", "level": 9, "inDb": true, "note": "Bind Sight through the pet, 27 min. P99 level 12." },
+        { "name": "Voice Graft", "level": 15, "inDb": true, "note": "Speak through the pet. Research spell. P99 level 16." }
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "NOT an upgrade pair - two different utilities (see through pet vs speak through pet). Both stay memorised for scouting/pulling."
+      },
+      "missingOnLegends": [],
+      "stacking": { "slots": [], "conflicts": [], "stacksWith": [], "notes": "Both can be active on the same pet simultaneously." },
+      "sources": ["https://wiki.project1999.com/Necromancer"]
+    },
+    {
+      "id": "nec-corpse-locate",
+      "name": "Corpse location",
+      "category": "utility",
+      "sharedWith": ["Shadow Knight (Locate Corpse)"],
+      "members": [
+        { "name": "Locate Corpse", "level": 1, "inDb": true, "note": "Instant point-at-corpse." },
+        { "name": "Track Corpse", "level": 20, "inDb": true, "note": "Kunark. Re-points every tick for 12 minutes - a tracking version of Locate Corpse." }
+      ],
+      "replacement": { "strict": true, "note": "Track Corpse supersedes Locate Corpse (continuous vs one-shot)." },
+      "missingOnLegends": [],
+      "stacking": { "slots": [], "conflicts": [], "stacksWith": [], "notes": "" },
+      "sources": ["https://wiki.project1999.com/Necromancer"]
+    },
+    {
+      "id": "nec-corpse-summon",
+      "name": "Corpse summon",
+      "category": "utility",
+      "sharedWith": ["Shadow Knight (Summon Corpse)"],
+      "members": [
+        { "name": "Summon Corpse", "level": 39, "inDb": true, "note": "Consumes a Jade Inlaid Coffin, 700 mana. The classic corpse-recovery service spell." },
+        { "name": "Conjure Corpse", "level": 57, "inDb": true, "note": "Summon Corpse(65) - higher level cap on the target corpse. Consumes a Tiny Jade Inlaid Coffin. Kunark NPC drop." }
+      ],
+      "replacement": { "strict": true, "note": "Conjure Corpse raises the corpse-level cap and uses a cheaper reagent." },
+      "missingOnLegends": [],
+      "stacking": { "slots": [], "conflicts": [], "stacksWith": [], "notes": "" },
+      "sources": ["https://wiki.project1999.com/Necromancer"]
+    },
+    {
+      "id": "nec-dispel",
+      "name": "Dispel magic",
+      "category": "utility",
+      "sharedWith": ["Cleric", "Druid", "Enchanter", "Magician", "Shaman", "Wizard", "Shadow Knight"],
+      "members": [
+        { "name": "Cancel Magic", "level": 15, "inDb": true, "note": "Cancel Magic(1). P99 level 16." },
+        { "name": "Nullify Magic", "level": 37, "inDb": true, "note": "Cancel Magic(4) x2. P99 level 39." },
+        { "name": "Annul Magic", "level": 53, "inDb": true, "note": "Cancel Magic(9) x2." }
+      ],
+      "replacement": { "strict": true, "note": "Dispel strength ascends; higher ranks strip more/stronger buffs per cast." },
+      "missingOnLegends": [],
+      "stacking": { "slots": [], "conflicts": [], "stacksWith": [], "notes": "" },
+      "sources": ["https://wiki.project1999.com/Necromancer"]
+    },
+    {
+      "id": "nec-corpse-res",
+      "name": "Sacrifice / Convergence (Essence Emerald pair)",
+      "category": "utility",
+      "sharedWith": [],
+      "members": [
+        { "name": "Sacrifice", "level": 51, "inDb": true, "note": "Kills a consenting player (levels 46-59) to create an Essence Emerald. Consumes an emerald. Quest spell." },
+        { "name": "Convergence", "level": 53, "inDb": true, "note": "Resurrect a corpse at 93% experience. Consumes an Essence Emerald. NPC drop." }
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "Not an upgrade chain - a producer/consumer pair. Sacrifice makes the reagent that Convergence (and Infusion, and Trucidation) consume."
+      },
+      "missingOnLegends": [],
+      "stacking": { "slots": [], "conflicts": [], "stacksWith": [], "notes": "" },
+      "sources": ["https://wiki.project1999.com/Necromancer"]
+    },
+    {
+      "id": "nec-travel",
+      "name": "Self-movement utility",
+      "category": "utility",
+      "sharedWith": ["most casters"],
+      "members": [
+        { "name": "Gate", "level": 4, "inDb": true, "note": "Teleport to bind." },
+        { "name": "Shadow Step", "level": 5, "inDb": true, "note": "Short random-direction blink. P99 level 8." },
+        { "name": "Levant", "level": 55, "inDb": true, "note": "Self-only in-zone evacuation. Kunark NPC drop. Only works at night." }
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "Three unrelated escape tools kept simultaneously - Gate leaves the zone, Levant relocates within it (night only), Shadow Step is a short blink. No replacement."
+      },
+      "missingOnLegends": [],
+      "stacking": { "slots": [], "conflicts": [], "stacksWith": [], "notes": "" },
+      "sources": ["https://wiki.project1999.com/Necromancer"]
+    }
+  ],
+  "standalone": [
+    { "name": "Coldlight", "level": 1, "note": "Summons a light source. No line." },
+    { "name": "Reclaim Energy", "level": 1, "note": "Destroys the pet for mana proportional to its remaining HP. Pet-management utility; no upgrade rank exists." },
+    { "name": "Sense the Dead", "level": 1, "note": "Detect undead direction. No line." },
+    { "name": "True North", "level": 2, "note": "Face north. No line." },
+    { "name": "Impart Strength", "level": 8, "note": "Transfers 10 STR from caster to target for 6 minutes. Unique effect; never upgraded. Would sit in the Strength (Primary) buff line if it stacked at all - too small to matter." },
+    { "name": "Vampiric Embrace", "level": 7, "note": "Adds a lifetap proc to the caster's own melee (VampEmbraceNecro). Permanent self buff, no rank above it in the classic set. Shared with Shadow Knight." },
+    { "name": "Bind Affinity", "level": 12, "note": "Sets bind point. No line." },
+    { "name": "Feign Death", "level": 16, "note": "The class-defining utility. No upgrade rank exists for necromancers (unlike monks' skill-based FD). Instant, 60 mana." },
+    { "name": "Tiny Companion", "level": 19, "note": "Shrinks the pet by 50%. Cosmetic/practical pet utility. Not on P99." },
+    { "name": "Identify", "level": 20, "note": "Item lore. No line." },
+    { "name": "Breath of the Dead", "level": 21, "note": "Water breathing, permanent, self. No upgrade - and made redundant at 41 by Dead Man Floating's Water Breathing(2) component." },
+    { "name": "Screaming Terror", "level": 22, "note": "Single-target mesmerise (up to level 55) + 1% memory blur, 3 ticks. The necro's only mez. No upgrade rank. Feared/mezzed targets conflict: mez and fear cannot both hold a mob." },
+    { "name": "Eternities Torment", "level": 27, "note": "Undead-only DoT, 30/tick for 2 min 6 s. Real live spell (Allakhazam 2543, Luclin-era Echo Caverns vendor batch alongside Focus Death and Shackle of Bone). No P99 equivalent and no other rank - an unlined undead DoT. Whether it collides with the Disease or Darkness line is unverified." },
+    { "name": "Dark Soul", "level": 39, "note": "Curse-counter DoT, 96-140/tick for 30 s. Real live spell (Allakhazam 4096). No P99 equivalent, no sibling ranks. Curse counters mean only a Remove Curse cures it." },
+    { "name": "Summon Companion", "level": 40, "note": "Calls the pet to the caster. Velious. No line." },
+    { "name": "Bounce", "level": 44, "note": "40% chance to reflect a spell, 12 s. Real live spell (Allakhazam 4099), researched (Pristine Supple Runic Hide + Quill of the Arch Lich). No P99 equivalent, no other rank." },
+    { "name": "Insidious Retrogression", "level": 46, "note": "546-550 damage + 10% snare + -25 STR + -25 ATK over 1 min 36 s. Real live spell (Allakhazam 2545). Described as an aggro-kite opener. Not on P99; unlined." },
+    { "name": "Ward of Calliav", "level": 49, "note": "Pet damage rune (Legends lists 'Absorb Hit up to 11747 damage', a suspiciously large figure). Real live spell, MAG/NEC/BST 46-49. First member of the Calliav pet-rune line." },
+    { "name": "Infusion", "level": 55, "note": "Restores 1000 mana to self, 1 mana cost, consumes an Essence Emerald. Kunark NPC drop. Paired with Sacrifice as the emerald consumer; no upgrade rank." }
+  ],
+  "unlinked": [],
+  "openQuestions": [
+    "Dead Man Floating's non-resist components (Levitate(2), See Invisible(1), Water Breathing(2)) are not slot-tabled on any authoritative classic source - P99's Buff_Lines only tracks stat effects and lists DMF solely under Poison Resistance. Whether DMF's levitate overwrites (or is overwritten by) druid/shaman/wizard Levitate, and whether its See Invisible collides with Deadeye, needs in-game testing on Legends.",
+    "Legends' Shackle of Spirit (L38) shows -10% melee haste while Shackle of Bone (L17) shows -20%. The higher-level spell should be the stronger slow; this looks like a data error in the Legends DB rather than a design choice.",
+    "Legends' Envenomed Bolt shows 351 damage per tick vs the classic 146 per tick (and 41 initial vs 110). Either Legends re-tuned the spell or the DB row is wrong.",
+    "The 'of Life' healing-reduction DoTs (Cancelling / Negation / Cessation of Life, levels 8/18/37) have no Allakhazam counterpart. Confirmed Legends-custom with high confidence, but their stacking behaviour against the classic DoT lines is untested.",
+    "Defoliate (L29) is a Druid spell name; Allakhazam's Necromancer list returns only Defoliation (52). Legends appears to have granted necros a lower plant nuke - confirm whether it is a Legends addition or a re-tier.",
+    "Eternities Torment (L27) and Dark Soul (L39) are real live spells with no sibling ranks and no P99 data - their DoT-line membership (and therefore what they will and will not stack with) is unresolved.",
+    "The Strength-debuff slot: Siphon Strength / Wave of Enfeeblement / Surge of Enfeeblement vs the Muscle DoT line's -STR component vs shaman Cripple/Weaken. P99's Buff_Lines page covers beneficial buffs only, so no authoritative slot table exists for detrimentals.",
+    "Legends carries four duplicate rows: Leach (L9 and L12), Rapacious Subvention (L21 and L24), Invisibility versus Undead / Invisibility Versus Undead (both L1), Improved Invis vs Undead / Improved Invisibility to Undead (both L50). These are almost certainly ingest duplicates, not re-tiers; recommend collapsing.",
+    "Legends' 'Instill' (L53) is the classic 'Enstill' and its DB row has no effects array at all - it needs the root effect populated.",
+    "P99's Buff_Lines Cold Resistance section omits Necromancer from Endure Cold / Resist Cold even though the P99 Necromancer spell list grants both. Treated here as a wiki gap."
+  ],
+  "sources": [
+    "https://wiki.project1999.com/Buff_Lines - authoritative slot-by-slot buff stacking tables (AC slots 1-9 and layer 2, Attack slots, Damage Absorption, Damage Shield slots, HP, HP Regeneration, Mana Regeneration including the Lich slot, and all five resistances)",
+    "https://wiki.project1999.com/Necromancer_Spell_Lines - authoritative per-line DoT / nuke / lifetap / fear / root tables with mana, damage, ticks, DPM and resist modifiers",
+    "https://wiki.project1999.com/Necromancer - full classic/Kunark/Velious necromancer spell list by level tier, plus the pet table",
+    "https://wiki.project1999.com/Sesserdrix%27s_All_in_One_Necromancer_Strategy_Guide - the 7-DoT-line taxonomy (Magical Leech, Magical Snare, Magical DPS, Fire DPS, Poison DPS, Disease DPS, Disease Debuff) and situational usage",
+    "https://www.project1999.com/forums/archive/index.php/t-169115.html - DoT stacking rules, quoting the 2002-09-04 live patch notes verbatim",
+    "https://wiki.project1999.com/Shadow_Knight - cross-class line sharing for the Darkness, Fire, Muscle, Disease Cloud, lifetap, skin and pet lines",
+    "https://everquest.allakhazam.com/db/spelllist.html?name=Torbas&type=nec&level=1&opt=And+Higher&action=search - Torbas nuke line levels on live (32 / 49 / 54)",
+    "https://everquest.allakhazam.com/db/spelllist.html?name=of+Life&type=nec&level=1&opt=And+Higher&action=search - negative result establishing the 'of Life' DoTs as Legends-custom",
+    "https://everquest.allakhazam.com/db/spelllist.html?name=Calliav&level=1&opt=And+Higher&action=search - Ward of Calliav (MAG/NEC/BST 46-49) and the rest of the Calliav pet-rune line",
+    "https://everquest.allakhazam.com/db/spelllist.html?name=Defoliat&type=nec&level=1&opt=And+Higher&action=search - negative result for a necro 'Defoliate'",
+    "https://everquest.allakhazam.com/db/spell.html?spell=3702 - Auspice (player reports that it does not stack with Bond of Death)",
+    "https://everquest.allakhazam.com/db/spell.html?spell=2541 - Focus Death",
+    "https://everquest.allakhazam.com/db/spell.html?spell=2542 - Shackle of Bone",
+    "https://everquest.allakhazam.com/db/spell.html?spell=2543 - Eternities Torment",
+    "https://everquest.allakhazam.com/db/spell.html?spell=2545 - Insidious Retrogression",
+    "https://everquest.allakhazam.com/db/spell.html?spell=4096 - Dark Soul",
+    "https://everquest.allakhazam.com/db/spell.html?spell=4099 - Bounce",
+    "https://everquest.allakhazam.com/db/spell.html?spell=9988 - Form of Bleached Bone"
+  ]
+}

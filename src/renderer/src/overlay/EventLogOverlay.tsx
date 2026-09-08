@@ -1,0 +1,457 @@
+// EventLogOverlay (Task #59) — the 'events' overlay kind: a live, reverse-chronological feed of
+// alerts firing, notable loot, and quest completions.
+//
+// It is a sibling of OverlayMeter in the SAME overlay.html bundle (kind read from `?kind=`), so
+// it shares all the per-kind machinery: persisted `overlays.events` config, drag/resize, the
+// bg-alpha slider, and the lock (pin) semantics. Styling deliberately mirrors the meter — plain
+// divs + inline styles, no MUI — so the window stays cheap to paint over the game.
+//
+// DATA: the main-side eventFeed module (modules/eventFeed.ts) owns the capped ring and is the
+// single source of truth. We hydrate it once over `module:getSnapshot` and then ride
+// `module:delta`, the same contract useModule implements for the main app. Because that module
+// admits only LIVE events, opening this overlay during the startup replay shows an empty feed
+// that fills as things actually happen — never a burst of hours-old history.
+//
+// INTERACTION, by mode:
+//   interactive — rows with a link open the wiki page in the DEFAULT BROWSER (an <a
+//                 target="_blank">, turned into shell.openExternal by main's
+//                 setWindowOpenHandler; the overlay window itself never navigates), and EVERY
+//                 item name reveals that item's in-game-style card on hover — a quest's reward
+//                 item (hover the row, the reward is named at its right edge) and a LOOT row's
+//                 item name (hover the name; the rest of the row is metadata). One card, both
+//                 places: what it is, then what it's for.
+//                 A CON ROW ALSO CLICKS THROUGH TO THE APP (Task #64): the hover card is a
+//                 glance (six drops, then "+38 more"), and a mob you conned and want to think
+//                 about deserves the real page. Clicking asks main to raise the main window and
+//                 open the Mobs tab on that mob — every drop listed out, each one hoverable and
+//                 clickable. The row carries NO cursor change for it (user's call): the pointer
+//                 hand read as a link promise on a window whose other affordances are links,
+//                 and the hover card is already the row's answer to "is there more here".
+//   locked      — fully click-through and STATIC: the same rows, minus every affordance. No
+//                 links, no hover card, no deep link, no pointer cursors (a click-through
+//                 window can't be hovered, so an affordance there would be a lie).
+//
+// HONESTY (law 1): a row shows only what the feed carries. A quest whose dataset names no
+// reward has no hover target at all; an item whose page never resolved is plain text, not a
+// dead link; an item whose lookup says nothing renders as its NAME, with no "what it's for"
+// block at all (an empty block would claim "we checked, there's nothing" — we can't know that).
+
+import { type JSX, useEffect, useRef, useState } from 'react'
+import { MODULE_WORLD_CHANGED, type FeedEvent, type FeedSnap, type ModuleChanged } from '@shared/types'
+import { CONSIDER_FACTION_COLOR } from '@shared/logEvents'
+import { wikiPageUrl } from '@shared/wiki'
+import { formatTime } from '../lib/formatDate'
+import { isTradeskillOnly } from '../lib/itemKnowledgeView'
+import { ItemHoverCard, lookupItemCached } from './feedHoverCards'
+import { MobCard } from '../lib/hoverCards'
+import { overlayMobLookup } from './mobLookup'
+import { HoverCardLayer } from './hoverCardLayer'
+import { FOOTER_ROW, OverlayContent } from './overlayScale'
+import { TextScaleStepper } from './TextScaleStepper'
+import { useOverlayChrome, type OverlayChrome } from './useOverlayChrome'
+import { OverlayHeader } from './OverlayHeader'
+import { PALETTE, withAlpha } from '../../../shared/palette'
+
+const ACCENT = PALETTE.accent
+
+/** Per-kind accent + glyph. Colors match the app's semantics (alerts violet — the app accent —
+ *  loot cyan, quest green, consider amber — a hue none of the other three uses, so a con row is identifiable at a glance
+ *  even before you read it). The '◎' glyph reads as an eye/reticle: you looked at something. */
+const KIND_STYLE: Record<FeedEvent['kind'], { color: string; glyph: string }> = {
+  alert: { color: PALETTE.accent, glyph: '!' },
+  loot: { color: PALETTE.cyan, glyph: '◆' },
+  quest: { color: PALETTE.green, glyph: '✦' },
+  con: { color: PALETTE.amber, glyph: '◎' }
+}
+
+/**
+ * A con row's ACCENT is the faction rung's color, not the kind's — the whole point of a consider
+ * is "how does this thing feel about me", so the row's left edge and headline say it before you
+ * read a word. The violet kind color stays on the glyph, so the row is still recognizably a con.
+ */
+function rowAccent(e: FeedEvent): string {
+  return e.con ? CONSIDER_FACTION_COLOR[e.con.faction] : KIND_STYLE[e.kind].color
+}
+
+/** Newest first — the feed module keeps its ring newest-LAST. */
+function newestFirst(rows: FeedSnap): FeedEvent[] {
+  return rows.slice().reverse()
+}
+
+/**
+ * TRADESKILL FILTER (Task #62) — hide loot rows for items that are only recipe ingredients.
+ *
+ * The feed admits a loot row when the item is NOTABLE, and an item page's stats block hands
+ * the QUEST ITEM flag to a whole family of things no quest anywhere uses (spider legs, gnome
+ * meat, bone-chip-grade components). On a glanceable overlay that is pure noise, so they never
+ * appear here. UNCONDITIONAL, unlike the loot tab's toggle: this window is a separate renderer
+ * entry with its own storage partition (it cannot read the main window's localStorage) and its
+ * persisted config lives in the main-owned store, so there is no honest place to keep a pref
+ * yet. The loot tab remains the surface where you can ask to see them.
+ *
+ * A row is held back until its verdict lands rather than shown-then-yanked: the item is already
+ * in main's item cache (the feed only exists because a lookup resolved it), so the answer is an
+ * IPC round trip, not a wiki call. A lookup that fails counts as "not tradeskill" — an outage
+ * must never blank the feed.
+ */
+function useTradeskillFilter(feed: FeedEvent[]): FeedEvent[] {
+  // `boolean | undefined` is the honest value type: a title with NO verdict yet reads
+  // undefined, and the `=== false` filter below is what holds that row back until the
+  // lookup lands. Typing it as plain `boolean` would make that comparison look redundant.
+  const [verdict, setVerdict] = useState<Record<string, boolean | undefined>>({})
+  const asked = useRef<Set<string>>(new Set())
+
+  const lootKeys = feed
+    // eslint-disable-next-line eqc/no-domain-munging -- JOS-459 cutover ledger item 3: no served view source answers this yet, so the renderer still derives FeedEvent. Becomes a view descriptor when the source lands.
+    .filter((e) => e.kind === 'loot')
+    .map((e) => e.title.toLowerCase())
+    .join('|')
+
+  useEffect(() => {
+    let alive = true
+    const todo: string[] = []
+    for (const e of feed) {
+      if (e.kind !== 'loot') continue
+      const key = e.title.toLowerCase()
+      if (asked.current.has(key)) continue
+      asked.current.add(key)
+      todo.push(e.title)
+    }
+    for (const title of todo) {
+      // Same door the hover card uses (lookupItemCached), so the verdict ALSO warms the card.
+      void lookupItemCached(title).then((k) => {
+        // A lookup that failed (null) counts as "not tradeskill" — an outage must never blank
+        // the feed.
+        if (alive) setVerdict((v) => ({ ...v, [title.toLowerCase()]: k ? isTradeskillOnly(k) : false }))
+      })
+    }
+    return () => {
+      alive = false
+    }
+    // Re-run when the set of loot titles on screen changes.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lootKeys])
+
+  // eslint-disable-next-line eqc/no-domain-munging -- JOS-459 cutover ledger item 3: no served view source answers this yet, so the renderer still derives FeedEvent. Becomes a view descriptor when the source lands.
+  return feed.filter((e) => e.kind !== 'loot' || verdict[e.title.toLowerCase()] === false)
+}
+
+
+/** What a row hovers, and what it links or hands off to. Locked mode has none of it. */
+interface RowAffordances {
+  href: string | undefined
+  /** a CON row explains a MOB, not an item — same hover machinery, different card */
+  previewMob: string | undefined
+  /** a quest's reward item, else — for a loot row — the item that dropped, which IS the headline */
+  previewItem: string | undefined
+  /** a quest row hovers by ROW (the reward sits at the row's right edge, so the row is the target) */
+  rowHover: boolean
+  /** a loot or CON row hovers by NAME: the name is the subject, the rest of the row is metadata */
+  nameHover: boolean
+}
+
+function rowAffordances(e: FeedEvent, interactive: boolean): RowAffordances {
+  const reward = e.reward
+  const previewMob = interactive && e.kind === 'con' ? e.title : undefined
+  const previewItem =
+    interactive && !previewMob ? (reward?.item ?? (e.kind === 'loot' ? e.title : undefined)) : undefined
+  return {
+    href: interactive ? wikiPageUrl(e.page) : undefined,
+    previewMob,
+    previewItem,
+    rowHover: !!previewItem && !!reward,
+    nameHover: (!!previewItem && !reward) || !!previewMob
+  }
+}
+
+/** The row's headline: a wiki link when the feed knows a page and we're interactive, else text. */
+function RowTitle({
+  e,
+  accent,
+  href,
+  nameHover,
+  isMob,
+  onEnter,
+  onLeave
+}: {
+  e: FeedEvent
+  accent: string
+  href: string | undefined
+  nameHover: boolean
+  isMob: boolean
+  onEnter: (ev: React.MouseEvent<HTMLElement>) => void
+  onLeave: () => void
+}): JSX.Element {
+  // For a quest the link is the QUEST page, not the reward item's.
+  if (href) {
+    return (
+      <a
+        data-testid="feed-title"
+        href={href}
+        target="_blank"
+        rel="noreferrer"
+        style={{ color: accent, fontWeight: 600, textDecoration: 'none' }}
+        onMouseEnter={(ev) => {
+          ev.currentTarget.style.textDecoration = 'underline'
+          if (nameHover) onEnter(ev)
+        }}
+        onMouseLeave={(ev) => {
+          ev.currentTarget.style.textDecoration = 'none'
+          if (nameHover) onLeave()
+        }}
+      >
+        {e.title}
+      </a>
+    )
+  }
+  return (
+    <span
+      data-testid="feed-title"
+      // A CON row's name carries no cursor change at all (see the deep-link note below);
+      // an item name keeps the `help` cursor, which is what its hover card is.
+      style={{ color: accent, fontWeight: 600, cursor: nameHover && !isMob ? 'help' : undefined }}
+      onMouseEnter={nameHover ? onEnter : undefined}
+      onMouseLeave={nameHover ? onLeave : undefined}
+    >
+      {e.title}
+    </span>
+  )
+}
+
+/** One feed row. `interactive` false ⇒ locked mode: identical content, zero affordances. */
+function Row({ e, interactive }: { e: FeedEvent; interactive: boolean }): JSX.Element {
+  // The hover card's ANCHOR element (null = no card). Holding the element itself, not a boolean,
+  // is what lets the layer clamp against the exact thing you're pointing at.
+  const [anchor, setAnchor] = useState<HTMLElement | null>(null)
+  const style = KIND_STYLE[e.kind]
+  const accent = rowAccent(e)
+  const reward = e.reward
+  const { href, previewMob, previewItem, rowHover, nameHover } = rowAffordances(e, interactive)
+  // DEEP LINK (Task #64): a con row hands the mob to the app. Interactive mode only — a locked
+  // overlay is click-through by law and has no clicks to give. Deliberately NO cursor change:
+  // the pointer hand is this window's link vocabulary, and this is a hand-off, not a link.
+  const deepLinkMob = previewMob
+  const enter = (ev: React.MouseEvent<HTMLElement>): void => setAnchor(ev.currentTarget)
+  const leave = (): void => setAnchor(null)
+
+  return (
+    <div
+      data-testid="feed-row"
+      data-deeplink-mob={deepLinkMob}
+      onMouseEnter={rowHover ? enter : undefined}
+      onMouseLeave={rowHover ? leave : undefined}
+      onClick={deepLinkMob ? () => window.eqOverlay.focusMob(deepLinkMob) : undefined}
+      style={{
+        display: 'flex',
+        gap: 6,
+        alignItems: 'baseline',
+        padding: '3px 4px',
+        borderLeft: `2px solid ${accent}`,
+        marginBottom: 2,
+        background: 'rgba(255,255,255,0.04)',
+        borderRadius: 3,
+        fontSize: 11,
+        lineHeight: 1.3
+      }}
+    >
+      {/* The kind glyph. NO hover naming it (JOS-358): tooltips live in the title bar on these
+          windows now, and a row that has to name its own glyph on hover is a legend the feed
+          never had room for anyway. */}
+      <span style={{ color: style.color, flexShrink: 0, width: 10, textAlign: 'center', fontWeight: 700 }}>
+        {style.glyph}
+      </span>
+      <span
+        style={{
+          color: 'rgba(255,255,255,0.45)',
+          flexShrink: 0,
+          fontVariantNumeric: 'tabular-nums',
+          fontSize: 10
+        }}
+      >
+        {formatTime(e.ts)}
+      </span>
+      <span style={{ flexGrow: 1, minWidth: 0 }}>
+        <RowTitle
+          e={e}
+          accent={accent}
+          href={href}
+          nameHover={nameHover}
+          isMob={!!previewMob}
+          onEnter={enter}
+          onLeave={leave}
+        />
+        {e.detail && (
+          <span style={{ color: 'rgba(255,255,255,0.6)', marginLeft: 5 }}>{e.detail}</span>
+        )}
+        {/* A quest that awards an item names it inline — the hover card is the detail view. */}
+        {reward && (
+          <span style={{ color: 'rgba(255,255,255,0.85)', marginLeft: 5 }}>
+            → <span style={{ color: '#5fe08a' }}>{reward.item}</span>
+          </span>
+        )}
+      </span>
+
+      {anchor && previewMob && (
+        <HoverCardLayer anchor={anchor} onDismiss={leave}>
+          <MobCard mob={previewMob} con={e.con} lookup={overlayMobLookup} />
+        </HoverCardLayer>
+      )}
+      {anchor && !previewMob && previewItem && (
+        <HoverCardLayer anchor={anchor} onDismiss={leave}>
+          <ItemHoverCard item={previewItem} stats={reward?.stats} />
+        </HoverCardLayer>
+      )}
+    </div>
+  )
+}
+
+/**
+ * Hydrate the feed, then ride deltas. A `log:character` rebuild resets the module's ring; the
+ * next delta's seq restarts low, so we accept a delta whose seq went BACKWARDS by re-hydrating
+ * rather than silently dropping rows forever. Same gap/dupe rule useModule enforces in the app.
+ *
+ * …AND WE NO LONGER WAIT FOR THAT DELTA TO ARRIVE (JOS-172). A backwards seq is evidence that only
+ * exists once something happens; `log:character` is main SAYING the world was rebuilt, and it now
+ * reaches this window (pipeline.ts `sendWorldRebuilt`). On a switch the previous character's rows
+ * used to sit here until the new one's log produced a live event of a kind this feed admits.
+ */
+function useEventFeed(): FeedSnap {
+  const [rows, setRows] = useState<FeedSnap>([])
+  const seqRef = useRef(-1)
+
+  useEffect(() => {
+    let alive = true
+    const hydrate = (): void => {
+      void window.eqOverlay.getModuleSnapshot<FeedSnap>('eventFeed').then((snap) => {
+        if (!alive || !snap) return
+        seqRef.current = snap.seq
+        setRows(snap.state)
+      })
+    }
+    hydrate()
+    // THE INCREMENT IS A CURSOR NOW (JOS-499 item 7). Main's own fold is deleted, so there is no
+    // `module:delta` carrying appended rows to concatenate: `module:changed` is a name and a
+    // revision, and the answer to it is the whole read above.
+    //
+    // THE CAP MOVES BACK WHERE IT BELONGS. This hook used to mirror the module's own 100-row cap
+    // while concatenating, because it was accumulating rows itself. It no longer accumulates — the
+    // served snapshot IS the ring, already capped by whoever owns it — so mirroring the number here
+    // would be a second opinion about a bound that is not this window's to hold.
+    const off = window.eqOverlay.onModuleChanged((c: ModuleChanged) => {
+      // The world that answers reads changed hands: nothing held is trustworthy, ask again.
+      if (c.moduleId === MODULE_WORLD_CHANGED) {
+        hydrate()
+        return
+      }
+      if (c.moduleId !== 'eventFeed') return
+      if (c.seq <= seqRef.current) return
+      hydrate()
+    })
+    const offChar = window.eqOverlay.onCharacter(() => {
+      hydrate()
+    })
+    return () => {
+      alive = false
+      off()
+      offChar()
+    }
+  }, [])
+
+  return rows
+}
+
+/** Footer — interactive mode only: the bg-alpha slider + text size, matching the meters. Chrome,
+ *  so unscaled and ONE ROW at any width: the buttons never shrink and the slider absorbs whatever
+ *  the row is short (see OverlayMeter's footer for the whole reasoning). */
+function FeedFooter({
+  bgAlpha,
+  textScale,
+  patch,
+  noDrag
+}: {
+  bgAlpha: number
+  textScale: number
+  patch: OverlayChrome['patch']
+  noDrag: React.CSSProperties
+}): JSX.Element {
+  return (
+    <div
+      style={{
+        ...FOOTER_ROW,
+        ...noDrag,
+        gap: 8,
+        fontSize: 10,
+        color: 'rgba(255,255,255,0.6)'
+      }}
+    >
+      {/* The word IS the label (JOS-358) — the footer names its own controls, it does not hover. */}
+      <span style={{ flexShrink: 0 }}>bg</span>
+      <input
+        type="range"
+        min={0.1}
+        max={1}
+        step={0.02}
+        value={bgAlpha}
+        onChange={(e) => patch({ bgAlpha: Number(e.target.value) })}
+        style={{ flexGrow: 1, flexShrink: 1, flexBasis: 0, minWidth: 24, accentColor: ACCENT, height: 4 }}
+      />
+      <TextScaleStepper textScale={textScale} patch={patch} noDrag={noDrag} />
+    </div>
+  )
+}
+
+export default function EventLogOverlay(): JSX.Element {
+  const rows = useEventFeed()
+  const { locked, bgAlpha, textScale, hovering, patch, toggleLock, onEnter, onLeave, dragRegion, noDrag } =
+    useOverlayChrome()
+  const feed = useTradeskillFilter(newestFirst(rows))
+
+  return (
+    <div
+      onMouseEnter={onEnter}
+      onMouseLeave={onLeave}
+      style={{
+        // 100%, NOT 100vw/100vh — a viewport unit inside the scaled content pane is resolved
+        // against the window and then zoomed (overlayScale).
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        fontFamily: 'Inter, "Segoe UI", Roboto, system-ui, sans-serif',
+        color: '#f2f2f2',
+        background: withAlpha(PALETTE.bg, bgAlpha),
+        border: locked ? '1px solid rgba(255,255,255,0.04)' : `1px solid ${withAlpha(PALETTE.accent, 0.4)}`,
+        borderRadius: 8,
+        boxSizing: 'border-box',
+        overflow: 'hidden'
+      }}
+    >
+      {/* Same one-row header as the meters, minus the selector: this kind has nothing to select
+          (the feed is one live stream, not a set of segments), so it draws no chevron, installs
+          no listeners, and reads exactly as it always did. */}
+      <OverlayHeader
+        tag="EVENTS"
+        title="Event log"
+        titleColor={ACCENT}
+        tail={String(feed.length)}
+        tailColor="rgba(255,255,255,0.5)"
+        chrome={{ locked, hovering, dragRegion, noDrag, toggleLock }}
+      />
+
+      {/* The feed. Newest first; a fixed-height scroll box (AGENTS.md: a growing list never sizes
+          to its content) that is also where the text scale is applied — the chrome above and
+          below it stays at 1 so it cannot be pushed out of a small window. */}
+      <OverlayContent textScale={textScale}>
+        {feed.length === 0 ? (
+          <div style={{ fontSize: 11, color: 'rgba(255,255,255,0.5)', padding: '8px 2px' }}>
+            Watching for alerts, notable loot, considers and quest completions…
+          </div>
+        ) : (
+          feed.map((e) => <Row key={e.id} e={e} interactive={!locked} />)
+        )}
+      </OverlayContent>
+
+      {!locked && <FeedFooter bgAlpha={bgAlpha} textScale={textScale} patch={patch} noDrag={noDrag} />}
+    </div>
+  )
+}

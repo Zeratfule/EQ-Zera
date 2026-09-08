@@ -1,0 +1,72 @@
+{
+  "compilerOptions": {
+    "composite": true,
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "jsx": "react-jsx",
+    "strict": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
+    "baseUrl": ".",
+    "paths": {
+      "@renderer/*": ["src/renderer/src/*"],
+      "@shared/*": ["src/shared/*"]
+    },
+    // `vite/client` is here for ONE symbol: `import.meta.env.DEV`, the anchor of
+    // src/renderer/src/devFlags.ts. It is vite's own builtin (true on any dev server, a literal
+    // `false` in a build) and needs no `define`, which is exactly why the dev-tools flag leans on
+    // it instead of on a config value a stale server may never have seen. It also brings the
+    // asset-module declarations (`*.css`, `*.svg`, …) — harmless, and correct for this project.
+    "types": ["node", "vite/client"]
+  },
+  "include": [
+    "src/renderer/src/**/*",
+    "src/renderer/src/**/*.tsx",
+    "src/shared/**/*",
+    "src/preload/index.d.ts",
+    "src/preload/overlay.d.ts",
+    // `index.d.ts` declares `window.eq` as `typeof api`, so this project already type-checks
+    // src/preload/index.ts as a dependency of it. With `composite: true` every file TypeScript
+    // reaches has to be LISTED, so a module index.ts imports must be named here too — that is
+    // what `perf.ts` (the HUD's slice of the bridge) is doing in this list.
+    "src/preload/perf.ts",
+    "src/preload/characterApi.ts",
+    // …and `windows.ts` (the overlays + the celebration toast), for the same reason.
+    "src/preload/windows.ts",
+    // …and `roster.ts` (the group roster's user edits), likewise.
+    "src/preload/roster.ts",
+    // …and `graphics.ts` (the two graphics-compatibility switches), likewise.
+    "src/preload/graphics.ts",
+    // …and `dev.ts` (the dev-only restart button's one method, JOS-61), likewise.
+    "src/preload/dev.ts",
+    // …and `sounds.ts` (packs, the registry browser, the user's own imports — JOS-68), likewise.
+    "src/preload/sounds.ts",
+    // …and `releaseNotes.ts` (the one what's-new store key, JOS-73), likewise.
+    "src/preload/releaseNotes.ts",
+    // …and `uiScale.ts` (the main window's text size, JOS-123), likewise.
+    "src/preload/uiScale.ts",
+    // …and `buffTrust.ts` (the buff externals allowlist, JOS-140), likewise.
+    "src/preload/buffTrust.ts",
+    // …and `respawn.ts` (the respawn watch list, JOS-194), likewise.
+    "src/preload/respawn.ts",
+    // …and `planner.ts` (the exaltation planner + the Gear tab's reads, JOS-285), likewise.
+    "src/preload/planner.ts",
+    // …and `questsApi.ts` (the quest tracker's read/write pair), likewise.
+    "src/preload/questsApi.ts",
+    "src/preload/craftApi.ts",
+    // …and `knowledge.ts` (the spell/item/mob lookups, JOS-293), likewise.
+    "src/preload/knowledge.ts",
+    // …and `overlaySnap.ts` (the overlay-snapping switch, JOS-217), likewise.
+    "src/preload/overlaySnap.ts",
+    // …and `logStream.ts` (line / character rebuild / quiet-switch offer, JOS-432), likewise.
+    "src/preload/logStream.ts",
+    // …and `engine.ts` (the data server's brokered byte channel, JOS-484), likewise.
+    "src/preload/engine.ts"
+  ]
+}

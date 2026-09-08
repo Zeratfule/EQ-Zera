@@ -1,0 +1,615 @@
+// packRegistry.ts — in-app openpeon.com sound-pack registry (Task #29).
+//
+// Three jobs:
+//   1. fetchRegistry() — GET the registry index.json, reconcile against installed
+//      packs, cache it (24h in-memory + on-disk in userData), tolerate offline by
+//      falling back to the cache (or an empty list) with an `error` field set.
+//   2. installPack(name, onProgress) — download the pack's GitHub release tarball
+//      (Node https, following redirects), gunzip it (zlib), extract with a minimal
+//      hand-rolled tar reader, write only the `{source_path}/` subtree into
+//      <userData>/soundpacks/<name>/, and convert the CESP openpeon.json into our
+//      manifest.json (keeping openpeon.json alongside). Rejects path traversal.
+//   3. uninstallPack(name) — remove the userData pack dir (bundled packs, which
+//      live under resources/, are never in the registry and can't be uninstalled).
+//
+// A pack is "installed" if listPacks() already surfaces its id (name === id).
+
+import { get as httpsGet } from 'node:https'
+import { gunzipSync } from 'node:zlib'
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { join, resolve, sep } from 'node:path'
+import { app } from 'electron'
+import { logError } from './errorLog'
+import {
+  cespToManifestSounds,
+  deriveSoundId,
+  listPacks,
+  userPacksRoot,
+  type CespManifest
+} from './sounds'
+import { USER_SOUNDS_PACK_ID } from '../shared/userSounds'
+import { packInstallHttpError } from '../shared/packInstall'
+import { isSafePackId, isSafeSourceRepo, isSafeSourceRef, isSafeSourcePath } from './security'
+import type {
+  PackInstallProgress,
+  PackPreviewList,
+  PackPreviewSound,
+  RegistryListResult,
+  RegistryPack,
+  RegistryPackView,
+  SoundData,
+  SoundPackManifest
+} from '../shared/types'
+
+const REGISTRY_URL = 'https://peonping.github.io/registry/index.json'
+const CACHE_TTL_MS = 24 * 60 * 60 * 1000 // 24h
+const MAX_REDIRECTS = 5
+const MAX_DOWNLOAD_BYTES = 100 * 1024 * 1024 // 100MB sanity cap
+const PREVIEW_CACHE_MAX = 20 // LRU cap for previewed audio bytes
+const AUDIO_MIME: Record<string, string> = {
+  '.wav': 'audio/wav',
+  '.mp3': 'audio/mpeg',
+  '.ogg': 'audio/ogg'
+}
+
+interface RegistryIndex {
+  version?: number
+  packs: RegistryPack[]
+}
+
+// ---- registry validation (defense in depth) ----------------------------------
+//
+// The registry index is fetched from an untrusted host (peonping.github.io /
+// raw.githubusercontent.com — malicious or MITM'd is the threat model). A crafted row can
+// carry a `name` that walks out of the soundpack root or a `source_*` field that re-points a
+// URL/archive path. installPack() is the sharp edge (it DELETES `packDir` and WRITES a staged
+// dir), so the primary guard lives there — but we also filter at INGEST so one poisoned row can
+// never reach the disk cache, the listing, or a preview, and a previously-poisoned on-disk
+// cache is neutralized on read. A single bad row DROPS; a good registry with one bad row still
+// works. Dropped rows are COUNTED, never interpolated — a crafted name must not ride into a log
+// line carrying escapes.
+
+/**
+ * Refuse a pack whose name or `source_*` fields could escape a path/URL — called by installPack
+ * BEFORE any path is built, against the same allowlists `sounds:getData` uses (no separators, no
+ * `..`, no drive/UNC/ADS). Throws a clear error the IPC layer surfaces; the message NEVER echoes
+ * the raw name, which is exactly the kind of string that could carry escapes. Re-checks `source_*`
+ * at use even though ingest already filters — provisionPacks calls installPack directly with the
+ * compiled-in default, and belt + suspenders is cheap.
+ */
+function assertPackInstallable(pack: RegistryPack): void {
+  if (!isSafePackId(pack.name)) throw new Error('pack name is not a valid identifier')
+  if (!isSafeSourceRepo(pack.source_repo) || !isSafeSourceRef(pack.source_ref) || !isSafeSourcePath(pack.source_path)) {
+    throw new Error('pack source fields are not valid')
+  }
+}
+
+/**
+ * Keep only rows that pass validation; log how many were dropped (COUNTS only, never a value).
+ *
+ * The counts are now PER FIELD (`name=0 source_repo=45 source_ref=0 source_path=2`), because the
+ * old single number could not tell an attack from our own over-strictness: JOS-162's 47 dropped
+ * rows read identically to 47 poisoned ones, and the shape of the answer — one field, one value
+ * of it — is what identified them as honest. A row failing two fields increments both, so the
+ * per-field counts can exceed the row count; the row total is reported separately for that
+ * reason. Field NAMES are ours and are safe to interpolate; field VALUES never are (a crafted
+ * name is exactly the kind of string that would ride escapes into a log line), and no branch
+ * here has one in hand.
+ */
+export function sanitizeRegistryPacks(packs: RegistryPack[]): RegistryPack[] {
+  const counts: Record<string, number> = { name: 0, source_repo: 0, source_ref: 0, source_path: 0 }
+  const kept = packs.filter((p) => {
+    const bad: string[] = []
+    if (!isSafePackId(p.name)) bad.push('name')
+    if (!isSafeSourceRepo(p.source_repo)) bad.push('source_repo')
+    if (!isSafeSourceRef(p.source_ref)) bad.push('source_ref')
+    if (!isSafeSourcePath(p.source_path)) bad.push('source_path')
+    for (const field of bad) counts[field]++
+    return bad.length === 0
+  })
+  const dropped = packs.length - kept.length
+  if (dropped > 0) {
+    const by = Object.entries(counts).map(([field, n]) => `${field}=${String(n)}`).join(' ')
+    logError('main:packRegistry', {
+      message: `dropped ${String(dropped)} of ${String(packs.length)} registry pack(s) failing validation (${by})`
+    })
+  }
+  return kept
+}
+
+// ---- in-memory + on-disk cache ------------------------------------------------
+
+let memCache: { at: number; packs: RegistryPack[] } | null = null
+
+function cacheFile(): string {
+  return join(app.getPath('userData'), 'registry-cache.json')
+}
+
+function readDiskCache(): { at: number; packs: RegistryPack[] } | null {
+  try {
+    const raw = readFileSync(cacheFile(), 'utf8')
+    const parsed = JSON.parse(raw) as { at: number; packs: RegistryPack[] }
+    // Neutralize a previously-poisoned on-disk cache on the way in: a row that fails validation
+    // never re-enters the listing or an install, even if it was written before this guard existed.
+    if (parsed && Array.isArray(parsed.packs)) return { at: parsed.at, packs: sanitizeRegistryPacks(parsed.packs) }
+  } catch {
+    // no/invalid cache
+  }
+  return null
+}
+
+function writeDiskCache(packs: RegistryPack[]): void {
+  try {
+    writeFileSync(cacheFile(), JSON.stringify({ at: Date.now(), packs }), 'utf8')
+  } catch (err) {
+    logError('main:packRegistry', { message: 'failed writing registry cache', err })
+  }
+}
+
+// ---- HTTPS helpers (follow redirects) -----------------------------------------
+
+/** GET a URL and buffer the whole body. Follows up to MAX_REDIRECTS redirects. */
+function httpGetBuffer(
+  url: string,
+  onProgress?: (received: number, total: number | null) => void,
+  redirects = 0
+): Promise<Buffer> {
+  return new Promise((resolvePromise, reject) => {
+    const req = httpsGet(url, { headers: { 'User-Agent': 'everquest-companion' } }, (res) => {
+      const status = res.statusCode ?? 0
+      if (status >= 300 && status < 400 && res.headers.location) {
+        res.resume() // drain
+        if (redirects >= MAX_REDIRECTS) {
+          reject(new Error(`too many redirects (${url})`))
+          return
+        }
+        const next = new URL(res.headers.location, url).toString()
+        httpGetBuffer(next, onProgress, redirects + 1).then(resolvePromise, reject)
+        return
+      }
+      if (status < 200 || status >= 300) {
+        res.resume()
+        // THE STATUS AND THE SERVER'S CLOCK BOTH RIDE ALONG, and neither is decoration (JOS-307,
+        // JOS-420). `shared/packInstall.ts` decides from them whether another attempt could change
+        // the answer (408/5xx yes, 403/404 no) and, for a 429, WHEN — and this response is the only
+        // place `Retry-After` exists at all. `packInstallHttpError` builds the whole thing, beside
+        // the code that reads it, so the second downloader cannot spell it differently.
+        reject(packInstallHttpError(url, status, res.headers['retry-after']))
+        return
+      }
+      const totalHeader = res.headers['content-length']
+      const total = totalHeader ? Number(totalHeader) : null
+      const chunks: Buffer[] = []
+      let received = 0
+      res.on('data', (c: Buffer) => {
+        received += c.length
+        if (received > MAX_DOWNLOAD_BYTES) {
+          req.destroy()
+          reject(new Error('download exceeded size cap'))
+          return
+        }
+        chunks.push(c)
+        onProgress?.(received, total)
+      })
+      res.on('end', () => resolvePromise(Buffer.concat(chunks)))
+      res.on('error', reject)
+    })
+    req.on('error', reject)
+  })
+}
+
+// ---- minimal tar reader -------------------------------------------------------
+
+interface TarEntry {
+  name: string
+  type: string // '0'/'\0' = file, '5' = dir, 'x'/'g'/'L' = pax/longname (skipped)
+  size: number
+  data: Buffer
+}
+
+/** Parse an octal numeric tar header field (space/NUL terminated). */
+function parseOctal(buf: Buffer, offset: number, length: number): number {
+  const s = buf.toString('ascii', offset, offset + length).replace(/[\0 ]+$/, '').trim()
+  if (!s) return 0
+  const n = parseInt(s, 8)
+  return Number.isFinite(n) ? n : 0
+}
+
+/**
+ * Read a (already-gunzipped) tar archive into file entries. 512-byte headers;
+ * name (0..100) + optional prefix (345..500) joined; size at 124; typeflag at 156.
+ * pax/global/GNU-longname entries ('x','g','L','K') are skipped defensively (their
+ * data block is consumed but not interpreted) — we don't need long names for these
+ * packs. Two consecutive zero blocks end the archive.
+ */
+function readTar(buf: Buffer): TarEntry[] {
+  const out: TarEntry[] = []
+  let off = 0
+  let zeroBlocks = 0
+  while (off + 512 <= buf.length) {
+    const header = buf.subarray(off, off + 512)
+    // End-of-archive: a full zero block.
+    if (header.every((b) => b === 0)) {
+      zeroBlocks++
+      off += 512
+      if (zeroBlocks >= 2) break
+      continue
+    }
+    zeroBlocks = 0
+
+    const name = header.toString('ascii', 0, 100).replace(/\0.*$/, '')
+    const prefix = header.toString('ascii', 345, 500).replace(/\0.*$/, '')
+    const fullName = prefix ? `${prefix}/${name}` : name
+    const size = parseOctal(header, 124, 12)
+    const type = String.fromCharCode(header[156] || 0x30) // '0' default
+    off += 512
+
+    const dataStart = off
+    const padded = Math.ceil(size / 512) * 512
+    off += padded
+
+    // Skip pax extended headers / GNU long-name entries defensively.
+    if (type === 'x' || type === 'g' || type === 'L' || type === 'K') continue
+    // Only regular files ('0' or NUL) carry usable content; skip dirs/links.
+    if (type !== '0' && type !== '\0') continue
+
+    out.push({
+      name: fullName,
+      type,
+      size,
+      data: buf.subarray(dataStart, dataStart + size)
+    })
+  }
+  return out
+}
+
+// ---- registry fetch -----------------------------------------------------------
+
+/** The offline answer: serve the cache (memory, then disk, then empty) with `error` set. */
+function registryFallback(err: unknown): RegistryListResult {
+  logError('main:packRegistry', { message: 'registry fetch failed', err })
+  const cached = memCache?.packs ?? readDiskCache()?.packs ?? []
+  return {
+    packs: annotate(cached),
+    fromCache: cached.length > 0,
+    error: err instanceof Error ? err.message : String(err)
+  }
+}
+
+/**
+ * Fetch the registry index (24h cached, offline-tolerant). Always returns a list;
+ * on failure it serves the cache (or empty) and sets `error`. Each pack is
+ * annotated with `installed` by reconciling against listPacks().
+ */
+export async function fetchRegistry(force = false): Promise<RegistryListResult> {
+  const now = Date.now()
+  memCache ??= readDiskCache()
+
+  const fresh = memCache && now - memCache.at < CACHE_TTL_MS
+  if (!force && fresh && memCache) {
+    return { packs: annotate(memCache.packs), fromCache: true }
+  }
+
+  try {
+    const body = await httpGetBuffer(REGISTRY_URL)
+    const index = JSON.parse(body.toString('utf8')) as RegistryIndex
+    // Filter at ingest: a poisoned row can't reach memCache, the disk cache, or the listing.
+    const packs = sanitizeRegistryPacks(Array.isArray(index.packs) ? index.packs : [])
+    memCache = { at: now, packs }
+    writeDiskCache(packs)
+    return { packs: annotate(packs) }
+  } catch (err) {
+    return registryFallback(err)
+  }
+}
+
+/**
+ * Set of installed pack ids (bundled + user), used to reconcile the registry. The reserved
+ * `my-sounds` pack is NOT one: it is the user's own imported audio, it is never in this
+ * index, and letting it annotate a same-named registry row would badge that row "Installed"
+ * with an Uninstall button that (correctly) refuses.
+ */
+function installedIds(): Set<string> {
+  return new Set(listPacks().map((p) => p.id).filter((id) => id !== USER_SOUNDS_PACK_ID))
+}
+
+function annotate(packs: RegistryPack[]): RegistryPackView[] {
+  const installed = installedIds()
+  return packs.map((p) => ({ ...p, installed: installed.has(p.name) }))
+}
+
+// ---- preview (list sounds + stream one file, no install) ----------------------
+//
+// Both read the pack straight off GitHub raw at the release tag. The raw form
+// `https://raw.githubusercontent.com/{repo}/{ref}/{path}` works for TAG refs (verified
+// against a real pack), so we use it directly rather than the `refs/tags/{ref}` form.
+// The manifest listing is cached per pack for the session; previewed audio bytes use
+// a small LRU (previews are one-off and can be large-ish).
+
+/** raw.githubusercontent base for a pack's release tree (no trailing slash). */
+function rawBase(pack: RegistryPack): string {
+  const sub = pack.source_path && pack.source_path !== '.' ? pack.source_path.replace(/\\/g, '/').replace(/^\/|\/$/g, '') : ''
+  const root = `https://raw.githubusercontent.com/${pack.source_repo}/${pack.source_ref}`
+  return sub ? `${root}/${sub}` : root
+}
+
+// Manifest listings cached per pack for the whole session (packs are immutable at a tag).
+const previewListCache = new Map<string, PackPreviewSound[]>()
+// Previewed audio bytes as a small LRU (Map preserves insertion order → evict oldest).
+const previewSoundCache = new Map<string, SoundData>()
+
+function lruGet(cacheKey: string): SoundData | undefined {
+  const hit = previewSoundCache.get(cacheKey)
+  if (hit) {
+    previewSoundCache.delete(cacheKey)
+    previewSoundCache.set(cacheKey, hit) // bump to most-recent
+  }
+  return hit
+}
+
+function lruSet(cacheKey: string, data: SoundData): void {
+  previewSoundCache.set(cacheKey, data)
+  while (previewSoundCache.size > PREVIEW_CACHE_MAX) {
+    const oldest = previewSoundCache.keys().next().value
+    if (oldest === undefined) break
+    previewSoundCache.delete(oldest)
+  }
+}
+
+/**
+ * List a registry pack's sounds WITHOUT installing it: fetch its CESP openpeon.json
+ * off GitHub raw at the release tag, run the same CESP→manifest conversion the
+ * installer uses (so soundIds + labels match a real install), and return the file
+ * path for each (relative to the raw base, e.g. "sounds/foo.mp3"). Cached per pack.
+ */
+export async function fetchPackSounds(pack: RegistryPack): Promise<PackPreviewList> {
+  const cached = previewListCache.get(pack.name)
+  if (cached) return { sounds: cached }
+  try {
+    const body = await httpGetBuffer(`${rawBase(pack)}/openpeon.json`)
+    const cesp = JSON.parse(body.toString('utf8')) as CespManifest
+    // Run the SAME CESP→manifest conversion the installer uses so soundIds + labels
+    // match a real install exactly. As each soundId is derived, capture its ORIGINAL
+    // CESP file path (which may already carry a `sounds/` prefix, e.g.
+    // "sounds/foo.mp3") — that's the path to fetch relative to the raw base. The
+    // converted manifest stores file as `sounds/<basename>`, so we keep the source
+    // path separately here.
+    const taken = new Set<string>()
+    const idToFile = new Map<string, string>()
+    const manifestSounds = cespToManifestSounds(cesp, (category, file) => {
+      const id = deriveSoundId(category, file, taken)
+      idToFile.set(id, file)
+      return id
+    })
+    const sounds: PackPreviewSound[] = Object.entries(manifestSounds).map(([soundId, s]) => ({
+      soundId,
+      label: s.label,
+      file: idToFile.get(soundId) ?? s.file
+    }))
+    previewListCache.set(pack.name, sounds)
+    return { sounds }
+  } catch (err) {
+    logError('main:packRegistry', { message: `preview list for '${pack.name}' failed`, err })
+    return { sounds: [], error: err instanceof Error ? err.message : String(err) }
+  }
+}
+
+/**
+ * Fetch a single preview audio file's bytes off GitHub raw (same base URL + the
+ * manifest's file path). Returns { mime, dataBase64 } like getSoundData so the
+ * renderer builds a Blob URL. LRU-cached. `file` is validated against the pack's
+ * preview listing to prevent fetching arbitrary repo paths.
+ */
+export async function fetchPreviewSound(pack: RegistryPack, file: string): Promise<SoundData | null> {
+  const listing = await fetchPackSounds(pack)
+  if (!listing.sounds.some((s) => s.file === file)) return null
+
+  const cacheKey = `${pack.name}::${file}`
+  const cached = lruGet(cacheKey)
+  if (cached) return cached
+
+  const ext = file.slice(file.lastIndexOf('.')).toLowerCase()
+  const mime = AUDIO_MIME[ext]
+  if (!mime) return null
+
+  // Path is one of the manifest's own file entries; still normalize + strip any
+  // traversal defensively before joining onto the raw base.
+  const safeRel = file.replace(/\\/g, '/').replace(/^\/+/, '')
+  if (safeRel.split('/').includes('..')) return null
+  try {
+    const buf = await httpGetBuffer(`${rawBase(pack)}/${safeRel}`)
+    const data: SoundData = { mime, dataBase64: buf.toString('base64') }
+    lruSet(cacheKey, data)
+    return data
+  } catch (err) {
+    logError('main:packRegistry', { message: `preview sound '${file}' for '${pack.name}' failed`, err })
+    return null
+  }
+}
+
+/** Resolve a registry pack by name (from the cached/live index). Null if unknown. */
+export async function findRegistryPack(name: string): Promise<RegistryPack | null> {
+  const reg = await fetchRegistry(false)
+  return reg.packs.find((p) => p.name === name) ?? null
+}
+
+// ---- install / uninstall ------------------------------------------------------
+
+/** Reject archive entries that would escape the target dir once written. */
+function safeJoin(targetRoot: string, relPath: string): string | null {
+  const dest = resolve(targetRoot, relPath)
+  const rootWithSep = targetRoot.endsWith(sep) ? targetRoot : targetRoot + sep
+  if (dest !== targetRoot && !dest.startsWith(rootWithSep)) return null
+  return dest
+}
+
+/** What the archive walk produced: the raw CESP manifest (if the pack carried one) and how
+ *  many audio files were written into the stage dir. */
+interface StagedEntries {
+  cespRaw: string | null
+  wrote: number
+}
+
+/**
+ * Write the pack root's files out of the archive into `stageDir`: `openpeon.json` verbatim
+ * (kept alongside for provenance) and every audio file flattened under `sounds/`. Throws —
+ * after removing the stage dir — on an entry that would escape the target.
+ */
+function stageEntries(entries: TarEntry[], rootPrefix: string, stageDir: string): StagedEntries {
+  let cespRaw: string | null = null
+  let wrote = 0
+  for (const entry of entries) {
+    if (!entry.name.startsWith(rootPrefix)) continue
+    const rel = entry.name.slice(rootPrefix.length)
+    if (!rel || rel.endsWith('/')) continue
+
+    const dest = safeJoin(stageDir, rel)
+    if (!dest) {
+      rmSync(stageDir, { recursive: true, force: true })
+      throw new Error(`unsafe archive path: ${entry.name}`)
+    }
+
+    const base = rel.split('/').pop() ?? rel
+    if (rel === 'openpeon.json') {
+      cespRaw = entry.data.toString('utf8')
+      // keep the original alongside for provenance
+      writeFileSync(dest, entry.data)
+      continue
+    }
+    // Only keep audio files, flattened under sounds/ (matches our manifest paths).
+    if (/\.(wav|mp3|ogg)$/i.test(base)) {
+      writeFileSync(join(stageDir, 'sounds', base), entry.data)
+      wrote++
+    }
+  }
+  return { cespRaw, wrote }
+}
+
+/**
+ * Convert the staged CESP manifest into ours and write `manifest.json` into the stage dir.
+ * Throws — after removing the stage dir — when the CESP is unparseable or converts to nothing.
+ */
+function writeConvertedManifest(pack: RegistryPack, stageDir: string, cespRaw: string): void {
+  let cesp: CespManifest
+  try {
+    cesp = JSON.parse(cespRaw) as CespManifest
+  } catch {
+    rmSync(stageDir, { recursive: true, force: true })
+    throw new Error('openpeon.json is not valid JSON')
+  }
+
+  const taken = new Set<string>()
+  const sounds = cespToManifestSounds(cesp, (category, file) => deriveSoundId(category, file, taken))
+  if (Object.keys(sounds).length === 0) {
+    rmSync(stageDir, { recursive: true, force: true })
+    throw new Error('no sounds after conversion')
+  }
+
+  // First NON-EMPTY of registry name → CESP name → pack id (what `a || b || c` said): an
+  // empty display_name from either source falls through rather than titling the pack ''.
+  const displayName = [pack.display_name, cesp.display_name, pack.name].find((v) => v) ?? pack.name
+  const manifest: SoundPackManifest & { source?: { repo: string; ref: string } } = {
+    id: pack.name,
+    name: displayName,
+    sounds,
+    license: cesp.license ?? pack.license ?? 'see source repo',
+    source: { repo: pack.source_repo, ref: pack.source_ref }
+  }
+  writeFileSync(join(stageDir, 'manifest.json'), JSON.stringify(manifest, null, 2) + '\n', 'utf8')
+}
+
+/**
+ * Install a registry pack end-to-end. Streams progress via `onProgress`. Throws on
+ * failure (the IPC layer converts that into a `packs:progress` error + a failed
+ * result). `targetRootOverride` lets the validation harness install into a temp dir.
+ */
+export async function installPack(
+  pack: RegistryPack,
+  onProgress: (p: PackInstallProgress) => void,
+  targetRootOverride?: string
+): Promise<void> {
+  const name = pack.name
+  // TRAVERSAL GUARD — BEFORE any path is constructed. See assertPackInstallable: `name` and the
+  // `source_*` fields come from the untrusted registry and are about to become a path
+  // (`join(packsRoot, name)`, which installPack then DELETES and rewrites) and a download URL.
+  // (uninstallPack already guarded with safeJoin; this closes the asymmetry.)
+  assertPackInstallable(pack)
+  // `my-sounds` names the user's OWN imported audio (JOS-68) and is not the registry's to
+  // claim. Its bytes live in a different root, so an install here could not overwrite them —
+  // but it WOULD put a second pack under that id in the listing, and the picker would show
+  // whichever won the de-dupe. Refusing the name is one line and removes the question.
+  if (name === USER_SOUNDS_PACK_ID) throw new Error(`'${name}' is reserved for your imported sounds`)
+  const packsRoot = targetRootOverride ?? userPacksRoot()
+  const packDir = join(packsRoot, name)
+
+  // 1. Download the release tarball.
+  onProgress({ name, phase: 'downloading', percent: 0 })
+  const tarUrl = `https://github.com/${pack.source_repo}/archive/refs/tags/${pack.source_ref}.tar.gz`
+  const gz = await httpGetBuffer(tarUrl, (received, total) => {
+    if (total) onProgress({ name, phase: 'downloading', percent: Math.round((received / total) * 100) })
+  })
+
+  // 2. Gunzip + tar-extract in memory.
+  onProgress({ name, phase: 'extracting' })
+  const tarBuf = gunzipSync(gz)
+  const entries = readTar(tarBuf)
+  if (entries.length === 0) throw new Error('archive contained no files')
+
+  // The archive wraps everything in a single top-level dir (e.g. repo-1.0.1/).
+  // Detect it, then the pack root = <topDir>/<source_path>.
+  const topDir = entries[0].name.split('/')[0]
+  const rawSubPath = pack.source_path && pack.source_path !== '.' ? pack.source_path : ''
+  const rootPrefix = rawSubPath ? `${topDir}/${rawSubPath.replace(/\\/g, '/').replace(/\/$/, '')}/` : `${topDir}/`
+
+  // Stage into a fresh dir (write to a temp sibling, then swap) so a mid-install
+  // failure never leaves a half-written pack shadowing a good one.
+  const stageDir = `${packDir}.installing`
+  if (existsSync(stageDir)) rmSync(stageDir, { recursive: true, force: true })
+  mkdirSync(join(stageDir, 'sounds'), { recursive: true })
+
+  const { cespRaw, wrote } = stageEntries(entries, rootPrefix, stageDir)
+
+  if (!cespRaw) {
+    rmSync(stageDir, { recursive: true, force: true })
+    throw new Error('pack has no openpeon.json')
+  }
+  if (wrote === 0) {
+    rmSync(stageDir, { recursive: true, force: true })
+    throw new Error('pack contained no audio files')
+  }
+
+  // 3. Convert CESP → our manifest.
+  onProgress({ name, phase: 'converting' })
+  writeConvertedManifest(pack, stageDir, cespRaw)
+
+  // 4. Atomically swap the staged dir into place.
+  if (existsSync(packDir)) rmSync(packDir, { recursive: true, force: true })
+  // rename can fail across-device; both are under packsRoot so a plain rename is safe.
+  const { renameSync } = await import('node:fs')
+  renameSync(stageDir, packDir)
+
+  onProgress({ name, phase: 'done' })
+}
+
+/**
+ * Uninstall a user-installed pack (remove its <userData>/soundpacks/<name>/ dir).
+ * Bundled packs live under resources/ and are not reachable here, so they're never
+ * uninstallable. Returns false if the pack dir doesn't exist under userData.
+ */
+export function uninstallPack(name: string): boolean {
+  // Same reservation as installPack: the user's own sounds are managed from "My sounds…",
+  // one at a time and with a warning, never wiped wholesale by the registry browser.
+  if (name === USER_SOUNDS_PACK_ID) return false
+  const packDir = join(userPacksRoot(), name)
+  // Guard against traversal via a crafted name.
+  const safe = safeJoin(userPacksRoot(), name)
+  if (!safe || safe !== packDir) return false
+  if (!existsSync(packDir)) return false
+  try {
+    rmSync(packDir, { recursive: true, force: true })
+    return true
+  } catch (err) {
+    logError('main:packRegistry', { message: `failed removing pack ${name}`, err })
+    return false
+  }
+}

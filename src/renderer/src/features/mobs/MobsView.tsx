@@ -1,0 +1,410 @@
+// MobsView (Task #64) — the MODULE HOME for creature knowledge.
+//
+// WHY A TAB OF ITS OWN. Three surfaces already knew things about mobs and none of them was a
+// place you could go: the events overlay's con rows (a glance, over the game), the Raid Targets
+// tab's "recently considered" strip (lodging with raid progression because it needed a roof),
+// and a modal that opened over whichever list you happened to be in. "What is this thing and
+// what does it drop" is a question you ask deliberately, about any of 7,866 mobs — most of
+// which you have never conned and none of which are raid targets. That is a tab.
+//
+// THE HIERARCHY, as shipped:
+//   Mobs (this view)                    the creature knowledge home
+//     ├── search                        the whole committed catalog, fuzzy, offline
+//     ├── In <zone>                     what lives WHERE YOU ARE  ← the default surface
+//     ├── Recently considered           what you've been sizing up  ← moved off Raid Targets
+//     └── MobPage                       THE detail surface, app-wide
+//   Raid Targets                        raid progression only — a roster + your kills; its
+//                                       cards now route HERE instead of opening their own modal.
+//
+// THE BROWSE SURFACE IS AN OVERVIEW OF WHERE YOU ARE. It used to open on "Recently considered"
+// + "Most considered" — two views of the same con ring, one of which ("what you keep coming back
+// to") answered a question nobody was asking while a "Most considered" chip cloud pushed
+// everything else down the page. What you actually want when you open this tab mid-session is
+// the bestiary of the room you are standing in, and then what you were just sizing up. So the
+// zone roster leads, in a fixed-height scroll box (AGENTS.md — a growing list never grows the
+// page), the con strip sits below it with its own bounded height, and "Most considered" is gone.
+//
+// TWO STATES, one view: the BROWSE surface (search box + zone roster + con strip) and the DRILL
+// page, with a breadcrumb back — the same shape the combat tab uses for a fight drill-down,
+// rather than a second modal.
+//
+// SEARCH is client-side and instant (AGENTS.md "Search"): the input echoes immediately, the
+// filter runs on a deferred value, and the catalog is an ES-imported JSON already bundled for
+// main's mob lookup. No IPC, no network, works offline.
+
+import { type JSX, useDeferredValue, useEffect, useMemo, useState } from 'react'
+import {
+  Box,
+  Button,
+  Chip,
+  Paper,
+  Stack,
+  TextField,
+  Typography
+} from '@mui/material'
+import ArrowBackIcon from '@mui/icons-material/ArrowBack'
+import PetsIcon from '@mui/icons-material/Pets'
+import type {
+  CharacterSnap,
+  ConsiderSnap,
+  KillMap,
+  KillsSnap,
+  MobEntry
+} from '@shared/types'
+import { killIndex, killsFor } from '@shared/kills'
+import type { NavBack } from '../../appRouting'
+import { useBackTarget } from '../../appBack'
+import { useModule } from '../../lib/useModule'
+import { MobPage } from './MobPage'
+import { RecentlyConsidered } from './RecentlyConsidered'
+import { MOB_CATALOG, searchMobs } from './mobSearch'
+import { mobsInZone } from './mobZone'
+import type { MobTarget } from './mobTarget'
+
+/**
+ * The kills module: per-mob WHOLESALE replace plus the shape guard (shared/kills.ts) — a delta
+ * written under a different kill-record shape re-hydrates the baseline instead of merging into
+ * it, so a stale narrow entry cannot outlive an update in a running window.
+ *
+ * WHAT IT RETURNS IS THE JOIN INDEX, not the raw snapshot map (JOS-350): re-keyed by `mobKey`,
+ * so every reader below — the search row's "N killed", the roster's, and the mob page itself —
+ * looks a mob up through the ONE fold in `shared/kills.killsFor`. Memoized on the snapshot
+ * object, which `useModule` replaces exactly when the map can have changed.
+ */
+function useKills(): KillMap {
+  const snap = useModule<KillsSnap>('kills')
+  return useMemo(() => killIndex(snap?.mobs ?? {}), [snap])
+}
+
+
+/** ONE search result. The catalog row IS the row — level, zones and drop count, all local. */
+function MobResultRow({
+  entry,
+  kills,
+  onOpen
+}: {
+  entry: MobEntry
+  kills: KillMap
+  onOpen: (t: MobTarget) => void
+}): JSX.Element {
+  const drops = entry.drops?.length ?? 0
+  // THE ONE JOIN (JOS-350). The catalog spells `Innoruuk's Chosen` with an apostrophe and the log
+  // spells it with a backtick; `killsFor` folds both, so this row and the page it opens agree.
+  const kill = killsFor(kills, entry.name)
+  return (
+    <Stack
+      direction="row"
+      spacing={1}
+      alignItems="baseline"
+      role="button"
+      tabIndex={0}
+      data-testid="mobs-result-row"
+      onClick={() => onOpen({ mob: entry.name, entry })}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') onOpen({ mob: entry.name, entry })
+      }}
+      sx={{
+        py: 0.4,
+        px: 0.75,
+        borderRadius: 1,
+        cursor: 'pointer',
+        minWidth: 0,
+        '&:hover': { bgcolor: 'action.hover' }
+      }}
+    >
+      <Typography variant="body2" sx={{ fontWeight: 600, flexShrink: 0 }}>
+        {entry.name}
+      </Typography>
+      {entry.level && (
+        <Typography variant="caption" color="text.secondary" sx={{ flexShrink: 0 }}>
+          Lvl {entry.level}
+        </Typography>
+      )}
+      <Typography variant="caption" color="text.secondary" noWrap sx={{ minWidth: 0 }}>
+        {entry.zones?.join(', ')}
+      </Typography>
+      <Box sx={{ flexGrow: 1 }} />
+      {kill && kill.count > 0 && (
+        <Typography variant="caption" sx={{ color: 'success.main', flexShrink: 0 }}>
+          {kill.count} killed
+        </Typography>
+      )}
+      {/* Drop COUNT, not the drops: the page lists them out. Absent when the page had no loot
+          section at all — an honest 0 is a different claim and this row can't make it. */}
+      {drops > 0 && (
+        <Chip
+          size="small"
+          variant="outlined"
+          label={`${drops} drop${drops === 1 ? '' : 's'}`}
+          sx={{ height: 18, fontSize: 10, flexShrink: 0, '& .MuiChip-label': { px: 0.6 } }}
+        />
+      )}
+    </Stack>
+  )
+}
+
+/**
+ * IN <ZONE> — the roster of the place you are standing in, lowest level first.
+ *
+ * The zone name is displayed RAW, exactly as the game printed it ("The Ruins of Old Paineel -
+ * Solo 4 (Refined)"), because that is what your client's zone line says and matching it is how
+ * you know the app is talking about where you are. The folding that turns it into catalog rows
+ * is mobZone's business, not the heading's.
+ *
+ * SIZE IS A CONTRACT, AND IT IS CONDITIONAL. With rows, this is the panel that must survive, so
+ * it takes `flexGrow:1` + `minHeight:0` and owns its own `overflow:auto` (AGENTS.md — "a growing
+ * list lives in a FIXED-height scroll box"). Kael Drakkel is 343 rows; the page itself still
+ * never scrolls.
+ *
+ * With ZERO rows there is nothing to grow: a `flexGrow:1` panel containing one sentence ate the
+ * whole viewport and pushed "Recently considered" to the bottom edge, so an empty answer was the
+ * loudest thing on the tab. Empty ⇒ `flexShrink:0` and auto height (header + the quiet line), and
+ * the freed space goes to the strip below (see the browse branch).
+ */
+function ZoneRoster({
+  zone,
+  rows,
+  kills,
+  onOpen
+}: {
+  zone: string
+  rows: MobEntry[]
+  kills: KillMap
+  onOpen: (t: MobTarget) => void
+}): JSX.Element {
+  const empty = rows.length === 0
+  return (
+    <Paper
+      variant="outlined"
+      data-testid="mobs-zone-roster"
+      sx={
+        empty
+          ? { p: 1, flexShrink: 0 }
+          : { p: 1, flexGrow: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }
+      }
+    >
+      <Typography variant="subtitle2" sx={{ color: 'primary.main', flexShrink: 0 }}>
+        In {zone}{' '}
+        {rows.length > 0 && (
+          <Typography component="span" variant="caption" color="text.secondary">
+            - {rows.length} in the catalog
+          </Typography>
+        )}
+      </Typography>
+      {rows.length > 0 ? (
+        <Box sx={{ flexGrow: 1, minHeight: 0, overflow: 'auto' }}>
+          {rows.map((e) => (
+            <MobResultRow key={e.page} entry={e} kills={kills} onOpen={onOpen} />
+          ))}
+        </Box>
+      ) : (
+        // The catalog and the game don't always spell a place the same way (mobZone documents
+        // which ones). Say so plainly rather than showing an empty box or a guessed roster.
+        <Typography
+          data-testid="mobs-zone-empty"
+          variant="body2"
+          color="text.disabled"
+          sx={{ p: 1 }}
+        >
+          The catalog lists no mobs for {zone}.
+        </Typography>
+      )}
+    </Paper>
+  )
+}
+
+/**
+ * NO ZONE YET — the log hasn't printed a zone line this session, so there is nothing to be an
+ * overview OF. Rather than head a section with a blank, the roster is skipped entirely and this
+ * says what the tab will fill itself with once you play.
+ */
+function NoZoneYet({ hasConsidered }: { hasConsidered: boolean }): JSX.Element {
+  return (
+    <Box
+      sx={{
+        flexGrow: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 1,
+        color: 'text.secondary',
+        textAlign: 'center'
+      }}
+    >
+      {!hasConsidered && <PetsIcon sx={{ fontSize: 44, opacity: 0.5 }} />}
+      <Typography variant="body2" sx={{ maxWidth: 460 }}>
+        {hasConsidered
+          ? 'Zone into somewhere and this becomes an overview of what lives there. Until then, search the catalog by name or zone.'
+          : `Your zone, cons and kills show up here as you play - a roster of whatever you're standing in. Meanwhile, search ${MOB_CATALOG.length.toLocaleString()} creatures by name or zone: levels, zones and full drop tables, all offline.`}
+      </Typography>
+      <Typography variant="caption" color="text.disabled">
+        Anything you <code>/con</code> in game shows up here too.
+      </Typography>
+    </Box>
+  )
+}
+
+/**
+ * THE DRILL STATE: one mob page under one Back.
+ *
+ * THE BUTTON NAMES ITS DESTINATION, which is why it never just said "Back". Normally that is this
+ * tab's own browse surface ("Mobs"). But a mob page reached by a DEEP LINK — an Overview kill row,
+ * a raid card, a Sky dropper, an overlay con row — belongs to the tab that sent you, and since
+ * JOS-43 Back returns there and says so ("Overview", "Raid Targets"). `nav.back()` reports whether
+ * it navigated, so with nothing parked this is exactly the button it has always been.
+ */
+function MobDrill({
+  target,
+  kills,
+  nav,
+  onClose
+}: {
+  target: MobTarget
+  kills: KillMap
+  nav?: NavBack
+  onClose: () => void
+}): JSX.Element {
+  // ONE expression, read by TWO things (JOS-201): the button below, and the mouse's Back button,
+  // which registers it for as long as this page is on screen. The browse surface behind it
+  // registers nothing, so a press there falls through to the app-level origin walk.
+  const back = (): boolean => {
+    if (!nav?.back()) onClose()
+    return true
+  }
+  useBackTarget(back)
+  return (
+    <Stack spacing={1} sx={{ height: '100%' }}>
+      <Box>
+        <Button size="small" data-testid="mobs-back" startIcon={<ArrowBackIcon />} onClick={back}>
+          {nav?.origin?.label ?? 'Mobs'}
+        </Button>
+      </Box>
+      <Box sx={{ flexGrow: 1, minHeight: 0, overflow: 'auto' }}>
+        <MobPage key={`${target.mob}#${target.entry?.page ?? ''}`} target={target} kills={kills} />
+      </Box>
+    </Stack>
+  )
+}
+
+/**
+ * @param target             a mob to open on arrival (a deep link from the events overlay, or a
+ *                           raid target card). Re-applied whenever `targetNonce` changes, so
+ *                           asking for the SAME mob twice opens it twice instead of looking
+ *                           broken.
+ * @param onTargetConsumed   told the moment the target has been opened, so the router drops it.
+ *                           Load-bearing: this view unmounts when you switch tabs, and a target
+ *                           still parked in the router would silently re-open a page you'd
+ *                           already backed out of the next time you came here.
+ * @param nav                the app's ONE back contract (appRouting `NavBack`, JOS-43). A mob
+ *                           page reached from the Overview, a raid card, a Sky dropper or an
+ *                           overlay row backs out to THERE; one reached from this tab's own
+ *                           search/roster/con strip backs out to the browse surface, unchanged.
+ */
+export default function MobsView({
+  target,
+  targetNonce,
+  onTargetConsumed,
+  nav
+}: {
+  target?: MobTarget | null
+  targetNonce?: number
+  onTargetConsumed?: () => void
+  nav?: NavBack
+}): JSX.Element {
+  const [query, setQuery] = useState('')
+  const deferred = useDeferredValue(query)
+  const [drill, setDrill] = useState<MobTarget | null>(target ?? null)
+  // A NATIVE drill — a row on this tab's own surfaces. It ends whatever journey a link parked, so
+  // Back below means the browse surface, which is where the reader genuinely came from.
+  const openNative = (t: MobTarget): void => {
+    nav?.clear()
+    setDrill(t)
+  }
+
+  const kills = useKills()
+  const considered = useModule<ConsiderSnap>('consider') ?? []
+  // WHERE YOU ARE. The character module carries the RAW display zone off the `zone` log event;
+  // it is undefined until the log prints one (a fresh log, or before the replay reaches a zone
+  // line), and that absence is a state this view renders — never a blank heading.
+  const zone = useModule<CharacterSnap>('character')?.zone
+
+  // An inbound target (deep link / raid card) opens the page, then is consumed. Keyed on the
+  // NONCE, not the target's identity: the same mob asked for twice must open twice.
+  useEffect(() => {
+    if (!target) return
+    setDrill(target)
+    onTargetConsumed?.()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [targetNonce])
+
+  const hits = useMemo(() => searchMobs(deferred), [deferred])
+  const searching = deferred.trim().length > 0
+  // A filter over 7,866 rows — cheap (render-bound, AGENTS.md "Search"), but it only changes
+  // when you zone, so memoize on the zone string.
+  const zoneRows = useMemo(() => (zone ? mobsInZone(zone, MOB_CATALOG) : []), [zone])
+
+  if (drill) return <MobDrill target={drill} kills={kills} nav={nav} onClose={() => setDrill(null)} />
+
+  return (
+    <Stack spacing={1.5} sx={{ height: '100%' }}>
+      <TextField
+        size="small"
+        placeholder="Search mobs…"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+        slotProps={{ htmlInput: { 'data-testid': 'mobs-search' } }}
+        sx={{ maxWidth: 420 }}
+      />
+
+      {searching ? (
+        <Paper variant="outlined" sx={{ p: 1, flexGrow: 1, minHeight: 0, overflow: 'auto' }}>
+          {hits.length > 0 ? (
+            <>
+              <Typography variant="caption" color="text.secondary" sx={{ px: 0.75 }}>
+                {hits.length} of {MOB_CATALOG.length} mobs
+              </Typography>
+              {hits.map((h) => (
+                <MobResultRow key={h.entry.page} entry={h.entry} kills={kills} onOpen={openNative} />
+              ))}
+            </>
+          ) : (
+            <Typography variant="body2" color="text.disabled" sx={{ p: 1 }}>
+              No mob in the catalog matches “{deferred.trim()}”.
+            </Typography>
+          )}
+        </Paper>
+      ) : (
+        // BROWSE = where you are, then what you were just sizing up. The roster leads and takes
+        // the leftover height; the con strip keeps its own bounded height below it. With no zone
+        // known there is nothing to lead WITH, so the strip (which renders nothing when empty)
+        // moves to the top and the invitation takes the space the roster would have had.
+        //
+        // EMPTY ROSTER is the third case: the roster goes compact (see ZoneRoster) and the
+        // leftover height is handed DOWNWARD instead, so the con strip sits directly under the
+        // one-line answer rather than being pinned to the bottom of an otherwise blank panel.
+        // The strip keeps its own fixed-height scroll box either way — that is its law, not a
+        // reaction to this state; the wrapper only decides where the slack lives.
+        <>
+          {zone ? (
+            <>
+              <ZoneRoster zone={zone} rows={zoneRows} kills={kills} onOpen={openNative} />
+              {zoneRows.length === 0 ? (
+                <Box sx={{ flexGrow: 1, minHeight: 0, display: 'flex', flexDirection: 'column' }}>
+                  <RecentlyConsidered rows={considered} onOpen={openNative} />
+                </Box>
+              ) : (
+                <RecentlyConsidered rows={considered} onOpen={openNative} />
+              )}
+            </>
+          ) : (
+            <>
+              <RecentlyConsidered rows={considered} onOpen={openNative} />
+              <NoZoneYet hasConsidered={considered.length > 0} />
+            </>
+          )}
+        </>
+      )}
+    </Stack>
+  )
+}

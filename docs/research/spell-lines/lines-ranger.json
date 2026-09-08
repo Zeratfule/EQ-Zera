@@ -1,0 +1,725 @@
+{
+  "class": "Ranger",
+  "generatedNotes": [
+    "Legends re-tiers the whole Ranger book downward. In classic (P99) Rangers get their first spells at 9 and level in blocks (9/15/22/30/39/49/50+); on Legends the same spells appear from level 1 upward with per-level granularity. Level differences between `members[].level` (Legends, authoritative) and the classic level noted in `note` are therefore expected and systematic, not per-spell errors.",
+    "Legends also re-scales magnitudes: heals, DoTs and DD are markedly stronger than classic (e.g. Healing 135-175 vs classic 84-100; Stinging Swarm 27-42/tick vs classic 13/tick; Immolate 42-67/tick vs classic 24/tick), while AC on the coat line is slightly lower than classic.",
+    "Observed data-shape tell in the input file: effect strings phrased 'Increase Armor Class by N' carry Legends-tuned (usually lower) AC, while 'Increase AC by N' rows reproduce the classic P99 numbers verbatim. Every Skin-line spell appears TWICE in the file, once in each phrasing. See skin-line notes and openQuestions.",
+    "Stacking model used throughout: P99 Buff Lines groups every buff by the effect slot it writes to. 'Buffs under the same heading can't be stacked together.' Cross-line conflicts below are derived from shared headings/slots on that page."
+  ],
+  "lines": [
+    {
+      "id": "skin-line",
+      "name": "Skin line",
+      "category": "hp-ac-buff",
+      "sharedWith": ["Druid"],
+      "members": [
+        {"name": "Skin Like Wood", "level": 7, "inDb": true, "note": "Legends-tuned duplicate row: AC 2 (L1) to 3 (L4), targetType 'Single Friendly (or Self)'. Classic value is AC 3->4."},
+        {"name": "Skin Like Wood", "level": 9, "inDb": true, "note": "Classic row: Druid 1 / Ranger 9, AC 3 @L1 to 4 @L10, +20 max HP. Level and values match P99 exactly."},
+        {"name": "Skin Like Rock", "level": 21, "inDb": true, "note": "Legends-tuned duplicate row: AC 5 (L14) to 6 (L16)."},
+        {"name": "Skin Like Rock", "level": 22, "inDb": true, "note": "Classic row: Druid 14 / Ranger 22, AC 6-7, max HP 54 (L14) to 105 (L65)."},
+        {"name": "Skin Like Steel", "level": 38, "inDb": true, "note": "Legends-tuned duplicate row: flat AC 8."},
+        {"name": "Skin Like Steel", "level": 39, "inDb": true, "note": "Classic row: Druid 24 / Ranger 39, AC 9-10, max HP 74 (L24) to 100 (L50)."},
+        {"name": "Skin Like Diamond", "level": 54, "inDb": true, "note": "Legends-tuned duplicate row: AC 10 (L36) to 11 (L38). Same level as the classic row."},
+        {"name": "Skin Like Diamond", "level": 54, "inDb": true, "note": "Classic row: Druid 39 / Ranger 54, AC 13, max HP 178-200."},
+        {"name": "Skin Like Nature", "level": 59, "inDb": true, "note": "Legends-tuned duplicate row: AC 12 (L46) to 13 (L47). Same level as the classic row."},
+        {"name": "Skin Like Nature", "level": 59, "inDb": true, "note": "Classic row: Druid 49 / Ranger 59, AC 16, max HP 248-250, +2 HP/tick. Top of the Ranger chain."}
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "Later members overwrite earlier ones (all write AC slot 1 and the HP Primary 'AC and HP' column, so only one can be up). BUT the chain is not monotonic in HP: Skin Like Rock scales to 105 max HP at L65 while Skin Like Steel caps at 100 max HP at L50. Above ~L50 a Ranger trades 5 max HP for 3-4 AC by moving from Rock to Steel. This quirk is classic and Legends reproduces it verbatim in both rows. Skin Like Diamond (200 HP) and Nature (250 HP) are unambiguous upgrades."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [
+          {"line": "heroism-line", "class": "Cleric/Paladin", "detail": "Courage, Center, Daring, Bravery, Valor, Resolution, Heroism and Fortitude all sit in AC slot 1 and in the same HP-Primary 'AC and HP' column as the Skin line. A cleric's Valor/Resolution/Heroism overwrites Skin Like Diamond/Nature and vice versa - only one lands.", "source": "https://wiki.project1999.com/Buff_Lines#AC_.28Slot_1.29"},
+          {"line": "aegolism", "class": "Cleric", "detail": "Aegolism (Cleric 60) is the AC slot 1 & 4 combination buff: it blocks the Skin line AND the Aegis line at once. Per the page's own rule, a combination buff does not stack with the buffs listed underneath it.", "source": "https://wiki.project1999.com/Buff_Lines#HP_.28Primary.29"},
+          {"line": "protection-of-the-glades", "class": "Druid", "detail": "Protection of the Glades (Druid 60, +24 AC / +470 HP) is the top of the same AC slot 1 / HP-Primary column. It overwrites any Skin-line buff on the Ranger.", "source": "https://wiki.project1999.com/Buff_Lines#AC_.28Slot_1.29"},
+          {"line": "natureskin", "class": "Druid", "detail": "Natureskin (Druid 57, +19 AC / +400 HP / +4 regen) is the Druid-only successor in the same slot; it replaces Skin Like Nature and also collides with Skin Like Nature's +2 regen in HP-Regen slot 4.", "source": "https://wiki.project1999.com/Buff_Lines#AC_.28Slot_1.29"},
+          {"line": "inner-fire", "class": "Shaman", "detail": "Inner Fire (Shaman 1, +3 AC / +20 HP) is in AC slot 1 - same line, blocked by any Skin buff.", "source": "https://wiki.project1999.com/Buff_Lines#AC_.28Slot_1.29"},
+          {"line": "armor-of-protection", "class": "Cleric", "detail": "Armor of Protection (Cleric 34) appears in the HP-Primary 'AC and HP' column (+225 HP), so it collides with the Skin line on HP even though its AC lives in slot 2.", "source": "https://wiki.project1999.com/Buff_Lines#HP_.28Primary.29"},
+          {"line": "hp-regen-slot-4", "class": "Item/Druid", "detail": "Only for Skin Like Nature: its +2 HP/tick is HP-Regeneration slot 4, shared with Natureskin (+4) and the Rejuvenation potions (+10/+20/+40). A Rejuvenation potion will block or be blocked by Skin Like Nature's regen component.", "source": "https://wiki.project1999.com/Buff_Lines#HP_Regeneration_.28Slot_4.29"}
+        ],
+        "stacksWith": [
+          {"line": "symbol-line", "detail": "The Cleric Symbol line (Transal -> Ryltan -> Pinzarn -> Naltron -> Marzin, plus Naltron's Mark) is the separate 'HP Only and Requires Gem' column of HP (Primary). Per the page's column rule the two columns stack: Skin Like Nature + Symbol of Marzin both land. This is the standard Ranger buff pairing. Note the shared blocker: Aegolism combines both columns and therefore blocks both.", "source": "https://wiki.project1999.com/Buff_Lines#HP_.28Primary.29"},
+          {"line": "aegis-line", "detail": "Cleric Holy Armor -> Guard -> Armor of Faith -> Shield of Words -> Aegis (and Bulwark of Faith) are AC slot 4; the Skin line is AC slot 1. They stack. Only Aegolism (slot 1 & 4) breaks this.", "source": "https://wiki.project1999.com/Buff_Lines#AC_.28Slot_4.29"},
+          {"line": "talisman-line", "detail": "Shaman Talisman of Tnarg/Altuna/Kragg and the caster Shielding line are the separate 'HP (Shielding / Talisman)' heading; they stack with Skin-line HP. Focus of Spirit (Shaman 60) is explicitly exempted from the combination-blocking rule on that page.", "source": "https://wiki.project1999.com/Buff_Lines#HP_.28Shielding_.2F_Talisman.29"},
+          {"line": "coat-line", "detail": "Thistlecoat/Barbcoat/Bramblecoat/Spikecoat/Thorncoat are AC slot 2 - stack with the Skin line.", "source": "https://wiki.project1999.com/Buff_Lines#AC_.28Slot_2.29"},
+          {"line": "call-of-earth-line", "detail": "Riftwind's Protection / Call of Earth are AC slot 3 - stack with the Skin line.", "source": "https://wiki.project1999.com/Buff_Lines#AC_.28Slot_3.29"},
+          {"line": "atk-self-line", "detail": "Strength of Nature's +75 max HP is the 'HP (Strength)' heading, separate from HP (Primary) - it stacks with Skin-line HP. See the caveat in atk-self-line about its stacking block.", "source": "https://wiki.project1999.com/Buff_Lines#HP_.28Strength.29"}
+        ],
+        "notes": "The Ranger's ceiling stack is Skin Like Nature (AC1/HP) + Symbol of Marzin (HP) + Aegis/Bulwark (AC4) + a coat (AC2) + Call of Earth (AC3) + a Talisman/Shielding (HP). Accepting a cleric Heroism or an Aegolism replaces the Skin buff rather than adding to it."
+      },
+      "sources": [
+        "https://wiki.project1999.com/Ranger/Spells",
+        "https://wiki.project1999.com/Buff_Lines",
+        "https://wiki.project1999.com/Druid/Spells"
+      ]
+    },
+    {
+      "id": "coat-line",
+      "name": "Coat line (self AC + damage shield)",
+      "category": "damage-shield",
+      "sharedWith": ["Druid"],
+      "members": [
+        {"name": "Thistlecoat", "level": 13, "inDb": true, "note": "Classic Druid 9 / Ranger 15. Legends AC 3-5 vs classic 4-6."},
+        {"name": "Barbcoat", "level": 30, "inDb": true, "note": "Classic Druid 19 / Ranger 30. Legends AC 8-10 vs classic 11-12."},
+        {"name": "Bramblecoat", "level": 34, "inDb": true, "note": "Classic Druid 29 / Ranger 39. Legends AC 14-15 vs classic 17-18."},
+        {"name": "Spikecoat", "level": 42, "inDb": true, "note": "Classic Druid 39 / Ranger 49 per Buff Lines. NOTE: the P99 Ranger/Spells page omits Spikecoat from its L49 block - the Buff Lines page is the source that confirms Rangers get it. Legends AC 19-21 vs classic 25."},
+        {"name": "Thorncoat", "level": 60, "inDb": true, "note": "Classic Druid 49 / Ranger 60. Legends AC 26 vs classic 31."}
+      ],
+      "replacement": {"strict": true, "note": "Monotonic in both AC (slot 2) and damage shield (slot 3); the later member overwrites the earlier. Self-only throughout."},
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [
+          {"line": "shielding-line", "class": "Enchanter/Magician/Necromancer/Wizard", "detail": "Minor/Lesser/Shielding/Major/Greater/Arch Shielding and Shield of the Magi all occupy AC slot 2 with the coats. A caster's self-Shielding is irrelevant to a Ranger, but a coat will block AC slot 2 buffs cast on the Ranger from that group.", "source": "https://wiki.project1999.com/Buff_Lines#AC_.28Slot_2.29"},
+          {"line": "yaulp-line", "class": "Cleric/Paladin", "detail": "Yaulp / Yaulp II / III / IV write AC slot 2 (+6 to +15) - same slot as the coats.", "source": "https://wiki.project1999.com/Buff_Lines#AC_.28Slot_2.29"},
+          {"line": "armor-of-protection", "class": "Cleric", "detail": "Armor of Protection (Cleric 34, +15 AC) is AC slot 2 - conflicts with the coat line.", "source": "https://wiki.project1999.com/Buff_Lines#AC_.28Slot_2.29"},
+          {"line": "bladecoat", "class": "Druid", "detail": "Bladecoat (Druid 56) is the Druid-only top of this same line (AC slot 2 +37, DS slot 3 +6); it overwrites Thorncoat.", "source": "https://wiki.project1999.com/Buff_Lines#AC_.28Slot_2.29"}
+        ],
+        "stacksWith": [
+          {"line": "shield-of-thistles-line", "detail": "The castable Shield of Thistles/Brambles/Spikes are DS slot 1; the coats are DS slot 3. Both damage shields apply at once."},
+          {"line": "call-of-earth-line", "detail": "Call of Earth is AC slot 3 / DS slot 2 - fully independent of the coats."},
+          {"line": "skin-line", "detail": "AC slot 1 vs slot 2."},
+          {"line": "aegis-line", "detail": "AC slot 4 vs slot 2."}
+        ],
+        "notes": "A Ranger can run three damage shields at once (coat DS3 + Shield of X DS1 + Call of Earth DS2) and four AC layers (Skin AC1 + coat AC2 + Call of Earth AC3 + cleric Aegis AC4)."
+      },
+      "sources": ["https://wiki.project1999.com/Buff_Lines#AC_.28Slot_2.29", "https://wiki.project1999.com/Buff_Lines#Damage_Shield_.28Slot_3.29", "https://wiki.project1999.com/Ranger/Spells"]
+    },
+    {
+      "id": "shield-of-thistles-line",
+      "name": "Shield of Thistles line (castable damage shield)",
+      "category": "damage-shield",
+      "sharedWith": ["Druid"],
+      "members": [
+        {"name": "Shield of Thistles", "level": 24, "inDb": true, "note": "Classic Druid 9 / Ranger 30."},
+        {"name": "Shield of Brambles", "level": 43, "inDb": true, "note": "Classic Druid 29 / Ranger 49."},
+        {"name": "Shield of Spikes", "level": 58, "inDb": true, "note": "Classic Druid 39 / Ranger 58. Top of the Ranger chain."}
+      ],
+      "replacement": {"strict": true, "note": "Same effect slot, monotonic magnitude (+6 -> +12 -> +17 at max); later overwrites earlier."},
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [
+          {"line": "magician-damage-shield-line", "class": "Magician", "detail": "Shield of Fire, Shield of Flame, Inferno Shield, Barrier of Combustion, Shield of Lava, Boon of Immolation, Cadeau of Flame and Aegis of Ro all sit in Damage Shield slot 1 with the Ranger's Shield of X. A magician DS overwrites the Ranger's and vice versa.", "source": "https://wiki.project1999.com/Buff_Lines#Damage_Shield_.28Slot_1.29"},
+          {"line": "druid-thorn-line", "class": "Druid", "detail": "Shield of Barbs, Shield of Thorns, Shield of Blades and Legacy of Thorn are the Druid-only continuation of the same DS slot 1 line - they replace Shield of Spikes.", "source": "https://wiki.project1999.com/Buff_Lines#Damage_Shield_.28Slot_1.29"},
+          {"line": "banshee-aura", "class": "Necromancer/Shadow Knight", "detail": "Banshee Aura is DS slot 1.", "source": "https://wiki.project1999.com/Buff_Lines#Damage_Shield_.28Slot_1.29"},
+          {"line": "feedback", "class": "Enchanter", "detail": "Feedback (Enchanter 29) is DS slot 1.", "source": "https://wiki.project1999.com/Buff_Lines#Damage_Shield_.28Slot_1.29"},
+          {"line": "okeils-radiation", "class": "Wizard", "detail": "O'Keil's Radiation is DS slot 1.", "source": "https://wiki.project1999.com/Buff_Lines#Damage_Shield_.28Slot_1.29"}
+        ],
+        "stacksWith": [
+          {"line": "coat-line", "detail": "Coats are DS slot 3."},
+          {"line": "call-of-earth-line", "detail": "Call of Earth is DS slot 2."},
+          {"line": "bard-psalm", "detail": "Psalm of Warmth / Psalm of Cooling are layer-2 DS - they stack with everything above."}
+        ],
+        "notes": "This is the line a Ranger gives to a tank; it is the same slot the group magician is buffing, so it must be coordinated (the magician's is far larger)."
+      },
+      "sources": ["https://wiki.project1999.com/Buff_Lines#Damage_Shield_.28Slot_1.29", "https://wiki.project1999.com/Ranger/Spells"]
+    },
+    {
+      "id": "call-of-earth-line",
+      "name": "Call of Earth line (AC + damage shield)",
+      "category": "hp-ac-buff",
+      "sharedWith": [],
+      "members": [
+        {"name": "Riftwind's Protection", "level": 29, "inDb": true, "note": "Real EQ Ranger 29 spell (Allakhazam spell 2593): +2 DS, +11 AC (L29) to +12 (L30), 1 hour. LEGENDS DISCREPANCY: the file gives it +30 AC. Not present in the classic-era P99 Ranger list."},
+        {"name": "Call of Earth", "level": 48, "inDb": true, "note": "Classic Ranger 50: +4 DS, +24 AC (L50) to +25 (L55). Legends gives +4 DS, +20 AC."}
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "In live EQ this is a clean upgrade (11-12 AC -> 24-25 AC, DS 2 -> 4). On Legends it is NOT: Riftwind's Protection grants +30 AC while Call of Earth grants only +20 AC. A Legends Ranger who wants max AC in slot 3 should keep Riftwind's Protection and take Call of Earth only for the extra +2 damage shield. Flagging as a probable Legends tuning bug or an intentional trade."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [
+          {"line": "augmentation-line", "class": "Enchanter", "detail": "Augmentation (+9) and Augment (+18) write AC slot 3 - same slot as Call of Earth. An enchanter's Augment and the Ranger's Call of Earth will overwrite each other.", "source": "https://wiki.project1999.com/Buff_Lines#AC_.28Slot_3.29"},
+          {"line": "frenzy", "class": "Shaman", "detail": "Frenzy (Shaman 19, +10 AC, self-only) is AC slot 3.", "source": "https://wiki.project1999.com/Buff_Lines#AC_.28Slot_3.29"},
+          {"line": "speed-of-the-shissar", "class": "Item", "detail": "Speed of the Shissar (Staff of the Serpent click, +12 AC) is AC slot 3.", "source": "https://wiki.project1999.com/Buff_Lines#AC_.28Slot_3.29"},
+          {"line": "kilvas-skin-of-flame", "class": "Item", "detail": "Call of Earth's damage shield is DS slot 2, shared with Kilva's Skin of Flame (+31), Scorching Skin, Frostreaver's Blessing, Shield of the Eighth and O'Keil's Flickering Flame. Kilva's will block Call of Earth's DS component.", "source": "https://wiki.project1999.com/Buff_Lines#Damage_Shield_.28Slot_2.29"}
+        ],
+        "stacksWith": [
+          {"line": "skin-line", "detail": "AC slot 1."},
+          {"line": "coat-line", "detail": "AC slot 2 / DS slot 3."},
+          {"line": "shield-of-thistles-line", "detail": "DS slot 1."},
+          {"line": "aegis-line", "detail": "Cleric AC slot 4."}
+        ],
+        "notes": "The live-EQ warning that Riftwind's Protection 'can interfere with some higher level armor class enhancing spells' is the AC slot 3 collision above - do not blind-cast it on other players."
+      },
+      "sources": ["https://wiki.project1999.com/Buff_Lines#AC_.28Slot_3.29", "https://everquest.allakhazam.com/db/spell.html?spell=2593", "https://wiki.project1999.com/Ranger/Spells"]
+    },
+    {
+      "id": "heal-line",
+      "name": "Heal line",
+      "category": "heal",
+      "sharedWith": ["Druid", "Cleric", "Shaman", "Paladin"],
+      "members": [
+        {"name": "Minor Healing", "level": 1, "inDb": true, "note": "Classic Ranger 9."},
+        {"name": "Light Healing", "level": 16, "inDb": true, "note": "Classic Ranger 22."},
+        {"name": "Healing", "level": 28, "inDb": true, "note": "Classic Ranger 39. Legends 135-175 vs classic 84-100."},
+        {"name": "Greater Healing", "level": 38, "inDb": true, "note": "Classic Ranger 57. Classic applies a hybrid penalty (P99 lists 'Hybrid Classes: 244 to 270 HP' against the base 288-300); Legends lists a flat 280-350."}
+      ],
+      "replacement": {"strict": true, "note": "Straight magnitude upgrades; instant heals so no stacking question, only mana efficiency."},
+      "missingOnLegends": ["Superior Healing (Druid 51 - Druid-only, never a Ranger spell)"],
+      "stacking": {"conflicts": [], "stacksWith": [], "notes": "Instant heals do not create buff icons and are outside the buff-slot model entirely."},
+      "sources": ["https://wiki.project1999.com/Ranger/Spells", "https://wiki.project1999.com/Healing_Spell_Lines"]
+    },
+    {
+      "id": "invisibility-line",
+      "name": "Camouflage line",
+      "category": "invisibility",
+      "sharedWith": ["Druid"],
+      "members": [
+        {"name": "Camouflage", "level": 14, "inDb": true, "note": "Classic Druid 5 / Ranger 15. Outdoors-only."},
+        {"name": "Superior Camouflage", "level": 47, "inDb": true, "note": "Classic Druid 19 / Ranger 49. Works indoors, longer duration."}
+      ],
+      "replacement": {"strict": true, "note": "Superior Camouflage drops the outdoors requirement and lasts longer; it fully replaces Camouflage."},
+      "missingOnLegends": ["Improved Superior Camouflage (Druid 50 - Druid-only)"],
+      "stacking": {
+        "conflicts": [
+          {"line": "invisibility-line-generic", "class": "Enchanter/Magician/Wizard", "detail": "All ordinary invisibility effects share one invis state; recasting replaces. Invisibility versus Animals and Invisibility versus Undead are separate effects and are Druid/other-class spells the Ranger does not get.", "source": "https://wiki.project1999.com/Druid/Spells"}
+        ],
+        "stacksWith": [{"line": "see-invisible", "detail": "See Invisible is a detection effect on the caster, unrelated to being invisible."}],
+        "notes": "Invisibility breaks on casting/attacking; not tracked by the Buff Lines slot model."
+      },
+      "sources": ["https://wiki.project1999.com/Ranger/Spells"]
+    },
+    {
+      "id": "sow-line",
+      "name": "SoW line (Spirit of Wolf)",
+      "category": "movement",
+      "sharedWith": ["Druid", "Shaman"],
+      "members": [
+        {"name": "Spirit of Wolf", "level": 28, "inDb": true, "note": "Classic Druid 14 / Ranger 30 / Shaman 9. +55% at max. The Ranger never gets a higher single-target SoW; Scale of Wolf (70%) and Spirit of Cheetah are Druid/Shaman only."}
+      ],
+      "replacement": {"strict": true, "note": "Single member for Rangers. Recasting refreshes."},
+      "missingOnLegends": ["Scale of Wolf (Druid/Shaman 24 - not a Ranger spell)", "Spirit of Cheetah (Druid 60 - not a Ranger spell)"],
+      "stacking": {
+        "conflicts": [
+          {"line": "shrew-line", "class": "Druid/Shaman/Ranger/Beastlord", "detail": "Pack Shrew / Spirit of the Shrew and Spirit of Wolf are the same movement-speed line. Casting Spirit of Wolf on someone running Pack Shrew drops the shrew (and its Ultravision) entirely.", "source": "https://everquest.allakhazam.com/db/spell.html?spell=4055"},
+          {"line": "wolf-form-line", "class": "Druid/Ranger", "detail": "Wolf Form (+55%) and Greater Wolf Form (+60%) are in Speed (Primary) with Spirit of Wolf; a Ranger in Greater Wolf Form gains nothing from SoW and SoW will overwrite the faster form's speed component.", "source": "https://wiki.project1999.com/Buff_Lines#Speed_.28Primary.29"},
+          {"line": "selos-line", "class": "Bard", "detail": "Selo's Accelerando / Selo's Song of Travel are Speed (Primary) - a bard running Selo's makes SoW redundant and the two overwrite.", "source": "https://wiki.project1999.com/Buff_Lines#Speed_.28Primary.29"},
+          {"line": "druid-forms", "class": "Druid", "detail": "Form of the Great Wolf, Form of the Howler, Form of the Hunter, Share Wolf Form and Spirit of Cheetah are all Speed (Primary).", "source": "https://wiki.project1999.com/Buff_Lines#Speed_.28Primary.29"}
+        ],
+        "stacksWith": [{"line": "haste-line", "detail": "Movement speed and melee haste are different statistics; SoW stacks with any haste buff."}],
+        "notes": "Movement-speed DEBUFFS (Snare/Ensnare/Tangling Weeds) write the same movement-speed effect as SoW-line buffs - this is why casting SoW on a snared mob cures the snare. Treated here as a well-known classic interaction; the Buff Lines page only tabulates beneficial buffs, so it is not directly cited."
+      },
+      "sources": ["https://wiki.project1999.com/Buff_Lines#Speed_.28Primary.29", "https://wiki.project1999.com/Ranger/Spells"]
+    },
+    {
+      "id": "shrew-line",
+      "name": "Shrew line (movement + ultravision)",
+      "category": "movement",
+      "sharedWith": ["Druid", "Shaman", "Beastlord"],
+      "members": [
+        {"name": "Spirit of the Shrew", "level": 41, "inDb": true, "note": "Post-classic (Luclin-era). Live levels per Allakhazam: Shaman 29, Druid 34, Beastlord 34, Ranger 44. +30% run, Ultravision, 36 min. Not on the P99 classic Ranger or Druid lists."},
+        {"name": "Pack Shrew", "level": 49, "inDb": true, "note": "Group version, same +30% and Ultravision. Post-classic; not on the P99 lists."}
+      ],
+      "replacement": {"strict": false, "note": "Pack Shrew is the GROUP version at identical magnitude (+30% / Ultravision), not a stronger buff. It replaces Spirit of the Shrew operationally, not numerically."},
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [
+          {"line": "sow-line", "class": "Druid/Ranger/Shaman", "detail": "Explicitly documented: Pack Shrew and Spirit of Wolf do not stack. Casting Spirit of Wolf on an active Pack Shrew drops the shrew buff, so Ultravision must be reapplied separately.", "source": "https://everquest.allakhazam.com/db/spell.html?spell=4055"},
+          {"line": "wolf-form-line", "class": "Druid/Ranger", "detail": "Shared Speed (Primary) line with Wolf Form / Greater Wolf Form; also the shrew's +30% is far weaker, so it is a downgrade if it lands over a wolf form.", "source": "https://wiki.project1999.com/Buff_Lines#Speed_.28Primary.29"},
+          {"line": "selos-line", "class": "Bard", "detail": "Speed (Primary).", "source": "https://wiki.project1999.com/Buff_Lines#Speed_.28Primary.29"},
+          {"line": "vision-line", "class": "Ranger", "detail": "SUSPECTED: the shrew's Ultravision and Chill Sight's Ultravision are the same effect; one should overwrite the other. Not confirmed by a classic source - see openQuestions.", "source": "https://everquest.allakhazam.com/db/spell.html?spell=4054"}
+        ],
+        "stacksWith": [],
+        "notes": "The whole point of the shrew line is bundling Ultravision with movement; the anti-synergy is that any better run-speed buff strips the Ultravision with it."
+      },
+      "sources": ["https://everquest.allakhazam.com/db/spell.html?spell=4054", "https://everquest.allakhazam.com/db/spell.html?spell=4055", "https://wiki.project1999.com/Buff_Lines#Speed_.28Primary.29"]
+    },
+    {
+      "id": "wolf-form-line",
+      "name": "Wolf Form line",
+      "category": "movement",
+      "sharedWith": ["Druid"],
+      "members": [
+        {"name": "Wolf Form", "level": 48, "inDb": true, "note": "Classic Druid 24 / Ranger 49. Self-only illusion: +55% run, +30 ATK."},
+        {"name": "Greater Wolf Form", "level": 56, "inDb": true, "note": "Classic Druid 34 / Ranger 56. +60% run, +40 ATK."}
+      ],
+      "replacement": {"strict": true, "note": "Greater Wolf Form beats Wolf Form on both run speed and ATK; both are self-only illusions and occupy the same slots."},
+      "missingOnLegends": ["Form of the Great Wolf (Druid 44)", "Form of the Howler (Druid 54)", "Form of the Hunter (Druid 60)", "Share Wolf Form (Druid 39)"],
+      "stacking": {
+        "conflicts": [
+          {"line": "sow-line", "class": "Druid/Ranger/Shaman", "detail": "Speed (Primary): Spirit of Wolf (+55%) will overwrite Greater Wolf Form's (+60%) speed - a net loss. Do not let a druid SoW a Ranger in Greater Wolf Form.", "source": "https://wiki.project1999.com/Buff_Lines#Speed_.28Primary.29"},
+          {"line": "shrew-line", "class": "Ranger", "detail": "Speed (Primary).", "source": "https://wiki.project1999.com/Buff_Lines#Speed_.28Primary.29"},
+          {"line": "avatar", "class": "Shaman", "detail": "Wolf Form's ATK is Attack slot 3, shared with Avatar (+100), Form of the Hunter, Form of the Great Wolf, Boon of the Garou, Share Wolf Form and the Aura of Battle click. Avatar overwrites the wolf-form ATK component.", "source": "https://wiki.project1999.com/Buff_Lines#Attack_.28Slot_3.29"},
+          {"line": "illusion-buffs", "class": "Enchanter", "detail": "Only one illusion can be active; Illusion: Werewolf / Boon of the Garou replace wolf form.", "source": "https://wiki.project1999.com/Buff_Lines#Attack_.28Slot_3.29"}
+        ],
+        "stacksWith": [
+          {"line": "atk-self-line", "detail": "Firefist / Strength of Nature are Attack slot 1; wolf-form ATK is slot 3."},
+          {"line": "call-of-the-predator-line", "detail": "Call of the Predator is Attack slot 2."}
+        ],
+        "notes": "Greater Wolf Form + Strength of Nature (slot 1) + Call of the Predator (slot 2) + Visions of Grandeur (slot 4) is the fully-stacked Ranger ATK build per the Buff Lines Ranger max row (+324)."
+      },
+      "sources": ["https://wiki.project1999.com/Buff_Lines#Attack_.28Slot_3.29", "https://wiki.project1999.com/Buff_Lines#Speed_.28Primary.29"]
+    },
+    {
+      "id": "atk-self-line",
+      "name": "Firefist line (self ATK, Attack slot 1)",
+      "category": "atk-buff",
+      "sharedWith": ["Druid"],
+      "members": [
+        {"name": "Firefist", "level": 17, "inDb": true, "note": "Classic Druid 9 / Ranger 22, self-only, +10 ATK at max. Attack slot 1."},
+        {"name": "Nature's Precision", "level": 37, "inDb": true, "note": "+15 ATK, self, permanent. Post-classic / Legends: not in the P99 Ranger or Druid lists. Slot assignment inferred from the ATK-buff family."},
+        {"name": "Force of Nature", "level": 50, "inDb": true, "note": "+20 ATK, +5 damage shield, +6 HP/tick and +6 endurance/tick, self, permanent. Post-classic / Legends: not on P99. The DS and regen slots are unknown - see openQuestions."},
+        {"name": "Strength of Nature", "level": 51, "inDb": true, "note": "Classic Ranger 51 (Velious). +25 ATK (Attack slot 1) and +75 max HP (HP (Strength) heading). Castable on others."}
+      ],
+      "replacement": {"strict": false, "note": "Monotonic in ATK (10 -> 15 -> 20 -> 25) and later members overwrite earlier ones in Attack slot 1, but Force of Nature (self, permanent, carries a damage shield and HP/endurance regen) and Strength of Nature (castable on others, 1 hour, carries +75 max HP) are not interchangeable. Whether Force of Nature's non-ATK effects survive being overwritten by Strength of Nature is unverified."},
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [
+          {"line": "yaulp-line", "class": "Cleric/Paladin", "detail": "Yaulp IV grants +16 ATK in Attack slot 1 - conflicts with Firefist / Strength of Nature.", "source": "https://wiki.project1999.com/Buff_Lines#Attack_.28Slot_1.29"},
+          {"line": "grim-aura", "class": "Necromancer/Shadow Knight", "detail": "Grim Aura (+10 ATK) is Attack slot 1.", "source": "https://wiki.project1999.com/Buff_Lines#Attack_.28Slot_1.29"},
+          {"line": "celestial-tranquility", "class": "Item", "detail": "Celestial Fists click (+40 ATK) is Attack slot 1.", "source": "https://wiki.project1999.com/Buff_Lines#Attack_.28Slot_1.29"},
+          {"line": "divine-strength-line", "class": "Paladin", "detail": "Strength of Nature's +75 max HP is in the 'HP (Strength)' heading with Divine Glory (+100) and Divine Strength (+200) - a paladin's Divine Strength and the Ranger's Strength of Nature collide on the HP component.", "source": "https://wiki.project1999.com/Buff_Lines#HP_.28Strength.29"},
+          {"line": "hp-buffs-under-400", "class": "any", "detail": "CRITICAL: Strength of Nature carries an explicit stacking block - 'Block new spell if slot 4 is effect Max Hitpoints and < 400'. While it is up, incoming buffs whose slot 4 is a max-HP increase below 400 are refused. That covers Skin Like Nature (250), Skin Like Diamond (200), Valor (200), Resolution (250) and the lower Symbols. Cast the HP buffs FIRST, then Strength of Nature. The same effect text appears verbatim in the Legends file and on P99, so this is classic behaviour Legends inherits.", "source": "https://wiki.project1999.com/Ranger/Spells"}
+        ],
+        "stacksWith": [
+          {"line": "call-of-the-predator-line", "detail": "Attack slot 2."},
+          {"line": "wolf-form-line", "detail": "Attack slot 3."},
+          {"line": "visions-of-grandeur", "detail": "Attack slot 4 (Enchanter 60)."},
+          {"line": "bard-jonthans", "detail": "Jonthan's Provocation / McVaxius' Rousing Rondo are layer-2 ATK."},
+          {"line": "skin-line", "detail": "Strength of Nature's HP is the HP (Strength) heading, separate from HP (Primary) - subject to the <400 block above, it adds on top of Skin-line HP."}
+        ],
+        "notes": "P99's Ranger max-ATK row is Strength of Nature (slot 1) + Call of the Predator (slot 2) + Avatar (slot 3) + Visions of Grandeur (slot 4) + Frostreaver's Blessing (slot 5) + Dance of the Blade (slot 12) + bard + worn = +324."
+      },
+      "sources": ["https://wiki.project1999.com/Buff_Lines#Attack_.28Slot_1.29", "https://wiki.project1999.com/Buff_Lines#HP_.28Strength.29", "https://wiki.project1999.com/Ranger/Spells"]
+    },
+    {
+      "id": "call-of-the-predator-line",
+      "name": "Call of the Predator (group ATK, Attack slot 2)",
+      "category": "atk-buff",
+      "sharedWith": [],
+      "members": [
+        {"name": "Call of the Predator", "level": 60, "inDb": true, "note": "Classic Ranger 60. Group v2, +40 ATK. The Ranger's signature raid contribution."}
+      ],
+      "replacement": {"strict": true, "note": "Single member; no upgrade exists in the classic era."},
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [
+          {"line": "illusion-werewolf", "class": "Enchanter", "detail": "Illusion: Werewolf (+61 ATK) and Illusion: Spirit Wolf (+15) are Attack slot 2 - an enchanter werewolf illusion blocks Call of the Predator.", "source": "https://wiki.project1999.com/Buff_Lines#Attack_.28Slot_2.29"}
+        ],
+        "stacksWith": [
+          {"line": "atk-self-line", "detail": "Attack slot 1 (Firefist / Strength of Nature)."},
+          {"line": "wolf-form-line", "detail": "Attack slot 3 (Wolf Form / Greater Wolf Form / Avatar)."},
+          {"line": "visions-of-grandeur", "detail": "Attack slot 4."}
+        ],
+        "notes": "Only one Ranger's Call of the Predator matters per group - identical spells from two Rangers overwrite."
+      },
+      "sources": ["https://wiki.project1999.com/Buff_Lines#Attack_.28Slot_2.29", "https://wiki.project1999.com/Ranger/Spells"]
+    },
+    {
+      "id": "vision-line",
+      "name": "Vision line (Eyes of the Cat / Chill Sight)",
+      "category": "vision",
+      "sharedWith": [],
+      "members": [
+        {"name": "Eyes of the Cat", "level": 27, "inDb": true, "note": "Classic Ranger 30. Infravision, self-only."},
+        {"name": "Chill Sight", "level": 56, "inDb": true, "note": "Classic Ranger 56. Ultravision, self-only."}
+      ],
+      "replacement": {"strict": true, "note": "Ultravision strictly supersedes Infravision for seeing in the dark; they are separate effects but there is no reason to run Eyes of the Cat once Chill Sight is available."},
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [
+          {"line": "shrew-line", "class": "Ranger/Druid/Shaman", "detail": "SUSPECTED: Spirit of the Shrew and Pack Shrew also grant Ultravision; running one alongside Chill Sight is redundant and one likely overwrites the other. Unverified against a classic source.", "source": "https://everquest.allakhazam.com/db/spell.html?spell=4054"}
+        ],
+        "stacksWith": [],
+        "notes": "Vision effects are not tabulated on the P99 Buff Lines page (it covers statistics only), so slot claims here are weaker than the AC/HP/ATK ones."
+      },
+      "sources": ["https://wiki.project1999.com/Ranger/Spells"]
+    },
+    {
+      "id": "resist-fire-line",
+      "name": "Fire resist line",
+      "category": "resist",
+      "sharedWith": ["Druid", "Cleric", "Shaman"],
+      "members": [
+        {"name": "Endure Fire", "level": 9, "inDb": true, "note": "Classic Druid 1 / Ranger 9 / Cleric 9 / Shaman 5. +20 FR at max."},
+        {"name": "Resist Fire", "level": 46, "inDb": true, "note": "Classic Ranger 49 (Buff Lines and Ranger/Spells agree). +40 FR at max."}
+      ],
+      "replacement": {"strict": true, "note": "Same slot, +20 -> +40; later overwrites earlier."},
+      "missingOnLegends": ["Circle of Winter (Druid 51 group +45 FR - Druid-only)"],
+      "stacking": {
+        "conflicts": [
+          {"line": "circle-of-winter", "class": "Druid", "detail": "Circle of Winter (+45) is Fire Resist slot 1 with Endure/Resist Fire - the druid group version replaces the Ranger's.", "source": "https://wiki.project1999.com/Buff_Lines#Slot_1_2"},
+          {"line": "aura-of-red-petals", "class": "Item", "detail": "Aura of Red Petals (Red Flower of Functionality, +50) is Fire Resist slot 1.", "source": "https://wiki.project1999.com/Buff_Lines#Slot_1_2"}
+        ],
+        "stacksWith": [
+          {"line": "magician-fire-shield-line", "detail": "Shield of Fire through Aegis of Ro give fire resist in slot 2 - they stack with Resist Fire."},
+          {"line": "elemental-armor", "detail": "Elemental Armor / Aura of Cold potions are Fire Resist slot 4."},
+          {"line": "bard-psalm-of-cooling", "detail": "Psalm of Cooling and Elemental Rhythms are layer 2."}
+        ],
+        "notes": ""
+      },
+      "sources": ["https://wiki.project1999.com/Buff_Lines#Fire_Resistance", "https://wiki.project1999.com/Ranger/Spells"]
+    },
+    {
+      "id": "resist-cold-line",
+      "name": "Cold resist line",
+      "category": "resist",
+      "sharedWith": ["Druid", "Cleric", "Shaman"],
+      "members": [
+        {"name": "Endure Cold", "level": 18, "inDb": true, "note": "P99 Ranger/Spells lists Endure Cold at Ranger 22 (Velious era); the Buff Lines page says Ranger 9. Discrepancy inside P99 itself - Legends puts it at 18."},
+        {"name": "Resist Cold", "level": 55, "inDb": true, "note": "P99 Ranger/Spells lists Resist Cold at Ranger 55 (Velious); Buff Lines says Ranger 49. Discrepancy inside P99 itself."}
+      ],
+      "replacement": {"strict": true, "note": "+20 -> +40, same slot."},
+      "missingOnLegends": ["Circle of Summer (Druid 52 group +45 CR - Druid-only)"],
+      "stacking": {
+        "conflicts": [
+          {"line": "circle-of-summer", "class": "Druid", "detail": "Circle of Summer (+45) is the Cold Resistance Primary line with Endure/Resist Cold.", "source": "https://wiki.project1999.com/Buff_Lines#Cold_Resistance"}
+        ],
+        "stacksWith": [
+          {"line": "aura-of-white-petals", "detail": "Aura of White Petals and Elemental Armor are the separate Flower/Armor heading - they stack with Resist Cold."},
+          {"line": "bard-psalm-of-warmth", "detail": "Psalm of Warmth is the bard heading."},
+          {"line": "aura-of-heat-potions", "detail": "Potion heading."}
+        ],
+        "notes": "Cold resist is the one resist where a Ranger's own buff plus a flower plus a bard song all stack, unlike fire where the flower shares the Ranger's slot."
+      },
+      "sources": ["https://wiki.project1999.com/Buff_Lines#Cold_Resistance", "https://wiki.project1999.com/Ranger/Spells"]
+    },
+    {
+      "id": "strength-line",
+      "name": "Strength line",
+      "category": "stat-buff",
+      "sharedWith": ["Druid"],
+      "members": [
+        {"name": "Strength of Earth", "level": 26, "inDb": true, "note": "Classic Druid 9 / Ranger 22. +15 STR at max."},
+        {"name": "Storm Strength", "level": 53, "inDb": true, "note": "Classic Druid 44 / Ranger 53. +35 STR at max."}
+      ],
+      "replacement": {"strict": true, "note": "Same Strength (Primary) heading; +15 -> +35."},
+      "missingOnLegends": ["Strength of Stone (Druid 34)", "Girdle of Karana (Druid 55)"],
+      "stacking": {
+        "conflicts": [
+          {"line": "shaman-strength-line", "class": "Shaman", "detail": "Strengthen, Spirit Strength, Raging Strength, Furious/Tumultuous Strength, Strength, Maniacal Strength and Talisman of the Rhino are all Strength (Primary) - a shaman's Strength (+67) overwrites Storm Strength (+35).", "source": "https://wiki.project1999.com/Buff_Lines#Strength_.28Primary.29"},
+          {"line": "druid-strength-line", "class": "Druid", "detail": "Strength of Stone (Druid 34, +25) and Girdle of Karana (Druid 55, +42) are the Druid continuation of the same line.", "source": "https://wiki.project1999.com/Buff_Lines#Strength_.28Primary.29"},
+          {"line": "berserker-spirit", "class": "Enchanter", "detail": "Rampage (+42) and Berserker Spirit (+40) are Strength (Primary).", "source": "https://wiki.project1999.com/Buff_Lines#Strength_.28Primary.29"}
+        ],
+        "stacksWith": [
+          {"line": "focus-of-spirit", "detail": "Focus of Spirit's STR is the 'Strength (Power)' heading - it stacks."},
+          {"line": "bard-anthem", "detail": "Anthem De Arms / Chant of Battle are the Anthem heading."},
+          {"line": "yaulp-line", "detail": "Yaulp STR is the 'Short Duration: Yaulp' heading."},
+          {"line": "avatar", "detail": "Avatar STR is its own heading."}
+        ],
+        "notes": "In a grouped raid the shaman's Strength line always wins; the Ranger's Storm Strength matters mostly when soloing or when no shaman is present."
+      },
+      "sources": ["https://wiki.project1999.com/Buff_Lines#Strength_.28Primary.29", "https://wiki.project1999.com/Ranger/Spells"]
+    },
+    {
+      "id": "agility-line",
+      "name": "Agility line (Feet like Cat)",
+      "category": "stat-buff",
+      "sharedWith": ["Shaman"],
+      "members": [
+        {"name": "Feet like Cat", "level": 12, "inDb": true, "note": "Classic Ranger 15 / Shaman 5. +18 AGI at max. The Ranger's only agility buff."}
+      ],
+      "replacement": {"strict": true, "note": "Single member for Rangers."},
+      "missingOnLegends": ["Spirit of Cat, Nimble, Agility, Deliriously Nimble, Talisman of the Cat (all Shaman-only)"],
+      "stacking": {
+        "conflicts": [
+          {"line": "shaman-agility-line", "class": "Shaman", "detail": "Feet like Cat sits at the bottom of Agility (Primary) with Spirit of Cat (+27), Nimble (+36), Agility (+45), Talisman of the Cat (+45) and Deliriously Nimble (+52). Any shaman agility buff replaces it.", "source": "https://wiki.project1999.com/Buff_Lines#Agility_.28Primary.29"}
+        ],
+        "stacksWith": [
+          {"line": "augmentation-line", "detail": "Enchanter Augmentation/Augment AGI is the 'Speed Augmentation' heading."},
+          {"line": "bard-march", "detail": "Nillipus' March of the Wee is the March heading."},
+          {"line": "avatar", "detail": "Avatar / Primal Essence is its own heading."}
+        ],
+        "notes": ""
+      },
+      "sources": ["https://wiki.project1999.com/Buff_Lines#Agility_.28Primary.29"]
+    },
+    {
+      "id": "call-proc-line",
+      "name": "Call of Sky / Call of Fire line (melee proc buff)",
+      "category": "proc-buff",
+      "sharedWith": [],
+      "members": [
+        {"name": "Call of Sky", "level": 36, "inDb": true, "note": "Classic Ranger 39 (Velious). Self-only 'Add Melee Proc'."},
+        {"name": "Call of Sky Strike", "level": 36, "inDb": true, "note": "Proc payload of Call of Sky - 35 damage + 1 sec stun. Not directly castable; appears as its own DB row."},
+        {"name": "Call of Fire", "level": 55, "inDb": true, "note": "Classic Ranger 55. Self-only 'Add Proc: Call Of Fire Strike'. Legends gives it a 10 minute duration."},
+        {"name": "Call of Fire Strike", "level": 55, "inDb": true, "note": "Proc payload of Call of Fire - 65 damage + 1 sec stun. Not directly castable."}
+      ],
+      "replacement": {"strict": true, "note": "Call of Fire's proc does 65 vs Call of Sky's 35, so it is a straight upgrade. INFERRED: a character can only carry one added melee proc at a time, so the later spell replaces the earlier. Not confirmed by a cited classic source."},
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [
+          {"line": "other-proc-buffs", "class": "any", "detail": "INFERRED, LOW CONFIDENCE: added-melee-proc buffs (Call of Sky, Call of Fire, shaman/enchanter proc buffs, weapon-granted procs from spells) generally occupy one proc slot and overwrite. The P99 Buff Lines page does not tabulate proc buffs, so no citation is available.", "source": "https://wiki.project1999.com/Buff_Lines"}
+        ],
+        "stacksWith": [],
+        "notes": "The two 'Strike' rows are payload spells and should probably be hidden from a player-facing spell list."
+      },
+      "sources": ["https://wiki.project1999.com/Ranger/Spells"]
+    },
+    {
+      "id": "snare-line",
+      "name": "Snare line",
+      "category": "snare",
+      "sharedWith": ["Druid"],
+      "members": [
+        {"name": "Tangling Weeds", "level": 5, "inDb": true, "note": "-20% movement, 18 sec. Not present in the classic P99 Ranger or Druid lists - Legends-added low-level snare."},
+        {"name": "Snare", "level": 6, "inDb": true, "note": "Classic Druid 1 / Ranger 9. Legends -40% for 3 min; classic -41% to -55%."},
+        {"name": "Ensnare", "level": 51, "inDb": true, "note": "Classic Druid 29 / Ranger 51. Legends -40% for 11 min; classic -56%. On Legends the upgrade is duration, not magnitude."}
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "On Legends, Ensnare and Snare have the SAME -40% magnitude; Ensnare only extends duration 3 min -> 11 min. In classic, Ensnare was also stronger (-56% vs -55%). Legends therefore makes Ensnare a duration upgrade only - worth flagging to players who expect a stronger slow."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [
+          {"line": "sow-line", "class": "Druid/Ranger/Shaman", "detail": "Movement-speed debuffs and movement-speed buffs write the same effect: casting Spirit of Wolf on a snared mob removes the snare, and stronger snares overwrite weaker ones. Well-known classic behaviour; the P99 Buff Lines page tabulates beneficial buffs only, so this conflict is asserted from the shared Speed effect rather than a table row.", "source": "https://wiki.project1999.com/Buff_Lines#Speed_.28Primary.29"}
+        ],
+        "stacksWith": [],
+        "notes": "Root (Grasping/Ensnaring/Enveloping Roots) is a separate effect from snare and the two do coexist, but a root break leaves the snare running."
+      },
+      "sources": ["https://wiki.project1999.com/Ranger/Spells", "https://wiki.project1999.com/Druid/Spells"]
+    },
+    {
+      "id": "root-line",
+      "name": "Roots line",
+      "category": "root",
+      "sharedWith": ["Druid"],
+      "members": [
+        {"name": "Grasping Roots", "level": 15, "inDb": true, "note": "Classic Druid 5 / Ranger 15."},
+        {"name": "Ensnaring Roots", "level": 45, "inDb": true, "note": "Classic Druid 24 / Ranger 49."},
+        {"name": "Enveloping Roots", "level": 60, "inDb": true, "note": "Classic Druid 39 / Ranger 60. Top of the Ranger chain."}
+      ],
+      "replacement": {"strict": true, "note": "Longer duration, higher level cap and more up-front damage at each step; a new root overwrites the old one."},
+      "missingOnLegends": ["Engulfing Roots (Druid 49)", "Engorging Roots (Druid 56)", "Entrapping Roots (Druid 60)"],
+      "stacking": {
+        "conflicts": [
+          {"line": "root-line-any", "class": "any", "detail": "All root effects share one slot; recasting replaces. Damage from any source can break root.", "source": "https://wiki.project1999.com/Ranger/Spells"}
+        ],
+        "stacksWith": [{"line": "snare-line", "detail": "Root and snare are separate effects and coexist - the standard Ranger root-rot open."}],
+        "notes": "Each Ranger root also lands a direct-damage component, so casting root on a rooted mob risks breaking it."
+      },
+      "sources": ["https://wiki.project1999.com/Ranger/Spells", "https://wiki.project1999.com/Druid/Spells"]
+    },
+    {
+      "id": "animal-pacify-line",
+      "name": "Lull Animal line (animal pacify)",
+      "category": "pacify",
+      "sharedWith": ["Druid"],
+      "members": [
+        {"name": "Lull Animal", "level": 4, "inDb": true, "note": "Classic Druid 1 / Ranger 9. Works up to L30 targets."},
+        {"name": "Calm Animal", "level": 31, "inDb": true, "note": "Classic Druid 19 / Ranger 39. Works up to L50 targets."}
+      ],
+      "replacement": {"strict": true, "note": "Higher level cap and smaller aggro-radius reduction penalty; Calm Animal replaces Lull Animal for anything above L30."},
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [
+          {"line": "harmony-line", "class": "Ranger/Druid", "detail": "Pacify effects share a slot; a landed Harmony and a landed Calm Animal overwrite one another on the same target.", "source": "https://wiki.project1999.com/Ranger/Spells"}
+        ],
+        "stacksWith": [],
+        "notes": "Animal-only targeting; Harmony is the any-mob equivalent."
+      },
+      "sources": ["https://wiki.project1999.com/Ranger/Spells"]
+    },
+    {
+      "id": "harmony-line",
+      "name": "Harmony line (any-target pacify)",
+      "category": "pacify",
+      "sharedWith": ["Druid"],
+      "members": [
+        {"name": "Harmony", "level": 22, "inDb": true, "note": "Classic Druid 5 / Ranger 22. Targeted AE, works up to L40 targets."},
+        {"name": "Harmony of Nature", "level": 39, "inDb": true, "note": "Works up to L65 targets. Post-classic - not on the P99 Ranger or Druid lists. On Legends it is single-target, not targeted AE."}
+      ],
+      "replacement": {"strict": false, "note": "Harmony of Nature raises the level cap from 40 to 65, but on Legends it changes target type from Targeted AE to Single and has a shorter duration (42 sec vs 2 min). It is an upgrade for high-level pulls and a downgrade for clearing a camp - keep both."},
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [
+          {"line": "animal-pacify-line", "class": "Ranger/Druid", "detail": "Same pacify slot as Lull/Calm Animal.", "source": "https://wiki.project1999.com/Ranger/Spells"}
+        ],
+        "stacksWith": [],
+        "notes": "Harmony is the Ranger's pulling tool; the aggro-radius reduction is the load-bearing part, not the pacify."
+      },
+      "sources": ["https://wiki.project1999.com/Ranger/Spells"]
+    },
+    {
+      "id": "fire-dd-line",
+      "name": "Fire nuke line",
+      "category": "dd",
+      "sharedWith": ["Druid"],
+      "members": [
+        {"name": "Burst of Fire", "level": 14, "inDb": true, "note": "Classic Druid 5 / Ranger 15."},
+        {"name": "Ignite", "level": 19, "inDb": true, "note": "Classic Druid 9 / Ranger 22."},
+        {"name": "Firestrike", "level": 52, "inDb": true, "note": "Classic Druid 39 / Ranger 52."},
+        {"name": "Calefaction", "level": 59, "inDb": true, "note": "Classic Druid 44 / Ranger 59. P99 notes it is poor value vs casting Firestrike twice - Legends keeps the same shape (450 for 250 mana vs 422 for 155)."}
+      ],
+      "replacement": {"strict": true, "note": "Straight damage upgrades. Calefaction is a mana-efficiency downgrade despite being higher damage per cast."},
+      "missingOnLegends": ["Burst of Flame (Druid 1)", "Combust / Breath of Ro / Wildfire (Druid-only)"],
+      "stacking": {"conflicts": [], "stacksWith": [], "notes": "Instant direct damage - no buff slots involved."},
+      "sources": ["https://wiki.project1999.com/Ranger/Spells", "https://wiki.project1999.com/Druid/Spells"]
+    },
+    {
+      "id": "arrow-line",
+      "name": "Arrow line (fire DD + DoT)",
+      "category": "dd",
+      "sharedWith": [],
+      "members": [
+        {"name": "Searing Arrow", "level": 15, "inDb": true, "note": "Post-classic Ranger line (Luclin era). Not present on P99."},
+        {"name": "Flaming Arrow", "level": 26, "inDb": true, "note": "Live EQ: Ranger 29, 113 damage instant (Allakhazam spell 3565). Legends: 102 up-front + 51/tick."},
+        {"name": "Burning Arrow", "level": 36, "inDb": true, "note": "Live EQ: Ranger 39, 182 damage. Legends: 155 + 78/tick."},
+        {"name": "Scorching Arrow", "level": 46, "inDb": true, "note": "Legends: 210 + 105/tick."}
+      ],
+      "replacement": {"strict": true, "note": "Monotonic damage; each replaces the previous. On Legends every member is a hybrid nuke + 6-second DoT, which is a Legends re-shape - the live-EQ versions are pure instant nukes."},
+      "missingOnLegends": [],
+      "stacking": {"conflicts": [], "stacksWith": [], "notes": "The 6-second DoT component means two arrow casts in quick succession may overwrite each other's DoT tick - unverified on Legends."},
+      "sources": ["https://everquest.allakhazam.com/db/spell.html?spell=3565"]
+    },
+    {
+      "id": "lightning-dd-line",
+      "name": "Lightning nuke line",
+      "category": "dd",
+      "sharedWith": ["Druid"],
+      "members": [
+        {"name": "Invoke Lightning", "level": 15, "inDb": true, "note": "Classic Druid 5 / Ranger 15. Targeted AE."},
+        {"name": "Careless Lightning", "level": 37, "inDb": true, "note": "Classic Druid 19 / Ranger 39. Single target."}
+      ],
+      "replacement": {"strict": false, "note": "Careless Lightning does far more damage but is single-target; Invoke Lightning is a Targeted AE. Different tools, not a clean replacement."},
+      "missingOnLegends": ["Lightning Strike (Druid 34)", "Lightning Blast (Druid 49)", "Fury of Air / Cascade of Hail (Druid-only)"],
+      "stacking": {"conflicts": [], "stacksWith": [], "notes": ""},
+      "sources": ["https://wiki.project1999.com/Ranger/Spells", "https://wiki.project1999.com/Druid/Spells"]
+    },
+    {
+      "id": "flame-lick-line",
+      "name": "Flame Lick line (fire DoT + AC debuff)",
+      "category": "dot",
+      "sharedWith": ["Druid"],
+      "members": [
+        {"name": "Flame Lick", "level": 3, "inDb": true, "note": "Classic Druid 1 / Ranger 9. -3 AC plus a small fire DoT. Requires a Fire Beetle Eye. Legends scales the DoT to 17/tick at L32 vs classic 3/tick."},
+        {"name": "Immolate", "level": 44, "inDb": true, "note": "Classic Druid 29 / Ranger 49. -10 to -18 AC plus a large fire DoT. Legends 42-67/tick vs classic 24/tick."}
+      ],
+      "replacement": {"strict": true, "note": "Immolate is stronger on both the DoT and the AC debuff. Same effect family, so the later overwrites the earlier on a target."},
+      "missingOnLegends": ["Breath of Ro (Druid 52)", "Wildfire (Druid 59)"],
+      "stacking": {
+        "conflicts": [
+          {"line": "ac-debuff-effects", "class": "any", "detail": "The AC-reduction component shares a debuff slot with other AC debuffs; a stronger AC debuff on the same mob replaces a weaker one. Both members of this line carry it, so Flame Lick on an Immolated mob is a downgrade.", "source": "https://wiki.project1999.com/Ranger/Spells"}
+        ],
+        "stacksWith": [{"line": "swarm-line", "detail": "Insect-swarm DoTs are a separate DoT and run concurrently with Flame Lick / Immolate."}],
+        "notes": "This is the Ranger's only debuff line."
+      },
+      "sources": ["https://wiki.project1999.com/Ranger/Spells", "https://wiki.project1999.com/Druid/Spells"]
+    },
+    {
+      "id": "swarm-line",
+      "name": "Swarm line (insect DoT)",
+      "category": "dot",
+      "sharedWith": ["Druid"],
+      "members": [
+        {"name": "Stinging Swarm", "level": 25, "inDb": true, "note": "Classic Druid 14 / Ranger 30. Legends 27-42/tick vs classic 13/tick."},
+        {"name": "Swarm of Pain", "level": 40, "inDb": true, "note": "Post-classic - not on the P99 Ranger or Druid lists. 50-56/tick on Legends."},
+        {"name": "Drones of Doom", "level": 54, "inDb": true, "note": "Classic Druid 34 / Ranger 54. Legends 148-156/tick vs classic 34/tick."}
+      ],
+      "replacement": {"strict": true, "note": "Monotonic damage; same DoT family so the later member overwrites the earlier on a target."},
+      "missingOnLegends": ["Drifting Death (Druid 44)", "Winged Death (Druid 53)"],
+      "stacking": {
+        "conflicts": [
+          {"line": "swarm-line-self", "class": "Ranger/Druid", "detail": "Members of this line overwrite each other on a target; a second Ranger casting a lower member wipes the higher one.", "source": "https://wiki.project1999.com/Druid/Spells/34"}
+        ],
+        "stacksWith": [{"line": "flame-lick-line", "detail": "Different DoT family - Immolate and Drones of Doom run together."}],
+        "notes": "These DoTs draw aggro on landing and each tick; the classic Ranger root-rot pattern is root + Immolate + Drones."
+      },
+      "sources": ["https://wiki.project1999.com/Ranger/Spells", "https://wiki.project1999.com/Druid/Spells/34"]
+    },
+    {
+      "id": "summoned-dd-line",
+      "name": "Ward Summoned line (anti-summoned nuke)",
+      "category": "dd",
+      "sharedWith": ["Druid"],
+      "members": [
+        {"name": "Ward Summoned", "level": 16, "inDb": true, "note": "Classic Druid 5 / Ranger 22."},
+        {"name": "Dismiss Summoned", "level": 33, "inDb": true, "note": "Classic Druid 24 / Ranger 39."}
+      ],
+      "replacement": {"strict": true, "note": "Straight damage upgrade against Construct/Elemental targets."},
+      "missingOnLegends": ["Expulse Summoned (Druid 14)", "Expel Summoned (Druid 34)", "Banish Summoned (Druid 44)", "Exile Summoned (Druid 55)"],
+      "stacking": {"conflicts": [], "stacksWith": [], "notes": "Rangers stop at Dismiss Summoned in classic; the higher members are Druid-only, so the Legends omission is correct, not a gap."},
+      "sources": ["https://wiki.project1999.com/Ranger/Spells", "https://wiki.project1999.com/Druid/Spells"]
+    },
+    {
+      "id": "jolt-line",
+      "name": "Jolt line (hate reduction)",
+      "category": "utility",
+      "sharedWith": [],
+      "members": [
+        {"name": "Jolt", "level": 50, "inDb": true, "note": "Classic Ranger 55 (Kunark). -500 hate, magic resist check."},
+        {"name": "Cinder Jolt", "level": 55, "inDb": true, "note": "Classic Ranger 55 (Velious). -500 hate, FIRE resist check."}
+      ],
+      "replacement": {"strict": false, "note": "Sidegrade, not an upgrade: identical -500 hate, but Cinder Jolt is checked against fire resist instead of magic resist. Keep both and pick by the mob's resistances."},
+      "missingOnLegends": [],
+      "stacking": {"conflicts": [], "stacksWith": [], "notes": "Instant hate reduction, no buff slot."},
+      "sources": ["https://wiki.project1999.com/Ranger/Spells"]
+    },
+    {
+      "id": "dispel-line",
+      "name": "Cancel Magic line",
+      "category": "utility",
+      "sharedWith": ["Druid"],
+      "members": [
+        {"name": "Cancel Magic", "level": 30, "inDb": true, "note": "Classic Druid 19 / Ranger 30. Cancel Magic (1) - one dispel attempt."}
+      ],
+      "replacement": {"strict": true, "note": "Nullify Magic is the strict upgrade (4 dispel attempts) but is absent from the Legends file."},
+      "missingOnLegends": ["Nullify Magic"],
+      "stacking": {"conflicts": [], "stacksWith": [], "notes": "MISSING ON LEGENDS: Nullify Magic is a classic Ranger 58 spell (P99 Ranger/Spells, Kunark era; also Druid 44). Its absence leaves the Legends Ranger with only single-attempt dispel at level 60."},
+      "sources": ["https://wiki.project1999.com/Ranger/Spells"]
+    },
+    {
+      "id": "stamina-line",
+      "name": "Invigor line (fatigue recovery)",
+      "category": "utility",
+      "sharedWith": ["Druid"],
+      "members": [
+        {"name": "Invigor", "level": 30, "inDb": true, "note": "Classic Druid 14 / Ranger 30. -35 stamina loss."},
+        {"name": "Extinguish Fatigue", "level": 52, "inDb": true, "note": "Classic Druid 29 / Ranger 52. -90 stamina loss."}
+      ],
+      "replacement": {"strict": true, "note": "Larger stamina recovery; same effect."},
+      "missingOnLegends": [],
+      "stacking": {"conflicts": [], "stacksWith": [], "notes": "Effectively obsolete once stamina stopped gating melee, but classic-accurate."},
+      "sources": ["https://wiki.project1999.com/Ranger/Spells"]
+    }
+  ],
+  "standalone": [
+    {"name": "Glimpse", "level": 2, "note": "Classic Ranger 9. Self-only +55% magnification (zoom). No upgrade exists; Bind Sight is a different effect."},
+    {"name": "Dance of the Fireflies", "level": 10, "note": "Classic Ranger 15. Summons a light source (Firefly Globe). Also Druid 1. No upgrade line for Rangers."},
+    {"name": "Hawk Eye", "level": 11, "note": "+10% chance to hit, self, permanent. NOT in the classic P99 Ranger list and not a Druid spell - Legends-specific (or post-classic). No upgrade found. Effect is unlike anything on the P99 Buff Lines page, so stacking is unknown."},
+    {"name": "Cure Poison", "level": 13, "note": "Classic Ranger 15. -4 poison counters. The upgrade (Counteract Poison, Druid 29) is Druid-only, so this is correctly a single spell for Rangers."},
+    {"name": "Panic Animal", "level": 16, "note": "Classic Ranger 22. Animal-only fear. The upgrade (Terrorize Animal, Druid 19) is Druid-only."},
+    {"name": "Bind Sight", "level": 17, "note": "Classic Ranger 22. See through the target's eyes. Ranger/Druid scouting utility, no upgrade."},
+    {"name": "Enduring Breath", "level": 20, "note": "Classic Ranger 22. Water breathing, consumes Fish Scales. No Ranger upgrade."},
+    {"name": "Cure Disease", "level": 22, "note": "-4 disease counters. NOT on the P99 classic Ranger list (Rangers get only Cure Poison in classic); it is Druid 5. Legends grants it to Rangers."},
+    {"name": "See Invisible", "level": 32, "note": "NOT on the P99 classic Ranger list; it is Druid 14. Legends grants it to Rangers."},
+    {"name": "Levitate", "level": 35, "note": "Classic Ranger 39. Consumes a Bat Wing. Levitation is its own effect and overwrites other levitate sources."},
+    {"name": "Call of Flame", "level": 49, "note": "Classic Ranger 49, obtained from the Call of Flame Quest rather than a vendor. A one-off fire nuke (300 on Legends) that sits between Ignite and Firestrike in the fire-DD progression but upgrades nothing and is upgraded by nothing."}
+  ],
+  "unlinked": [
+    {"info": "MISSING ON LEGENDS - Chloroplast. Classic Ranger 55 (also Druid 44, Shaman 39): +10 HP/tick regeneration, HP-Regeneration slot 1. Its absence means the Legends Ranger has NO regeneration buff at all except the incidental +2/tick rider on Skin Like Nature (which is regen slot 4, not slot 1). This is the single largest capability gap versus the classic Ranger.", "source": "https://wiki.project1999.com/Buff_Lines#HP_Regeneration_.28Slot_1.29"},
+    {"info": "MISSING ON LEGENDS - Nullify Magic. Classic Ranger 58 (Kunark), Cancel Magic (4). Leaves the Legends Ranger with only the level-30 single-attempt Cancel Magic.", "source": "https://wiki.project1999.com/Ranger/Spells"},
+    {"info": "HP-Regeneration slot 1 (Chloroplast, Regeneration, Regrowth, Regrowth of the Grove, Fungal Regrowth) is a separate heading from HP-Regeneration slot 4 (Skin Like Nature's +2, Natureskin's +4, the Rejuvenation potions). So a Fungi Staff or a druid's Regrowth stacks with Skin Like Nature's regen rider, but a Rejuvenation potion does not.", "source": "https://wiki.project1999.com/Buff_Lines#HP_Regeneration_.28Slot_4.29"},
+    {"info": "P99 internal inconsistency worth recording: the Ranger/Spells page omits Spikecoat from its level 49 block, but the Buff Lines page lists 'Spikecoat (Self-only: Druid 39, Ranger 49)' in both AC slot 2 and Damage Shield slot 3. Spikecoat IS a classic Ranger spell; Legends has it at 42.", "source": "https://wiki.project1999.com/Buff_Lines#AC_.28Slot_2.29"},
+    {"info": "P99 internal inconsistency: Endure Cold and Resist Cold are listed as Ranger 22 and Ranger 55 (Velious era) on Ranger/Spells but as Ranger 9 and Ranger 49 on Buff Lines. Legends uses 18 and 55.", "source": "https://wiki.project1999.com/Buff_Lines#Cold_Resistance"},
+    {"info": "Classic applies a hybrid-class penalty to some Ranger casts - P99 records Greater Healing as '288 (L24) to 300 (L30) (Hybrid Classes: 244 to 270 HP)'. This is the most likely explanation for the paired Skin-line rows in the Legends file, where one row carries lower AC than the other.", "source": "https://wiki.project1999.com/Ranger/Spells"},
+    {"info": "Rangers have no haste spell in any era, so the shaman/enchanter Haste (Primary) line and the Ervaj/v2 line never conflict with anything a Ranger casts.", "source": "https://wiki.project1999.com/Buff_Lines#Haste"},
+    {"info": "Aegolism (Cleric 60) is the only buff that occupies AC slot 1 AND slot 4 simultaneously; it therefore blocks the Ranger's Skin line and the cleric Aegis line at once, and per the P99 max-HP table it is a net -70 HP versus the best mixed stack. A Ranger being buffed by a full cleric should prefer Heroism + Aegis + Symbol over Aegolism where the choice exists.", "source": "https://wiki.project1999.com/Buff_Lines#HP_.28Primary.29"}
+  ],
+  "openQuestions": [
+    "Every Skin-line spell appears TWICE in the Legends file - once with 'Increase Armor Class by N' (lower AC, level equal or 1-2 lower, targetType 'Single Friendly (or Self)') and once with 'Increase AC by N' (exactly the classic P99 values and the classic Ranger level, targetType 'Single'). Are these two distinct castable spells on Legends, a hybrid-penalty variant pair, or duplicated DB rows that should be de-duplicated before display? Same question for the AC phrasing on Riftwind's Protection, the coat line and Call of Earth.",
+    "Legends' Riftwind's Protection grants +30 AC while the level-48 Call of Earth grants only +20 AC (live EQ has 11-12 and 24-25 respectively). Is the +30 intentional, and does Call of Earth actually overwrite it in-game? If it does, the level-48 spell is an AC downgrade.",
+    "Force of Nature (L50) grants +5 damage shield and +6 HP/tick - which damage-shield slot and which regen slot? If its DS is slot 1 it conflicts with Shield of Spikes; if slot 3 it conflicts with the coat line. If its regen is slot 1 it partly replaces the missing Chloroplast.",
+    "Does casting Strength of Nature's 'Block new spell if slot 4 is effect Max Hitpoints and < 400' fire on Legends? If so, Rangers must be told to accept cleric/Skin HP buffs BEFORE self-casting Strength of Nature.",
+    "Do Spirit of the Shrew / Pack Shrew's Ultravision and Chill Sight's Ultravision overwrite each other on Legends?",
+    "Are added-melee-proc buffs (Call of Sky, Call of Fire) mutually exclusive with each other and with other proc buffs on Legends? No classic-source table covers proc buffs.",
+    "Legends' Ensnare is the same -40% as Snare (duration upgrade only). Intentional re-tier or a data error?",
+    "Our wiki mirror anchors a 'Blessing of the Page line' and a 'Shielding line'. Neither appears on the P99 AC/HP tables under those names (Shielding maps to the caster AC-slot-2 / HP-Shielding-Talisman entries). Confirm against the mirror whether Blessing of the Page shares a slot with the Skin line before publishing Ranger stacking advice.",
+    "Four spells in the file have no classic-era counterpart at all and should be confirmed as Legends-authored rather than mis-transcribed: Tangling Weeds, Hawk Eye, Harmony of Nature, Swarm of Pain (plus Nature's Precision and Force of Nature, which are named like later-era live spells)."
+  ],
+  "sources": [
+    "https://wiki.project1999.com/Ranger/Spells",
+    "https://wiki.project1999.com/Buff_Lines",
+    "https://wiki.project1999.com/Druid/Spells",
+    "https://wiki.project1999.com/Druid/Spells/34",
+    "https://wiki.project1999.com/Druid/Spells/50",
+    "https://everquest.allakhazam.com/db/spell.html?spell=3565",
+    "https://everquest.allakhazam.com/db/spell.html?spell=2593",
+    "https://everquest.allakhazam.com/db/spell.html?spell=4054",
+    "https://everquest.allakhazam.com/db/spell.html?spell=4055"
+  ]
+}

@@ -1,0 +1,620 @@
+{
+  "class": "Bard",
+  "lines": [
+    {
+      "id": "brd-haste-group",
+      "name": "Group Haste (Anthem / Celerity / Crescendo)",
+      "category": "haste",
+      "sharedWith": ["Enchanter", "Shaman", "Ranger"],
+      "members": [
+        { "name": "Anthem De Arms", "level": 10, "inDb": true, "note": "Singing. +10% haste, +35 STR (+98 with max instrument/Puretone). DB has two rows for this song, one worded 'Increase Melee Haste by 10%' (Group) and one 'Increase Attack Speed by 10%' (Party) - same effect, different wording." },
+        { "name": "Vilia's Verses of Celerity", "level": 36, "inDb": true, "note": "Singing. +20% haste, AGI and AC. First real group haste upgrade." },
+        { "name": "McVaxius' Berserker Crescendo", "level": 42, "inDb": true, "note": "Brass. P99 Buff_Lines lists +23% haste at max caster level; Legends DB row reads 'Increase Melee Haste by 8%' - see openQuestions." },
+        { "name": "Verses of Victory", "level": 50, "inDb": true, "note": "Singing. +30% haste plus STR 30 / AGI 30 / AC 15. The standard group haste song of the era." },
+        { "name": "Vilia's Chorus of Celerity", "level": 54, "inDb": true, "note": "Singing. +45% haste, haste-only (no stats). Highest bard group haste; bards run it when the group already has stats covered." },
+        { "name": "McVaxius' Rousing Rondo", "level": 57, "inDb": true, "note": "Brass. Only +22% haste (lower than Verses of Victory) but adds STR, ATK (Attack Layer 2 Slot 3&4) and a +8 (+22) damage shield (DS Layer 2 Slot 4). Chosen for the DS/ATK, not the haste." }
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "Not a strict chain. Haste magnitude does not climb monotonically: Vilia's Chorus of Celerity (54) is +45% while Verses of Victory (50) is +30% and McVaxius' Rousing Rondo (57) is only +22%. Because these songs bundle different secondary effects (STR, AGI, AC, ATK, damage shield) into different slots, the 'best' member depends on what else the group has. IMPORTANT INSTRUMENT EXCEPTION: per P99, 'All Bard song effects except haste and mana regeneration are affected by instruments' - so the haste component never benefits from an instrument, but the STR/AC/AGI/ATK/DS components scale up to +280% with a max (28) instrument modifier or Puretone Discipline. That means a Brass-wielding bard gets far more out of McVaxius' Rousing Rondo/Berserker Crescendo than a bard with no brass, while the haste number is unchanged."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "slots": ["Haste (Primary)", "Strength (Anthem)", "Attack (Layer 2, Slot 3 & 4)", "Damage Shield (Layer 2, Slot 4)", "Agility (Primary - unconfirmed)"],
+        "conflicts": [
+          { "line": "Enchanter/Shaman haste line", "class": "Enchanter, Shaman", "detail": "P99 Buff_Lines puts every bard group haste song in the SAME 'Haste (Primary)' table as Visions of Grandeur (Ench 60, +58%), Celerity (Ench 39 / Sha 56, +50%), Augment (Ench 56, +45%), Alacrity (Ench 24 / Sha 44, +40%), Quickness (Ench 16 / Sha 29, +30%), Augmentation (Ench 29, +28%) and Wonderous Rapidity (Ench 58, +70%). Buffs under the same heading cannot stack. A bard haste song and an enchanter/shaman haste spell therefore contend for one slot - only the stronger one is in effect, and the weaker one will not land.", "source": "https://wiki.project1999.com/Buff_Lines" },
+          { "line": "brd-haste-jonthans", "class": "Bard", "detail": "Jonthan's Whistling Warsong/Provocation/Inspiration are in the same Haste (Primary) slot, so a bard's self-haste song and a group haste song contend. Because Jonthan's is self-only and stronger, the classic result is that the bard gets Jonthan's while the group gets the group song - a well-known P99 interaction ('Jonathan's Provocation overwrites Verses of Victory since Jonathan's Provocation is self only and has a higher haste percentage').", "source": "https://www.project1999.com/forums/showthread.php?t=87734" },
+          { "line": "Ranger Haste / item click haste", "class": "Ranger", "detail": "Haste (Ranger 40) and self-only click hastes (Dark Cloak of the Sky, +50%) sit in Haste (Primary) too.", "source": "https://wiki.project1999.com/Buff_Lines" },
+          { "line": "Bard STR songs", "class": "Bard", "detail": "Anthem De Arms and McVaxius' Rousing Rondo share 'Strength (Anthem)' with Chant of Battle, Jonthan's Whistling Warsong and Niv's Melody of Preservation. Whichever lands first blocks/overwrites the others' STR component - this is the mechanical explanation for the community observation that Anthem de Arms, Chant of Battle and McVaxius' Berserker Crescendo 'do not stack'.", "source": "https://www.project1999.com/forums/archive/index.php/t-23433.html" }
+        ],
+        "stacksWith": [
+          { "line": "brd-haste-ervaj", "detail": "Melody/Composition of Ervaj occupy a SEPARATE 'Haste (Ervaj / v2)' slot and add on top of any Haste (Primary) source, bard or enchanter." },
+          { "line": "Shaman/Druid/Enchanter STR buffs", "detail": "'Strength (Anthem)' is a bard-only line; it stacks with Strength (Primary) (shaman Strength/Maniacal Strength, druid Storm Strength, enchanter Strengthen) and with Strength (Power) (Focus of Spirit, potions)." },
+          { "line": "Magician/Druid damage shields", "detail": "McVaxius' Rousing Rondo's damage shield is 'Damage Shield (Layer 2, Slot 4)', separate from mage/druid DS (Slot 1), so it stacks with Shield of Lava / Legacy of Thorn etc." },
+          { "line": "Ranger/Shaman/Cleric ATK buffs", "detail": "'Attack (Layer 2, Slot 3 & 4)' is a bard-only ATK line; it stacks with Attack Slots 1-12 used by Strength of Nature, Yaulp IV, Avatar, Call of the Predator, etc." }
+        ],
+        "notes": "Slot names are P99 Buff_Lines headings; 'Buffs under the same heading can't be stacked together'. Bard group haste is the single biggest place where bard songs collide with other classes' spells - it is a shared global slot, not a bard-private layer. Everything else this line carries (STR, ATK, DS) lives in bard-private 'Anthem' / 'Layer 2' lines and stacks freely. Note P99 Buff_Lines does NOT list the AC components of Vilia's Verses of Celerity, McVaxius' Berserker Crescendo or Verses of Victory, nor Verses of Victory's STR/AGI - a wiki gap, not evidence of free stacking."
+      },
+      "sources": [
+        "https://wiki.project1999.com/Buff_Lines",
+        "https://wiki.project1999.com/Bard",
+        "https://www.project1999.com/forums/archive/index.php/t-23433.html",
+        "https://www.project1999.com/forums/showthread.php?t=87734"
+      ]
+    },
+    {
+      "id": "brd-haste-jonthans",
+      "name": "Jonthan's Self-Only Haste",
+      "category": "haste",
+      "sharedWith": ["Enchanter", "Shaman", "Ranger"],
+      "members": [
+        { "name": "Jonthan's Whistling Warsong", "level": 7, "inDb": true, "note": "Singing, self-only. +25% haste at max, +32 (+89) STR, +10 (+28) AC. Also available as a click from Robe of the Whistling Fists." },
+        { "name": "Jonthan's Provocation", "level": 45, "inDb": true, "note": "Singing, self-only. P99 Buff_Lines: +50% haste; Legends DB row reads 'Increase Melee Haste by 3%' - see openQuestions. Adds +17 (+47) ATK." },
+        { "name": "Jonthan's Inspiration", "level": 58, "inDb": true, "note": "Singing, self-only. +63% haste, +16 (+44) ATK. Highest bard haste in the era; DB agrees with P99 (61-63%)." }
+      ],
+      "replacement": {
+        "strict": true,
+        "note": "Strict by haste magnitude (25% -> 50% -> 63%) and all three are self-only, so there is no reason to keep a lower member for its target type. One soft exception: only Jonthan's Whistling Warsong carries AC (AC Layer 2, Slot 3) and STR (Strength (Anthem)), so a low bard has a genuine reason to sing it that the upgrades do not replace. Because these are Singing-skill songs they scale with the singing modifier rather than an instrument, so no 'wrong instrument' inversion applies to the STR/AC/ATK numbers within this line."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "slots": ["Haste (Primary)", "Strength (Anthem)", "AC (Layer 2, Slot 3)", "Attack (Layer 2, Slot 3 & 4)"],
+        "conflicts": [
+          { "line": "Enchanter/Shaman haste line", "class": "Enchanter, Shaman", "detail": "Same global Haste (Primary) slot as Celerity, Alacrity, Quickness, Augment(ation), Visions of Grandeur, Wonderous Rapidity. Jonthan's Inspiration (+63%) beats everything an enchanter can cast except Wonderous Rapidity (+70%).", "source": "https://wiki.project1999.com/Buff_Lines" },
+          { "line": "brd-haste-group", "class": "Bard", "detail": "Contends with the bard's own group haste songs in Haste (Primary). Classic behaviour: the self-only Jonthan's overwrites the group song on the bard while groupmates keep the group song.", "source": "https://www.project1999.com/forums/showthread.php?t=87734" },
+          { "line": "brd-haste-group (ATK component)", "class": "Bard", "detail": "Jonthan's Provocation and Jonthan's Inspiration share 'Attack (Layer 2, Slot 3 & 4)' with McVaxius' Rousing Rondo - their ATK components do not stack with each other.", "source": "https://wiki.project1999.com/Buff_Lines" }
+        ],
+        "stacksWith": [
+          { "line": "brd-haste-ervaj", "detail": "Ervaj v2 haste adds on top of Jonthan's." },
+          { "line": "Cleric/Ranger/Shaman ATK spells", "detail": "Bard ATK is a private 'Layer 2' line - stacks with Yaulp IV, Strength of Nature, Avatar, Aura of Battle, etc." },
+          { "line": "Cleric/Druid/Enchanter AC spells", "detail": "Jonthan's Whistling Warsong AC is 'AC (Layer 2, Slot 3)', separate from all caster AC slots 1-9, so it stacks with Aegolism, Shield of Words, Umbra, Guardian etc." }
+        ],
+        "notes": "Self-only. On P99 the 12-second song-recast quirk applies: a song can still block a competing song for ~12 seconds after it was last sung even if the buff is no longer showing."
+      },
+      "sources": [
+        "https://wiki.project1999.com/Buff_Lines",
+        "https://wiki.project1999.com/Bard",
+        "https://www.project1999.com/forums/showthread.php?t=87734"
+      ]
+    },
+    {
+      "id": "brd-haste-ervaj",
+      "name": "Ervaj Haste (v2 / overhaste slot)",
+      "category": "haste",
+      "sharedWith": [],
+      "members": [
+        { "name": "Song: Melody of Ervaj", "level": 50, "inDb": true, "note": "Brass REQUIRED. +5% v2 haste, +5-6 AC. Velious-era NPC drop, not sold. DB has two rows: one reads 'Increase Melee Haste by 5%' and one 'Increase Haste v2 by 5%' - the v2 wording is the correct one per P99 Buff_Lines." },
+        { "name": "Song: Composition of Ervaj", "level": 60, "inDb": true, "note": "+10% v2 haste, +9 AC. Velious-era drop. DB has two identical rows. This is the classic bard 'overhaste' that everyone stacks on top of a hasted group." }
+      ],
+      "replacement": {
+        "strict": true,
+        "note": "Strict: Composition (+10%) strictly replaces Melody (+5%) and they share the same Ervaj/v2 slot, so they do not stack with each other. Melody of Ervaj REQUIRES a brass instrument to sing at all; the haste component itself is not instrument-modified, but the AC component is, so a bard with a strong brass gets meaningfully more AC out of it."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "slots": ["Haste (Ervaj/\"v2\")"],
+        "conflicts": [
+          { "line": "brd-haste-ervaj (internal)", "class": "Bard", "detail": "Melody of Ervaj and Composition of Ervaj are both listed under 'Haste (Ervaj/v2)' on P99 Buff_Lines and therefore do NOT stack with each other. Correction to the working model: Composition is not the only member of the v2 slot - Melody sits there too.", "source": "https://wiki.project1999.com/Buff_Lines" }
+        ],
+        "stacksWith": [
+          { "line": "Haste (Primary) - every source", "detail": "This is the load-bearing exception in the whole haste system: the Ervaj songs occupy a second, bard-only haste line, so +10% Composition of Ervaj adds on top of enchanter Wonderous Rapidity (+70%) to reach the P99 maximum of +80% spell haste. It also adds on top of any bard group/self haste song." }
+        ],
+        "notes": "P99 Buff_Lines' max spell-haste table is literally '+80% = +70% Wonderous Rapidity + 10% Composition of Ervaj', which is the cleanest proof that the v2 slot is additive with Haste (Primary). This page only covers spell haste; worn item haste is a separate system again."
+      },
+      "sources": [
+        "https://wiki.project1999.com/Buff_Lines",
+        "https://everquest.allakhazam.com/db/spelllist.html?type=brd&level=1&opt=And+Higher&action=search"
+      ]
+    },
+    {
+      "id": "brd-speed-selos",
+      "name": "Selo's Run Speed (travel line)",
+      "category": "movement",
+      "sharedWith": ["Druid", "Shaman", "Ranger"],
+      "members": [
+        { "name": "Selo's Accelerando", "level": 5, "inDb": true, "note": "Percussion. Group. Scales with EVERY bard level, reaching +65% base (+182% with a max percussion instrument), which makes the level 5 song the fastest run speed in classic EQ at high level." },
+        { "name": "Selo's Accelerating Chorus", "level": 49, "inDb": true, "note": "Post-classic (Luclin). NOT on P99. Legends level 49 matches live Allakhazam. Long duration (2m30s) 'buff' version at a flat +15% - a persistent travel buff rather than a sung song, so it survives leaving song range." },
+        { "name": "Selo's Song of Travel", "level": 51, "inDb": true, "note": "Percussion. Kunark. Same +65% (+182%) speed as Accelerando but bundles Invisibility, See Invisible and Levitate. Also available as an item click (Level 46) on singing-steel-era gear." }
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "Not strict. Song of Travel does not beat Accelerando on raw speed - both cap at +65% (+182%) - it just bundles invis/lev/see-invis, and it is a Kunark drop-taught song. Selo's Accelerating Chorus is far SLOWER (+15%) but has a real duration, so it is used as an out-of-combat travel buff, not as a twist. Strong instrument exception: speed IS instrument-modified, so a bard holding a max percussion instrument (or under Puretone Discipline) nearly triples the speed of Selo's Accelerando; a bard with no drum gets only the base value and will be slower than a druid's Spirit of Cheetah."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "slots": ["Speed (Primary)"],
+        "conflicts": [
+          { "line": "Spirit of Wolf / wolf forms / Cheetah", "class": "Druid, Shaman, Ranger", "detail": "P99 Buff_Lines puts Selo's Song of Travel and Selo's Accelerando in the same 'Speed (Primary)' table as Spirit of Cheetah (+115%), Form of the Hunter (+70%), Scale of Wolf (+70%), Form of the Howler (+67%), Form of the Great Wolf / Share Wolf Form / Greater Wolf Form (+60%) and Spirit of Wolf (+55%).", "source": "https://wiki.project1999.com/Buff_Lines" },
+          { "line": "J-Boots / item run speed", "class": "any", "detail": "Same slot family.", "source": "https://wiki.project1999.com/Bard" }
+        ],
+        "stacksWith": [],
+        "notes": "IMPORTANT NUANCE, and it differs from every other shared slot: the P99 Bard FAQ says Selo's and another run-speed buff can both be present at once but only the FASTER of the two applies - 'While they are stacked, you will get the benefit of only the best (Selo's) but if Selo's ends, you will go back to SoW/jboots speed.' So SoW is a valid safety net under Selo's rather than being blocked outright. Second bard-specific limitation P99 flags on this line only: the buff is LOST IF YOU MOVE OUT OF SONG RANGE, unlike a cast spell."
+      },
+      "sources": [
+        "https://wiki.project1999.com/Buff_Lines",
+        "https://wiki.project1999.com/Bard",
+        "https://everquest.allakhazam.com/db/spelllist.html?type=brd&level=1&opt=And+Higher&action=search"
+      ]
+    },
+    {
+      "id": "brd-regen-hp",
+      "name": "HP Regeneration (Hymn / Cantata)",
+      "category": "regen",
+      "sharedWith": [],
+      "members": [
+        { "name": "Hymn of Restoration", "level": 6, "inDb": true, "note": "String. Group. +13 HP/tick base, +36 with a max string instrument. Remains the single best pure HP-regen song at level 60." },
+        { "name": "Cantana of Soothing", "level": 34, "inDb": true, "note": "String REQUIRED. +4 (+11) HP/tick plus +5 mana/tick and stamina. P99/Buff_Lines spell the name 'Cantata of Soothing'; Legends uses 'Cantana' - a spelling variance, not a different song. Velious-era on P99." },
+        { "name": "Cantana of Replenishment", "level": 55, "inDb": true, "note": "String. +12 (+33) HP/tick, +13 mana/tick, stamina. Kunark. Spelled 'Cantata of Replenishment' on P99." }
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "NOT strict, and this is one of the headline non-replacement facts for bards: the level 6 Hymn of Restoration (+13 / +36) out-regens the level 55 Cantana of Replenishment (+12 / +33) on pure HP. Cantana of Replenishment is preferred only because it also delivers mana regen from a different slot. Both are String songs, so the instrument does not break the tie - a bard with a max string is still better off with Hymn if the group needs HP only. A bard with NO string instrument gets only the base numbers (+13 vs +12), and the gap narrows but does not invert."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "slots": ["HP Regeneration (Layer 2, Slot 1)", "Mana Regeneration (Cantata)"],
+        "conflicts": [
+          { "line": "brd-regen-hp (internal)", "class": "Bard", "detail": "All three are listed under 'HP Regeneration (Layer 2, Slot 1)' so their HP-regen components do not stack with each other.", "source": "https://wiki.project1999.com/Buff_Lines" }
+        ],
+        "stacksWith": [
+          { "line": "Druid/Shaman regeneration line", "detail": "Bard HP regen is a bard-private 'Layer 2' line. It stacks fully with HP Regeneration (Slot 1): Regrowth of the Grove, Regrowth, Chloroplast, Pack Chloroplast, Regeneration, and with the Fungi Covered Great Staff click. Confirmed twice: the P99 Bard FAQ says 'Hymn of Restoration will not decrease the duration of other regeneration spells, such as Regeneration/Chloroplast/Regrowth', and the P99 song-twist thread answers 'No' to whether regen and chloroplast conflict." },
+          { "line": "brd-protective-niv / Psalm of Mystic Shielding", "detail": "Niv's Melody of Preservation and Psalm of Mystic Shielding are in 'HP Regeneration (Layer 2, Slot 3)', a THIRD regen layer, so a bard can twist Hymn of Restoration AND Niv's Melody of Preservation and have both regen effects apply." },
+          { "line": "Enchanter Clarity line", "detail": "The Cantata mana-regen component is in 'Mana Regeneration (Cantata)', separate from Enchanter 'Mana Regeneration (Clarity)' - Cantana of Replenishment +13 mana stacks on top of Clarity II +11." },
+          { "line": "brd-manaregen-cassindra", "detail": "'Cantata' and 'Chorus' are separate mana-regen lines, so Cantana of Replenishment (+13) and Cassindra's Chorus of Clarity (+7/+14) stack with each other." },
+          { "line": "Worn regeneration items", "detail": "Worn regen is its own capped line (15/tick cap) and is unaffected." }
+        ],
+        "notes": "Because bard regen sits in two private layers plus the caster layer, a group with a bard, a druid and an enchanter reaches P99's maximum regen values - the bard's contribution is purely additive to the casters'."
+      },
+      "sources": [
+        "https://wiki.project1999.com/Buff_Lines",
+        "https://wiki.project1999.com/Bard",
+        "https://www.project1999.com/forums/archive/index.php/t-87734.html"
+      ]
+    },
+    {
+      "id": "brd-manaregen-cassindra",
+      "name": "Mana Regeneration (Cassindra's Clarity)",
+      "category": "mana-regen",
+      "sharedWith": [],
+      "members": [
+        { "name": "Cassindra's Chant of Clarity", "level": 20, "inDb": true, "note": "Singing. +2 mana/tick. Velious-era on P99 (sold in East Commons), which is why low-level bards on classic timelines did not have it." },
+        { "name": "Cassindra's Chorus of Clarity", "level": 32, "inDb": true, "note": "Singing. +7 mana/tick, or +14 if 'pulsed' (manually re-cast every 3 seconds). Explicitly NOT affected by any singing modifier including Puretone Discipline - it always produces +7 per 3 seconds." }
+      ],
+      "replacement": {
+        "strict": true,
+        "note": "Strict: +2 -> +7 (+14 pulsed), same slot, same target type. This is the one bard line where the instrument/Puretone exception explicitly does NOT apply - P99 states mana regeneration (along with haste) is not affected by instruments, and calls out Cassindra's Chorus of Clarity by name as unaffected by any singing modifier. The only multiplier is player technique (pulsing)."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "slots": ["Mana Regeneration (Chorus)"],
+        "conflicts": [
+          { "line": "brd-manaregen-cassindra (internal)", "class": "Bard", "detail": "Both members sit in 'Mana Regeneration (Chorus)' and do not stack with each other.", "source": "https://wiki.project1999.com/Buff_Lines" }
+        ],
+        "stacksWith": [
+          { "line": "Enchanter Clarity line", "detail": "'Mana Regeneration (Clarity)' (Gift of Pure Thought +11, Clarity II +11, Boon of the Clear Mind +7, Clarity +7, Breeze +2) is a separate heading. Bard mana song stacks fully on top of enchanter clarity." },
+          { "line": "Enchanter Gift line", "detail": "'Mana Regeneration (Gift)' (Gift of Brilliance, Gift of Insight, Mask of the Hunter) is separate again." },
+          { "line": "Druid Protection of the Glades", "detail": "Its own heading - stacks." },
+          { "line": "Necromancer Lich line", "detail": "Its own heading - stacks." },
+          { "line": "brd-regen-hp (Cantata mana)", "detail": "'Cantata' is a separate mana-regen heading, so a single bard can run Cassindra's Chorus of Clarity and Cantana of Replenishment together for both mana lines." }
+        ],
+        "notes": "Unique multi-caster rule: P99 states multiple bards singing (or pulsing) Cassindra's Chorus of Clarity ALL STACK - 'each extra Bard added to the group can add (+14) additional mana regen ... up to (+56) additional mana regen with 4 extra bards pulsing'. This is the only buff on the page where same-name, same-slot instances from different casters stack, and it is a bard-song-specific behaviour with no spell equivalent."
+      },
+      "sources": ["https://wiki.project1999.com/Buff_Lines"]
+    },
+    {
+      "id": "brd-protective-niv",
+      "name": "Niv's Protective Party Songs",
+      "category": "defensive",
+      "sharedWith": [],
+      "members": [
+        { "name": "Niv's Melody of Preservation", "level": 47, "inDb": true, "note": "String. +10 (+28) STR, +9 (+25) HP regen, +10 (+28) absorb magic damage. Also a click from Breath of Harmony." },
+        { "name": "Niv's Harmonic", "level": 58, "inDb": true, "note": "Singing. +24 (+67) AC - the largest bard AC buff by a wide margin. DB also shows +10 absorb magic damage, which P99 Buff_Lines does not list." }
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "Not a replacement pair at all - they occupy different slots and STACK with each other. Niv's Harmonic is AC only (AC Layer 2, Slot 2); Niv's Melody of Preservation is STR + regen + magic absorb. Grouped as a line only by composer name and role. Instrument exception is severe here: Niv's Harmonic goes from +24 to +67 AC with a max singing modifier, and Niv's Melody of Preservation from +9 to +25 regen with a max string, so a bard who has switched off String to sing something else loses most of the value."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "slots": ["AC (Layer 2, Slot 2)", "HP Regeneration (Layer 2, Slot 3)", "Damage Absorption, Magic (Melody)", "Strength (Anthem)"],
+        "conflicts": [
+          { "line": "brd-resist-psalms (Psalm of Mystic Shielding)", "class": "Bard", "detail": "Niv's Melody of Preservation shares 'HP Regeneration (Layer 2, Slot 3)' with Psalm of Mystic Shielding - their regen components do not stack.", "source": "https://wiki.project1999.com/Buff_Lines" },
+          { "line": "brd-haste-group / Chant of Battle", "class": "Bard", "detail": "Niv's Melody of Preservation's STR is in 'Strength (Anthem)' with Anthem De Arms, Jonthan's Whistling Warsong, Chant of Battle and McVaxius' Rousing Rondo - the STR components collide.", "source": "https://wiki.project1999.com/Buff_Lines" }
+        ],
+        "stacksWith": [
+          { "line": "All caster AC lines", "detail": "AC (Layer 2, Slot 2) is bard-private; stacks with cleric Aegolism/Shield of Words, enchanter Umbra, shaman Guardian, druid Protection of the Glades, and with the other bard AC layers." },
+          { "line": "Shield of Song / Psalm of Mystic Shielding", "detail": "Magic absorb is split three ways among bards ('Song Shield' = Shield of Song +20/+56, 'Psalm' = Psalm of Mystic Shielding +15/+42, 'Melody' = Niv's Melody of Preservation +10/+28) and all three stack, for +126 total." },
+          { "line": "Druid/Shaman regeneration", "detail": "Layer 2 regen stacks with caster Slot 1 regen." }
+        ],
+        "notes": "The three-way split of bard magic absorption is a good example of the general pattern: within one statistic, bards get multiple private lines that stack with each other AND with the caster lines."
+      },
+      "sources": ["https://wiki.project1999.com/Buff_Lines", "https://wiki.project1999.com/Bard"]
+    },
+    {
+      "id": "brd-resist-rhythms",
+      "name": "Rhythms (multi-resist + AC)",
+      "category": "resist",
+      "sharedWith": [],
+      "members": [
+        { "name": "Elemental Rhythms", "level": 9, "inDb": true, "note": "Percussion. MR + FR + CR + AC. +35 (+98) per resist." },
+        { "name": "Purifying Rhythms", "level": 13, "inDb": true, "note": "Percussion. MR + PR + DR + AC. The 'poison/disease' counterpart to Elemental Rhythms." },
+        { "name": "Guardian Rhythms", "level": 17, "inDb": true, "note": "Percussion. MR + the largest low-level AC (+9/+25). Sits in a different AC slot (Layer 2 Slot 1) than the other two." }
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "Not upgrades - they are parallel coverage choices. Elemental Rhythms (fire/cold) and Purifying Rhythms (poison/disease) cover disjoint resists, and Guardian Rhythms trades resist breadth for AC. All three are Percussion, all three are eventually replaced per-resist by the Psalms (which give +70/+196 vs +35/+98), but the Rhythms are never fully obsolete because one Rhythm covers three resists where one Psalm covers one."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "slots": ["Magic Resistance (Psalm)", "Fire Resistance (Layer 2, Slot 2 & 3)", "AC (Layer 2, Slot 1)", "AC (Layer 2, Slot 4)"],
+        "conflicts": [
+          { "line": "brd-resist-rhythms (internal) + Psalm of Mystic Shielding", "class": "Bard", "detail": "Elemental Rhythms, Guardian Rhythms, Purifying Rhythms and Psalm of Mystic Shielding are ALL listed under 'Magic Resistance (Psalm)'. Only one can be up. This is the mechanical basis for the widely-repeated P99 bard rule that 'fire/cold song does not stack with poison/disease song' - it is the shared magic-resist slot that collides, not the elemental resists themselves.", "source": "https://wiki.project1999.com/Bard" },
+          { "line": "brd-resist-psalms (fire)", "class": "Bard", "detail": "Elemental Rhythms and Psalm of Cooling share 'Fire Resistance (Layer 2, Slot 2 & 3)'.", "source": "https://wiki.project1999.com/Buff_Lines" },
+          { "line": "brd-resist-psalms (AC)", "class": "Bard", "detail": "Elemental Rhythms and Purifying Rhythms share 'AC (Layer 2, Slot 4)' with Psalm of Warmth and Psalm of Vitality.", "source": "https://wiki.project1999.com/Buff_Lines" },
+          { "line": "Chant of Battle / Nillipus' March of the Wee", "class": "Bard", "detail": "Guardian Rhythms shares 'AC (Layer 2, Slot 1)' with Chant of Battle and Nillipus' March of the Wee.", "source": "https://wiki.project1999.com/Buff_Lines" }
+        ],
+        "stacksWith": [
+          { "line": "Cleric/Druid/Shaman/Enchanter resist spells", "detail": "The bard resist entries live under their own 'Psalm' / 'Bard' / 'Layer 2' headings, distinct from every 'Primary' resist heading (Resist Magic, Group Resist Magic, Resist Fire, Resist Cold, Resist Disease, Resist Poison, Endure X, Talisman of Jasinth/Shadoo, Circle of Summer). Bard resist songs stack fully with class resist buffs - and the P99 maximum-resist tables are literally computed as caster primary + bard Psalm + flower/potion." },
+          { "line": "Magician/Wizard Elemental Armor, Enchanter Shield of the Magi", "detail": "Separate headings - stack." },
+          { "line": "All caster AC lines", "detail": "Bard AC is entirely in 'AC (Layer 2, ...)' slots, which stack with caster AC Slots 1-9." }
+        ],
+        "notes": "Resists are the clearest 'bards stack freely' case: every resist statistic has a caster-side Primary line and a bard-side Psalm/Bard/Layer-2 line, and they add. The collisions are all bard-vs-bard."
+      },
+      "sources": ["https://wiki.project1999.com/Buff_Lines", "https://wiki.project1999.com/Bard"]
+    },
+    {
+      "id": "brd-resist-psalms",
+      "name": "Psalms (single-resist specialists)",
+      "category": "resist",
+      "sharedWith": [],
+      "members": [
+        { "name": "Psalm of Warmth", "level": 25, "inDb": true, "note": "Singing. Cold resist +70 (+196), damage shield +13 (+36), infravision, AC." },
+        { "name": "Psalm of Vitality", "level": 29, "inDb": true, "note": "Singing. Disease resist +70 (+196), AC." },
+        { "name": "Psalm of Cooling", "level": 33, "inDb": true, "note": "Singing. Fire resist +70 (+196), damage shield +13 (+36), ultravision, AC." },
+        { "name": "Psalm of Purity", "level": 37, "inDb": true, "note": "Singing. Poison resist +70 (+196), AC." },
+        { "name": "Psalm of Mystic Shielding", "level": 41, "inDb": true, "note": "Singing. Magic resist +70 (+196), +15 (+42) absorb magic damage, +5 (+14) HP regen, AC. The most loaded of the Psalms." }
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "Explicitly NOT a replacement chain despite the ascending levels - each Psalm covers a different resist, so the level 25 Psalm of Warmth is never obsoleted by the level 41 Psalm of Mystic Shielding. A bard picks the Psalm matching the encounter's damage type. All five are Singing songs, so they scale with the singing modifier (max 28 / 280%, e.g. via Puretone Discipline) rather than a held instrument; a bard who has swapped to a drum for Selo's still gets full Psalm value, which is why Psalms twist well with instrument songs."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "slots": ["Cold Resistance (Bard)", "Disease Resistance (Psalm)", "Fire Resistance (Layer 2, Slot 2 & 3)", "Magic Resistance (Psalm)", "Poison Resistance (Psalm)", "Damage Shield (Layer 2, Slot 1)", "Damage Absorption, Magic (Psalm)", "HP Regeneration (Layer 2, Slot 3)", "AC (Layer 2, Slot 4)"],
+        "conflicts": [
+          { "line": "brd-resist-psalms (internal, damage shield)", "class": "Bard", "detail": "Psalm of Cooling and Psalm of Warmth are both in 'Damage Shield (Layer 2, Slot 1)' - their damage shields do not stack with each other.", "source": "https://wiki.project1999.com/Buff_Lines" },
+          { "line": "brd-resist-psalms + brd-resist-rhythms (AC)", "class": "Bard", "detail": "Psalm of Warmth and Psalm of Vitality share 'AC (Layer 2, Slot 4)' with Elemental Rhythms and Purifying Rhythms.", "source": "https://wiki.project1999.com/Buff_Lines" },
+          { "line": "brd-resist-rhythms (magic resist)", "class": "Bard", "detail": "Psalm of Mystic Shielding shares 'Magic Resistance (Psalm)' with all three Rhythms songs.", "source": "https://wiki.project1999.com/Buff_Lines" },
+          { "line": "brd-protective-niv", "class": "Bard", "detail": "Psalm of Mystic Shielding shares 'HP Regeneration (Layer 2, Slot 3)' with Niv's Melody of Preservation.", "source": "https://wiki.project1999.com/Buff_Lines" }
+        ],
+        "stacksWith": [
+          { "line": "All caster resist buffs", "detail": "P99's maximum resist tables add the bard Psalm on top of the caster Primary line: e.g. Magic Resistance max for a non-pet caster is +251 = +55 Group Resist Magic (Ench 49) + +196 Psalm of Mystic Shielding; Poison max is +361 = Talisman of Shadoo + Aura of Green Petals + Dead Man Floating + +196 Psalm of Purity. Bard resist songs never contend with cleric/druid/shaman/enchanter resist spells." },
+          { "line": "Magician/Druid damage shields", "detail": "Psalm damage shields are 'Damage Shield (Layer 2, Slot 1)', separate from mage/druid DS (Slot 1) - Psalm of Cooling stacks on top of Shield of Lava / Legacy of Thorn." },
+          { "line": "brd-protective-niv / Shield of Song", "detail": "Magic absorb from Psalm of Mystic Shielding stacks with Shield of Song and Niv's Melody of Preservation (three separate headings)." },
+          { "line": "Druid/Shaman regeneration", "detail": "Psalm of Mystic Shielding's HP regen stacks with druid/shaman regen (different slot family)." }
+        ],
+        "notes": "P99 Buff_Lines does not list Elemental Rhythms under Cold Resistance nor Purifying Rhythms under Disease/Poison Resistance even though those songs grant those resists per the Legends DB and the P99 Bard song table - treat those as wiki gaps, and assume by symmetry that Elemental Rhythms shares the cold slot with Psalm of Warmth and Purifying Rhythms shares the disease/poison slots with Psalm of Vitality / Psalm of Purity. Likewise the AC components of Psalm of Cooling, Psalm of Purity and Psalm of Mystic Shielding are not in any AC table."
+      },
+      "sources": ["https://wiki.project1999.com/Buff_Lines", "https://wiki.project1999.com/Bard"]
+    },
+    {
+      "id": "brd-mez",
+      "name": "Mesmerize",
+      "category": "crowd-control",
+      "sharedWith": ["Enchanter"],
+      "members": [
+        { "name": "Kelin's Lucid Lullaby", "level": 15, "inDb": true, "note": "String. Mez up to level 25. P99 lists this as PBAoE; the Legends DB records targetType 'Single' - see openQuestions." },
+        { "name": "Crission's Pixie Strike", "level": 28, "inDb": true, "note": "Wind. Single-target mez up to level 45, plus a magic resist debuff." },
+        { "name": "Sionachie's Dreams", "level": 40, "inDb": true, "note": "Post-classic (not on P99). Single-target mez up to level 53. Legends level 40 matches live Allakhazam." },
+        { "name": "Song of Twilight", "level": 53, "inDb": true, "note": "Wind. Kunark. Single-target mez up to level 54, the bard's top mez." }
+      ],
+      "replacement": {
+        "strict": true,
+        "note": "Strict by mez level cap: 25 -> 45 -> 53 -> 54. The only reason to keep a lower member is mana/song-time economy, and on P99 Kelin's Lucid Lullaby's AE form is a distinct tool from the single-target upgrades. Instruments do affect mez duration/effectiveness (String for Kelin's, Wind for Crission's and Twilight), so a bard mezzing without the right instrument gets a shorter mez - but the LEVEL CAP is fixed and no instrument lets a lower song mez a higher mob."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "slots": ["Mesmerize (detrimental - no buff slot)"],
+        "conflicts": [
+          { "line": "Enchanter mesmerize line", "class": "Enchanter", "detail": "Mez is a detrimental effect and is not covered by the Buff_Lines slot tables. Practically, a second mez landing on a mezzed mob re-applies rather than stacking, and any damage breaks it.", "source": "https://wiki.project1999.com/Bard" }
+        ],
+        "stacksWith": [],
+        "notes": "Detrimental songs are outside the buff-slot system entirely; the twist limit (below) is what constrains a bard's crowd control, not slots."
+      },
+      "sources": ["https://wiki.project1999.com/Bard", "https://everquest.allakhazam.com/db/spelllist.html?type=brd&level=1&opt=And+Higher&action=search"]
+    },
+    {
+      "id": "brd-charm",
+      "name": "Charm (Solon's)",
+      "category": "crowd-control",
+      "sharedWith": ["Enchanter", "Druid", "Necromancer"],
+      "members": [
+        { "name": "Solon's Song of the Sirens", "level": 27, "inDb": true, "note": "Wind. Charm up to level 37, plus MR debuff." },
+        { "name": "Solon's Bravura", "level": 39, "inDb": true, "note": "Wind. Charm up to level 51. P99/live name is 'Solon's Bewitching Bravura'; Legends shortens it. DB has two rows differing only in durationText (18 seconds vs 1 Min) - see openQuestions." }
+      ],
+      "replacement": {
+        "strict": true,
+        "note": "Strict by charm level cap (37 -> 51). Both are Wind songs. Charisma - not instrument - is what reduces early charm breaks per the P99 Bard FAQ, so the practical 'exception' here is a stat, not an instrument: a high-CHA bard holding no wind instrument still charms more reliably than a low-CHA bard with a great flute (though the flute extends duration)."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "slots": ["Charm (detrimental - no buff slot)"],
+        "conflicts": [
+          { "line": "Enchanter/Druid/Necromancer charm", "class": "Enchanter, Druid, Necromancer", "detail": "One charm per mob; a second charm attempt from any class replaces or breaks. Not a Buff_Lines slot.", "source": "https://wiki.project1999.com/Bard" }
+        ],
+        "stacksWith": [],
+        "notes": "P99 FAQ: charisma reduces the chance for charm to break early but does not affect the resist rate of charm or mesmerize."
+      },
+      "sources": ["https://wiki.project1999.com/Bard"]
+    },
+    {
+      "id": "brd-fear",
+      "name": "Fear (Angstlich's / Midnight)",
+      "category": "crowd-control",
+      "sharedWith": ["Cleric", "Necromancer", "Shadow Knight", "Druid"],
+      "members": [
+        { "name": "Angstlich's Appalling Screech", "level": 26, "inDb": true, "note": "Brass. PBAE fear, works on mobs up to level 52." },
+        { "name": "Song of Midnight", "level": 56, "inDb": true, "note": "Brass. Kunark. PBAE fear + 8/tick DoT + a self/target speed component, but NIGHT TIME ONLY." }
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "Not strict. Song of Midnight is time-of-day gated (night only) and Angstlich's Appalling Screech has no such restriction, so the level 26 song stays memorised for the whole career. Both are Brass, so instrument choice does not differentiate them; the daylight restriction does."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "slots": ["Fear (detrimental - no buff slot)"],
+        "conflicts": [],
+        "stacksWith": [],
+        "notes": "Companion song: Song of Highsun (56) is the daytime counterpart utility (gate/shadowstep), listed as standalone."
+      },
+      "sources": ["https://wiki.project1999.com/Bard"]
+    },
+    {
+      "id": "brd-lull",
+      "name": "Lull / Pacify",
+      "category": "crowd-control",
+      "sharedWith": ["Cleric", "Druid", "Enchanter"],
+      "members": [
+        { "name": "Kelin's Lugubrious Lament", "level": 8, "inDb": true, "note": "String. Reduces aggro radius and pacifies. The bard's only lull for the entire 1-60 career - never upgraded." }
+      ],
+      "replacement": {
+        "strict": true,
+        "note": "Single-member line; nothing replaces it. Charisma (not the instrument) reduces the resist rate on lull per the P99 Bard FAQ, though a String instrument still extends the effect."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "slots": ["Pacify (detrimental - no buff slot)"],
+        "conflicts": [
+          { "line": "Cleric/Druid/Enchanter lull line", "class": "Cleric, Druid, Enchanter", "detail": "Same pacify mechanic; not a Buff_Lines slot. Repeated lulls on a mob raise resist chance rather than stacking.", "source": "https://wiki.project1999.com/Bard" }
+        ],
+        "stacksWith": [],
+        "notes": "Listed as its own line rather than standalone because it is the whole of the bard lull progression - a one-member line is a meaningful annotation for the DB (nothing to upgrade to)."
+      },
+      "sources": ["https://wiki.project1999.com/Bard"]
+    },
+    {
+      "id": "brd-ae-dot",
+      "name": "PBAE DoT (Chords / Denon's)",
+      "category": "damage",
+      "sharedWith": [],
+      "members": [
+        { "name": "Chords of Dissonance", "level": 2, "inDb": true, "note": "String. 2 HP/tick PBAE. The classic bard swarm-kiting tool." },
+        { "name": "Denon's Disruptive Discord", "level": 18, "inDb": true, "note": "Brass. 4 HP/tick PBAE plus an AC debuff." },
+        { "name": "Denon's Bereavement", "level": 59, "inDb": true, "note": "String. Kunark. 30 HP/tick PBAE plus stun, poison counters and MR debuff." }
+      ],
+      "replacement": {
+        "strict": true,
+        "note": "Strict by damage (2 -> 4 -> 30 per tick). Real instrument exception in this line: Chords of Dissonance and Denon's Bereavement are String while Denon's Disruptive Discord is Brass. A bard holding a strong string but no brass will often get more DPS out of Chords of Dissonance than out of the higher Denon's Disruptive Discord, because song damage IS instrument-modified (up to +280%). Swarm bards famously kept Chords of Dissonance memorised long past level 18 for exactly this reason."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "slots": ["DoT (detrimental - no buff slot)"],
+        "conflicts": [
+          { "line": "brd-ae-dot (internal)", "class": "Bard", "detail": "Same-song-family DoTs on one mob overwrite rather than stack; different bard AE DoTs (e.g. Chords of Dissonance and Selo's Chords of Cessation) do stack as separate detrimental effects.", "source": "https://wiki.project1999.com/Bard" }
+        ],
+        "stacksWith": [
+          { "line": "brd-ae-slow, brd-st-dot", "detail": "Distinct detrimental effects; a twisting bard routinely runs an AE DoT, an AE slow and a single-target DoT simultaneously." }
+        ],
+        "notes": "Detrimental - outside the Buff_Lines slot system."
+      },
+      "sources": ["https://wiki.project1999.com/Bard", "https://wiki.project1999.com/Buff_Lines"]
+    },
+    {
+      "id": "brd-ae-slow",
+      "name": "AE Slow / Snare (Largo's Melodic -> Selo's AE chain)",
+      "category": "debuff",
+      "sharedWith": ["Shaman", "Enchanter"],
+      "members": [
+        { "name": "Largo's Melodic Binding", "level": 20, "inDb": true, "note": "Singing. PBAE -15%..-35% attack speed and AC debuff." },
+        { "name": "Selo's Chords of Cessation", "level": 48, "inDb": true, "note": "String. PBAE DoT + -17%..-20% attack speed." },
+        { "name": "Selo's Assonant Strain", "level": 54, "inDb": true, "note": "String. Kunark. PBAE -43%..-45% movement speed + -23%..-25% attack speed. P99/live spell name is 'Selo's Assonant Strane'." }
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "Not strict - the three do different jobs. Largo's Melodic Binding is the strongest AE slow (up to -35%) and it is the LEVEL 20 song; Selo's Chords of Cessation slows less but adds AE damage; Selo's Assonant Strain is the only AE snare. Instrument split matters: Largo's Melodic Binding is Singing (always full value under Puretone/singing mod) while both Selo's AE songs are String, so a bard without a string instrument keeps Largo's Melodic Binding as the better AE slow well past 54."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "slots": ["Attack speed debuff (detrimental)", "Movement speed debuff (detrimental)"],
+        "conflicts": [
+          { "line": "Shaman slow line", "class": "Shaman", "detail": "Attack-speed debuffs from bard songs and shaman slows contend on the mob's attack-speed effect; the stronger slow wins. P99 group advice explicitly pairs bard snare/slow songs WITH shaman slows for tanking, implying they are used together but the melee-slow component does not sum.", "source": "https://wiki.project1999.com/Bard" }
+        ],
+        "stacksWith": [
+          { "line": "brd-ae-dot", "detail": "Different detrimental effects - AE slow and AE DoT run together." }
+        ],
+        "notes": "Detrimental. Bards tank on P99 by twisting these for aggro."
+      },
+      "sources": ["https://wiki.project1999.com/Bard"]
+    },
+    {
+      "id": "brd-st-slow-snare",
+      "name": "Single-Target Snare / Slow",
+      "category": "debuff",
+      "sharedWith": ["Shaman", "Ranger", "Druid", "Necromancer"],
+      "members": [
+        { "name": "Selo's Consonant Chain", "level": 23, "inDb": true, "note": "Singing. -30% movement + -16%..-35% attack speed on one target. The bard's workhorse pull/kite song." },
+        { "name": "Largo's Assonant Binding", "level": 51, "inDb": true, "note": "Singing. Kunark. -52%..-61% movement, -30%..-35% attack speed, -AC, -AGI. P99/live spell name is 'Largo's Absonant Binding'." },
+        { "name": "Angstlich's Assonance", "level": 60, "inDb": true, "note": "Brass. Kunark. -31% attack speed + 25 HP/tick DoT, 1 minute duration with a 12s cooldown. NO SNARE - shares only the composer name with Angstlich's Appalling Screech." }
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "Not strict. Largo's Assonant Binding strictly beats Selo's Consonant Chain on both snare and slow, but Angstlich's Assonance at 60 DROPS the snare entirely in exchange for a DoT and a long fixed duration, so bards keep Largo's Assonant Binding for kiting and use Angstlich's Assonance as a slow/DoT. Instrument exception: Selo's Consonant Chain and Largo's Assonant Binding are Singing while Angstlich's Assonance is Brass - a bard with no brass gets much less out of the level 60 song than out of the level 51 one."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "slots": ["Movement speed debuff (detrimental)", "Attack speed debuff (detrimental)"],
+        "conflicts": [
+          { "line": "Ranger/Druid/Necromancer snare", "class": "Ranger, Druid, Necromancer", "detail": "Snare effects contend on the mob's movement rate - the strongest applies, they do not sum.", "source": "https://wiki.project1999.com/Bard" },
+          { "line": "Shaman slow line", "class": "Shaman", "detail": "Attack-speed debuff contends with shaman/enchanter slows.", "source": "https://wiki.project1999.com/Bard" }
+        ],
+        "stacksWith": [],
+        "notes": "Detrimental - not governed by Buff_Lines slots."
+      },
+      "sources": ["https://wiki.project1999.com/Bard", "https://everquest.allakhazam.com/db/spelllist.html?type=brd&level=1&opt=And+Higher&action=search"]
+    },
+    {
+      "id": "brd-st-dot",
+      "name": "Single-Target DoT (Fufil's / Tuyen's Chants)",
+      "category": "damage",
+      "sharedWith": [],
+      "members": [
+        { "name": "Fufil's Curtailing Chant", "level": 30, "inDb": true, "note": "Percussion. 11-17 HP/tick plus MR debuff. The first real single-target bard DoT." },
+        { "name": "Tuyen's Chant of Flame", "level": 38, "inDb": true, "note": "Percussion. 20-26 HP/tick + fire resist debuff." },
+        { "name": "Tuyen's Chant of Disease", "level": 42, "inDb": true, "note": "Post-classic (not on P99). 22-26 HP/tick + disease resist debuff. Legends level 42 matches live Allakhazam (spell 3567, sold by Minstrel Cirsaelle in the Plane of Knowledge)." },
+        { "name": "Tuyen's Chant of Frost", "level": 46, "inDb": true, "note": "Percussion. 24-26 HP/tick + cold resist debuff." },
+        { "name": "Tuyen's Chant of Poison", "level": 50, "inDb": true, "note": "Post-classic (not on P99). 26 HP/tick + poison resist debuff. Legends level 50 matches live Allakhazam (spell 3566)." }
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "Not a replacement chain - the Tuyen's Chants are parallel damage-type variants, chosen by the target's weakest resist, and they all stack with each other on one mob. Damage climbs only slightly (20 -> 26/tick) across 12 levels. Instrument note: Flame and Frost are Percussion on P99; the two post-classic ones (Disease, Poison) follow the same family. Song damage is instrument-modified, so a bard holding a drum gets far more from any Tuyen's Chant than one holding a lute."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "slots": ["DoT (detrimental - no buff slot)"],
+        "conflicts": [],
+        "stacksWith": [
+          { "line": "brd-st-dot (internal)", "detail": "The differently-named Tuyen's Chants are separate detrimental effects and run concurrently on one mob - the classic high-level bard DPS twist stacks several." },
+          { "line": "brd-ae-dot", "detail": "AE and single-target DoTs coexist." }
+        ],
+        "notes": "Detrimental - outside the Buff_Lines system. This is the line most often cited in 5-song twist rotations (Fufil's + Chant of Flame + Chant of Frost + mana song + regen)."
+      },
+      "sources": [
+        "https://wiki.project1999.com/Bard",
+        "https://everquest.allakhazam.com/db/spell.html?spell=3567",
+        "https://everquest.allakhazam.com/db/spell.html?spell=3566"
+      ]
+    },
+    {
+      "id": "brd-dd-brusco",
+      "name": "Direct Damage / Interrupt (Brusco's)",
+      "category": "damage",
+      "sharedWith": [],
+      "members": [
+        { "name": "Brusco's Boastful Bellow", "level": 12, "inDb": true, "note": "Singing. 26 damage instant, interrupts casting. The bard's only spell interrupt for 43 levels." },
+        { "name": "Brusco's Bombastic Bellow", "level": 55, "inDb": true, "note": "Singing. Kunark. 222 damage + 8 second stun, but on a 300 second cooldown." }
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "Not strict because of the reuse timer: Brusco's Bombastic Bellow does ~8.5x the damage but has a 5 minute cooldown, so Brusco's Boastful Bellow remains the spammable interrupt. Both are Singing, so no instrument inversion within the line."
+      },
+      "missingOnLegends": [],
+      "stacking": { "slots": [], "conflicts": [], "stacksWith": [], "notes": "Instant detrimental - no slot interaction." },
+      "sources": ["https://wiki.project1999.com/Bard"]
+    },
+    {
+      "id": "brd-mana-drain",
+      "name": "Mana Drain",
+      "category": "debuff",
+      "sharedWith": [],
+      "members": [
+        { "name": "Denon's Dissension", "level": 35, "inDb": true, "note": "Brass. PBAE instant mana drain, 22-30." },
+        { "name": "Cassindra's Insipid Ditty", "level": 57, "inDb": true, "note": "String. Kunark. Single-target 15-16 mana/tick drain plus INT/WIS debuff." }
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "Not strict - different target types (PBAE burst vs single-target drain-over-time) and different instruments (Brass vs String). Grouped functionally, not as an upgrade chain. A bard holding brass keeps Denon's Dissension for AE caster shutdown regardless of level."
+      },
+      "missingOnLegends": [],
+      "stacking": { "slots": [], "conflicts": [], "stacksWith": [], "notes": "Detrimental - no buff slot. Functional grouping; the community does not have a firm name for this pairing." },
+      "sources": ["https://wiki.project1999.com/Bard"]
+    },
+    {
+      "id": "brd-dispel",
+      "name": "Dispel",
+      "category": "utility",
+      "sharedWith": ["Enchanter", "Magician", "Cleric", "Druid"],
+      "members": [
+        { "name": "Alenia's Disenchanting Melody", "level": 22, "inDb": true, "note": "String REQUIRED. Cancel Magic (1) - one buff slot stripped." },
+        { "name": "Syvelian's Anti-Magic Aria", "level": 40, "inDb": true, "note": "Singing. Cancel Magic (4) - four buff slots stripped." }
+      ],
+      "replacement": {
+        "strict": true,
+        "note": "Strict: dispel strength 1 -> 4. Notable instrument caveat: Alenia's Disenchanting Melody REQUIRES a string instrument to sing at all, while Syvelian's Anti-Magic Aria is Singing and needs nothing held - so the upgrade also removes an equipment constraint."
+      },
+      "missingOnLegends": [],
+      "stacking": { "slots": [], "conflicts": [], "stacksWith": [], "notes": "Dispel removes buffs rather than occupying a slot." },
+      "sources": ["https://wiki.project1999.com/Bard"]
+    }
+  ],
+  "standalone": [
+    { "name": "Chant of Battle", "level": 1, "inDb": true, "note": "Percussion, group. +20 (+56) STR, +20 (+56) DEX, +6 (+16) AC. Never upgraded - it is the bard's ONLY DEX song for all 60 levels. Slots: 'Strength (Anthem)' (conflicts with Anthem De Arms, Jonthan's Whistling Warsong, Niv's Melody of Preservation, McVaxius' Rousing Rondo), 'Dexterity (Power)' (CONFLICTS WITH ENCHANTER Visions of Grandeur +25 and with Greater/Potion of Power - a rare bard-vs-caster collision outside haste/speed), and 'AC (Layer 2, Slot 1)' (conflicts with Guardian Rhythms and Nillipus' March of the Wee). Also a proc on Harmonic Spear." },
+    { "name": "Jaxan's Jig o' Vigor", "level": 3, "inDb": true, "note": "Percussion, group. Stamina-loss reduction (endurance regen). No upgrade; the Cantata songs later fold a stamina component in. Not represented in the Buff_Lines slot tables." },
+    { "name": "Lyssa's Locating Lyric", "level": 4, "inDb": true, "note": "Singing. Corpse location. Utility, no upgrade, no slot." },
+    { "name": "Magical Monologue", "level": 9, "inDb": true, "note": "POST-CLASSIC - not on P99's classic-through-Velious bard list. Self-only, grants the ability to hit magic-immune creatures. Legends level 9 matches live Allakhazam exactly. Standalone." },
+    { "name": "Cinda's Charismatic Carillon", "level": 11, "inDb": true, "note": "Wind. Single-target faction improvement (+120 to +610). No upgrade. No buff slot." },
+    { "name": "Lyssa's Cataloging Libretto", "level": 14, "inDb": true, "note": "Singing. Identify. No upgrade. See 'Identify' in unlinked - the Legends DB carries a second, identically-levelled Identify entry." },
+    { "name": "Song of Sustenance", "level": 15, "inDb": true, "note": "POST-CLASSIC (Luclin, Allakhazam spell 2602) - not on P99. Group food/water sustenance, 1m30s. Legends level 15 matches live. Standalone." },
+    { "name": "Tarew's Aquatic Ayre", "level": 16, "inDb": true, "note": "Wind, group. Enduring breath. No upgrade. No buff slot." },
+    { "name": "Shauri's Sonorous Clouding", "level": 19, "inDb": true, "note": "Wind REQUIRED, group. Invisibility + see invisible. Not upgraded as such - Selo's Song of Travel (51) later bundles invis into the travel song, but Shauri's remains the standalone group invis." },
+    { "name": "Melanie's Mellifluous Motion", "level": 21, "inDb": true, "note": "Wind, group. Short-range random teleport (escape). No upgrade." },
+    { "name": "Lyssa's Veracious Concord", "level": 24, "inDb": true, "note": "Wind, group. See invisible + ultravision. Vision utility; not an upgrade of Shauri's Sonorous Clouding (which grants invis, not vision)." },
+    { "name": "Amplification", "level": 30, "inDb": true, "note": "POST-CLASSIC (Luclin, Allakhazam spell 2603) - not on P99. Self-only, increases singing skill by 0.7%. Legends level 30 matches live. Interacts with the instrument system: it raises the singing modifier, which multiplies every Singing-skill song's magnitude." },
+    { "name": "Agilmente's Aria of Eagles", "level": 31, "inDb": true, "note": "Wind REQUIRED, group. Levitate. No upgrade; Selo's Song of Travel (51) bundles levitate but does not replace it." },
+    { "name": "Lyssa's Solidarity of Vision", "level": 34, "inDb": true, "note": "Wind. Bind sight (scouting). No upgrade. No buff slot." },
+    { "name": "Aria of Asceticism", "level": 39, "inDb": true, "note": "PROBLEM ENTRY. The Legends DB carries TWO songs called Aria of Asceticism: this level 39 row (group, 'Add Melee Proc:', +75 DEX) and a level 45 row (single-friendly, cure -2 poison / -2 disease counters). Live Allakhazam knows only the level 45 cure song. The level 39 row is either a Legends-custom proc song reusing the name or a DB collision - see openQuestions. Neither appears on P99." },
+    { "name": "Denon's Desperate Dirge", "level": 43, "inDb": true, "note": "Singing. Targeted-AE 315 damage nuke requiring 800 mana. A burst nuke, not part of the Denon's PBAE DoT chain. No upgrade." },
+    { "name": "Cassindra's Elegy", "level": 44, "inDb": true, "note": "Singing, group. +16 (+44) INT and WIS. Occupies the bard-private 'Intelligence (Elegy)' and 'Wisdom (Elegy)' lines, so it STACKS with enchanter Intelligence/Brilliance/Insight and with shaman/enchanter Wisdom buffs. No upgrade." },
+    { "name": "Aria of Asceticism", "level": 45, "inDb": true, "note": "POST-CLASSIC (not on P99). Single friendly/self cure: -2 poison counter, -2 disease counter. Legends level 45 matches live Allakhazam. Same name as the level 39 DB row - see openQuestions." },
+    { "name": "Rizlona's Embers", "level": 45, "inDb": true, "note": "POST-CLASSIC (Planes-era, not on P99). Group spell-damage focus: +1% to +15% DD damage, instant detrimental spells only, max level 52. Legends level 45 matches live Allakhazam. No slot in the classic Buff_Lines model (spell-damage focus is a later-era mechanic); assume it stacks with everything classic." },
+    { "name": "Shield of Song", "level": 49, "inDb": true, "note": "String, group. Kunark. +20 (+56) damage absorption AND +20 (+56) magic damage absorption. Occupies bard-private 'Damage Absorption (Shield of Song)' and 'Damage Absorption, Magic (Song Shield)', so it stacks with enchanter Rune/Rampage lines, with necromancer/wizard skin lines, AND with the two other bard magic-absorb lines (Psalm of Mystic Shielding, Niv's Melody of Preservation). DB has two rows, one worded 'Absorb 20 damage per hit (up to 45 total)' and one 'Increase Absorb Damage by 20'. No upgrade." },
+    { "name": "Nillipus' March of the Wee", "level": 52, "inDb": true, "note": "Percussion, group. Kunark. +9 (+25) AC, +18 (+50) AGI, +9 (+33) damage absorption, shrink. Slots: 'AC (Layer 2, Slot 1)' (conflicts with Guardian Rhythms and Chant of Battle), 'Agility (March)' (bard-private, stacks with shaman Agility/Nimble/Talisman of the Cat and enchanter Augment), 'Damage Absorption (March)' (bard-private, stacks with Shield of Song and with enchanter Rune). No upgrade." },
+    { "name": "Song of Dawn", "level": 53, "inDb": true, "note": "Wind. Kunark. Single-target hate reduction (-181 to -185). DAYTIME ONLY. No upgrade; Song of Highsun (56) is a separate daytime tool." },
+    { "name": "Song: Occlusion of Sound", "level": 55, "inDb": true, "note": "Percussion REQUIRED. Velious NPC drop. Unresistable -10 cold / fire / magic resist on one target. Unique - the bard's only resist debuff song and unresistable, which is why raids valued it. DB has two identical rows. No upgrade." },
+    { "name": "Song of Highsun", "level": 56, "inDb": true, "note": "Wind. Kunark. Cancel Magic(9) x2, 0-second stun, NPC gate / PC shadowstep. DAYTIME ONLY. The bard's emergency mob-removal tool. Not part of the dispel line despite the Cancel Magic components (it is a banish, not a buff strip in practice)." },
+    { "name": "Solon's Charismatic Concord", "level": 59, "inDb": true, "note": "Singing, group. Kunark. +45 (+126) CHA. Occupies the bard-private 'Charisma (Bard Song)' line, so it STACKS with shaman Charisma/Glamour/Alluring Aura and enchanter Adorning Grace/Radiant Visage. No upgrade. Shares only the composer name with the Solon's charm line." },
+    { "name": "Kazumi's Note of Preservation", "level": 60, "inDb": true, "note": "Wind, group. Kunark. Invulnerability with a 180 second cooldown. The bard's capstone emergency button. No upgrade, no slot." }
+  ],
+  "unlinked": [
+    { "name": "Identify", "level": 14, "inDb": true, "note": "The Legends DB carries a bare 'Identify' at bard level 14 alongside Lyssa's Cataloging Libretto (also level 14, also Identify, also instant, also single-target). 'Identify' is the generic caster spell name; no classic source lists it as a bard song. Almost certainly a DB duplication/aliasing artifact of Lyssa's Cataloging Libretto rather than a real second song - flagged rather than merged, because the input is authoritative for existence." }
+  ],
+  "openQuestions": [
+    "HASTE MAGNITUDE DISAGREEMENTS (do not average - the DB and P99 disagree by a lot on two songs). Jonthan's Provocation: Legends DB says 'Increase Melee Haste by 3%'; P99 Buff_Lines says +50%, and the P99 community explicitly reports it overwriting Verses of Victory (+30%) on the bard because it is stronger. McVaxius' Berserker Crescendo: DB says 'Increase Melee Haste by 8%'; P99 says +23%. Every other bard haste song agrees between the two sources (Anthem De Arms 10%, Vilia's Verses of Celerity 20%, McVaxius' Rousing Rondo 22%, Jonthan's Whistling Warsong 25%, Verses of Victory 30%, Vilia's Chorus of Celerity 45%, Jonthan's Inspiration 63%, Melody of Ervaj 5%, Composition of Ervaj 10%). Recommend re-reading the two outlier rows from the Legends source - they look like a base-value-vs-max-value parse difference, not a Legends re-balance.",
+    "SONG: MELODY OF ERVAJ - WHICH HASTE SLOT? The DB has two rows for it: one 'Increase Melee Haste by 5%' and one 'Increase Haste v2 by 5%'. P99 Buff_Lines places Melody of Ervaj in 'Haste (Ervaj/v2)' alongside Composition of Ervaj. If the DB's 'Melee Haste' row is used, the annotation would wrongly put it in the crowded primary haste slot where +5% is worthless. Recommend treating the 'Haste v2' row as canonical and suppressing the other.",
+    "ARIA OF ASCETICISM APPEARS TWICE AT DIFFERENT LEVELS WITH UNRELATED EFFECTS: level 39 (group, 'Add Melee Proc:', +75 DEX) and level 45 (single friendly, -2 poison / -2 disease counter). Live Allakhazam has only the level 45 cure version. Is the level 39 row a Legends-custom proc song, a mis-joined row, or a truncated effect list (the 'Add Melee Proc:' string ends in a colon with no proc named, which smells like a parse truncation)?",
+    "SOLON'S BRAVURA APPEARS TWICE at level 39 with identical effects but different durationText ('18 seconds' vs '1 Min'). Charm duration is load-bearing for bards. Which is the Legends value?",
+    "KELIN'S LUCID LULLABY TARGET TYPE: P99's bard song table lists it as 'PBAoE: Mesmerize (up to level 25)' and the P99 stacking discussion treats it as the AE mez; the Legends DB records targetType 'Single'. If Legends really made it single-target, that is a meaningful gameplay change worth surfacing to users, because AE mez at 15 is the classic bard pulling tool.",
+    "NAME VARIANTS vs classic sources (three songs, all present on Legends, none missing): Legends 'Solon's Bravura' = classic 'Solon's Bewitching Bravura'; Legends 'Largo's Assonant Binding' = classic 'Largo's Absonant Binding'; Legends 'Selo's Assonant Strain' = classic 'Selo's Assonant Strane'. Also Legends 'Cantana of Soothing' / 'Cantana of Replenishment' vs 'Cantata of ...' - note that P99's own two pages disagree with each other on the Cantana/Cantata spelling, so that one is not a Legends deviation.",
+    "OTHER EXACT-DUPLICATE ROWS in the input (91 rows, 84 distinct names): Anthem De Arms x2 (Group vs Party target, 'Melee Haste' vs 'Attack Speed' wording), Shield of Song x2 (different absorb wording), Song: Occlusion of Sound x2 (identical), Song: Composition of Ervaj x2 (identical). Each is annotated once in this file. Recommend de-duplicating at ingest.",
+    "WIKI GAPS (assumed, not confirmed): P99 Buff_Lines omits Elemental Rhythms from the Cold Resistance table, Purifying Rhythms from the Disease and Poison tables, the AC components of Psalm of Cooling / Psalm of Purity / Psalm of Mystic Shielding, the AC and STR/AGI components of Verses of Victory / Vilia's Verses of Celerity / McVaxius' Berserker Crescendo, and Niv's Harmonic's magic absorb. By symmetry these almost certainly share the corresponding bard slots, but that is inference, not a cited fact.",
+    "TWIST CAPACITY on Legends is unverified. The P99 Bard FAQ describes maintaining three song effects by stopping each song ~3 seconds in; the classic ceiling is generally 3-4 songs (5 for expert players with fast macros). If Legends changed song duration, recast time or the ~12-second recast-block quirk, the practical stacking picture changes even though the slot tables do not.",
+    "P99's Cassindra's Chant of Clarity is tagged Velious-era and Cantana of Soothing Velious-era, while Legends presumably makes them available on its own timeline - era availability was not researched for Legends."
+  ],
+  "sources": [
+    "https://wiki.project1999.com/Buff_Lines",
+    "https://wiki.project1999.com/Bard",
+    "https://www.project1999.com/forums/archive/index.php/t-23433.html",
+    "https://www.project1999.com/forums/archive/index.php/t-87734.html",
+    "https://www.project1999.com/forums/showthread.php?t=87734",
+    "https://everquest.allakhazam.com/db/spelllist.html?type=brd&level=1&opt=And+Higher&action=search",
+    "https://everquest.allakhazam.com/db/spell.html?spell=3566",
+    "https://everquest.allakhazam.com/db/spell.html?spell=3567"
+  ],
+  "globalNotes": {
+    "songVsSpellStackingModel": "Stacking on P99 is SLOT-based, and bard songs are inside the same slot tables as spells - but almost all of them sit in bard-private headings. Three regimes: (1) SHARED GLOBAL SLOTS where a bard song directly contends with another class's spell - Haste (Primary) (all bard group and self haste songs vs Enchanter Visions of Grandeur/Wonderous Rapidity/Celerity/Augment/Alacrity/Quickness/Augmentation and Shaman Celerity/Alacrity/Quickness, plus Ranger Haste), Speed (Primary) (Selo's Accelerando and Selo's Song of Travel vs Spirit of Wolf, wolf forms, Spirit of Cheetah, Form of the Hunter), and Dexterity (Power) (Chant of Battle vs Enchanter Visions of Grandeur and Power potions). (2) BARD-PRIVATE LINES that stack fully with the caster equivalents - Strength (Anthem), Agility (March), Charisma (Bard Song), Intelligence (Elegy), Wisdom (Elegy), AC (Layer 2, Slots 1-4), Attack (Layer 2, Slot 3&4), Damage Shield (Layer 2, Slots 1 and 4), Damage Absorption (Shield of Song) and (March), Damage Absorption Magic (Song Shield / Psalm / Melody), HP Regeneration (Layer 2, Slots 1 and 3), Mana Regeneration (Chorus) and (Cantata), and the bard sub-tables under all five resistances. (3) A BONUS SLOT the bard uniquely supplies - Haste (Ervaj/v2), which adds on top of any Haste (Primary) source from any class; P99's maximum spell haste of +80% is exactly +70% Wonderous Rapidity plus +10% Composition of Ervaj. Consequence for annotation: haste and run speed are the only places a bard song should be flagged as conflicting with another class's buff; everything else the bard brings is additive.",
+    "songVsSongRules": "Within the bard's own kit, conflicts are dense because one song touches several slots and all its components must fit. Documented collision groups: Strength (Anthem) = Anthem De Arms / Jonthan's Whistling Warsong / Chant of Battle / Niv's Melody of Preservation / McVaxius' Rousing Rondo. Magic Resistance (Psalm) = Elemental Rhythms / Guardian Rhythms / Purifying Rhythms / Psalm of Mystic Shielding (this is why the community says the fire-cold song does not stack with the poison-disease song). AC (Layer 2, Slot 1) = Chant of Battle / Guardian Rhythms / Nillipus' March of the Wee. AC (Layer 2, Slot 4) = Elemental Rhythms / Purifying Rhythms / Psalm of Warmth / Psalm of Vitality. Damage Shield (Layer 2, Slot 1) = Psalm of Warmth / Psalm of Cooling. HP Regeneration (Layer 2, Slot 1) = Hymn of Restoration / Cantana of Soothing / Cantana of Replenishment. HP Regeneration (Layer 2, Slot 3) = Niv's Melody of Preservation / Psalm of Mystic Shielding. Attack (Layer 2, Slot 3&4) = Jonthan's Provocation / Jonthan's Inspiration / McVaxius' Rousing Rondo. Haste (Primary) = every bard haste song. Haste (Ervaj/v2) = Melody of Ervaj / Composition of Ervaj. Community-observed non-stacking groups from the P99 forum diagram map onto these: {Anthem de Arms, Chant of Battle, McVaxius' Berserker Crescendo}, {Jonthan's Whistling Warsong, Vilia's Verses of Celerity}, {Jonthan's Provocation, Verses of Victory, Vilia's Chorus of Celerity, McVaxius' Berserker Crescendo}.",
+    "twistIsAPlayerMechanicNotASlotRule": "Distinct from all of the above: a bard can only have a few song EFFECTS running at once because songs must be re-sung. Twisting means starting a song, waiting ~3 seconds for the effect message, stopping it (/stopsong) and starting the next, cycling back before the first expires. The P99 Bard FAQ says 'Using this method, you can have three song effects on at all times'; four-song twists are standard practice and five-song twists are described as advanced. This limit is imposed by song duration (most bard songs are 2-4 ticks) and human reaction time, NOT by the buff-slot system - two songs that occupy different slots still cannot both be up if the bard cannot cycle fast enough. A P99-specific quirk compounds it: song non-stacking is enforced for ~12 seconds after a song was last cast even if its buff is no longer showing, so a bard cannot rapidly alternate two songs that share a slot. All bard buffs also occupy the normal 15-buff window.",
+    "instrumentModel": "P99: 'All Bard song effects except haste and mana regeneration are affected by instruments.' The maximum instrument modifier is 28 (280%), reachable with a max instrument of the right type or with Puretone Discipline (which acts as the best instrument of every type and also boosts the singing modifier). Buff_Lines shows every bard buff as 'base (max)'. Practical consequences recorded per line: (a) haste percentages and Cassindra's Chorus of Clarity's mana regen never change with instruments, so those two lines are pure level-based upgrades; (b) everything else can nearly triple, so a lower song sung with the correct instrument routinely beats a higher song sung without it (documented in this file for Chords of Dissonance vs Denon's Disruptive Discord, Largo's Melodic Binding vs the Selo's AE songs, Selo's Accelerando with/without percussion, and the Tuyen's Chants); (c) five songs REQUIRE an instrument to sing at all - Shauri's Sonorous Clouding (wind), Alenia's Disenchanting Melody (string), Agilmente's Aria of Eagles (wind), Cantana of Soothing (string), Song: Melody of Ervaj (brass), Song: Occlusion of Sound (percussion); (d) Singing-skill songs (the Psalms, Verses of Victory, Vilia's Chorus of Celerity, the Jonthan's line, Niv's Harmonic, Solon's Charismatic Concord, Cassindra's Elegy) need nothing held, so they twist cleanly alongside instrument songs - a bard can only hold one instrument at a time and both hands must be free to use it.",
+    "coverage": "All 91 input rows are accounted for. The input has 84 distinct song names and 85 distinct name+level pairs; every one of those 85 appears exactly once in this file (verified programmatically). Seven names appear on more than one row: Aria of Asceticism (two rows at DIFFERENT levels, 39 and 45, with unrelated effects - both listed separately in standalone) and six exact same-level duplicate pairs (Anthem De Arms 10, Solon's Bravura 39, Shield of Song 49, Song: Melody of Ervaj 50, Song: Occlusion of Sound 55, Song: Composition of Ervaj 60), each recorded once with the duplication called out. Distribution: 58 songs across 20 lines, 26 standalone entries, 1 unlinked.",
+    "legendsVsClassicLevels": "Notable: all 70 songs shared between Legends and P99's classic-through-Velious bard list match on level EXACTLY - zero level mismatches. Nothing from the P99 classic bard list is missing on Legends (hence every line's missingOnLegends is empty). Legends additionally carries 11 post-classic songs (Magical Monologue 9, Song of Sustenance 15, Amplification 30, Sionachie's Dreams 40, Tuyen's Chant of Disease 42, Aria of Asceticism 39 and 45, Rizlona's Embers 45, Selo's Accelerating Chorus 49, Tuyen's Chant of Poison 50) plus Song: Composition of Ervaj 60 (which is classic Velious but absent from P99's song table while present in P99 Buff_Lines). Every one of those post-classic songs also matches its LIVE Allakhazam level exactly, so for Bard the Legends set is best described as 'classic set, unmodified levels, plus a curated slice of Luclin/Planes songs imported at their live levels' - not a re-tiering. This refines the prior finding that Legends tracks modern Allakhazam rather than P99: for Bard the two agree on every classic song, so bard levels do not discriminate between the two sources."
+  }
+}

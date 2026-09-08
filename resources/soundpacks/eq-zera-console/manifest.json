@@ -1,0 +1,115 @@
+{
+  "id": "eq-zera-console",
+  "name": "EQ Zera Console",
+  "license": "CC0-1.0 (original, synthesized by scripts/gen-sounds.mts)",
+  "sounds": {
+    "session-start-power-01": {
+      "file": "session-start-power-01.wav",
+      "label": "Start · Power on"
+    },
+    "session-start-power-02": {
+      "file": "session-start-power-02.wav",
+      "label": "Start · Boot"
+    },
+    "session-start-power-03": {
+      "file": "session-start-power-03.wav",
+      "label": "Start · Wake"
+    },
+    "session-end-power-01": {
+      "file": "session-end-power-01.wav",
+      "label": "End · Power down"
+    },
+    "session-end-power-02": {
+      "file": "session-end-power-02.wav",
+      "label": "End · Shutdown"
+    },
+    "session-end-power-03": {
+      "file": "session-end-power-03.wav",
+      "label": "End · Fade"
+    },
+    "task-acknowledge-blip-01": {
+      "file": "task-acknowledge-blip-01.wav",
+      "label": "Acknowledge · Blip"
+    },
+    "task-acknowledge-blip-02": {
+      "file": "task-acknowledge-blip-02.wav",
+      "label": "Acknowledge · Ping"
+    },
+    "task-acknowledge-blip-03": {
+      "file": "task-acknowledge-blip-03.wav",
+      "label": "Acknowledge · Pop"
+    },
+    "task-progress-tick-01": {
+      "file": "task-progress-tick-01.wav",
+      "label": "Progress · Tick"
+    },
+    "task-progress-tick-02": {
+      "file": "task-progress-tick-02.wav",
+      "label": "Progress · Tap"
+    },
+    "task-progress-tick-03": {
+      "file": "task-progress-tick-03.wav",
+      "label": "Progress · Step"
+    },
+    "task-complete-fanfare-01": {
+      "file": "task-complete-fanfare-01.wav",
+      "label": "Complete · Fanfare"
+    },
+    "task-complete-fanfare-02": {
+      "file": "task-complete-fanfare-02.wav",
+      "label": "Complete · Victory"
+    },
+    "task-complete-fanfare-03": {
+      "file": "task-complete-fanfare-03.wav",
+      "label": "Complete · Cleared"
+    },
+    "task-error-buzz-01": {
+      "file": "task-error-buzz-01.wav",
+      "label": "Error · Buzz"
+    },
+    "task-error-buzz-02": {
+      "file": "task-error-buzz-02.wav",
+      "label": "Error · Wrong"
+    },
+    "task-error-buzz-03": {
+      "file": "task-error-buzz-03.wav",
+      "label": "Error · Slip"
+    },
+    "input-required-alarm-01": {
+      "file": "input-required-alarm-01.wav",
+      "label": "Input · Alarm"
+    },
+    "input-required-alarm-02": {
+      "file": "input-required-alarm-02.wav",
+      "label": "Input · Siren"
+    },
+    "input-required-alarm-03": {
+      "file": "input-required-alarm-03.wav",
+      "label": "Input · Warning"
+    },
+    "resource-limit-thud-01": {
+      "file": "resource-limit-thud-01.wav",
+      "label": "Limit · Thud"
+    },
+    "resource-limit-thud-02": {
+      "file": "resource-limit-thud-02.wav",
+      "label": "Limit · Drop"
+    },
+    "resource-limit-thud-03": {
+      "file": "resource-limit-thud-03.wav",
+      "label": "Limit · Low"
+    },
+    "user-spam-click-01": {
+      "file": "user-spam-click-01.wav",
+      "label": "Spam · Click"
+    },
+    "user-spam-click-02": {
+      "file": "user-spam-click-02.wav",
+      "label": "Spam · Tock"
+    },
+    "user-spam-click-03": {
+      "file": "user-spam-click-03.wav",
+      "label": "Spam · Tap"
+    }
+  }
+}

@@ -1,0 +1,20 @@
+EQ Zera
+=======
+
+This software is a derivative work of "everquest-companion" (EQ Legends Companion),
+Copyright (c) 2026 Josh Moyers, https://github.com/jmoyers/everquest-companion,
+licensed under the Functional Source License, Version 1.1, MIT Future License
+(FSL-1.1-MIT). The full license text is in the LICENSE file and applies to this
+derivative as well.
+
+Under the FSL the original author's product names and trademarks are not licensed;
+this fork is therefore distributed under the name "EQ Zera" and is not affiliated
+with or endorsed by the original author.
+
+Bundled data is scraped from eqlwiki.com under that wiki's terms. The bundled
+Alan Rickman voice pack is from utensils/openpeon-alan-rickman-soundpack (CC-BY-4.0).
+
+Bundled fonts (src/renderer/src/assets/fonts/): Orbitron, Copyright 2009 The Orbitron Project
+Authors (github.com/theleagueof/orbitron), and Share Tech Mono, Copyright 2012 Carrois Type
+Design (carrois.com). Both are licensed under the SIL Open Font License, Version 1.1
+(https://openfontlicense.org). Fetched by scripts/fetch-fonts.mts; latin subsets only.

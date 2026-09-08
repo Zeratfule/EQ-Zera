@@ -1,0 +1,53 @@
+<Configuration>
+  <!--
+    Windows Sandbox harness for the POST-RELEASE END-TO-END FEEDBACK SMOKE TEST.
+
+    Sibling of installer-test.wsb, and deliberately a different thing. That one proves the
+    installer stands alone on a clean machine. THIS one proves the whole feedback pipeline
+    works from a machine that has only ever seen the PUBLISHED artifact: download the release
+    installer, verify it against the published SHA256SUMS.txt, install it silently, plant a
+    mocked EverQuest log, launch the installed app with EQ_SMOKE_FEEDBACK set, and let it file
+    ONE real bug report with a log slice attached through the ordinary submit path.
+
+    DIFFERENCES FROM installer-test.wsb, both load-bearing:
+      * NO release/ MAPPING. The installer is DOWNLOADED from
+        https://github.com/jmoyers/everquest-companion/releases/latest/download/ - testing the
+        artifact a user would actually get, not a local build. Networking is therefore
+        required (it is on by default; do not add <Networking>Disable</Networking>).
+      * The results folder is a TWO-WAY channel: the host writes the run's nonce and the
+        synthesized log into it before launch, and the guest writes its verdict back.
+
+    ON-DEMAND ONLY. This files a REAL report against the LIVE ingest API and costs a real row
+    and a real S3 object (which the host then deletes). It is not in CI, not in `npm test`,
+    and not in `npm run test:e2e`.
+
+    DO NOT launch this file directly. Run it through the wrapper:
+      npm run smoke:release
+      (powershell -ExecutionPolicy Bypass -File scripts\sandbox\run-smoke-feedback.ps1)
+    which generates the nonce, synthesizes the log, closes stale VMs (only ONE sandbox
+    instance is allowed machine-wide), parks the VM window off the primary monitor without
+    stealing focus, force-closes it when the results land, THEN verifies the report and its
+    scrubbed slice in the live cloud and deletes both. Raw double-click skips all of that,
+    leaves a VM on screen, and leaves a report in the operator's backlog.
+
+    Read: scripts\sandbox\results\smoke-result.txt after it finishes.
+
+    NOTE: HostFolder paths must be ABSOLUTE. They're written for this repo's location
+    (C:\Users\jmoye\everquest-companion); adjust if the repo moves.
+  -->
+  <MappedFolders>
+    <MappedFolder>
+      <HostFolder>C:\Users\jmoye\everquest-companion\scripts\sandbox</HostFolder>
+      <SandboxFolder>C:\harness</SandboxFolder>
+      <ReadOnly>true</ReadOnly>
+    </MappedFolder>
+    <MappedFolder>
+      <HostFolder>C:\Users\jmoye\everquest-companion\scripts\sandbox\results</HostFolder>
+      <SandboxFolder>C:\results</SandboxFolder>
+      <ReadOnly>false</ReadOnly>
+    </MappedFolder>
+  </MappedFolders>
+  <LogonCommand>
+    <Command>powershell.exe -ExecutionPolicy Bypass -NoProfile -File C:\harness\smoke-feedback.ps1</Command>
+  </LogonCommand>
+</Configuration>

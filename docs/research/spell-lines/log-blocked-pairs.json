@@ -1,0 +1,238 @@
+{
+ "generatedAt": "2026-08-13",
+ "source": "owner log eqlog_Primitive_freeport.txt, in-game block messages (no player speech)",
+ "note": "Measured EQ Legends stacking conflicts: casting BLOCKED failed because BY was already up. Primary evidence tier for the stacking overlay.",
+ "pairs": [
+  {
+   "blocked": "Illusion: Air Elemental",
+   "by": "Boon of the Garou",
+   "count": 33,
+   "firstSeen": "Thu Jul 30 20:42:27 2026",
+   "lastSeen": "Sun Aug 09 22:44:41 2026"
+  },
+  {
+   "blocked": "Spirit of the Traveler",
+   "by": "Spirit of Wolf",
+   "count": 24,
+   "firstSeen": "Tue Jul 28 22:02:50 2026",
+   "lastSeen": "Thu Aug 13 22:23:32 2026"
+  },
+  {
+   "blocked": "Boon of the Garou",
+   "by": "Illusion: Air Elemental",
+   "count": 20,
+   "firstSeen": "Thu Jul 30 16:21:42 2026",
+   "lastSeen": "Tue Aug 11 21:47:23 2026"
+  },
+  {
+   "blocked": "Symbol of Ryltan",
+   "by": "Symbol of Pinzarn",
+   "count": 13,
+   "firstSeen": "Mon Aug 03 22:56:53 2026",
+   "lastSeen": "Mon Aug 10 21:20:04 2026"
+  },
+  {
+   "blocked": "Arch Shielding",
+   "by": "Talisman of Altuna",
+   "count": 6,
+   "firstSeen": "Thu Jul 30 18:25:05 2026",
+   "lastSeen": "Thu Jul 30 22:00:48 2026"
+  },
+  {
+   "blocked": "Spirit of the Traveler",
+   "by": "Spirit of Bih`Li",
+   "count": 5,
+   "firstSeen": "Thu Jul 30 18:22:33 2026",
+   "lastSeen": "Thu Jul 30 22:36:07 2026"
+  },
+  {
+   "blocked": "Frenzy",
+   "by": "Fury",
+   "count": 5,
+   "firstSeen": "Thu Aug 13 20:17:51 2026",
+   "lastSeen": "Thu Aug 13 23:26:17 2026"
+  },
+  {
+   "blocked": "Boon of the Garou",
+   "by": "Illusion: Human",
+   "count": 3,
+   "firstSeen": "Thu Jul 30 16:08:34 2026",
+   "lastSeen": "Wed Aug 12 15:37:59 2026"
+  },
+  {
+   "blocked": "Center",
+   "by": "Skin like Rock",
+   "count": 3,
+   "firstSeen": "Thu Aug 13 20:17:51 2026",
+   "lastSeen": "Thu Aug 13 22:51:13 2026"
+  },
+  {
+   "blocked": "Boon of the Clear Mind",
+   "by": "Clarity",
+   "count": 2,
+   "firstSeen": "Thu Jul 30 16:08:34 2026",
+   "lastSeen": "Thu Jul 30 16:21:42 2026"
+  },
+  {
+   "blocked": "Augmentation",
+   "by": "Celerity",
+   "count": 2,
+   "firstSeen": "Thu Jul 30 18:54:46 2026",
+   "lastSeen": "Thu Jul 30 20:09:33 2026"
+  },
+  {
+   "blocked": "Antimagic Poison",
+   "by": "Neurotoxic Poison",
+   "count": 2,
+   "firstSeen": "Mon Aug 03 14:59:20 2026",
+   "lastSeen": "Mon Aug 03 15:22:53 2026"
+  },
+  {
+   "blocked": "Valor of Marr",
+   "by": "Alacrity",
+   "count": 2,
+   "firstSeen": "Mon Aug 03 21:02:14 2026",
+   "lastSeen": "Mon Aug 03 21:14:34 2026"
+  },
+  {
+   "blocked": "Paralytic Poison",
+   "by": "Mage Bane Poison",
+   "count": 2,
+   "firstSeen": "Mon Aug 03 23:53:40 2026",
+   "lastSeen": "Tue Aug 04 00:04:43 2026"
+  },
+  {
+   "blocked": "Illusion: Air Elemental",
+   "by": "Illusion: Human",
+   "count": 2,
+   "firstSeen": "Mon Aug 10 18:20:22 2026",
+   "lastSeen": "Wed Aug 12 15:37:59 2026"
+  },
+  {
+   "blocked": "Riftwind's Protection",
+   "by": "Fury",
+   "count": 2,
+   "firstSeen": "Thu Aug 13 23:20:42 2026",
+   "lastSeen": "Thu Aug 13 23:26:44 2026"
+  },
+  {
+   "blocked": "Illusion: Skeleton",
+   "by": "Illusion: Dark Elf",
+   "count": 1,
+   "firstSeen": "Wed Jul 29 01:18:37 2026",
+   "lastSeen": "Wed Jul 29 01:18:37 2026"
+  },
+  {
+   "blocked": "Clarity",
+   "by": "Clarity",
+   "count": 1,
+   "firstSeen": "Wed Jul 29 01:22:27 2026",
+   "lastSeen": "Wed Jul 29 01:22:27 2026"
+  },
+  {
+   "blocked": "Breeze",
+   "by": "Clarity",
+   "count": 1,
+   "firstSeen": "Wed Jul 29 13:59:56 2026",
+   "lastSeen": "Wed Jul 29 13:59:56 2026"
+  },
+  {
+   "blocked": "Augmentation",
+   "by": "Alacrity",
+   "count": 1,
+   "firstSeen": "Wed Jul 29 14:55:19 2026",
+   "lastSeen": "Wed Jul 29 14:55:19 2026"
+  },
+  {
+   "blocked": "Illusion: Fire Elemental",
+   "by": "Illusion: Air Elemental",
+   "count": 1,
+   "firstSeen": "Wed Jul 29 18:21:07 2026",
+   "lastSeen": "Wed Jul 29 18:21:07 2026"
+  },
+  {
+   "blocked": "Illusion: Skeleton",
+   "by": "Boon of the Garou",
+   "count": 1,
+   "firstSeen": "Sat Aug 01 21:43:50 2026",
+   "lastSeen": "Sat Aug 01 21:43:50 2026"
+  },
+  {
+   "blocked": "Paralytic Poison",
+   "by": "Neurotoxic Poison",
+   "count": 1,
+   "firstSeen": "Mon Aug 03 20:01:47 2026",
+   "lastSeen": "Mon Aug 03 20:01:47 2026"
+  },
+  {
+   "blocked": "Paralytic Poison",
+   "by": "Banishing Poison",
+   "count": 1,
+   "firstSeen": "Tue Aug 04 20:01:44 2026",
+   "lastSeen": "Tue Aug 04 20:01:44 2026"
+  },
+  {
+   "blocked": "Illusion: Air Elemental",
+   "by": "Illusion: Skeleton",
+   "count": 1,
+   "firstSeen": "Sat Aug 08 14:52:11 2026",
+   "lastSeen": "Sat Aug 08 14:52:11 2026"
+  },
+  {
+   "blocked": "Boon of the Garou",
+   "by": "Illusion: Skeleton",
+   "count": 1,
+   "firstSeen": "Sat Aug 08 14:52:11 2026",
+   "lastSeen": "Sat Aug 08 14:52:11 2026"
+  },
+  {
+   "blocked": "Illusion: Air Elemental",
+   "by": "Illusion: Dark Elf",
+   "count": 1,
+   "firstSeen": "Sat Aug 08 21:24:25 2026",
+   "lastSeen": "Sat Aug 08 21:24:25 2026"
+  },
+  {
+   "blocked": "Boon of the Garou",
+   "by": "Illusion: Dark Elf",
+   "count": 1,
+   "firstSeen": "Sat Aug 08 21:24:25 2026",
+   "lastSeen": "Sat Aug 08 21:24:25 2026"
+  },
+  {
+   "blocked": "Illusion: Erudite",
+   "by": "Illusion: Dark Elf",
+   "count": 1,
+   "firstSeen": "Sun Aug 09 11:42:14 2026",
+   "lastSeen": "Sun Aug 09 11:42:14 2026"
+  },
+  {
+   "blocked": "Illusion: Dark Elf",
+   "by": "Illusion: Human",
+   "count": 1,
+   "firstSeen": "Tue Aug 11 15:32:35 2026",
+   "lastSeen": "Tue Aug 11 15:32:35 2026"
+  },
+  {
+   "blocked": "Illusion: Wood Elf",
+   "by": "Illusion: Erudite",
+   "count": 1,
+   "firstSeen": "Tue Aug 11 23:44:26 2026",
+   "lastSeen": "Tue Aug 11 23:44:26 2026"
+  },
+  {
+   "blocked": "Skin like Wood",
+   "by": "Center",
+   "count": 1,
+   "firstSeen": "Thu Aug 13 13:44:47 2026",
+   "lastSeen": "Thu Aug 13 13:44:47 2026"
+  },
+  {
+   "blocked": "Regeneration",
+   "by": "Boil Blood",
+   "count": 1,
+   "firstSeen": "Thu Aug 13 22:33:54 2026",
+   "lastSeen": "Thu Aug 13 22:33:54 2026"
+  }
+ ]
+}

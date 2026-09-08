@@ -1,0 +1,11 @@
+Location	Name	ID	Count	Slots
+Any Slot	Brigandine Tunic +1	3307	1	10
+Any Slot-Slot2	Empty	0	0	0
+
+KeyRing	Name	ID	
+Equipment	Symbol of Marr +2	12800
+Equipment	Light Woolen Mask	20821
+Equipment	Bracelet of Cessation +4	12804
+Equipment	Bracelet of Quiescence +2	12806
+Equipment	Light Woolen Mantle +1	20823
+Equipment	Black Silk Cape	20783

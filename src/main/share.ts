@@ -1,0 +1,288 @@
+// share.ts — main-side orchestration for settings/alert sharing.
+//
+// The RULES live in src/shared/profiles.ts (pure, unit-tested) and the WIRE FORMAT lives in
+// shareCodec.ts (pure + node:zlib, unit-tested). This file is the thin impure layer that
+// reads the electron-store, asks sounds.ts which packs are installed, and writes back.
+//
+// Renderer prefs (localStorage) can't be read from here, so the renderer passes its
+// whitelisted `ui` map in on every call and gets merged values back to write. That keeps
+// localStorage semantics entirely in the renderer and the store entirely in main.
+
+import {
+  applyAlertMerge,
+  buildAlertSetBody,
+  buildSettingsBody,
+  defaultSelectedScalars,
+  makeEnvelope,
+  mergeUiPref,
+  planAlertMerge,
+  planScalarChanges,
+  SHARE_ERROR_TEXT,
+  UI_PREF_SPECS,
+  type AlertSetBody,
+  type ScalarChange,
+  type SettingsBundleBody,
+  type ShareApplyResult,
+  type SharePreview,
+  type ScalarContext
+} from '../shared/profiles'
+import { decodeShareString, encodeShareString } from './shareCodec'
+import {
+  getAlertPrefs,
+  getAlerts,
+  getOverlayConfig,
+  saveAlerts,
+  setAlertPrefs,
+  setOverlayConfig
+} from './store'
+import { listPacks } from './sounds'
+import { getOverlayBgAlpha, setOverlayBgAlpha } from './storeOverlayBgAlpha'
+import { bodyBgAlphaPrefs } from '../shared/shareMerge'
+import type { OverlayKind } from '../shared/types'
+
+const KINDS: OverlayKind[] = ['fight', 'overall', 'heal-fight', 'heal-overall', 'events']
+
+/** Which sound packs exist on THIS machine (used to flag imports that reference others). */
+function installedPackIds(): string[] {
+  try {
+    return listPacks().map((p) => p.id)
+  } catch {
+    // Pack discovery is best-effort; with an empty set the planner simply flags nothing.
+    return []
+  }
+}
+
+function currentOverlays(): ScalarContext['overlays'] {
+  const out: ScalarContext['overlays'] = {}
+  for (const k of KINDS) {
+    const c = getOverlayConfig(k)
+    out[k] = { bgAlpha: c.bgAlpha }
+  }
+  return out
+}
+
+/** What the export/preview calls carry from the renderer: its whitelisted localStorage map. */
+export type UiPrefMap = Record<string, string>
+
+/** Encode the GLOBAL settings bundle (whitelisted — see profiles.ts classification). */
+export function exportSettingsString(appVersion: string, ui: UiPrefMap): string {
+  const body = buildSettingsBody({
+    alerts: getAlerts(),
+    alertPrefs: getAlertPrefs(),
+    overlays: currentOverlays(),
+    // JOS-407: the shared transparency rides ALONGSIDE the per-kind values above, never instead of
+    // them, so a machine on an older build reads this bundle and applies everything it knows.
+    overlayBgAlpha: getOverlayBgAlpha(),
+    ui
+  })
+  return encodeShareString(makeEnvelope('settings', body, appVersion))
+}
+
+/** Encode one alert (`ids:[id]`) or every alert (`ids` omitted) as a share string. */
+export function exportAlertsString(appVersion: string, ids?: string[]): string {
+  const body = buildAlertSetBody(getAlerts(), ids?.length ? ids : undefined)
+  return encodeShareString(makeEnvelope('alerts', body, appVersion))
+}
+
+/** A suggested file name for "save to file" — dated, so a folder of exports self-sorts. */
+export function shareFileName(kind: 'settings' | 'alerts', count?: number): string {
+  const day = new Date().toISOString().slice(0, 10)
+  const what = kind === 'alerts' ? `alerts${count ? `-${count}` : ''}` : 'settings'
+  return `eq-companion-${what}-${day}.eqshare`
+}
+
+function emptyPreview(text: string, error: string): SharePreview {
+  return { ok: false, error, alerts: [], scalars: [], missingPacks: [], text }
+}
+
+/**
+ * Decode + plan, without changing anything. This is what the import dialog renders: the
+ * user sees exactly which alerts will be ADDED (and which are skipped because they already
+ * have them), which scalar settings would be replaced (all opt-in, off by default), and
+ * which sound packs they're missing — before a single write happens.
+ */
+export function previewShare(text: string, ui: UiPrefMap): SharePreview {
+  const decoded = decodeShareString(text)
+  if (!decoded.ok) return emptyPreview(text, SHARE_ERROR_TEXT[decoded.error])
+  const env = decoded.envelope
+
+  const body = env.body as Partial<SettingsBundleBody & AlertSetBody>
+  const incomingAlerts = Array.isArray(body.alerts) ? body.alerts : []
+  const alerts = planAlertMerge(getAlerts(), incomingAlerts, installedPackIds())
+
+  let scalars: SharePreview['scalars'] = []
+  if (env.kind === 'settings') {
+    scalars = planScalarChanges(body, {
+      alertPrefs: getAlertPrefs(),
+      overlays: currentOverlays(),
+      overlayBgAlpha: getOverlayBgAlpha(),
+      ui
+    })
+  }
+
+  if (env.kind === 'character') {
+    // Designed, not built (profiles.ts forward-design section). Say so plainly instead of
+    // pretending there is nothing in the string.
+    return emptyPreview(
+      text,
+      'That share string carries a character profile. This version can share settings and alerts only.'
+    )
+  }
+
+  if (!alerts.length && !scalars.length) return emptyPreview(text, SHARE_ERROR_TEXT['empty-payload'])
+
+  const missingPacks = [
+    ...new Set(alerts.flatMap((a) => (a.action !== 'skip' && a.missingPackId ? [a.missingPackId] : [])))
+  ]
+
+  return {
+    ok: true,
+    kind: env.kind,
+    appVersion: env.app,
+    createdAt: env.at,
+    alerts,
+    scalars,
+    missingPacks,
+    text
+  }
+}
+
+/** Per-item opt-in from the preview. Omit either list to take that category's defaults. */
+export interface ShareSelection {
+  /** finalIds of alerts to add (defaults to every non-skip item) */
+  alertIds?: string[]
+  /** ScalarChange ids to apply (defaults to the additive unions only) */
+  scalarIds?: string[]
+}
+
+/** Apply one selected `overlay.<kind>.<field>` change. True when it actually wrote. */
+function applyOverlayScalar(changeId: string, body: SettingsBundleBody): boolean {
+  const [, kind, field] = changeId.split('.')
+  const inc = body.overlays?.[kind as OverlayKind]
+  // One field today. A `topN` id from a bundle written before that budget was retired falls
+  // through to false, which is the honest answer: nothing here can apply it any more.
+  if (inc && field === 'bgAlpha') {
+    setOverlayConfig(kind as OverlayKind, { bgAlpha: inc.bgAlpha })
+    return true
+  }
+  return false
+}
+
+/**
+ * Apply one selected `overlayBgAlpha.<half>` change (JOS-407). True when it actually wrote.
+ *
+ * HALF AT A TIME, because it is offered half at a time: the alpha and the mode are two rows, and a
+ * person taking a friend's transparency should not have to take their independent-mode answer with
+ * it. `bodyBgAlphaPrefs` is what makes an OLD bundle — per-kind alphas and no preference at all —
+ * importable under the least-harm rule: equal values mean the sender was synced, differing ones
+ * mean they were not. It runs BEFORE the per-kind rows, because the first opt-in to independent
+ * transparency seeds every kind (see planScalarChanges).
+ *
+ * Its own function because `applyScalarChange` is at the measured complexity ceiling — the reason
+ * `applyOverlayScalar` and `applyUiScalar` beside it are functions too.
+ */
+function applyBgAlphaScalar(changeId: string, body: SettingsBundleBody): boolean {
+  const incoming = bodyBgAlphaPrefs(body)
+  if (!incoming) return false
+  const half = changeId.slice('overlayBgAlpha.'.length)
+  if (half === 'shared') setOverlayBgAlpha({ shared: incoming.shared })
+  else if (half === 'independent') setOverlayBgAlpha({ independent: incoming.independent })
+  else return false
+  return true
+}
+
+/** Apply one selected `ui.<key>` change, recording the renderer's localStorage write.
+ *  True when it actually wrote. */
+function applyUiScalar(
+  changeId: string,
+  body: SettingsBundleBody,
+  ui: UiPrefMap,
+  uiWrites: Record<string, string>
+): boolean {
+  const key = changeId.slice(3)
+  const spec = UI_PREF_SPECS.find((s) => s.key === key)
+  const inc = body.ui?.[key]
+  if (spec && inc !== undefined) {
+    uiWrites[key] = mergeUiPref(spec, ui[key], inc)
+    return true
+  }
+  return false
+}
+
+/** Apply ONE selected scalar change, in the same order the categories were tested in when
+ *  this was a single if/else-if chain. True when it actually wrote. */
+function applyScalarChange(
+  change: ScalarChange,
+  body: SettingsBundleBody,
+  ui: UiPrefMap,
+  uiWrites: Record<string, string>
+): boolean {
+  if (change.id === 'alertPrefs.globalVolume' && body.alertPrefs) {
+    setAlertPrefs({ ...getAlertPrefs(), globalVolume: body.alertPrefs.globalVolume })
+    return true
+  }
+  if (change.id === 'alertPrefs.muted' && body.alertPrefs) {
+    setAlertPrefs({ ...getAlertPrefs(), muted: body.alertPrefs.muted })
+    return true
+  }
+  if (change.id === 'alertPrefs.alwaysPlayAll' && body.alertPrefs) {
+    // Normalized to a boolean here rather than spread through: the wire may omit the key, and
+    // `setAlertPrefs` writes it only when true (JOS-222), so an incoming `false` must ERASE a
+    // local `true` rather than being read as "said nothing".
+    setAlertPrefs({ ...getAlertPrefs(), alwaysPlayAll: body.alertPrefs.alwaysPlayAll === true })
+    return true
+  }
+  if (change.id.startsWith('overlayBgAlpha.')) return applyBgAlphaScalar(change.id, body)
+  if (change.id.startsWith('overlay.')) return applyOverlayScalar(change.id, body)
+  if (change.id.startsWith('ui.')) return applyUiScalar(change.id, body, ui, uiWrites)
+  return false
+}
+
+/** Walk the previewed scalars in order, applying the ones the user selected. Returns how
+ *  many landed plus the localStorage writes the renderer must perform. */
+function applySelectedScalars(
+  preview: SharePreview,
+  chosen: Set<string>,
+  body: SettingsBundleBody,
+  ui: UiPrefMap
+): { scalarsApplied: number; ui: Record<string, string> } {
+  const uiWrites: Record<string, string> = {}
+  let scalarsApplied = 0
+  for (const change of preview.scalars) {
+    if (!chosen.has(change.id)) continue
+    if (applyScalarChange(change, body, ui, uiWrites)) scalarsApplied++
+  }
+  return { scalarsApplied, ui: uiWrites }
+}
+
+/**
+ * Apply a previewed share, ADDITIVELY. Alerts are appended (never overwritten — see
+ * planAlertMerge's conflict rules); scalar settings are written only when explicitly
+ * selected. Returns the localStorage writes for the renderer to perform.
+ */
+export function applyShare(text: string, ui: UiPrefMap, selection?: ShareSelection): ShareApplyResult {
+  const preview = previewShare(text, ui)
+  if (!preview.ok) {
+    return { ok: false, error: preview.error, added: 0, skipped: 0, rekeyed: 0, scalarsApplied: 0, ui: {} }
+  }
+
+  const selectedAlerts = selection?.alertIds ? new Set(selection.alertIds) : undefined
+  const merged = applyAlertMerge(getAlerts(), preview.alerts, selectedAlerts)
+  if (merged.added > 0) saveAlerts(merged.alerts)
+
+  const chosen = new Set(selection?.scalarIds ?? defaultSelectedScalars(preview.scalars))
+  // previewShare already proved this decodes; re-read the body to source the values.
+  const decoded = decodeShareString(text)
+  const body = decoded.ok && preview.kind === 'settings' ? (decoded.envelope.body as SettingsBundleBody) : null
+
+  const applied = body ? applySelectedScalars(preview, chosen, body, ui) : { scalarsApplied: 0, ui: {} }
+
+  return {
+    ok: true,
+    added: merged.added,
+    skipped: merged.skipped,
+    rekeyed: merged.rekeyed,
+    scalarsApplied: applied.scalarsApplied,
+    ui: applied.ui
+  }
+}

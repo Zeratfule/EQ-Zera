@@ -1,0 +1,954 @@
+{
+  "class": "Beastlord",
+  "lines": [
+    {
+      "id": "bst-warder",
+      "name": "Warder (pet summon) line",
+      "category": "Pet",
+      "sharedWith": [],
+      "members": [
+        { "name": "Wild Spirit", "level": 1, "inDb": true, "note": "Summons a level 1 Warder. LEGENDS-CUSTOM: no level-1 Beastlord warder exists on live or in the Luclin-era Al'Kabor list; the live line opens at Spirit of Sharik. Legends front-loads the class with a pet at level 1." },
+        { "name": "Tame Spirit", "level": 4, "inDb": true, "note": "Summons a level 5 Warder. LEGENDS-CUSTOM, same evidence as Wild Spirit." },
+        { "name": "Spirit of Sharik", "level": 8, "inDb": true, "note": "Level 9 Warder. First live-canonical warder (live BST/8, Luclin/Al'Kabor BST/9)." },
+        { "name": "Spirit of Khaliz", "level": 15, "inDb": true, "note": "Level 16 Warder. Matches live BST/15." },
+        { "name": "Spirit of Keshuval", "level": 21, "inDb": true, "note": "Level 22 Warder. Matches live BST/21." },
+        { "name": "Spirit of Herikol", "level": 30, "inDb": true, "note": "Level 26 Warder. Matches live BST/30." },
+        { "name": "Spirit of Yekan", "level": 39, "inDb": true, "note": "Level 31 Warder. Matches live BST/39." },
+        { "name": "Spirit of Kashek", "level": 46, "inDb": true, "note": "Level 39 Warder. Matches live BST/46. Top warder on Legends." }
+      ],
+      "replacement": {
+        "strict": true,
+        "note": "Strictly replacing. Warder levels are monotonic on Legends (1, 5, 9, 16, 22, 26, 31, 39) and only one warder can be active; summoning a new one destroys the old. No reason to keep a lower tier. The only practical exception is mana/level-of-target trivia (a lower-level warder is cheaper to summon), which is not a real gameplay case."
+      },
+      "missingOnLegends": [
+        { "name": "Spirit of Omakin", "level": 54, "note": "Above the Legends level ceiling (top spell in the db is level 51)." },
+        { "name": "Spirit of Zehkes", "level": 56, "note": "Above ceiling. Notable because Legends DOES have the matching pet heal, Vigor of Zehkes, at 49 - the heal tier outruns the warder tier." },
+        { "name": "Spirit of Khurenz", "level": 58, "note": "Above ceiling." },
+        { "name": "Spirit of Khati Sha", "level": 60, "note": "Above ceiling." },
+        { "name": "Spirit of Arag", "level": 62, "note": "Above ceiling (post-Luclin)." },
+        { "name": "Spirit of Rellic", "level": 63, "note": "Above ceiling (post-Luclin)." },
+        { "name": "Spirit of Sorsha", "level": 64, "note": "Above ceiling (post-Luclin)." }
+      ],
+      "stacking": {
+        "slots": [],
+        "conflicts": [
+          { "line": "bst-warder", "class": "Beastlord", "detail": "Self-conflicting by mechanic rather than by buff slot: a Beastlord may have exactly one warder. Casting any member of this line while a warder is up replaces it.", "source": "https://everquest.fandom.com/wiki/Warder" }
+        ],
+        "stacksWith": [],
+        "notes": "Pet summons occupy no buff slot on the caster or the pet. All warder buffs (proc line, haste line, Calliav rune, pet heals) are re-applied from scratch after a re-summon."
+      },
+      "sources": [
+        "https://everquest.allakhazam.com/db/spelllist.html?type=bst&level=1&opt=And+Higher&action=search",
+        "https://lucy.alkabor.com/index_Beastlord.html",
+        "https://everquest.fandom.com/wiki/Warder"
+      ]
+    },
+    {
+      "id": "bst-warder-heal",
+      "name": "Warder heal line (Replenishing / Rejuvenation)",
+      "category": "Pet Heal",
+      "sharedWith": [],
+      "members": [
+        { "name": "Sharik's Replenishing", "level": 9, "inDb": true, "note": "Live BST/9. Also strips 10 disease, poison and curse counters from the warder." },
+        { "name": "Keshuval's Rejuvenation", "level": 15, "inDb": true, "note": "Live BST/15." },
+        { "name": "Herikol's Soothing", "level": 27, "inDb": true, "note": "Live BST/27." },
+        { "name": "Yekan's Recovery", "level": 36, "inDb": true, "note": "Live BST/36." },
+        { "name": "Vigor of Zehkes", "level": 49, "inDb": true, "note": "Live BST/49. Top pet heal on Legends at 671 HP; note the flat magnitude (no level scaling range) unlike the four lower tiers." }
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "Near-strict on healing throughput - each tier is a clean upgrade and all five carry the same 10/10/10 disease/poison/curse cure. The exception is mana efficiency: the lower tiers stay useful as cheap counter-strippers and top-offs on a warder that is only lightly damaged, exactly like the player heal line. Every member is instant-cast, so there is no cast-time tradeoff."
+      },
+      "missingOnLegends": [
+        { "name": "Aid of Khurenz", "level": 52, "note": "Above ceiling." },
+        { "name": "Sha's Restoration", "level": 55, "note": "Above ceiling." },
+        { "name": "Healing of Sorsha", "level": 61, "note": "Above ceiling (post-Luclin)." }
+      ],
+      "stacking": {
+        "slots": [],
+        "conflicts": [],
+        "stacksWith": [],
+        "notes": "Instant heals with cure components; no buff slot is consumed. The counter-removal component overlaps with Cure Disease / Cure Poison / Counteract Disease but those are player-targeted, so there is no interaction."
+      },
+      "sources": [
+        "https://everquest.allakhazam.com/db/spelllist.html?type=bst&level=1&opt=And+Higher&action=search",
+        "https://lucy.alkabor.com/index_Beastlord.html"
+      ]
+    },
+    {
+      "id": "bst-warder-proc",
+      "name": "Warder proc line (Spirit of Lightning / Blizzard / Inferno / Scorpion / Vermin)",
+      "category": "Pet Buff",
+      "sharedWith": [],
+      "members": [
+        { "name": "Spirit of Lightning", "level": 13, "inDb": true, "note": "Live BST/13. Magic proc. 40 min." },
+        { "name": "Spirit of the Blizzard", "level": 18, "inDb": true, "note": "Live BST/18. Cold proc. 42 min." },
+        { "name": "Spirit of Inferno", "level": 28, "inDb": true, "note": "Live BST/28. Fire proc. 44 min." },
+        { "name": "Spirit of the Scorpion", "level": 38, "inDb": true, "note": "Live BST/38. Poison proc. 46 min." },
+        { "name": "Spirit of Vermin", "level": 46, "inDb": true, "note": "Live BST/46. Disease proc. 48 min." }
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "NOT strict, and this is the most interesting replacement case in the class. On Legends all five members carry an identical rider (Increase Dexterity by 75, 150% proc rate mod) and differ only in the damage type of the proc and the buff duration (40/42/44/46/48 min). The proc damage itself is not exposed in the db. Because the resist type differs per member, a lower tier remains correct play against a mob highly resistant to the newer tier's element - keep the whole chain memmed rather than deleting older scrolls. Only one member can be active on the warder at a time."
+      },
+      "missingOnLegends": [
+        { "name": "Spirit of Wind", "level": 51, "note": "AT the Legends ceiling (level 51 spells DO exist on Legends - Resist Disease is 51) yet absent. This is a genuine gap rather than a ceiling effect and is the strongest evidence of deliberate Legends trimming inside this line." },
+        { "name": "Spirit of the Storm", "level": 53, "note": "Above ceiling." },
+        { "name": "Spirit of Snow", "level": 54, "note": "Above ceiling." },
+        { "name": "Spirit of Flame", "level": 56, "note": "Above ceiling." }
+      ],
+      "stacking": {
+        "slots": ["Melee proc (add proc) slot", "Dexterity slot"],
+        "conflicts": [
+          { "line": "bst-warder-proc", "class": "Beastlord", "detail": "Members are mutually exclusive on the warder - identical slot layout (proc in the first slot, DEX in the second) means the newer cast overwrites the older.", "source": "https://everquest.allakhazam.com/db/spelllist.html?type=bst&level=1&opt=And+Higher&action=search" },
+          { "line": "Any other add-proc buff on the same pet", "class": "Shaman/Enchanter/Ranger", "detail": "A pet can carry one add-proc effect. Shaman weapon-proc buffs cast on the warder will overwrite or be blocked by this line depending on which was cast last and relative level.", "source": "https://wiki.takp.info/index.php/Pets" }
+        ],
+        "stacksWith": [
+          { "line": "bst-warder-haste", "detail": "Yekan's Quickening (haste/STR/ATK/AC) uses entirely different slots and is the standard companion buff - stack it with a proc buff." },
+          { "line": "bst-calliav", "detail": "Ward of Calliav is a rune/absorb effect in its own slot and stacks freely." },
+          { "line": "bst-dex", "detail": "The DEX 75 rider sits in the proc spell's second slot, whereas Spirit of Monkey puts DEX in its first slot; different slot indices means both apply. Confirm in-game before relying on it." }
+        ],
+        "notes": "Community consensus is that nearly all Beastlord pet buffs stack with one another, with only a handful of mutually exclusive pairs; the proc line is the main mutually-exclusive family. MEDIUM confidence on the exact slot indices - derived from effect ordering in the Legends db, not from a Lucy slot dump."
+      },
+      "sources": [
+        "https://everquest.allakhazam.com/db/spelllist.html?type=bst&level=1&opt=And+Higher&action=search",
+        "https://lucy.alkabor.com/index_Beastlord.html",
+        "https://wiki.takp.info/index.php/Pets",
+        "https://everquest.fandom.com/wiki/Warder"
+      ]
+    },
+    {
+      "id": "bst-warder-haste",
+      "name": "Warder haste line (Quickening / Alacrity / Celerity)",
+      "category": "Pet Buff",
+      "sharedWith": [],
+      "members": [
+        { "name": "Yekan's Quickening", "level": 37, "inDb": true, "note": "Live BST/37. On Legends it is a four-slot omnibus: STR 25-45, attack speed 37-60%, ATK +20, AC 5-10. One hour duration - the longest buff in the class." }
+      ],
+      "replacement": {
+        "strict": true,
+        "note": "Only one member on Legends, so nothing to replace. On live the chain is strictly replacing (each tier is pure numeric upgrade in the same slots)."
+      },
+      "missingOnLegends": [
+        { "name": "Omakin's Alacrity", "level": 55, "note": "Above ceiling." },
+        { "name": "Arag's Celerity", "level": 63, "note": "Above ceiling (post-Luclin)." },
+        { "name": "Alacrity", "level": 60, "note": "The PLAYER-target haste. Beastlords get no self/group haste at all on Legends - the class's only haste effect is pet-only. Worth surfacing to users, since the shared-shaman intuition would suggest otherwise." },
+        { "name": "Celerity", "level": 63, "note": "Player haste, above ceiling." }
+      ],
+      "stacking": {
+        "slots": ["Haste (attack speed) slot - one global haste effect per target", "Strength slot", "ATK slot", "AC slot"],
+        "conflicts": [
+          { "line": "Haste (global)", "class": "Shaman/Enchanter/Bard", "detail": "Only one haste effect holds on any target. A shaman Alacrity/Celerity or enchanter haste landed on the warder will contest Yekan's Quickening; the higher-level spell wins and the loser is blocked.", "source": "https://wiki.project1999.com/Buff_Lines" },
+          { "line": "bst-str", "class": "Beastlord/Shaman", "detail": "The STR component competes with player STR buffs if a Strengthen-line spell is cast on the warder.", "source": "https://wiki.project1999.com/Buff_Lines" },
+          { "line": "bst-spiritual-brawn", "class": "Beastlord", "detail": "The ATK component competes with the Spiritual Brawn ATK slot if Brawn is ever landed on the pet (only possible with later Pet Affinity mechanics, which are unlikely to exist on a classic-era server).", "source": "https://lucy.alkabor.com/stacking_2178.html" }
+        ],
+        "stacksWith": [
+          { "line": "bst-warder-proc", "detail": "Standard warder loadout is Quickening + one proc buff + Ward of Calliav." },
+          { "line": "bst-calliav", "detail": "Rune effect, different slot." }
+        ],
+        "notes": "Haste is the one buff category where the classic 'one global slot' rule is unambiguous. LOW risk here."
+      },
+      "sources": [
+        "https://everquest.allakhazam.com/db/spelllist.html?type=bst&level=1&opt=And+Higher&action=search",
+        "https://lucy.alkabor.com/index_Beastlord.html",
+        "https://wiki.project1999.com/Buff_Lines"
+      ]
+    },
+    {
+      "id": "bst-calliav",
+      "name": "Calliav pet rune line",
+      "category": "Pet Buff",
+      "sharedWith": ["Necromancer", "Magician"],
+      "members": [
+        { "name": "Ward of Calliav", "level": 49, "inDb": true, "note": "Live line membership is NEC/49 MAG/46 BST/49 - Legends matches the BST level exactly. NOT a shaman spell despite the shamanic feel; do not inherit shaman stacking here. FLAG: the Legends magnitude, 'Absorb Hit up to 11747 damage', is orders of magnitude above the classic value and reads as either a Legends rebalance or a db extraction artifact - verify against the in-game spell description before surfacing the number." }
+      ],
+      "replacement": {
+        "strict": true,
+        "note": "Strictly replacing on live (Ward -> Guard -> Protection are pure absorb upgrades in the same slot). Only one member on Legends."
+      },
+      "missingOnLegends": [
+        { "name": "Guard of Calliav", "level": 58, "note": "Above ceiling." },
+        { "name": "Protection of Calliav", "level": 64, "note": "Above ceiling (post-Luclin)." }
+      ],
+      "stacking": {
+        "slots": ["Rune / damage-absorb slot"],
+        "conflicts": [
+          { "line": "Calliav", "class": "Necromancer/Magician", "detail": "A necromancer or magician casting their own Calliav-line rune on the warder contests the same slot - highest tier holds.", "source": "https://everquest.allakhazam.com/db/spelllist.html?type=bst&level=1&opt=And+Higher&action=search" },
+          { "line": "Rune (enchanter)", "class": "Enchanter", "detail": "Enchanter Rune-line absorb shields occupy the same absorb slot on classic-era rules.", "source": "https://wiki.project1999.com/Buff_Lines" }
+        ],
+        "stacksWith": [
+          { "line": "bst-warder-haste", "detail": "Different slots." },
+          { "line": "bst-warder-proc", "detail": "Different slots." }
+        ],
+        "notes": "MEDIUM confidence on the enchanter-Rune conflict; the Calliav/NEC/MAG conflict is solid from shared line membership."
+      },
+      "sources": [
+        "https://everquest.allakhazam.com/db/spelllist.html?type=bst&level=1&opt=And+Higher&action=search",
+        "https://wiki.project1999.com/Buff_Lines"
+      ]
+    },
+    {
+      "id": "bst-heal",
+      "name": "Direct heal line (Minor Healing -> Spirit Salve)",
+      "category": "Heal",
+      "sharedWith": ["Shaman", "Cleric", "Druid"],
+      "members": [
+        { "name": "Minor Healing", "level": 1, "inDb": true, "note": "Live BST/6, Luclin BST/9. RE-TIERED DOWN on Legends to level 1 - it replaces the missing level-1 spell Salve as the Beastlord's opening heal." },
+        { "name": "Light Healing", "level": 14, "inDb": true, "note": "Live BST/18. Re-tiered down 4 levels." },
+        { "name": "Healing", "level": 24, "inDb": true, "note": "Live BST/28. Re-tiered down 4 levels." },
+        { "name": "Greater Healing", "level": 34, "inDb": true, "note": "Live BST/38. Re-tiered down 4 levels." },
+        { "name": "Spirit Salve", "level": 48, "inDb": true, "note": "Live SHM/40 BST/48 - Legends matches the BST level exactly. This is the only member that is shaman-and-beastlord-only rather than a universal priest heal." }
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "Not strict. Magnitude is monotonic (20 -> 65 -> 175 -> 350 -> 456 at cap) so the top tier is always the biggest heal, but every classic heal line keeps its lower members in rotation for mana efficiency when topping off small deficits, and for faster cast time at low tiers. The interesting Legends-specific fact is the uniform 4-level downshift of the whole chain relative to live BST: Legends Beastlords reach each heal tier earlier, which materially changes the level-14-to-34 soloing experience."
+      },
+      "missingOnLegends": [
+        { "name": "Salve", "level": 1, "note": "Live BST/1. The class's first spell on live is absent on Legends; Minor Healing was moved to level 1 in its place. This is the one sub-51 live Beastlord spell Legends drops outright besides Spirit of Wind and Ultravision." },
+        { "name": "Chloroblast", "level": 59, "note": "Above ceiling." },
+        { "name": "Sha's Restoration", "level": 55, "note": "Above ceiling." },
+        { "name": "Trushar's Mending", "level": 65, "note": "Above ceiling (post-Luclin)." }
+      ],
+      "stacking": {
+        "slots": [],
+        "conflicts": [],
+        "stacksWith": [],
+        "notes": "Instant direct heals consume no buff slot. No stacking considerations."
+      },
+      "sources": [
+        "https://everquest.allakhazam.com/db/spelllist.html?type=bst&level=1&opt=And+Higher&action=search",
+        "https://lucy.alkabor.com/index_Beastlord.html"
+      ]
+    },
+    {
+      "id": "bst-spiritual-regen",
+      "name": "Spiritual line (group HP/mana regen)",
+      "category": "Buff",
+      "sharedWith": [],
+      "members": [
+        { "name": "Spiritual Light", "level": 41, "inDb": true, "note": "Live BST/41 (Luclin/Al'Kabor listed it at 44). Beastlord-original and one of the class's signature group utilities: 3 mana, 3 HP and 3 endurance per tick to the whole group for 45 minutes. The endurance component is post-Luclin flavour, so its presence on Legends is itself a modernisation." }
+      ],
+      "replacement": {
+        "strict": true,
+        "note": "Strictly replacing on live - each tier is the same slot layout with the regen value stepping up by roughly 2 per tier (3 -> 5 -> ...). Only the entry tier exists on Legends."
+      },
+      "missingOnLegends": [
+        { "name": "Spiritual Radiance", "level": 52, "note": "5 mana/HP per tick. Just above the Legends ceiling - the nearest missing upgrade in the class." },
+        { "name": "Spiritual Purity", "level": 59, "note": "Above ceiling." },
+        { "name": "Spiritual Dominion", "level": 64, "note": "Above ceiling (post-Luclin)." },
+        { "name": "Spiritual Ascendance", "level": 65, "note": "Above ceiling (post-Luclin)." }
+      ],
+      "stacking": {
+        "slots": ["Slot 5 - mana regeneration", "Slot 8 - hitpoint regeneration"],
+        "conflicts": [
+          { "line": "Manaskin", "class": "Enchanter/Wizard", "detail": "Manaskin blocks a new spell if slot 5 is effect 'Mana' and less than 20, which blocks Spiritual Light's +3/tick mana component.", "source": "https://lucy.alkabor.com/stacking_2176.html" },
+          { "line": "Barrier of Force", "class": "Enchanter", "detail": "Same block condition as Manaskin on slot 5 mana.", "source": "https://lucy.alkabor.com/stacking_2176.html" }
+        ],
+        "stacksWith": [
+          { "line": "Clarity / Clarity II (enchanter mana regen)", "detail": "Confirmed by community reporting that the Spiritual line stacks with the Clarity line. The mechanism is visible in the Lucy slot dump: Spiritual Light puts mana regen in SLOT 5, not the slot 1/2 that the Clarity line uses, so there is no same-slot collision. This is the load-bearing stacking fact for the line." },
+          { "line": "Regeneration line (druid/shaman HP regen, Slot 1)", "detail": "Spiritual Light's HP regen sits in SLOT 8, well clear of the classic Slot-1 regeneration family (Regeneration, Chloroplast, Regrowth), so a Beastlord's group regen adds on top of a druid's rather than contesting it." },
+          { "line": "bst-spiritual-brawn", "detail": "Different slots entirely (Brawn is slots 1 and 4)." }
+        ],
+        "notes": "HIGH confidence - taken directly from the Lucy stacking dump for spell 2176, which lists the actual slot indices. This is the single most useful stacking annotation in the Beastlord set, because the naive 'regen is Slot 1' assumption from the shaman model is WRONG here and would make the app tell users it conflicts with Clarity and Regeneration when it does not."
+      },
+      "sources": [
+        "https://lucy.alkabor.com/stacking_2176.html",
+        "https://everquest.allakhazam.com/db/spell.html?spell=2176",
+        "https://everquest.allakhazam.com/db/spell.html?spell=2177",
+        "https://everquest.allakhazam.com/db/spelllist.html?type=bst&level=1&opt=And+Higher&action=search"
+      ]
+    },
+    {
+      "id": "bst-spiritual-brawn",
+      "name": "Spiritual Brawn line (ATK + max HP) - the 'Fero' family entry tier",
+      "category": "Buff",
+      "sharedWith": [],
+      "members": [
+        { "name": "Spiritual Brawn", "level": 42, "inDb": true, "note": "Live BST/42, Beastlord-original. ATK +10, Max HP +75. This is the entry tier of the family the brief calls the Spiritual Strength / 'Fero' line - on live it grows into Spiritual Strength (60) and Spiritual Vigor (62), and shares its ATK slot with the Ferocity/Savagery family." }
+      ],
+      "replacement": {
+        "strict": true,
+        "note": "Strictly replacing within the family - later tiers use the identical slot layout (ATK in slot 1, Max HP in slot 4) with larger numbers, and the block conditions ensure only the strongest holds. Only the entry tier exists on Legends."
+      },
+      "missingOnLegends": [
+        { "name": "Spiritual Strength", "level": 60, "note": "Above ceiling. Direct upgrade." },
+        { "name": "Spiritual Vigor", "level": 62, "note": "Above ceiling (post-Luclin)." },
+        { "name": "Sha's Ferocity", "level": 59, "note": "Above ceiling." },
+        { "name": "Savagery", "level": 60, "note": "Above ceiling." },
+        { "name": "Ferocity", "level": 65, "note": "Above ceiling (post-Luclin). The namesake of the 'Fero' family; melee and melee-hybrid classes including Beastlord take a 1.34 multiplier on its 150 base ATK." },
+        { "name": "Growl of the Leopard", "level": 61, "note": "Above ceiling (post-Luclin)." }
+      ],
+      "stacking": {
+        "slots": ["Slot 1 - ATK", "Slot 4 - Max hitpoints"],
+        "conflicts": [
+          { "line": "Ferocity / Savagery / Sha's Ferocity (ATK family)", "class": "Beastlord/Shaman", "detail": "Spiritual Brawn's block condition is 'block new spell if slot 1 is ATK and less than N' - any stronger slot-1 ATK buff (Ferocity line, Frenzied Burnout) prevents Brawn from landing, and Brawn blocks weaker ones. Only one slot-1 ATK buff holds. None of these exist on Legends, so in practice Brawn's ATK component is uncontested there.", "source": "https://lucy.alkabor.com/stacking_2178.html" },
+          { "line": "Slot-4 Max HP buffs (Warder's Protection, later Spiritual tiers, Strength of Tunare)", "class": "Various", "detail": "Brawn's Max HP sits in slot 4 and is blocked by stronger slot-4 Max HP effects.", "source": "https://lucy.alkabor.com/stacking_2178.html" }
+        ],
+        "stacksWith": [
+          { "line": "bst-ac-skin", "detail": "Inner Fire's Max HP is in SLOT 2, Brawn's is in SLOT 4 - both HP bonuses apply simultaneously. A Legends Beastlord running Inner Fire plus Spiritual Brawn gets both HP pools, which is non-obvious and worth surfacing." },
+          { "line": "bst-str", "detail": "Different slots (STR line is slot 1 STR, Brawn slot 1 is ATK - different effect id, no collision)." },
+          { "line": "bst-spiritual-regen", "detail": "Different slots (5 and 8)." }
+        ],
+        "notes": "HIGH confidence on the slot indices (Lucy stacking dump for spell 2178). MEDIUM on the practical Legends conclusion, which assumes no higher-tier ATK buff exists on the server."
+      },
+      "sources": [
+        "https://lucy.alkabor.com/stacking_2178.html",
+        "https://everquest.allakhazam.com/db/spell.html?spell=2178",
+        "https://everquest.allakhazam.com/db/spell.html?spell=3463"
+      ]
+    },
+    {
+      "id": "bst-ac-skin",
+      "name": "AC / skin buff line (Inner Fire -> Protect)",
+      "category": "Buff",
+      "sharedWith": ["Shaman"],
+      "members": [
+        { "name": "Inner Fire", "level": 7, "inDb": true, "note": "Live BST/7. Three slots: slot 1 AC, slot 2 Max HP, slot 3 HP-when-cast - confirmed against the live spell page (spell 267), and the Legends effect list matches slot-for-slot." },
+        { "name": "Scale Skin", "level": 10, "inDb": true, "note": "Live BST/10. Pure slot-1 AC." },
+        { "name": "Turtle Skin", "level": 26, "inDb": true, "note": "Live BST/26." },
+        { "name": "Protect", "level": 48, "inDb": true, "note": "Live BST/48. Top AC buff on Legends at AC 11 flat." }
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "Not strict at the bottom of the chain. Scale Skin (AC 3-5) supersedes Inner Fire on AC, but Inner Fire ALSO grants Max HP and an instant HP bump that Scale Skin lacks, and the two share slot 1 so they cannot both be up. At low level the choice is genuinely AC-versus-HP rather than an upgrade. From Turtle Skin onward replacement is strict."
+      },
+      "missingOnLegends": [
+        { "name": "Shifting Shield", "level": 56, "note": "Above ceiling." },
+        { "name": "Talisman of Tnarg / Altuna / Kragg / Shadoo / Jasinth", "level": 53, "note": "The shaman Talisman family (53-63) is entirely above the Legends ceiling for Beastlords. Per the established shaman model the Talisman HP line is its own slot, so its absence does not affect this line's slotting." }
+      ],
+      "stacking": {
+        "slots": ["Slot 1 - AC (all four members)", "Slot 2 - Max HP (Inner Fire only)", "Slot 3 - HP when cast (Inner Fire only)"],
+        "conflicts": [
+          { "line": "bst-ac-skin", "class": "Beastlord/Shaman", "detail": "All four members share slot 1 AC and are mutually exclusive. Inner Fire specifically 'does not stack with Skins' - the classic community phrasing for exactly this collision.", "source": "https://everquest.allakhazam.com/db/spell.html?spell=267" },
+          { "line": "Skin Like Wood / Skin Like Rock (druid skin line)", "class": "Druid", "detail": "Same slot-1 AC family in classic rules; a druid skin buff and a Beastlord skin buff contest one another.", "source": "https://wiki.project1999.com/Buff_Lines" },
+          { "line": "bst-fleeting-fury", "class": "Beastlord/Shaman", "detail": "PARTIAL - Fleeting Fury's AC is in its second slot, not its first, so on strict slot rules it should stack with slot-1 AC buffs. See that line's notes; flagged MEDIUM confidence.", "source": "https://wiki.project1999.com/Buff_Lines" }
+        ],
+        "stacksWith": [
+          { "line": "Cleric/enchanter AC+HP line (Shadow, Protection, Aegolism/Symbol)", "detail": "The cleric-side AC family sits in SLOT 4 ('Shade, Protection and Aego are all on the same line for AC, since they all use slot 4'), so it does not contest the slot-1 shaman/beastlord skin line. A Beastlord can run Protect under a cleric Aegolism and get both AC values." },
+          { "line": "bst-spiritual-brawn", "detail": "Inner Fire's slot-2 Max HP coexists with Brawn's slot-4 Max HP." },
+          { "line": "bst-str / bst-sta / bst-dex", "detail": "Pure stat buffs are in their own per-stat slots per the established shaman model." }
+        ],
+        "notes": "HIGH confidence on the Inner Fire slot layout and the Inner-Fire-vs-Scale-Skin conflict. MEDIUM on the cleric slot-4 claim, which comes from a P99 forum discussion rather than the wiki table itself - the wiki Buff_Lines page could not be fetched this session (TLS certificate failure) and the slot model was inherited from the prior shaman wave."
+      },
+      "sources": [
+        "https://everquest.allakhazam.com/db/spell.html?spell=267",
+        "https://wiki.project1999.com/Buff_Lines",
+        "https://www.project1999.com/forums/archive/index.php/t-316267.html",
+        "https://everquest.allakhazam.com/db/spelllist.html?type=bst&level=1&opt=And+Higher&action=search"
+      ]
+    },
+    {
+      "id": "bst-str",
+      "name": "Strength line",
+      "category": "Buff",
+      "sharedWith": ["Shaman"],
+      "members": [
+        { "name": "Strengthen", "level": 14, "inDb": true, "note": "Live BST/14." },
+        { "name": "Spirit Strength", "level": 28, "inDb": true, "note": "Live BST/28." },
+        { "name": "Raging Strength", "level": 41, "inDb": true, "note": "Live BST/41. Top STR buff on Legends." }
+      ],
+      "replacement": {
+        "strict": true,
+        "note": "Strict. Single-effect buffs, same slot, monotonically larger STR (10 -> 18 -> 26 at cap) and longer duration (27 -> 36 -> 45 min). No reason to keep a lower tier."
+      },
+      "missingOnLegends": [
+        { "name": "Furious Strength", "level": 54, "note": "Above ceiling." },
+        { "name": "Talisman of Kragg", "level": 62, "note": "Above ceiling (post-Luclin)." }
+      ],
+      "stacking": {
+        "slots": ["Slot 1 - Strength (one STR slot, per the established shaman model)"],
+        "conflicts": [
+          { "line": "bst-str", "class": "Beastlord/Shaman", "detail": "Members are mutually exclusive.", "source": "https://wiki.project1999.com/Buff_Lines" },
+          { "line": "Strength line", "class": "Shaman/Cleric/Druid/Ranger", "detail": "Any other class's slot-1 STR buff contests the same slot; highest level holds.", "source": "https://wiki.project1999.com/Buff_Lines" },
+          { "line": "bst-fleeting-fury", "class": "Beastlord/Shaman", "detail": "Fleeting Fury leads with STR in slot 1, so it directly contests this line - this is the classic reason Fleeting Fury wipes a Strengthen-line buff for its 18-second duration.", "source": "https://wiki.project1999.com/Buff_Lines" }
+        ],
+        "stacksWith": [
+          { "line": "bst-sta", "detail": "Separate STA slot." },
+          { "line": "bst-dex", "detail": "Separate DEX slot." },
+          { "line": "bst-ac-skin", "detail": "Separate AC slot." },
+          { "line": "bst-frenzy", "detail": "Frenzy carries STR in its THIRD slot, so on strict slot rules it stacks with a slot-1 STR buff. MEDIUM confidence - see the Frenzy line." }
+        ],
+        "notes": "One slot per stat is the established model from the prior shaman wave."
+      },
+      "sources": [
+        "https://wiki.project1999.com/Buff_Lines",
+        "https://everquest.allakhazam.com/db/spelllist.html?type=bst&level=1&opt=And+Higher&action=search"
+      ]
+    },
+    {
+      "id": "bst-sta",
+      "name": "Stamina line (Spirit of Bear -> Spirit of Ox)",
+      "category": "Buff",
+      "sharedWith": ["Shaman"],
+      "members": [
+        { "name": "Spirit of Bear", "level": 17, "inDb": true, "note": "Live BST/17." },
+        { "name": "Spirit of Ox", "level": 37, "inDb": true, "note": "Live BST/37. Top STA buff on Legends." }
+      ],
+      "replacement": {
+        "strict": true,
+        "note": "Strict. STA 15 -> 23 at cap, 36 -> 45 min duration, same single slot."
+      },
+      "missingOnLegends": [
+        { "name": "Stamina", "level": 57, "note": "Above ceiling." },
+        { "name": "Spirit of the Bull / higher STA tiers", "level": 60, "note": "Above ceiling." }
+      ],
+      "stacking": {
+        "slots": ["Stamina slot"],
+        "conflicts": [
+          { "line": "bst-sta", "class": "Beastlord/Shaman", "detail": "Members mutually exclusive.", "source": "https://wiki.project1999.com/Buff_Lines" },
+          { "line": "Stamina line", "class": "Shaman/Druid/Cleric", "detail": "Any other class's STA buff shares the slot.", "source": "https://wiki.project1999.com/Buff_Lines" }
+        ],
+        "stacksWith": [
+          { "line": "bst-str", "detail": "Separate slot." },
+          { "line": "bst-dex", "detail": "Separate slot." },
+          { "line": "bst-ac-skin", "detail": "Separate slot." }
+        ],
+        "notes": "Note that classic STA buffs do not grant HP directly; players sometimes expect otherwise."
+      },
+      "sources": [
+        "https://wiki.project1999.com/Buff_Lines",
+        "https://everquest.allakhazam.com/db/spelllist.html?type=bst&level=1&opt=And+Higher&action=search"
+      ]
+    },
+    {
+      "id": "bst-dex",
+      "name": "Dexterity line (Spirit of Monkey)",
+      "category": "Buff",
+      "sharedWith": ["Shaman"],
+      "members": [
+        { "name": "Spirit of Monkey", "level": 38, "inDb": true, "note": "Live BST/38. Flat DEX 20, 36 minutes. The only player-target DEX buff a Legends Beastlord has." }
+      ],
+      "replacement": {
+        "strict": true,
+        "note": "Strict on live; single member on Legends."
+      },
+      "missingOnLegends": [
+        { "name": "Deftness", "level": 53, "note": "Above ceiling." },
+        { "name": "Dexterity", "level": 57, "note": "Above ceiling." }
+      ],
+      "stacking": {
+        "slots": ["Dexterity slot"],
+        "conflicts": [
+          { "line": "Dexterity line", "class": "Shaman/Enchanter/Cleric", "detail": "Shares the DEX slot with other classes' DEX buffs.", "source": "https://wiki.project1999.com/Buff_Lines" }
+        ],
+        "stacksWith": [
+          { "line": "bst-warder-proc", "detail": "The proc line's DEX 75 rider is in the proc spell's second slot; on strict slot rules it does not contest Spirit of Monkey's first-slot DEX. Relevant only when buffing the warder. MEDIUM confidence." },
+          { "line": "bst-str", "detail": "Separate slot." },
+          { "line": "bst-sta", "detail": "Separate slot." }
+        ],
+        "notes": "Spirit of Monkey at DEX 20 is much weaker than the DEX 75 the pet proc buffs hand the warder - a user-visible oddity worth a tooltip."
+      },
+      "sources": [
+        "https://wiki.project1999.com/Buff_Lines",
+        "https://everquest.allakhazam.com/db/spelllist.html?type=bst&level=1&opt=And+Higher&action=search"
+      ]
+    },
+    {
+      "id": "bst-fleeting-fury",
+      "name": "Fleeting Fury (short-duration combat buff)",
+      "category": "Buff",
+      "sharedWith": ["Shaman"],
+      "members": [
+        { "name": "Fleeting Fury", "level": 11, "inDb": true, "note": "Live BST/11. STR 15, AC 5, DEX 20 for 18 seconds. Shaman-shared; the shaman version is the same spell at a lower level." }
+      ],
+      "replacement": {
+        "strict": true,
+        "note": "No upgrade path exists for Beastlords on live or on Legends - it is a one-member line that is never replaced. Its niche (a burst of STR/AC/DEX for a single fight opening) is unaffected by the arrival of the longer-duration stat buffs, so it never becomes obsolete in the way an outgrown heal does."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "slots": ["Slot 1 - Strength", "Slot 2 - AC", "Slot 3 - Dexterity"],
+        "conflicts": [
+          { "line": "bst-str", "class": "Beastlord/Shaman", "detail": "Fleeting Fury's STR is in slot 1, the same slot the Strengthen line uses. Casting it overwrites a long-duration STR buff and leaves the character with no STR buff 18 seconds later - the well-known trap with this spell.", "source": "https://wiki.project1999.com/Buff_Lines" }
+        ],
+        "stacksWith": [
+          { "line": "bst-ac-skin", "detail": "Fleeting Fury's AC is in slot 2 while the skin line uses slot 1, so on strict slot rules both apply. MEDIUM confidence - derived from effect ordering, not a Lucy dump." },
+          { "line": "bst-dex", "detail": "Fleeting Fury's DEX is in slot 3 versus Spirit of Monkey's slot 1. MEDIUM confidence." }
+        ],
+        "notes": "The slot ORDER is the whole story for this spell and it is the one place where a naive 'same stat = same line' model gives the wrong answer in both directions. Flagged MEDIUM; worth an in-game check before the app asserts it."
+      },
+      "sources": [
+        "https://wiki.project1999.com/Buff_Lines",
+        "https://everquest.allakhazam.com/db/spelllist.html?type=bst&level=1&opt=And+Higher&action=search"
+      ]
+    },
+    {
+      "id": "bst-frenzy",
+      "name": "Frenzy (self-only permanent combat buff)",
+      "category": "Buff",
+      "sharedWith": [],
+      "members": [
+        { "name": "Frenzy", "level": 47, "inDb": true, "note": "Live BST/47, Beastlord-original and self-only. AC 8, AGI 10-25, STR 15-27, DEX 11-25, PERMANENT duration - the only permanent-duration buff in the Legends Beastlord set. Because it never ticks down it is effectively always-on, which makes its slot interactions unusually load-bearing." }
+      ],
+      "replacement": {
+        "strict": true,
+        "note": "No replacement within the Beastlord list on Legends. On live the self-buff role passes to Bestial Fury Discipline (60) and Growl of the Leopard (61), which are different mechanics rather than direct scroll upgrades."
+      },
+      "missingOnLegends": [
+        { "name": "Bestial Fury Discipline", "level": 60, "note": "Above ceiling; a discipline rather than a spell." },
+        { "name": "Growl of the Leopard", "level": 61, "note": "Above ceiling (post-Luclin)." }
+      ],
+      "stacking": {
+        "slots": ["Slot 1 - AC", "Slot 2 - Agility", "Slot 3 - Strength", "Slot 4 - Dexterity"],
+        "conflicts": [
+          { "line": "bst-ac-skin", "class": "Beastlord/Shaman", "detail": "Frenzy leads with AC in slot 1, the same slot the skin line uses, so Frenzy and Protect/Turtle Skin/Scale Skin/Inner Fire should contest one another. Since Frenzy is permanent and Protect is not, this materially affects what a level 48+ Beastlord runs. FLAGGED - see openQuestions.", "source": "https://everquest.allakhazam.com/db/spelllist.html?type=bst&level=1&opt=And+Higher&action=search" }
+        ],
+        "stacksWith": [
+          { "line": "bst-str", "detail": "Frenzy's STR is in slot 3 versus Strengthen-line slot 1 - should stack. MEDIUM confidence." },
+          { "line": "bst-dex", "detail": "Frenzy's DEX is in slot 4 versus Spirit of Monkey slot 1 - should stack. MEDIUM confidence." }
+        ],
+        "notes": "MEDIUM-to-LOW confidence overall. Slot indices are inferred from the effect ordering in the Legends db and mirror the live spell layout, but no Lucy slot dump was obtained for Frenzy. The Frenzy-versus-Protect question is the single most player-relevant unresolved stacking item in this class."
+      },
+      "sources": [
+        "https://everquest.allakhazam.com/db/spelllist.html?type=bst&level=1&opt=And+Higher&action=search",
+        "https://wiki.project1999.com/Buff_Lines"
+      ]
+    },
+    {
+      "id": "bst-movement",
+      "name": "Movement line (Spirit of Wolf / Shrew)",
+      "category": "Buff",
+      "sharedWith": ["Shaman", "Druid", "Ranger"],
+      "members": [
+        { "name": "Spirit of Wolf", "level": 24, "inDb": true, "note": "Live BST/24 (Luclin/Al'Kabor BST/30). Scales 30% to 55% movement speed." },
+        { "name": "Spirit of the Shrew", "level": 39, "inDb": true, "note": "Live RNG/41 DRU/30 SHM/29 BST/39 - Legends matches the BST level exactly. Single-target: ultravision plus a FLAT 30% movement speed." },
+        { "name": "Pack Shrew", "level": 44, "inDb": true, "note": "Live RNG/49 DRU/35 SHM/34 BST/44 - Legends matches the BST level. The group version of Spirit of the Shrew, same flat 30% plus ultravision." }
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "EXPLICITLY NOT STRICT, and this is a genuine Legends data finding rather than a lore assumption. In the Legends db Spirit of Wolf scales to 55% movement while both Shrew spells are a flat 30%. The Shrew spells therefore trade roughly half the run speed for ultravision and (for Pack Shrew) group coverage. A Beastlord travelling solo should keep casting Spirit of Wolf at high level; a Beastlord moving a group through a dark zone wants Pack Shrew. All three share the movement slot, so the choice is exclusive. Note also that Spirit of the Shrew is strictly worse than Pack Shrew except for mana cost, since both are flat 30%."
+      },
+      "missingOnLegends": [
+        { "name": "Spirit of the Storm", "level": 53, "note": "Above ceiling (and on live is a pet proc rather than movement - listed here only to note that no further movement upgrade exists for Beastlords)." }
+      ],
+      "stacking": {
+        "slots": ["Movement-speed slot (one global movement effect per target)", "Vision slot - ultravision component of the Shrew spells"],
+        "conflicts": [
+          { "line": "bst-movement", "class": "Beastlord", "detail": "All three members share the movement slot and are mutually exclusive.", "source": "https://wiki.project1999.com/Buff_Lines" },
+          { "line": "Spirit of Wolf / Selo's / Journeyman's Boots", "class": "Druid/Ranger/Shaman/Bard", "detail": "Movement enhancement is one global slot in classic rules - a druid SoW, bard Selo's, or clicky speed buff contests the same slot. Highest effect holds; bard Selo's overwrites and is overwritten depending on cast order.", "source": "https://wiki.project1999.com/Buff_Lines" },
+          { "line": "Vision line (Ultravision / Serpent Sight)", "class": "Shaman/Beastlord", "detail": "The Shrew spells' ultravision component contests the vision slot with Serpent Sight's infravision - casting Spirit of the Shrew over Serpent Sight replaces the vision effect.", "source": "https://wiki.project1999.com/Buff_Lines" }
+        ],
+        "stacksWith": [
+          { "line": "bst-str / bst-sta / bst-dex / bst-ac-skin", "detail": "Movement is its own slot and does not contest stat or AC buffs." }
+        ],
+        "notes": "The Legends Shrew magnitude (flat 30%) differs from the live Shrew behaviour that players expect (SoW-equivalent speed); treat the db value as authoritative and surface the difference. HIGH confidence that this is a real difference, since it is read straight from the ground-truth file."
+      },
+      "sources": [
+        "https://everquest.allakhazam.com/db/spelllist.html?type=bst&level=1&opt=And+Higher&action=search",
+        "https://wiki.project1999.com/Buff_Lines"
+      ]
+    },
+    {
+      "id": "bst-slow",
+      "name": "Slow line (Drowsy -> Sha's Lethargy)",
+      "category": "Debuff",
+      "sharedWith": ["Shaman"],
+      "members": [
+        { "name": "Drowsy", "level": 20, "inDb": true, "note": "Live BST/20. Flat 25% attack-speed reduction, 3 disease counters." },
+        { "name": "Languid Pace", "level": 35, "inDb": true, "note": "LIKELY LEGENDS-CUSTOM. Languid Pace is a classic SHAMAN spell (SHM/9) and does NOT appear in the live Beastlord class list on Allakhazam, nor in the Luclin-era Al'Kabor Beastlord list. Legends appears to have imported it to fill the 15-level gap between Drowsy (20) and Sha's Lethargy (50). Its Legends magnitude (18-30% scaling) is a genuine upgrade over Drowsy's flat 25% only from around level 45 - see replacement note." },
+        { "name": "Sha's Lethargy", "level": 50, "inDb": true, "note": "Live BST/50. 40% slow, 12 disease counters - a substantial jump and the Beastlord's real raid-relevant slow." }
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "NOT strict in the middle of the chain, and this is a direct consequence of the Legends-custom insertion. Languid Pace scales from 18% at low level to 30% at 60, so a Beastlord who gets it at 35 is casting an 18-24% slow while Drowsy is a flat 25% - Drowsy is BETTER until Languid Pace's scaling catches up in the mid-40s. Users should be warned not to unmem Drowsy at 35. Sha's Lethargy at 50 replaces both strictly. Also note Languid Pace applies 6 disease counters versus Drowsy's 3, which matters for landing it on disease-resistant mobs."
+      },
+      "missingOnLegends": [
+        { "name": "Incapacitate", "level": 56, "note": "Above ceiling." },
+        { "name": "Sha's Advantage", "level": 60, "note": "Above ceiling." },
+        { "name": "Turgur's Insects", "level": 60, "note": "Shaman-only on live; Beastlords never receive the top shaman slows. Listed to pre-empt the common user assumption that the shaman slow line continues for Beastlords." }
+      ],
+      "stacking": {
+        "slots": ["Attack-speed / haste-mod debuff slot on the target"],
+        "conflicts": [
+          { "line": "bst-slow", "class": "Beastlord/Shaman/Enchanter", "detail": "Slows do not stack. Any slow occupies the target's attack-speed slot and the newest cast replaces the existing one regardless of strength - the classic reason a weaker slow landing after a stronger one is a group-wiping mistake. Note that Sha's Lethargy uses 'Decrease Melee Haste' phrasing while Drowsy and Languid Pace use 'Decrease Attack Speed'; these are the same slot in practice.", "source": "https://wiki.project1999.com/Buff_Lines" },
+          { "line": "Haste on the target", "class": "Various", "detail": "A slow and a haste on the same mob contest the same attack-speed slot." , "source": "https://wiki.project1999.com/Buff_Lines" }
+        ],
+        "stacksWith": [
+          { "line": "bst-listless-power", "detail": "Listless Power debuffs STR/AGI/AC in separate slots and stacks with any slow." },
+          { "line": "bst-dot-disease / bst-dot-poison", "detail": "DoTs occupy their own slots and stack with slows." }
+        ],
+        "notes": "The disease-counter riders (3 / 6 / 12) are resist-check helpers, not stacking-relevant."
+      },
+      "sources": [
+        "https://everquest.allakhazam.com/db/spelllist.html?type=bst&level=1&opt=And+Higher&action=search",
+        "https://lucy.alkabor.com/index_Beastlord.html",
+        "https://wiki.project1999.com/Buff_Lines"
+      ]
+    },
+    {
+      "id": "bst-listless-power",
+      "name": "Listless Power (STR/AGI/AC debuff)",
+      "category": "Debuff",
+      "sharedWith": ["Shaman"],
+      "members": [
+        { "name": "Listless Power", "level": 44, "inDb": true, "note": "Live BST/44. Shaman-shared; on the shaman side it is the third rung of the Weaken -> Enfeeble -> Listless Power -> Cripple chain. Beastlords receive only this one rung." }
+      ],
+      "replacement": {
+        "strict": true,
+        "note": "Nothing to replace - the Beastlord gets a single member of the shaman debuff chain and never upgrades it."
+      },
+      "missingOnLegends": [
+        { "name": "Weaken", "level": 1, "note": "Shaman-only lower rung; Beastlords never receive it on live either, so this is not a Legends omission." },
+        { "name": "Enfeeble", "level": 24, "note": "Shaman-only lower rung; not a Legends omission." },
+        { "name": "Cripple", "level": 53, "note": "Shaman-only upper rung. Beastlords do not get Cripple on live at any level - worth stating explicitly because users coming from shaman expect it." }
+      ],
+      "stacking": {
+        "slots": ["Agility debuff slot", "Strength debuff slot", "AC debuff slot"],
+        "conflicts": [
+          { "line": "Weaken / Enfeeble / Cripple", "class": "Shaman", "detail": "Same chain, same slots - a shaman's Cripple and a Beastlord's Listless Power contest one another and the stronger/newer holds.", "source": "https://wiki.project1999.com/Buff_Lines" }
+        ],
+        "stacksWith": [
+          { "line": "bst-slow", "detail": "Different slots; the standard Beastlord opener is slow plus Listless Power." },
+          { "line": "Malaise / Insidious Malady (shaman resist debuffs)", "detail": "Different slots on classic rules." }
+        ],
+        "notes": "MEDIUM confidence on slot indices; the line membership is solid."
+      },
+      "sources": [
+        "https://everquest.allakhazam.com/db/spelllist.html?type=bst&level=1&opt=And+Higher&action=search",
+        "https://wiki.project1999.com/Buff_Lines"
+      ]
+    },
+    {
+      "id": "bst-nuke",
+      "name": "Direct damage line (frost / spirit nukes)",
+      "category": "Direct Damage",
+      "sharedWith": ["Shaman"],
+      "members": [
+        { "name": "Blast of Frost", "level": 12, "inDb": true, "note": "Live BST/12. 71 damage plus a level-55-capped stun component." },
+        { "name": "Frost Dagger", "level": 23, "inDb": true, "note": "LIKELY LEGENDS-CUSTOM. Frost Dagger is a classic SHAMAN nuke (SHM/16) and does NOT appear in the live Beastlord class list or the Al'Kabor Luclin Beastlord list. Legends appears to have imported it to fill the 14-level gap between Blast of Frost (12) and Ice Spear (33). 136 damage, same stun rider as the rest of the frost chain - which is itself evidence it was slotted into this line deliberately." },
+        { "name": "Spirit Strike", "level": 26, "inDb": true, "note": "Live BST/26. The odd one out: 74-78 damage with NO stun rider, and it does LESS damage than Frost Dagger three levels below it. Contemporary Beastlord guides note that the level 33 nuke supersedes Spirit Strike because Spirit Strike 'does less damage for more mana'. On Legends, with Frost Dagger inserted at 23, Spirit Strike is arguably dead on arrival." },
+        { "name": "Ice Spear", "level": 33, "inDb": true, "note": "Live BST/33. 207 damage, stun rider." },
+        { "name": "Frost Shard", "level": 47, "inDb": true, "note": "Live BST/47. 281 damage, stun rider. Top nuke on Legends." }
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "Not strict, for two separate reasons. (1) Standard mana-efficiency: a lower nuke remains the right finisher on a nearly-dead mob. (2) Legends-specific inversion: Frost Dagger at 23 does 136 damage while Spirit Strike at 26 does 74-78, so the chain is NOT monotonic on this server. Spirit Strike is only preferable where its (unlisted) resist type differs favourably - the db does not expose resist types, so this is unresolved. Treat Spirit Strike as a probable dead rung and flag it to users rather than presenting it as an upgrade over Frost Dagger."
+      },
+      "missingOnLegends": [
+        { "name": "Ice Shard", "level": 54, "note": "Above ceiling." },
+        { "name": "Blizzard Blast", "level": 59, "note": "Above ceiling." },
+        { "name": "Frost Spear", "level": 63, "note": "Above ceiling (post-Luclin)." }
+      ],
+      "stacking": {
+        "slots": [],
+        "conflicts": [],
+        "stacksWith": [],
+        "notes": "Instant direct damage; no buff slot. The 'Stun 0.0s up to level 55' rider on four of the five members is a no-duration interrupt check, not a stacking concern."
+      },
+      "sources": [
+        "https://everquest.allakhazam.com/db/spelllist.html?type=bst&level=1&opt=And+Higher&action=search",
+        "https://lucy.alkabor.com/index_Beastlord.html",
+        "https://www.paullynch.org/Everquest/VSBL/16spells30.html"
+      ]
+    },
+    {
+      "id": "bst-dot-disease",
+      "name": "Disease DoT line (Sicken -> Malaria)",
+      "category": "Damage Over Time",
+      "sharedWith": ["Shaman"],
+      "members": [
+        { "name": "Sicken", "level": 14, "inDb": true, "note": "Live BST/14. Shaman-shared entry disease DoT." },
+        { "name": "Malaria", "level": 40, "inDb": true, "note": "Live BST/40 and BEASTLORD-ONLY on the live class list - Legends matches the level exactly. Note it is a post-Luclin (Legacy of Ykesha era) spell, so its presence on a nominally classic-plus-Luclin server is a deliberate inclusion. 24-73 per tick over 12 ticks, no HP-when-cast component." }
+      ],
+      "replacement": {
+        "strict": true,
+        "note": "Strict within the disease line - Malaria is a large upgrade at every level and both are disease-based so there is no resist-type tradeoff. But see stacking: the disease line is meant to be run ALONGSIDE the poison line, not instead of it."
+      },
+      "missingOnLegends": [
+        { "name": "Plague", "level": 65, "note": "Above ceiling (post-Luclin)." },
+        { "name": "Affliction / Infectious Cloud", "level": 39, "note": "Shaman-only on live; Beastlords never receive the deeper shaman disease DoTs." }
+      ],
+      "stacking": {
+        "slots": ["Disease DoT damage slot", "Disease counter slot"],
+        "conflicts": [
+          { "line": "bst-dot-disease", "class": "Beastlord/Shaman", "detail": "Sicken and Malaria contest the same DoT slot; the newer cast replaces.", "source": "https://everquest.allakhazam.com/db/spell.html?spell=3689" }
+        ],
+        "stacksWith": [
+          { "line": "bst-dot-poison", "detail": "Malaria is explicitly described as stacking with most poison DoTs - it is the spell that lets a Beastlord run two DoTs at once. This is the central reason to memorise it." },
+          { "line": "bst-slow", "detail": "Different slots." }
+        ],
+        "notes": "HIGH confidence that Malaria is Beastlord-only and stacks with poison DoTs. The disease counters (1 for Sicken, 3 for Malaria) are resist helpers, not stacking-relevant."
+      },
+      "sources": [
+        "https://everquest.allakhazam.com/db/spell.html?spell=3689",
+        "https://everquest.allakhazam.com/db/spelllist.html?type=bst&level=1&opt=And+Higher&action=search"
+      ]
+    },
+    {
+      "id": "bst-dot-poison",
+      "name": "Poison DoT line (Tainted Breath -> Envenomed Breath)",
+      "category": "Damage Over Time",
+      "sharedWith": ["Shaman"],
+      "members": [
+        { "name": "Tainted Breath", "level": 19, "inDb": true, "note": "Live BST/19. Shaman-shared." },
+        { "name": "Envenomed Breath", "level": 35, "inDb": true, "note": "Live BST/35. Shaman-shared. 54-90 per tick over 7 ticks - the Beastlord's damage workhorse for most of the level range Legends covers." }
+      ],
+      "replacement": {
+        "strict": true,
+        "note": "Strict - same slot family, same 7-tick duration, much larger per-tick damage, and both carry an HP-when-cast component. No reason to keep Tainted Breath once Envenomed Breath is available except for its lower poison-counter load (5 versus 3 - actually Tainted Breath applies MORE counters, so Envenomed Breath is also easier to land)."
+      },
+      "missingOnLegends": [
+        { "name": "Venom of the Snake", "level": 52, "note": "Just above ceiling - the nearest missing poison DoT upgrade." },
+        { "name": "Scorpion Venom", "level": 61, "note": "Above ceiling (post-Luclin)." },
+        { "name": "Turepta Blood", "level": 65, "note": "Above ceiling (post-Luclin)." }
+      ],
+      "stacking": {
+        "slots": ["Poison DoT damage slot", "Poison counter slot"],
+        "conflicts": [
+          { "line": "bst-dot-poison", "class": "Beastlord/Shaman", "detail": "Members contest the same slot; newer replaces.", "source": "https://wiki.project1999.com/Buff_Lines" },
+          { "line": "Poison DoT line", "class": "Shaman", "detail": "A shaman's poison DoT on the same target contests the same slot.", "source": "https://wiki.project1999.com/Buff_Lines" }
+        ],
+        "stacksWith": [
+          { "line": "bst-dot-disease", "detail": "Poison and disease DoTs are separate slots - Envenomed Breath plus Malaria is the intended level-40+ damage pairing." }
+        ],
+        "notes": "MEDIUM confidence on the exact slot naming; HIGH confidence on the poison-versus-disease independence."
+      },
+      "sources": [
+        "https://everquest.allakhazam.com/db/spelllist.html?type=bst&level=1&opt=And+Higher&action=search",
+        "https://lucy.alkabor.com/index_Beastlord.html",
+        "https://wiki.project1999.com/Buff_Lines"
+      ]
+    },
+    {
+      "id": "bst-resist-cold",
+      "name": "Cold resist line (Endure Cold)",
+      "category": "Resist Buff",
+      "sharedWith": ["Shaman"],
+      "members": [
+        { "name": "Endure Cold", "level": 3, "inDb": true, "note": "Live BST/3. Shaman-shared." }
+      ],
+      "replacement": { "strict": true, "note": "Single member; no Resist Cold upgrade exists for Beastlords at any level on live." },
+      "missingOnLegends": [
+        { "name": "Resist Cold", "level": null, "note": "Beastlords do not receive a Resist Cold upgrade on live at all - this is NOT a Legends omission. Contrast Endure Disease, which does upgrade." }
+      ],
+      "stacking": {
+        "slots": ["Cold resist slot (one slot per resist type)"],
+        "conflicts": [
+          { "line": "Cold resist line", "class": "Shaman/Cleric/Druid/Ranger/Paladin", "detail": "Single-element resist buffs share one slot per element; the highest holds. Multi-resist buffs (cleric/druid group resist spells) sit in different slots and generally stack with single-element buffs on classic rules.", "source": "https://wiki.project1999.com/Buff_Lines" }
+        ],
+        "stacksWith": [
+          { "line": "bst-resist-fire / bst-resist-poison / bst-resist-disease / bst-resist-magic", "detail": "Each element is its own slot, so all five Endure spells can be up simultaneously." }
+        ],
+        "notes": "Per the established model, one slot per resist type."
+      },
+      "sources": ["https://wiki.project1999.com/Buff_Lines", "https://everquest.allakhazam.com/db/spelllist.html?type=bst&level=1&opt=And+Higher&action=search"]
+    },
+    {
+      "id": "bst-resist-fire",
+      "name": "Fire resist line (Endure Fire)",
+      "category": "Resist Buff",
+      "sharedWith": ["Shaman"],
+      "members": [
+        { "name": "Endure Fire", "level": 9, "inDb": true, "note": "Live BST/9. Shaman-shared." }
+      ],
+      "replacement": { "strict": true, "note": "Single member; no Resist Fire upgrade for Beastlords on live." },
+      "missingOnLegends": [
+        { "name": "Resist Fire", "level": null, "note": "Not a Beastlord spell on live - not a Legends omission." }
+      ],
+      "stacking": {
+        "slots": ["Fire resist slot"],
+        "conflicts": [
+          { "line": "Fire resist line", "class": "Shaman/Cleric/Druid/Ranger", "detail": "One slot per element; highest holds.", "source": "https://wiki.project1999.com/Buff_Lines" }
+        ],
+        "stacksWith": [
+          { "line": "The other four resist lines", "detail": "Separate slots per element." }
+        ],
+        "notes": ""
+      },
+      "sources": ["https://wiki.project1999.com/Buff_Lines", "https://everquest.allakhazam.com/db/spelllist.html?type=bst&level=1&opt=And+Higher&action=search"]
+    },
+    {
+      "id": "bst-resist-poison",
+      "name": "Poison resist line (Endure Poison)",
+      "category": "Resist Buff",
+      "sharedWith": ["Shaman"],
+      "members": [
+        { "name": "Endure Poison", "level": 18, "inDb": true, "note": "Live BST/18. Shaman-shared." }
+      ],
+      "replacement": { "strict": true, "note": "Single member on Legends; Resist Poison exists on live at 54, above the ceiling." },
+      "missingOnLegends": [
+        { "name": "Resist Poison", "level": 54, "note": "Above ceiling. Unlike Resist Cold/Fire, this upgrade DOES exist for Beastlords on live - Legends simply stops below it." }
+      ],
+      "stacking": {
+        "slots": ["Poison resist slot"],
+        "conflicts": [
+          { "line": "Poison resist line", "class": "Shaman/Cleric/Druid", "detail": "One slot per element; highest holds.", "source": "https://wiki.project1999.com/Buff_Lines" }
+        ],
+        "stacksWith": [
+          { "line": "The other four resist lines", "detail": "Separate slots per element." }
+        ],
+        "notes": ""
+      },
+      "sources": ["https://wiki.project1999.com/Buff_Lines", "https://everquest.allakhazam.com/db/spelllist.html?type=bst&level=1&opt=And+Higher&action=search"]
+    },
+    {
+      "id": "bst-resist-disease",
+      "name": "Disease resist line (Endure Disease -> Resist Disease)",
+      "category": "Resist Buff",
+      "sharedWith": ["Shaman"],
+      "members": [
+        { "name": "Endure Disease", "level": 22, "inDb": true, "note": "Live BST/22. Shaman-shared. Caps at +20 disease resist." },
+        { "name": "Resist Disease", "level": 51, "inDb": true, "note": "Live BST/51. +40 disease resist, 36 minutes. This is the HIGHEST-LEVEL spell in the entire Legends Beastlord set and effectively marks the server's Beastlord ceiling at 51." }
+      ],
+      "replacement": { "strict": true, "note": "Strict - double the resist, longer duration, same slot. The only Beastlord resist line on Legends that actually upgrades." },
+      "missingOnLegends": [],
+      "stacking": {
+        "slots": ["Disease resist slot"],
+        "conflicts": [
+          { "line": "bst-resist-disease", "class": "Beastlord/Shaman", "detail": "Members mutually exclusive; higher holds.", "source": "https://wiki.project1999.com/Buff_Lines" },
+          { "line": "Disease resist line", "class": "Shaman/Cleric", "detail": "One slot per element.", "source": "https://wiki.project1999.com/Buff_Lines" }
+        ],
+        "stacksWith": [
+          { "line": "The other four resist lines", "detail": "Separate slots per element." }
+        ],
+        "notes": "Relevant to PvE play on Legends because the Beastlord's own slow line applies disease counters - a group of Beastlords/shamans buffing disease resist on each other has no bearing on landing slows, which check the target's resist, not the caster's."
+      },
+      "sources": ["https://wiki.project1999.com/Buff_Lines", "https://everquest.allakhazam.com/db/spelllist.html?type=bst&level=1&opt=And+Higher&action=search"]
+    },
+    {
+      "id": "bst-resist-magic",
+      "name": "Magic resist line (Endure Magic)",
+      "category": "Resist Buff",
+      "sharedWith": ["Shaman"],
+      "members": [
+        { "name": "Endure Magic", "level": 34, "inDb": true, "note": "Live BST/34. Shaman-shared. Flat +20 magic resist (no level scaling range, unlike the other Endure spells)." }
+      ],
+      "replacement": { "strict": true, "note": "Single member; no Resist Magic for Beastlords on live." },
+      "missingOnLegends": [
+        { "name": "Resist Magic", "level": null, "note": "Not a Beastlord spell on live - not a Legends omission." }
+      ],
+      "stacking": {
+        "slots": ["Magic resist slot"],
+        "conflicts": [
+          { "line": "Magic resist line", "class": "Shaman/Cleric/Enchanter", "detail": "One slot per element; highest holds.", "source": "https://wiki.project1999.com/Buff_Lines" }
+        ],
+        "stacksWith": [
+          { "line": "The other four resist lines", "detail": "Separate slots per element." }
+        ],
+        "notes": ""
+      },
+      "sources": ["https://wiki.project1999.com/Buff_Lines", "https://everquest.allakhazam.com/db/spelllist.html?type=bst&level=1&opt=And+Higher&action=search"]
+    },
+    {
+      "id": "bst-cure-disease",
+      "name": "Disease cure line (Cure Disease -> Counteract Disease)",
+      "category": "Cure",
+      "sharedWith": ["Shaman", "Cleric", "Druid"],
+      "members": [
+        { "name": "Cure Disease", "level": 4, "inDb": true, "note": "Live BST/4. Removes 4 disease counters." },
+        { "name": "Counteract Disease", "level": 45, "inDb": true, "note": "Live BST/45. Removes 8 disease counters." }
+      ],
+      "replacement": { "strict": true, "note": "Strict - double the counters removed, same targeting. Mana efficiency is the only reason to keep the lower tier and cure spells are cheap enough that it rarely matters." },
+      "missingOnLegends": [
+        { "name": "Abolish Disease", "level": 63, "note": "Above ceiling (post-Luclin). Removes 36 counters." }
+      ],
+      "stacking": { "slots": [], "conflicts": [], "stacksWith": [], "notes": "Instant cures; no buff slot. Note the warder-heal line strips 10 disease counters off the PET, which is more than Counteract Disease removes from a player - a Beastlord cannot cure a player as well as they can cure their own warder." },
+      "sources": ["https://everquest.allakhazam.com/db/spelllist.html?type=bst&level=1&opt=And+Higher&action=search"]
+    },
+    {
+      "id": "bst-cure-poison",
+      "name": "Poison cure line (Cure Poison)",
+      "category": "Cure",
+      "sharedWith": ["Shaman", "Cleric", "Druid"],
+      "members": [
+        { "name": "Cure Poison", "level": 13, "inDb": true, "note": "Live BST/13. Removes 4 poison counters." }
+      ],
+      "replacement": { "strict": true, "note": "Single member on Legends." },
+      "missingOnLegends": [
+        { "name": "Counteract Poison", "level": 61, "note": "Above ceiling (post-Luclin). ASYMMETRY WORTH SURFACING: Beastlords get the disease cure upgrade at 45 but the matching poison cure upgrade only at 61, so on Legends the poison cure never improves past 4 counters." }
+      ],
+      "stacking": { "slots": [], "conflicts": [], "stacksWith": [], "notes": "Instant cure; no buff slot." },
+      "sources": ["https://everquest.allakhazam.com/db/spelllist.html?type=bst&level=1&opt=And+Higher&action=search"]
+    },
+    {
+      "id": "bst-vision",
+      "name": "Vision line (Serpent Sight -> Ultravision)",
+      "category": "Buff",
+      "sharedWith": ["Shaman"],
+      "members": [
+        { "name": "Serpent Sight", "level": 16, "inDb": true, "note": "Live BST/16. Infravision." }
+      ],
+      "replacement": { "strict": true, "note": "Strict on live (Ultravision supersedes infravision outright). On Legends the upgrade is absent, but see stacking - the Shrew movement spells carry ultravision as a rider and therefore supersede Serpent Sight functionally at level 39." },
+      "missingOnLegends": [
+        { "name": "Ultravision", "level": 51, "note": "AT the Legends ceiling yet absent - like Spirit of Wind, this is a genuine trim rather than a ceiling effect. Its absence is partly compensated by Spirit of the Shrew and Pack Shrew, which grant ultravision as a rider." }
+      ],
+      "stacking": {
+        "slots": ["Vision slot"],
+        "conflicts": [
+          { "line": "bst-movement", "class": "Beastlord", "detail": "The ultravision rider on Spirit of the Shrew and Pack Shrew occupies the vision slot and replaces Serpent Sight's infravision.", "source": "https://wiki.project1999.com/Buff_Lines" },
+          { "line": "Vision line", "class": "Shaman/Enchanter/Necromancer/Druid", "detail": "Any other class's infravision/ultravision buff shares the vision slot.", "source": "https://wiki.project1999.com/Buff_Lines" }
+        ],
+        "stacksWith": [
+          { "line": "bst-spirit-sight (see standalone)", "detail": "See Invisible is a different effect from infravision/ultravision and does not contest the vision slot." }
+        ],
+        "notes": "MEDIUM confidence on the exact slot behaviour of the Shrew ultravision rider."
+      },
+      "sources": ["https://wiki.project1999.com/Buff_Lines", "https://everquest.allakhazam.com/db/spelllist.html?type=bst&level=1&opt=And+Higher&action=search"]
+    },
+    {
+      "id": "bst-dispel",
+      "name": "Dispel line (Cancel Magic)",
+      "category": "Utility",
+      "sharedWith": ["Shaman", "Cleric", "Druid", "Enchanter", "Magician", "Wizard", "Necromancer"],
+      "members": [
+        { "name": "Cancel Magic", "level": 35, "inDb": true, "note": "Live BST/35. Universal caster dispel." }
+      ],
+      "replacement": { "strict": true, "note": "Strict on live (higher tiers strip more buffs per cast). Single member on Legends." },
+      "missingOnLegends": [
+        { "name": "Nullify Magic", "level": 58, "note": "Above ceiling." },
+        { "name": "Annul Magic", "level": 61, "note": "Above ceiling (post-Luclin)." }
+      ],
+      "stacking": { "slots": [], "conflicts": [], "stacksWith": [], "notes": "Instant dispel; no buff slot." },
+      "sources": ["https://everquest.allakhazam.com/db/spelllist.html?type=bst&level=1&opt=And+Higher&action=search"]
+    }
+  ],
+  "standalone": [
+    { "name": "Sense Animals", "level": 2, "inDb": true, "category": "Utility", "note": "Live BST/2. Beastlord/ranger/druid flavour utility; no upgrade path for Beastlords. No buff slot." },
+    { "name": "Flash of Light", "level": 5, "inDb": true, "category": "Utility Detrimental", "note": "Live BST/5. Blind plus -5 attack for 12s. The deeper blind line (Blinding Luminance, Whirl till you Hurl) is cleric/enchanter, not Beastlord, so this genuinely stands alone. Blind occupies a stun/blind slot on the target and does not stack with other blinds." },
+    { "name": "Summon Drink", "level": 17, "inDb": true, "category": "Summon Item", "note": "Live BST/17. Conjures water. Paired conceptually with Summon Food but not an upgrade of it - different item, different level, both stay memmed. No slot." },
+    { "name": "Tiny Companion", "level": 19, "inDb": true, "category": "Pet Utility", "note": "Live BST/19. Shrinks the warder by 50% - cosmetic/pathing utility, and unlike the player Shrink line it has no upgrade. Should NOT be grouped with the warder summon line: it is a modifier on an existing pet, not a summon." },
+    { "name": "Shrink", "level": 23, "inDb": true, "category": "Utility", "note": "Live BST/23. Player-target 34% size reduction. Shaman-shared. No Beastlord upgrade (Tiny Companion is the pet analogue, not an upgrade)." },
+    { "name": "Enduring Breath", "level": 25, "inDb": true, "category": "Utility", "note": "Live BST/25. Consumes Fish Scales. Shaman-shared. Occupies a breathing slot; does not stack with other EB effects but stacks with everything else." },
+    { "name": "Spirit Sight", "level": 29, "inDb": true, "category": "Vision", "note": "Live BST/29. See Invisible. Deliberately NOT placed in the Serpent Sight vision line: see-invis and infravision/ultravision are distinct effects in distinct slots and are routinely run together. No Beastlord upgrade exists." },
+    { "name": "Summon Food", "level": 29, "inDb": true, "category": "Summon Item", "note": "Live BST/29. Conjures food. See Summon Drink." },
+    { "name": "Summon Companion", "level": 31, "inDb": true, "category": "Pet Utility", "note": "Live BST/31. Call Pet - teleports the existing warder to the caster. A pet-management utility, not a summon; grouping it with the warder line would be wrong because it neither creates nor replaces a warder." },
+    { "name": "Levitate", "level": 32, "inDb": true, "category": "Utility", "note": "Live BST/32. Consumes Bat Wing. Shaman-shared. Levitation slot; does not stack with other levitate effects. Beastlords get no group levitate." },
+    { "name": "Invisibility", "level": 43, "inDb": true, "category": "Invisibility", "note": "Live BST/43. Shaman-shared. Invisibility slot; does not stack with Invisibility versus Undead or See Invis effects on the same target. Beastlords receive no Improved Invisibility." }
+  ],
+  "unlinked": [],
+  "legendsCustom": [
+    { "name": "Wild Spirit", "level": 1, "confidence": "high", "evidence": "Absent from both the live Allakhazam Beastlord class list (which starts at Salve/1, Sense Animals/2) and the Luclin-era Al'Kabor Beastlord list (which starts at level 9). Summons a level 1 Warder. Legends appears to have added two sub-8 warders so the class has a pet from level 1." },
+    { "name": "Tame Spirit", "level": 4, "confidence": "high", "evidence": "Same as Wild Spirit - no live or Luclin analogue at any level. Summons a level 5 Warder, bridging to Spirit of Sharik at 8." },
+    { "name": "Frost Dagger", "level": 23, "confidence": "high", "evidence": "A classic SHAMAN nuke (SHM/16). Does not appear in the live Beastlord class list nor the Al'Kabor Luclin Beastlord list. On Legends it sits at 23, filling the 12-to-33 nuke gap, and carries the same stun rider as the rest of the Beastlord frost chain." },
+    { "name": "Languid Pace", "level": 35, "confidence": "high", "evidence": "A classic SHAMAN slow (SHM/9). Not a live Beastlord spell and not in the Al'Kabor Luclin Beastlord list. On Legends it fills the 20-to-50 slow gap. Because it scales from 18%, it is initially WEAKER than Drowsy's flat 25%." },
+    { "name": "Minor Healing", "level": 1, "confidence": "high", "evidence": "The spell itself is canonical, but its LEVEL is custom: live BST/6, Luclin BST/9, Legends 1. It occupies the level-1 slot that Salve holds on live, and Salve is absent from Legends. The whole heal line is shifted 4-5 levels earlier." },
+    { "name": "Light Healing / Healing / Greater Healing", "level": null, "confidence": "high", "evidence": "Re-tiered, not added. Live BST levels are 18 / 28 / 38; Legends uses 14 / 24 / 34 - a uniform 4-level downshift across the direct heal line. Every other Legends Beastlord spell that exists on live matches its live BST level exactly, which makes this deliberate and makes the heal line the one systematically re-tiered family in the class." },
+    { "name": "Ward of Calliav", "level": 49, "confidence": "medium", "evidence": "The spell and its level (BST/49) are canonical, but the Legends magnitude - 'Absorb Hit up to 11747 damage' - is far above the classic value and is inconsistent with a level-49 classic-era rune. Either a Legends rebalance or a db-extraction artifact; flag rather than assert." },
+    { "name": "Spiritual Light", "level": 41, "confidence": "low", "evidence": "Canonical spell at the canonical live BST level. Flagged only because its third effect, 'Increase Endurance by 3 per tick', is a post-Luclin mechanic - its presence indicates Legends is drawing spell data from a modern client rather than a Luclin-era one, which has implications for trusting other magnitudes in the db." }
+  ],
+  "openQuestions": [
+    "Does Frenzy (47, permanent, slot-1 AC 8) block or get blocked by Protect (48, AC 11)? Both put AC in slot 1 on the standard reading, which would mean a level-48 Beastlord cannot run their best self-buff and their best AC buff together. This is the highest-impact unresolved item in the class and needs an in-game check on Legends.",
+    "Do the pet proc buffs' 'Increase Dexterity by 75' riders stack with Spirit of Monkey when both are on the warder? The answer depends on slot indices that were inferred from effect ordering rather than read from a Lucy slot dump.",
+    "Does Fleeting Fury really stack with the AC and DEX lines while conflicting with the STR line? The slot-order reading says yes, and this is counter-intuitive enough that the app should not assert it without verification.",
+    "What is Ward of Calliav's real absorb value on Legends? 11747 at level 49 is implausible for a classic-era rune and may be a data artifact.",
+    "Why are Spirit of Wind (51) and Ultravision (51) absent when Resist Disease (51) is present? Both are level-51 live Beastlord spells and the server clearly reaches 51. This suggests selective trimming rather than a hard ceiling, so there may be more intentional omissions than the ceiling model predicts.",
+    "The Legends Shrew spells give a flat 30% movement versus Spirit of Wolf's 30-55% scaling. Is this a Legends change or a db-extraction artifact? If it is real, the app should tell users NOT to replace Spirit of Wolf with Spirit of the Shrew for travel.",
+    "Spirit Strike (26, 74-78 damage) is strictly worse than Frost Dagger (23, 136 damage) on Legends unless their resist types differ. The ground-truth db does not expose resist type, so this could not be resolved.",
+    "The Project 1999 Buff_Lines wiki page could not be fetched during this research (TLS certificate verification failure on wiki.project1999.com). All slot-model claims sourced to it are inherited from the prior shaman wave rather than re-verified here, and are flagged MEDIUM confidence throughout."
+  ],
+  "sources": [
+    "https://everquest.allakhazam.com/db/spelllist.html?type=bst&level=1&opt=And+Higher&action=search - PRIMARY. Live Beastlord class spell list with per-class levels. Legends levels match this list exactly for every spell that exists on live, except the four-spell direct heal line. Also the source for cross-class line membership (Ward of Calliav = NEC/49 MAG/46 BST/49; Spirit Salve = SHM/40 BST/48; Spirit of the Shrew = RNG/41 DRU/30 SHM/29 BST/39; Malaria = BST/40 only).",
+    "https://lucy.alkabor.com/index_Beastlord.html - Luclin-era (Al'Kabor) Beastlord spell list. Used as the cross-check for Luclin-original membership and to identify the four Legends additions.",
+    "https://lucy.alkabor.com/stacking_2176.html - Lucy stacking dump for Spiritual Light. Source for the slot 5 (mana regen) / slot 8 (HP regen) finding and the Manaskin / Barrier of Force conflicts.",
+    "https://lucy.alkabor.com/stacking_2178.html - Lucy stacking dump for Spiritual Brawn. Source for slot 1 (ATK) / slot 4 (Max HP) and the block-condition mechanics of the Ferocity family.",
+    "https://everquest.allakhazam.com/db/spell.html?spell=267 - Inner Fire spell page. Source for its three-slot layout and the 'does not stack with Skins' conflict.",
+    "https://everquest.allakhazam.com/db/spell.html?spell=3689 - Malaria. Source for Beastlord-only membership and 'stacks with most poison DoTs'.",
+    "https://everquest.allakhazam.com/db/spell.html?spell=2176 and ?spell=2177 - Spiritual Light and Spiritual Radiance, for line progression (+2 regen per tier).",
+    "https://everquest.allakhazam.com/db/spell.html?spell=3463 - Ferocity, for the melee-hybrid 1.34 ATK multiplier and the no-stacking-with-other-Ferocity rule.",
+    "https://wiki.project1999.com/Buff_Lines - The slot model for all shared-shaman lines. COULD NOT BE FETCHED this session (TLS certificate error); claims attributed to it are inherited from the prior shaman research wave and flagged MEDIUM confidence.",
+    "https://www.project1999.com/forums/archive/index.php/t-316267.html - P99 Buff Lines discussion thread. Source for the cleric-side AC family sitting in slot 4 ('Shade, Protection and Aego are all on the same line for AC, since they all use slot 4'), which is why the shaman/beastlord slot-1 skin line stacks with it.",
+    "https://www.paullynch.org/Everquest/VSBL/16spells30.html - Contemporary Beastlord levelling guide. Source for warder buff priority (haste > dexterity > HP > AC > strength) and for Ice Spear superseding Spirit Strike.",
+    "https://wiki.takp.info/index.php/Pets and https://everquest.fandom.com/wiki/Warder - Source for 'nearly all Beastlord pet buffs stack with each other, with a very few mutually exclusive exceptions' and for the one-warder-at-a-time rule.",
+    "https://eqlwiki.com/Beastlord_Spells and https://eqlwiki.com/Beastlord - EverQuest Legends community wiki. Used ONLY to corroborate that Wild Spirit (1) and Tame Spirit (4) are real Legends warder summons. LOW confidence source - thin, possibly auto-generated content; the Legends-custom determination rests on their absence from the two authoritative live/Luclin lists, not on this site."
+  ]
+}

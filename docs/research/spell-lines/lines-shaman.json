@@ -1,0 +1,3275 @@
+{
+  "class": "Shaman",
+  "lines": [
+    {
+      "id": "talisman-hp",
+      "name": "Talisman line (max HP)",
+      "category": "hp-buff",
+      "sharedWith": [],
+      "members": [
+        {
+          "name": "Talisman of Tnarg",
+          "level": 32,
+          "inDb": true,
+          "note": "P99 classic level 34; Legends re-tiers to 32. +150 max HP classic vs 134-150 on Legends."
+        },
+        {
+          "name": "Talisman of Altuna",
+          "level": 40,
+          "inDb": true,
+          "note": "P99 classic level 44; Legends re-tiers to 40."
+        },
+        {
+          "name": "Talisman of Kragg",
+          "level": 55,
+          "inDb": true,
+          "note": "Level matches classic (Shaman 55)."
+        },
+        {
+          "name": "Focus of Spirit",
+          "level": 60,
+          "inDb": true,
+          "note": "Combination buff: its HP component sits IN this line (does not stack with Talisman of Kragg), but its STR/DEX components are separate lines that DO stack with the shaman STR/DEX primary lines."
+        }
+      ],
+      "replacement": {
+        "strict": true,
+        "note": "Strictly increasing max-HP within the line (Legends: 150 -> 250 -> 380 -> 405), and all four occupy the same buff slot, so the later member always replaces the earlier. The only nuance is Focus of Spirit: you take it over Talisman of Kragg for HP, and it additionally carries STR/DEX that Kragg does not."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [
+          {
+            "line": "Shielding line (Minor/Lesser/Shielding/Major/Greater/Arch Shielding, Shield of the Magi)",
+            "class": "Enchanter/Magician/Necromancer/Wizard",
+            "detail": "P99 groups these under one heading \"HP (Shielding / Talisman)\" — same buff slot, so a caster self-Shielding buff and a Talisman cannot both be up. Shield of the Magi (+250 HP) sits between Talisman of Altuna and Talisman of Kragg.",
+            "source": "https://wiki.project1999.com/Buff_Lines"
+          },
+          {
+            "line": "Armor of Protection",
+            "class": "Cleric",
+            "detail": "Cleric 34 self-only buff is listed in the same \"HP (Shielding / Talisman)\" heading (+225 HP) and therefore does not stack with the Talisman line.",
+            "source": "https://wiki.project1999.com/Buff_Lines"
+          },
+          {
+            "line": "Harnessing of Spirit / Infusion of Spirit",
+            "class": "Shaman",
+            "detail": "Harnessing of Spirit carries a max-HP component (+251 on Legends) in the same family; Allakhazam commentary reports Harnessing of Spirit overwrites Infusion of Spirit. Talisman of Kragg comments explicitly say it does not stack with \"HoS\".",
+            "source": "https://everquest.allakhazam.com/db/spell.html?spell=1585"
+          }
+        ],
+        "stacksWith": [
+          {
+            "line": "Symbol line (Symbol of Transal -> Ryltan -> Pinzarn -> Naltron -> Marzin, Naltron's Mark)",
+            "detail": "Different column in the P99 HP table (\"Primary (HP-only)\"). The maximum-HP build is Protection of the Glades + Symbol of Marzin + Focus of Spirit + Divine Strength = +1775, which requires Talisman/Focus to stack with the Symbol line."
+          },
+          {
+            "line": "Heroism line (Courage -> Center -> Daring -> Bravery -> Valor -> Resolution -> Heroism/Heroic Bond, Fortitude)",
+            "detail": "Cleric AC+HP line is the \"Primary (AC and HP)\" column; it stacks with the Shielding/Talisman column."
+          },
+          {
+            "line": "Skin line (Skin Like Wood -> Rock -> Steel -> Diamond -> Nature, Natureskin, Protection of the Glades)",
+            "detail": "Druid/Ranger line shares the Heroism column, not the Talisman column, so it stacks with Talisman."
+          },
+          {
+            "line": "Aegolism",
+            "detail": "Cleric 60 combination buff sits in the Cleric (Combination) HP column and AC slots 1&4; it stacks with the Talisman/Shielding column but replaces both the Heroism and Symbol lines."
+          },
+          {
+            "line": "Aegis line (Guard -> Armor of Faith -> Shield of Words -> Aegis / Bulwark of Faith)",
+            "detail": "Cleric AC slot 4 line — pure AC, no HP; unrelated slot to the Talisman HP line. NOTE: it does conflict with the shaman AC line (see ac-slot4)."
+          },
+          {
+            "line": "Infusion of Spirit",
+            "detail": "Allakhazam Talisman of Kragg page lists Infusion of Spirit as stacking."
+          }
+        ],
+        "notes": "This is the single most load-bearing shaman stacking fact: the Talisman line is NOT part of the cleric HP lines. A shaman Talisman + cleric Symbol + cleric/druid AC-and-HP buff all stack. What it collides with is the caster Shielding line and Cleric Armor of Protection."
+      },
+      "sources": [
+        "https://wiki.project1999.com/Buff_Lines",
+        "https://everquest.allakhazam.com/db/spell.html?spell=1585",
+        "https://wiki.project1999.com/Category:Talisman_line"
+      ]
+    },
+    {
+      "id": "hp-ac-heroism",
+      "name": "Heroism / Skin line (shaman member: Inner Fire)",
+      "category": "hp-ac-buff",
+      "sharedWith": [
+        "Cleric",
+        "Paladin",
+        "Druid",
+        "Ranger"
+      ],
+      "members": [
+        {
+          "name": "Inner Fire",
+          "level": 1,
+          "inDb": true,
+          "note": "Shaman-only member. +2 AC / +20 max HP at cap. P99 lists it as the bottom rung of both AC (Slot 1) and HP (Primary, AC and HP)."
+        }
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "Shaman never gets a higher member of this line; Inner Fire stays castable forever but is out-scaled by any cleric/druid buff in the same line, which will overwrite it."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [
+          {
+            "line": "Heroism line (Courage -> Center -> Daring -> Bravery -> Valor -> Resolution -> Heroism, Fortitude, Heroic Bond)",
+            "class": "Cleric/Paladin",
+            "detail": "Same heading \"AC (Slot 1)\" and \"HP (Primary: AC and HP)\". Any of these overwrite Inner Fire.",
+            "source": "https://wiki.project1999.com/Buff_Lines"
+          },
+          {
+            "line": "Skin line (Skin Like Wood -> Rock -> Steel -> Diamond -> Nature, Natureskin)",
+            "class": "Druid/Ranger",
+            "detail": "Same AC Slot 1 / HP Primary heading as Inner Fire.",
+            "source": "https://wiki.project1999.com/Buff_Lines"
+          },
+          {
+            "line": "Protection of the Glades",
+            "class": "Druid",
+            "detail": "Druid 60 group buff, top of AC Slot 1 (+24 AC / +470 HP).",
+            "source": "https://wiki.project1999.com/Buff_Lines"
+          },
+          {
+            "line": "Aegolism",
+            "class": "Cleric",
+            "detail": "Cleric 60 combination occupies AC slots 1 & 4 and the HP Primary column.",
+            "source": "https://wiki.project1999.com/Buff_Lines"
+          }
+        ],
+        "stacksWith": [
+          {
+            "line": "Talisman line",
+            "detail": "Different HP column (Shielding/Talisman vs Primary)."
+          },
+          {
+            "line": "Symbol line",
+            "detail": "Different HP column."
+          },
+          {
+            "line": "shaman AC line (Scale Skin ... Shroud of the Spirits)",
+            "detail": "That line is AC Slot 4, Inner Fire is AC Slot 1."
+          }
+        ],
+        "notes": "Practically: never keep Inner Fire on a character who has a cleric or druid in the group."
+      },
+      "sources": [
+        "https://wiki.project1999.com/Buff_Lines"
+      ]
+    },
+    {
+      "id": "str-primary",
+      "name": "Strength line (primary)",
+      "category": "stat-buff",
+      "sharedWith": [
+        "Enchanter",
+        "Druid",
+        "Ranger"
+      ],
+      "members": [
+        {
+          "name": "Strengthen",
+          "level": 1,
+          "inDb": true,
+          "note": "Shared with Enchanter 1."
+        },
+        {
+          "name": "Talisman of the Beast",
+          "level": 8,
+          "inDb": true,
+          "note": "GROUP +10 STR. Not present in P99 classic sources at any level — appears to be a Legends addition (a group version of Strengthen). Flagged."
+        },
+        {
+          "name": "Spirit Strength",
+          "level": 18,
+          "inDb": true,
+          "note": "P99 classic Shaman 19."
+        },
+        {
+          "name": "Raging Strength",
+          "level": 28,
+          "inDb": true,
+          "note": "P99 classic Shaman 29."
+        },
+        {
+          "name": "Tumultuous Strength",
+          "level": 35,
+          "inDb": true,
+          "note": "GROUP. P99 classic Shaman 39, same +34 STR as Furious Strength; Legends moves it to 35, i.e. BELOW its single-target twin."
+        },
+        {
+          "name": "Furious Strength",
+          "level": 39,
+          "inDb": true,
+          "note": "Level matches classic."
+        },
+        {
+          "name": "Strength",
+          "level": 46,
+          "inDb": true,
+          "note": "P99 classic Shaman 49 (+67)."
+        },
+        {
+          "name": "Manicial Strength",
+          "level": 57,
+          "inDb": true,
+          "note": "Legends spells it \"Manicial\"; classic name is Maniacal Strength (Shaman 57, +68)."
+        },
+        {
+          "name": "Talisman of the Rhino",
+          "level": 58,
+          "inDb": true,
+          "note": "GROUP +42 STR. Level matches classic. Weaker than the single-target Strength/Maniacal Strength — group convenience only."
+        }
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "Strictly increasing in magnitude among the single-target members. The GROUP members break strictness: Talisman of the Rhino (58, +42) is weaker than Strength (46, +67) and Maniacal Strength (57, +68), and because they share a buff slot the group cast will OVERWRITE the stronger single-target buff on anyone who already had it. Same trap with Tumultuous Strength (35, +34) vs Furious Strength (39, +34)."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [
+          {
+            "line": "Strength of Earth -> Strength of Stone -> Storm Strength, Girdle of Karana",
+            "class": "Druid/Ranger",
+            "detail": "All in the P99 \"Strength (Primary)\" heading with the shaman line — one slot, no stacking.",
+            "source": "https://wiki.project1999.com/Buff_Lines"
+          },
+          {
+            "line": "Strengthen -> Rampage -> Berserker Spirit",
+            "class": "Enchanter",
+            "detail": "Same \"Strength (Primary)\" heading.",
+            "source": "https://wiki.project1999.com/Buff_Lines"
+          },
+          {
+            "line": "Harnessing of Spirit",
+            "class": "Shaman",
+            "detail": "Harnessing of Spirit overwrites single-target STR/DEX buffs (its Legends effect text carries explicit \"Overwrite Existing Spell if Slot 1 is Strength and Less Than 67\" directives).",
+            "source": "https://everquest.allakhazam.com/db/spell.html?spell=2525"
+          }
+        ],
+        "stacksWith": [
+          {
+            "line": "Focus of Spirit (STR component)",
+            "detail": "P99 puts Focus of Spirit STR in a separate \"Strength (Power)\" column. The shaman maximum-STR build is Maniacal Strength (+68) + Focus of Spirit (+67) + Voice of the Berserker (+85) + Primal Essence (+20) = +240."
+          },
+          {
+            "line": "Frenzy line (Fleeting Fury / Burst of Strength / Frenzy / Fury / Rage / Voice of the Berserker)",
+            "detail": "P99 \"Strength (Short Duration)\" column — stacks with the primary line."
+          },
+          {
+            "line": "Avatar",
+            "detail": "Separate \"Strength (Avatar)\" column."
+          },
+          {
+            "line": "Bard Anthem De Arms / Chant of Battle / Jonthan's",
+            "detail": "Separate \"Strength (Anthem)\" column."
+          },
+          {
+            "line": "Infusion of Spirit",
+            "detail": "Allakhazam commentary: Infusion of Spirit stacks with all the individual shaman stat buffs, unlike the Focus/Harnessing branch."
+          }
+        ],
+        "notes": ""
+      },
+      "sources": [
+        "https://wiki.project1999.com/Buff_Lines",
+        "https://everquest.allakhazam.com/db/spell.html?spell=2525",
+        "https://everquest.allakhazam.com/db/spell.html?spell=3454"
+      ]
+    },
+    {
+      "id": "dex-primary",
+      "name": "Dexterity line (primary)",
+      "category": "stat-buff",
+      "sharedWith": [],
+      "members": [
+        {
+          "name": "Dexterous Aura",
+          "level": 1,
+          "inDb": true
+        },
+        {
+          "name": "Spirit of Monkey",
+          "level": 21,
+          "inDb": true,
+          "note": "P99 classic Shaman 24."
+        },
+        {
+          "name": "Rising Dexterity",
+          "level": 25,
+          "inDb": true,
+          "note": "P99 classic Shaman 29."
+        },
+        {
+          "name": "Deftness",
+          "level": 39,
+          "inDb": true
+        },
+        {
+          "name": "Dexterity",
+          "level": 48,
+          "inDb": true,
+          "note": "P99 classic Shaman 49."
+        },
+        {
+          "name": "Mortal Deftness",
+          "level": 58,
+          "inDb": true
+        },
+        {
+          "name": "Talisman of the Raptor",
+          "level": 59,
+          "inDb": true,
+          "note": "GROUP +60 DEX; same magnitude as Mortal Deftness."
+        }
+      ],
+      "replacement": {
+        "strict": true,
+        "note": "Strictly increasing. Talisman of the Raptor ties Mortal Deftness at +60 but is a group cast, so it is a convenience upgrade, not a magnitude one."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [
+          {
+            "line": "Harnessing of Spirit",
+            "class": "Shaman",
+            "detail": "Overwrites single-target DEX buffs; Legends effect text carries \"Overwrite Existing Spell if Slot 1 is Dexterity and Less Than 50\".",
+            "source": "https://everquest.allakhazam.com/db/spell.html?spell=2525"
+          }
+        ],
+        "stacksWith": [
+          {
+            "line": "Focus of Spirit (DEX component)",
+            "detail": "P99 \"Dexterity (Combination)\" column. IMPORTANT ORDERING BUG: \"Due to a mistake made by the original EQ developers Focus of Spirit and Mortal Deftness stack, even though they should be part of the same buff line, but only if Mortal Deftness is cast first.\""
+          },
+          {
+            "line": "Fleeting Fury / Frenzy line",
+            "detail": "P99 \"Dexterity (Short Duration)\" column."
+          },
+          {
+            "line": "Avatar",
+            "detail": "Separate \"Dexterity (Avatar)\" column."
+          },
+          {
+            "line": "Bard Chant of Battle, Enchanter Visions of Grandeur",
+            "detail": "Separate \"Dexterity (Power)\" column."
+          },
+          {
+            "line": "Boon of the Garou (Enchanter 44)",
+            "detail": "Separate \"Dexterity (Illusion)\" column."
+          }
+        ],
+        "notes": "The Mortal-Deftness-first ordering rule is the single most missable shaman buffing detail at level 60."
+      },
+      "sources": [
+        "https://wiki.project1999.com/Buff_Lines",
+        "https://everquest.allakhazam.com/db/spell.html?spell=2525"
+      ]
+    },
+    {
+      "id": "sta-primary",
+      "name": "Stamina line (primary)",
+      "category": "stat-buff",
+      "sharedWith": [],
+      "members": [
+        {
+          "name": "Spirit of Bear",
+          "level": 6,
+          "inDb": true,
+          "note": "P99 classic Shaman 9."
+        },
+        {
+          "name": "Spirit of Ox",
+          "level": 21,
+          "inDb": true,
+          "note": "P99 classic Shaman 24."
+        },
+        {
+          "name": "Health",
+          "level": 30,
+          "inDb": true,
+          "note": "P99 classic Shaman 34."
+        },
+        {
+          "name": "Stamina",
+          "level": 43,
+          "inDb": true,
+          "note": "P99 classic Shaman 44."
+        },
+        {
+          "name": "Riotous Health",
+          "level": 54,
+          "inDb": true
+        },
+        {
+          "name": "Talisman of the Brute",
+          "level": 57,
+          "inDb": true,
+          "note": "GROUP +40 STA — WEAKER than Riotous Health (+50) at level 54."
+        }
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "Strict through Riotous Health (+50). Talisman of the Brute (57) is a group cast at only +40 and will overwrite Riotous Health on anyone who already has it — a real downgrade, not an upgrade."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [
+          {
+            "line": "Infusion of Spirit (STA component)",
+            "class": "Shaman",
+            "detail": "Infusion of Spirit carries +45 STA; treat as the same stat slot as the primary STA line until confirmed. Allakhazam commentary says \"using HoS along with Stamina will actually be better than IoS\", implying Stamina and Infusion of Spirit collide.",
+            "source": "https://everquest.allakhazam.com/db/spell.html?spell=2525"
+          }
+        ],
+        "stacksWith": [
+          {
+            "line": "Stamina potions (Stability / Adroitness)",
+            "detail": "Separate potion columns on P99."
+          }
+        ],
+        "notes": "Shaman is the only class with this line — no cross-class conflict exists in classic. The maximum STA in the game is +50 (Riotous Health) plus potions."
+      },
+      "sources": [
+        "https://wiki.project1999.com/Buff_Lines",
+        "https://everquest.allakhazam.com/db/spell.html?spell=2525"
+      ]
+    },
+    {
+      "id": "agi-primary",
+      "name": "Agility line (primary)",
+      "category": "stat-buff",
+      "sharedWith": [
+        "Ranger"
+      ],
+      "members": [
+        {
+          "name": "Feet like Cat",
+          "level": 3,
+          "inDb": true,
+          "note": "P99 classic Shaman 5 / Ranger 15 — the only cross-class member."
+        },
+        {
+          "name": "Spirit of Cat",
+          "level": 18,
+          "inDb": true,
+          "note": "P99 classic Shaman 19."
+        },
+        {
+          "name": "Nimble",
+          "level": 31,
+          "inDb": true,
+          "note": "P99 classic Shaman 34."
+        },
+        {
+          "name": "Agility",
+          "level": 41,
+          "inDb": true,
+          "note": "P99 classic Shaman 44."
+        },
+        {
+          "name": "Deliriously Nimble",
+          "level": 53,
+          "inDb": true
+        },
+        {
+          "name": "Talisman of the Cat",
+          "level": 57,
+          "inDb": true,
+          "note": "GROUP +45 AGI — weaker than Deliriously Nimble (+52) at 53."
+        }
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "Strict through Deliriously Nimble (+52). Talisman of the Cat (57, +45) is again a group cast that downgrades anyone already carrying Deliriously Nimble."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [
+          {
+            "line": "Feet like Cat (ranger version)",
+            "class": "Ranger",
+            "detail": "Same spell, same line.",
+            "source": "https://wiki.project1999.com/Buff_Lines"
+          }
+        ],
+        "stacksWith": [
+          {
+            "line": "Augmentation -> Augment -> Visions of Grandeur / Speed of the Shissar",
+            "detail": "P99 \"Agility (Speed Augmentation)\" column — enchanter AGI stacks with shaman AGI."
+          },
+          {
+            "line": "Nillipus' March of the Wee",
+            "detail": "Bard \"Agility (March)\" column."
+          },
+          {
+            "line": "Avatar",
+            "detail": "Separate \"Agility (Avatar)\" column."
+          }
+        ],
+        "notes": ""
+      },
+      "sources": [
+        "https://wiki.project1999.com/Buff_Lines"
+      ]
+    },
+    {
+      "id": "cha-primary",
+      "name": "Charisma line (primary)",
+      "category": "stat-buff",
+      "sharedWith": [
+        "Enchanter"
+      ],
+      "members": [
+        {
+          "name": "Spirit of Snake",
+          "level": 10,
+          "inDb": true,
+          "note": "P99 classic Shaman 14."
+        },
+        {
+          "name": "Alluring Aura",
+          "level": 28,
+          "inDb": true,
+          "note": "P99 classic Shaman 29."
+        },
+        {
+          "name": "Glamour",
+          "level": 37,
+          "inDb": true,
+          "note": "P99 classic Shaman 39."
+        },
+        {
+          "name": "Charisma",
+          "level": 47,
+          "inDb": true,
+          "note": "P99 classic Shaman 49."
+        },
+        {
+          "name": "Talisman of the Serpent",
+          "level": 58,
+          "inDb": true,
+          "note": "GROUP +40 CHA — same magnitude as Charisma."
+        },
+        {
+          "name": "Unfailing Reverence",
+          "level": 59,
+          "inDb": true,
+          "note": "+55 CHA, the highest in the game."
+        }
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "Strict except Talisman of the Serpent (58, +40) which is a group re-cast of Charisma's magnitude, not an upgrade."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [
+          {
+            "line": "Sympathetic Aura -> Radiant Visage -> Adorning Grace -> Overwhelming Splendor",
+            "class": "Enchanter",
+            "detail": "Interleaved with the shaman line under one \"Charisma (Primary)\" heading — enchanter CHA and shaman CHA never stack.",
+            "source": "https://wiki.project1999.com/Buff_Lines"
+          }
+        ],
+        "stacksWith": [
+          {
+            "line": "Solon's Charismatic Concord",
+            "detail": "Bard song column, stacks (+126 with max instrument)."
+          }
+        ],
+        "notes": ""
+      },
+      "sources": [
+        "https://wiki.project1999.com/Buff_Lines"
+      ]
+    },
+    {
+      "id": "ac-slot4",
+      "name": "Shaman AC line (Scale Skin line)",
+      "category": "ac-buff",
+      "sharedWith": [
+        "Cleric",
+        "Paladin",
+        "Enchanter",
+        "Magician",
+        "Necromancer"
+      ],
+      "members": [
+        {
+          "name": "Scale Skin",
+          "level": 3,
+          "inDb": true,
+          "note": "P99 classic Shaman 5."
+        },
+        {
+          "name": "Turtle Skin",
+          "level": 11,
+          "inDb": true,
+          "note": "P99 classic Shaman 14."
+        },
+        {
+          "name": "Protect",
+          "level": 20,
+          "inDb": true,
+          "note": "P99 classic Shaman 24."
+        },
+        {
+          "name": "Shifting Shield",
+          "level": 31,
+          "inDb": true,
+          "note": "P99 classic Shaman 34."
+        },
+        {
+          "name": "Guardian",
+          "level": 42,
+          "inDb": true,
+          "note": "P99 classic Shaman 44."
+        },
+        {
+          "name": "Shroud of the Spirits",
+          "level": 54,
+          "inDb": true
+        }
+      ],
+      "replacement": {
+        "strict": true,
+        "note": "Strictly increasing AC; each replaces the last."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [
+          {
+            "line": "Aegis line (Holy Armor -> Spirit Armor -> Guard -> Armor of Faith -> Shield of Words -> Aegis / Bulwark of Faith)",
+            "class": "Cleric/Paladin",
+            "detail": "All in the P99 \"AC (Slot 4)\" heading with the shaman line. Bulwark of Faith (+37) and Aegis (+34) beat Shroud of the Spirits (+28), so a cleric buff overwrites the shaman one.",
+            "source": "https://wiki.project1999.com/Buff_Lines"
+          },
+          {
+            "line": "Haze -> Mist -> Cloud -> Obscure -> Shade -> Shadow -> Umbra",
+            "class": "Enchanter",
+            "detail": "Same AC Slot 4 heading.",
+            "source": "https://wiki.project1999.com/Buff_Lines"
+          },
+          {
+            "line": "Phantom Leather -> Chain -> Plate -> Armor",
+            "class": "Magician",
+            "detail": "Same AC Slot 4 heading.",
+            "source": "https://wiki.project1999.com/Buff_Lines"
+          },
+          {
+            "line": "Spirit Armor",
+            "class": "Necromancer",
+            "detail": "Same AC Slot 4 heading.",
+            "source": "https://wiki.project1999.com/Buff_Lines"
+          },
+          {
+            "line": "Aegolism",
+            "class": "Cleric",
+            "detail": "Occupies AC slots 1 AND 4 simultaneously, so it blocks both Inner Fire and the shaman AC line.",
+            "source": "https://wiki.project1999.com/Buff_Lines"
+          }
+        ],
+        "stacksWith": [
+          {
+            "line": "Heroism / Skin / Protection of the Glades (AC Slot 1)",
+            "detail": "Different AC slot."
+          },
+          {
+            "line": "Shielding line, Bladecoat/Thorncoat, Armor of Protection, Yaulp (AC Slot 2)",
+            "detail": "Different AC slot."
+          },
+          {
+            "line": "Frenzy line, Call of Earth, Augment (AC Slot 3)",
+            "detail": "Different AC slot — the shaman self Frenzy line AC stacks with the shaman AC line."
+          }
+        ],
+        "notes": "Because AC slot 4 is crowded, in a raid group the shaman AC buff is usually redundant with the cleric Aegis line."
+      },
+      "sources": [
+        "https://wiki.project1999.com/Buff_Lines"
+      ]
+    },
+    {
+      "id": "frenzy-self",
+      "name": "Frenzy / Berserker line (self STR+DEX+AGI+AC)",
+      "category": "stat-buff",
+      "sharedWith": [],
+      "members": [
+        {
+          "name": "Fleeting Fury",
+          "level": 4,
+          "inDb": true,
+          "note": "P99 classic Shaman 5. Short duration (18s). Also a proc on Iksar Berserker Club."
+        },
+        {
+          "name": "Burst of Strength",
+          "level": 11,
+          "inDb": true,
+          "note": "P99 classic Shaman 14, self-only, 3 ticks."
+        },
+        {
+          "name": "Frenzy",
+          "level": 16,
+          "inDb": true,
+          "note": "P99 classic Shaman 19, self-only, permanent duration; +10 AC in AC Slot 3."
+        },
+        {
+          "name": "Fury",
+          "level": 30,
+          "inDb": true
+        },
+        {
+          "name": "Rage",
+          "level": 45,
+          "inDb": true
+        },
+        {
+          "name": "Voice of the Berserker",
+          "level": 59,
+          "inDb": true,
+          "note": "Top of the line, +85 STR at cap on P99."
+        }
+      ],
+      "replacement": {
+        "strict": true,
+        "note": "Strictly increasing across all four stats. The two short-duration bottom members (Fleeting Fury, Burst of Strength) are functionally obsolete once Frenzy lands, since Frenzy is permanent-duration and self-only."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [
+          {
+            "line": "Call of Earth / Augmentation / Augment / Speed of the Shissar (AC Slot 3)",
+            "class": "Ranger/Enchanter",
+            "detail": "The AC component of this line sits in AC Slot 3 with the ranger and enchanter AC buffs — Call of Earth (+25) and Augment (+18) beat Frenzy (+10).",
+            "source": "https://wiki.project1999.com/Buff_Lines"
+          },
+          {
+            "line": "Yaulp line",
+            "class": "Cleric/Paladin",
+            "detail": "P99 \"Strength (Short Duration: Yaulp)\" is a separate column from shaman \"Strength (Short Duration)\", so these DO stack — listed here only to note that both are short-duration STR and are commonly confused.",
+            "source": "https://wiki.project1999.com/Buff_Lines"
+          }
+        ],
+        "stacksWith": [
+          {
+            "line": "Strength / Dexterity / Agility primary lines",
+            "detail": "This is the load-bearing one: P99's shaman maximum-STR row is Maniacal Strength (+68) + Focus of Spirit (+67) + Voice of the Berserker (+85) + Primal Essence (+20) = +240, which only works if the Frenzy line stacks with the primary stat lines."
+          },
+          {
+            "line": "Focus of Spirit",
+            "detail": "Different columns entirely."
+          },
+          {
+            "line": "Avatar",
+            "detail": "Different column."
+          }
+        ],
+        "notes": "P99 splits this line across three tables (AC Slot 3, Strength Short Duration, Dexterity Short Duration) rather than naming it, but the members form one named upgrade chain."
+      },
+      "sources": [
+        "https://wiki.project1999.com/Buff_Lines"
+      ]
+    },
+    {
+      "id": "spirit-combination",
+      "name": "Spirit combination line (Infusion / Harnessing of Spirit)",
+      "category": "combination-buff",
+      "sharedWith": [],
+      "members": [
+        {
+          "name": "Harnessing of Spirit",
+          "level": 46,
+          "inDb": true,
+          "note": "Legends: +251 max HP, +67 STR, +50 DEX, with explicit stacking directives in the effect text (\"Overwrite Existing Spell if Slot 1 is Strength and Less Than 67\", etc). LEVEL DISCREPANCY: this is a post-classic (Planes-of-Power era) spell, not a level-46 classic spell."
+        },
+        {
+          "name": "Infusion of Spirit",
+          "level": 49,
+          "inDb": true,
+          "note": "Legends: +50 STR, +55 DEX, +45 STA. Also post-classic on live EQ."
+        }
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "Harnessing of Spirit overwrites Infusion of Spirit, but is NOT strictly better: Infusion of Spirit buffs three stats for less mana and, critically, stacks with the individual shaman stat buffs, whereas Harnessing of Spirit overwrites them. The community answer is that Harnessing of Spirit + Stamina beats Infusion of Spirit, and Infusion of Spirit + individual STR/DEX buffs beats both."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [
+          {
+            "line": "Strength line / Dexterity line (single-target)",
+            "class": "Shaman",
+            "detail": "Harnessing of Spirit overwrites the single STR and DEX buffs.",
+            "source": "https://everquest.allakhazam.com/db/spell.html?spell=2525"
+          },
+          {
+            "line": "Focus of Spirit",
+            "class": "Shaman",
+            "detail": "Same combination family; Focus of Spirit is the level-60 version (HP + STR 67 + DEX 60) and is filed in the Talisman HP line by P99.",
+            "source": "https://wiki.project1999.com/Buff_Lines"
+          },
+          {
+            "line": "Talisman line (HP component of Harnessing of Spirit)",
+            "class": "Shaman",
+            "detail": "Allakhazam comments on Talisman of Kragg state it does not stack with \"HoS\".",
+            "source": "https://everquest.allakhazam.com/db/spell.html?spell=1585"
+          }
+        ],
+        "stacksWith": [
+          {
+            "line": "Talisman line (Infusion of Spirit only)",
+            "detail": "Allakhazam Talisman of Kragg page lists Infusion of Spirit as stacking with it."
+          },
+          {
+            "line": "Enchanter / Cleric / Wizard \"skin\" self-buffs (Infusion of Spirit only)",
+            "detail": "Allakhazam commentary: Infusion of Spirit stacks with those where the Focus line does not."
+          }
+        ],
+        "notes": "Focus of Spirit is deliberately filed under the Talisman line (per the given anchors and per P99) and appears there, not here."
+      },
+      "sources": [
+        "https://everquest.allakhazam.com/db/spell.html?spell=2525",
+        "https://everquest.allakhazam.com/db/spell.html?spell=3454",
+        "https://everquest.allakhazam.com/db/spell.html?spell=1585",
+        "https://wiki.project1999.com/Buff_Lines"
+      ]
+    },
+    {
+      "id": "avatar",
+      "name": "Avatar line",
+      "category": "stat-buff",
+      "sharedWith": [],
+      "members": [
+        {
+          "name": "Avatar",
+          "level": 60,
+          "inDb": true,
+          "note": "+100 STR/DEX/AGI/ATK for 6 minutes."
+        },
+        {
+          "name": "Primal Avatar",
+          "level": 60,
+          "inDb": true,
+          "note": "Identical effects and duration. On classic EQ this is the version that fires as a proc from Primal Velium Weapons; on Legends it is listed as a castable spell at the same level."
+        }
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "Same tier — these are two names for one effect, not an upgrade chain."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [
+          {
+            "line": "Primal Essence (Hammer of the Dragonborn click)",
+            "class": "item",
+            "detail": "Same \"Avatar\" column for STR/DEX/AGI (+20 vs +100).",
+            "source": "https://wiki.project1999.com/Buff_Lines"
+          },
+          {
+            "line": "Wolf/bear form ATK buffs (Attack Slot 3)",
+            "class": "Druid/Ranger/Enchanter",
+            "detail": "Avatar's +100 ATK sits in Attack Slot 3 with Form of the Hunter, Greater Wolf Form, Share Wolf Form and Boon of the Garou.",
+            "source": "https://wiki.project1999.com/Buff_Lines"
+          }
+        ],
+        "stacksWith": [
+          {
+            "line": "All shaman primary stat lines",
+            "detail": "Separate \"(Avatar)\" column in every stat table — Avatar stacks with everything else the shaman casts."
+          }
+        ],
+        "notes": "P99 nets Avatar at +80 in the max tables because it overwrites the +20 Primal Essence."
+      },
+      "sources": [
+        "https://wiki.project1999.com/Buff_Lines"
+      ]
+    },
+    {
+      "id": "haste",
+      "name": "Haste line",
+      "category": "haste",
+      "sharedWith": [
+        "Enchanter"
+      ],
+      "members": [
+        {
+          "name": "Quickness",
+          "level": 26,
+          "inDb": true,
+          "note": "P99 classic Shaman 29 / Enchanter 16. +30%."
+        },
+        {
+          "name": "Alacrity",
+          "level": 42,
+          "inDb": true,
+          "note": "P99 classic Shaman 44 / Enchanter 24. +40%."
+        },
+        {
+          "name": "Celerity",
+          "level": 56,
+          "inDb": true,
+          "note": "Level matches classic. +50% — the shaman cap."
+        }
+      ],
+      "replacement": {
+        "strict": true,
+        "note": "Strictly increasing haste percentage; one haste buff slot, so each replaces the last."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [
+          {
+            "line": "Enchanter haste (Quickness -> Alacrity -> Augmentation -> Augment -> Swift Like The Wind -> Aanya's Quickening -> Wonderous Rapidity)",
+            "class": "Enchanter",
+            "detail": "One \"Haste (Primary)\" heading. Enchanter tops out at +70% vs shaman +50%, so an enchanter always beats the shaman haste.",
+            "source": "https://wiki.project1999.com/Buff_Lines"
+          },
+          {
+            "line": "Haste",
+            "class": "Ranger",
+            "detail": "Ranger 40 self \"Haste\" (+50%) is in the same heading.",
+            "source": "https://wiki.project1999.com/Buff_Lines"
+          },
+          {
+            "line": "Bard haste songs (Verses of Victory, Vilia's, Jonthan's, McVaxius')",
+            "class": "Bard",
+            "detail": "Same \"Haste (Primary)\" heading — bard spell-haste and shaman haste do not stack.",
+            "source": "https://wiki.project1999.com/Buff_Lines"
+          },
+          {
+            "line": "Item/click haste (Speed of the Shissar, Celestial Tranquility, Flurry potions)",
+            "class": "item",
+            "detail": "Same heading.",
+            "source": "https://wiki.project1999.com/Buff_Lines"
+          }
+        ],
+        "stacksWith": [
+          {
+            "line": "Composition of Ervaj / Melody of Ervaj",
+            "detail": "Bard \"Haste (Ervaj/v2)\" column — the only spell haste that stacks, +10%."
+          },
+          {
+            "line": "Worn item haste",
+            "detail": "Out of scope of the P99 buff-lines page; see the separate Haste Guide. Worn haste is a different mechanic from spell haste."
+          }
+        ],
+        "notes": "The in-game maximum spell haste is +80% (Wonderous Rapidity +70% plus Composition of Ervaj +10%)."
+      },
+      "sources": [
+        "https://wiki.project1999.com/Buff_Lines"
+      ]
+    },
+    {
+      "id": "regen",
+      "name": "Regeneration line",
+      "category": "hp-regen",
+      "sharedWith": [
+        "Druid",
+        "Ranger"
+      ],
+      "members": [
+        {
+          "name": "Regeneration",
+          "level": 23,
+          "inDb": true,
+          "note": "P99 classic Shaman 24 / Druid 34. +5 HP/tick."
+        },
+        {
+          "name": "Chloroplast",
+          "level": 39,
+          "inDb": true,
+          "note": "Level matches classic (Shaman 39 / Druid 44 / Ranger 55). +10 HP/tick."
+        },
+        {
+          "name": "Regrowth",
+          "level": 52,
+          "inDb": true,
+          "note": "Level matches classic (Shaman 52 / Druid 54). +15 HP/tick — ties the Fungi Covered Great Staff cap."
+        }
+      ],
+      "replacement": {
+        "strict": true,
+        "note": "Strictly increasing HP/tick; one slot."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [
+          {
+            "line": "Druid regen line (Regeneration -> Chloroplast -> Regrowth, Pack Regeneration, Pack Chloroplast, Regrowth of the Grove)",
+            "class": "Druid",
+            "detail": "Literally the same spells plus druid group versions, all under \"HP Regeneration (Slot 1)\". Shaman regen and druid regen NEVER stack.",
+            "source": "https://wiki.project1999.com/Buff_Lines"
+          },
+          {
+            "line": "Fungal Regrowth (Fungi Covered Great Staff / Fungus Covered Scale Tunic)",
+            "class": "item",
+            "detail": "Same Slot 1 heading at +15 — ties Regrowth, so the classic fungi tunic makes shaman regen redundant.",
+            "source": "https://wiki.project1999.com/Buff_Lines"
+          },
+          {
+            "line": "Frostreaver's Blessing, Dulsehound, Fiery Might",
+            "class": "item",
+            "detail": "Same Slot 1 heading.",
+            "source": "https://wiki.project1999.com/Buff_Lines"
+          }
+        ],
+        "stacksWith": [
+          {
+            "line": "Form of the Great Bear (+2/tick)",
+            "detail": "HP Regeneration Slot 2 — the shaman self illusion stacks with the shaman regen line."
+          },
+          {
+            "line": "Hymn of Restoration / Cantata of Replenishment",
+            "detail": "Bard \"Layer 2, Slot 1\" column."
+          },
+          {
+            "line": "Niv's Melody of Preservation",
+            "detail": "Bard \"Layer 2, Slot 3\" column."
+          },
+          {
+            "line": "Rejuvenation potions, Natureskin, Skin Like Nature",
+            "detail": "HP Regeneration Slot 4."
+          },
+          {
+            "line": "Worn regen items",
+            "detail": "Stack with spell regen but cap at a combined +15/tick among themselves."
+          }
+        ],
+        "notes": "Highest spell regen in the game is +15/tick (Regrowth / Regrowth of the Grove / Fungal Regrowth)."
+      },
+      "sources": [
+        "https://wiki.project1999.com/Buff_Lines"
+      ]
+    },
+    {
+      "id": "speed-sow",
+      "name": "Spirit of Wolf / movement speed line",
+      "category": "movement",
+      "sharedWith": [
+        "Druid",
+        "Ranger",
+        "Bard"
+      ],
+      "members": [
+        {
+          "name": "Spirit of Wolf",
+          "level": 9,
+          "inDb": true,
+          "note": "Level matches classic (Shaman 9 / Druid 14 / Ranger 30). +55%."
+        },
+        {
+          "name": "Spirit of Cheetah",
+          "level": 21,
+          "inDb": true,
+          "note": "DISCREPANCY: on P99 this is a DRUID 60 self-only 8-tick +115% sprint. Legends gives it to Shaman at 21 at +75% for 8 ticks."
+        },
+        {
+          "name": "Scale of Wolf",
+          "level": 22,
+          "inDb": true,
+          "note": "P99 classic Shaman 24 / Druid 24. +70% but \"Make Fragile\" — the buff drops if you attack or cast."
+        },
+        {
+          "name": "Spirit of Bih`Li",
+          "level": 36,
+          "inDb": true,
+          "note": "GROUP +55% movement plus +15 ATK. Not present on the P99 buff-lines speed table (post-Velious on live EQ)."
+        },
+        {
+          "name": "Spirit of Scale",
+          "level": 52,
+          "inDb": true,
+          "note": "GROUP version of Scale of Wolf (+70%, Make Fragile). Not on the P99 speed table."
+        }
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "Not a clean chain. Scale of Wolf is faster than Spirit of Wolf but is cancelled by attacking or casting, so Spirit of Wolf stays the combat-safe choice forever. Spirit of Bih`Li is the group SoW; Spirit of Scale is the group Scale of Wolf. Spirit of Cheetah is an 8-tick sprint, not a replacement for anything."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [
+          {
+            "line": "Druid/Ranger movement (Spirit of Wolf, Wolf Form, Greater Wolf Form, Share Wolf Form, Form of the Great Wolf, Form of the Howler, Form of the Hunter, Spirit of Cheetah)",
+            "class": "Druid/Ranger",
+            "detail": "All of these plus the shaman line are one \"Speed (Primary)\" heading — a single movement-speed slot for the whole game.",
+            "source": "https://wiki.project1999.com/Buff_Lines"
+          },
+          {
+            "line": "Selo's Accelerando / Selo's Song of Travel",
+            "class": "Bard",
+            "detail": "Same \"Speed (Primary)\" heading; the bard song is faster (+182% with instruments) but is lost when you move out of song range.",
+            "source": "https://wiki.project1999.com/Buff_Lines"
+          },
+          {
+            "line": "Shrew line (Spirit of the Shrew, Pack Shrew)",
+            "class": "Shaman",
+            "detail": "Also movement speed (+30%), same slot; a shaman must choose SoW or the Shrew buff, not both.",
+            "source": "https://wiki.project1999.com/Buff_Lines"
+          }
+        ],
+        "stacksWith": [],
+        "notes": "Movement speed is the simplest line in the game: one slot, highest value wins, and only the bard song can beat a druid."
+      },
+      "sources": [
+        "https://wiki.project1999.com/Buff_Lines"
+      ]
+    },
+    {
+      "id": "shrew",
+      "name": "Shrew line (movement + ultravision)",
+      "category": "movement",
+      "sharedWith": [],
+      "members": [
+        {
+          "name": "Spirit of the Shrew",
+          "level": 29,
+          "inDb": true,
+          "note": "Single target. Ultravision + 30% movement."
+        },
+        {
+          "name": "Pack Shrew",
+          "level": 34,
+          "inDb": true,
+          "note": "GROUP version, same magnitudes."
+        }
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "Pack Shrew is the group version of Spirit of the Shrew at identical magnitude — a convenience upgrade only. Neither replaces Spirit of Wolf, which is faster."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [
+          {
+            "line": "Spirit of Wolf line",
+            "class": "Shaman/Druid/Ranger/Bard",
+            "detail": "Movement speed is one slot (\"Speed (Primary)\"), so the Shrew buff and any SoW-family buff overwrite each other; SoW at +55% is strictly better for speed.",
+            "source": "https://wiki.project1999.com/Buff_Lines"
+          },
+          {
+            "line": "Ultravision line",
+            "class": "Shaman",
+            "detail": "The ultravision component collides with the shaman Ultravision buff and with Acumen.",
+            "source": "https://wiki.project1999.com/Buff_Lines"
+          }
+        ],
+        "stacksWith": [],
+        "notes": "Neither member appears on the P99 buff-lines speed table; both are real EQ spells but post-Velious, so treat the classic sourcing as thin."
+      },
+      "sources": [
+        "https://wiki.project1999.com/Buff_Lines"
+      ]
+    },
+    {
+      "id": "resist-cold",
+      "name": "Cold resist line",
+      "category": "resist-buff",
+      "sharedWith": [
+        "Cleric",
+        "Druid",
+        "Ranger",
+        "Paladin",
+        "Enchanter",
+        "Necromancer"
+      ],
+      "members": [
+        {
+          "name": "Endure Cold",
+          "level": 1,
+          "inDb": true,
+          "note": "P99 classic Shaman 5."
+        },
+        {
+          "name": "Resist Cold",
+          "level": 24,
+          "inDb": true,
+          "note": "P99 classic Shaman 29. +40 at cap."
+        }
+      ],
+      "replacement": {
+        "strict": true,
+        "note": "Strictly increasing resist value; one slot per resist type. The group Talisman versions (where they exist) are also the strongest, so they are true upgrades."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [
+          {
+            "line": "Endure Cold / Resist Cold",
+            "class": "Cleric/Druid/Ranger",
+            "detail": "Same spells, one \"Cold Resistance (Primary)\" heading with druid Circle of Summer (+45, the cap).",
+            "source": "https://wiki.project1999.com/Buff_Lines"
+          }
+        ],
+        "stacksWith": [
+          {
+            "line": "Aura of White Petals / Elemental Armor",
+            "detail": "Separate \"Flower/Armor\" column."
+          },
+          {
+            "line": "Psalm of Warmth",
+            "detail": "Bard column, +196 with instruments."
+          },
+          {
+            "line": "Aura of Heat potions",
+            "detail": "Potion column."
+          }
+        ],
+        "notes": "Shaman has no group cold-resist talisman in classic — Circle of Summer (Druid 52) is the only group option."
+      },
+      "sources": [
+        "https://wiki.project1999.com/Buff_Lines"
+      ]
+    },
+    {
+      "id": "resist-fire",
+      "name": "Fire resist line",
+      "category": "resist-buff",
+      "sharedWith": [
+        "Cleric",
+        "Druid",
+        "Ranger",
+        "Paladin",
+        "Enchanter",
+        "Necromancer"
+      ],
+      "members": [
+        {
+          "name": "Endure Fire",
+          "level": 5,
+          "inDb": true,
+          "note": "Level matches classic."
+        },
+        {
+          "name": "Resist Fire",
+          "level": 27,
+          "inDb": true,
+          "note": "P99 classic Shaman 29. +40 at cap."
+        }
+      ],
+      "replacement": {
+        "strict": true,
+        "note": "Strictly increasing resist value; one slot per resist type. The group Talisman versions (where they exist) are also the strongest, so they are true upgrades."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [
+          {
+            "line": "Endure Fire / Resist Fire",
+            "class": "Cleric/Druid/Ranger",
+            "detail": "Same spells, one \"Fire Resistance Slot 1\" heading with druid Circle of Winter (+45).",
+            "source": "https://wiki.project1999.com/Buff_Lines"
+          }
+        ],
+        "stacksWith": [
+          {
+            "line": "Magician shields (Shield of Fire ... Cadeau of Flame, Aegis of Ro)",
+            "detail": "Fire Resistance Slot 2 — magician damage shields also give FR and stack with the shaman line."
+          },
+          {
+            "line": "Elemental Armor / Aura of Cold potions",
+            "detail": "Slot 4."
+          },
+          {
+            "line": "Psalm of Cooling / Elemental Rhythms",
+            "detail": "Bard Layer 2."
+          }
+        ],
+        "notes": "Shaman has no group fire-resist talisman in classic."
+      },
+      "sources": [
+        "https://wiki.project1999.com/Buff_Lines"
+      ]
+    },
+    {
+      "id": "resist-disease",
+      "name": "Disease resist line",
+      "category": "resist-buff",
+      "sharedWith": [
+        "Cleric",
+        "Druid",
+        "Ranger",
+        "Paladin",
+        "Enchanter",
+        "Necromancer"
+      ],
+      "members": [
+        {
+          "name": "Endure Disease",
+          "level": 8,
+          "inDb": true,
+          "note": "P99 classic Shaman 9."
+        },
+        {
+          "name": "Resist Disease",
+          "level": 30,
+          "inDb": true,
+          "note": "P99 classic Shaman 34. +40."
+        },
+        {
+          "name": "Talisman of Jasinth",
+          "level": 50,
+          "inDb": true,
+          "note": "GROUP +45 disease resist. P99 classic Shaman 51."
+        }
+      ],
+      "replacement": {
+        "strict": true,
+        "note": "Strictly increasing resist value; one slot per resist type. The group Talisman versions (where they exist) are also the strongest, so they are true upgrades."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [
+          {
+            "line": "Endure/Resist Disease",
+            "class": "Cleric/Druid/Necromancer/Paladin/Shadow Knight",
+            "detail": "Same \"Disease Resistance (Primary)\" heading.",
+            "source": "https://wiki.project1999.com/Buff_Lines"
+          },
+          {
+            "line": "Aura of Black Petals",
+            "class": "item",
+            "detail": "Same heading at +50, the cap.",
+            "source": "https://wiki.project1999.com/Buff_Lines"
+          }
+        ],
+        "stacksWith": [
+          {
+            "line": "Psalm of Vitality",
+            "detail": "Bard column."
+          },
+          {
+            "line": "Aura of Antibody potions / Aloe Sweat",
+            "detail": "Item column."
+          }
+        ],
+        "notes": "Talisman of Jasinth is the best castable disease resist in the game (+45) and is a group cast — a genuine shaman signature buff."
+      },
+      "sources": [
+        "https://wiki.project1999.com/Buff_Lines"
+      ]
+    },
+    {
+      "id": "resist-poison",
+      "name": "Poison resist line",
+      "category": "resist-buff",
+      "sharedWith": [
+        "Cleric",
+        "Druid",
+        "Ranger",
+        "Paladin",
+        "Enchanter",
+        "Necromancer"
+      ],
+      "members": [
+        {
+          "name": "Endure Poison",
+          "level": 11,
+          "inDb": true,
+          "note": "P99 classic Shaman 14."
+        },
+        {
+          "name": "Resist Poison",
+          "level": 35,
+          "inDb": true,
+          "note": "P99 classic Shaman 39. +40."
+        },
+        {
+          "name": "Talisman of Shadoo",
+          "level": 53,
+          "inDb": true,
+          "note": "GROUP +45 poison resist. Level matches classic."
+        }
+      ],
+      "replacement": {
+        "strict": true,
+        "note": "Strictly increasing resist value; one slot per resist type. The group Talisman versions (where they exist) are also the strongest, so they are true upgrades."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [
+          {
+            "line": "Endure/Resist Poison",
+            "class": "Cleric/Druid/Paladin",
+            "detail": "Same \"Poison Resistance (Primary)\" heading.",
+            "source": "https://wiki.project1999.com/Buff_Lines"
+          },
+          {
+            "line": "Resistant Skin",
+            "class": "Wizard",
+            "detail": "Same heading.",
+            "source": "https://wiki.project1999.com/Buff_Lines"
+          }
+        ],
+        "stacksWith": [
+          {
+            "line": "Dead Man Floating",
+            "detail": "Necromancer 44, separate column, +70 PR — stacks with Talisman of Shadoo."
+          },
+          {
+            "line": "Aura of Green Petals",
+            "detail": "Flower column."
+          },
+          {
+            "line": "Psalm of Purity",
+            "detail": "Bard column."
+          }
+        ],
+        "notes": "Talisman of Shadoo is the top castable poison resist (+45) and stacks with Dead Man Floating for +115 before flowers and songs."
+      },
+      "sources": [
+        "https://wiki.project1999.com/Buff_Lines"
+      ]
+    },
+    {
+      "id": "resist-magic",
+      "name": "Magic resist line",
+      "category": "resist-buff",
+      "sharedWith": [
+        "Cleric",
+        "Druid",
+        "Ranger",
+        "Paladin",
+        "Enchanter",
+        "Necromancer"
+      ],
+      "members": [
+        {
+          "name": "Endure Magic",
+          "level": 19,
+          "inDb": true,
+          "note": "Level matches classic."
+        },
+        {
+          "name": "Resist Magic",
+          "level": 43,
+          "inDb": true,
+          "note": "P99 classic Shaman 44. +40."
+        }
+      ],
+      "replacement": {
+        "strict": true,
+        "note": "Strictly increasing resist value; one slot per resist type. The group Talisman versions (where they exist) are also the strongest, so they are true upgrades."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [
+          {
+            "line": "Endure/Resist Magic",
+            "class": "Cleric/Druid/Enchanter/Paladin",
+            "detail": "Same \"Magic Resistance (Primary)\" heading.",
+            "source": "https://wiki.project1999.com/Buff_Lines"
+          },
+          {
+            "line": "Group Resist Magic",
+            "class": "Enchanter",
+            "detail": "Enchanter 49 group version at +55 — the cap, same heading.",
+            "source": "https://wiki.project1999.com/Buff_Lines"
+          }
+        ],
+        "stacksWith": [
+          {
+            "line": "Shielding line (Shield of the Magi etc.)",
+            "detail": "Separate \"Magic Shield\" column for casters."
+          },
+          {
+            "line": "Psalm of Mystic Shielding",
+            "detail": "Bard column."
+          },
+          {
+            "line": "Null Aura potions",
+            "detail": "Potion column."
+          }
+        ],
+        "notes": "Shaman has no group magic-resist talisman; the enchanter Group Resist Magic beats and overwrites Resist Magic."
+      },
+      "sources": [
+        "https://wiki.project1999.com/Buff_Lines"
+      ]
+    },
+    {
+      "id": "slow",
+      "name": "Slow line (Insects line)",
+      "category": "slow-debuff",
+      "sharedWith": [],
+      "members": [
+        {
+          "name": "Drowsy",
+          "level": 5,
+          "inDb": true,
+          "note": "-25% attack speed."
+        },
+        {
+          "name": "Walking Sleep",
+          "level": 13,
+          "inDb": true,
+          "note": "-23% to -35%."
+        },
+        {
+          "name": "Tagar's Insects",
+          "level": 27,
+          "inDb": true,
+          "note": "-34% to -50%."
+        },
+        {
+          "name": "Togor's Insects",
+          "level": 38,
+          "inDb": true,
+          "note": "-49% to -70%."
+        },
+        {
+          "name": "Turgur's Insects",
+          "level": 51,
+          "inDb": true,
+          "note": "-66% to -75%, the shaman single-target cap."
+        },
+        {
+          "name": "Turgur`s Insects",
+          "level": 51,
+          "inDb": true,
+          "note": "DUPLICATE RECORD: same spell as Turgur's Insects, differing only in the apostrophe character (backtick vs straight quote) and a slightly different max-duration string. Not a separate line member."
+        },
+        {
+          "name": "Tigir`s Insects",
+          "level": 58,
+          "inDb": true,
+          "note": "TARGETED AE slow at -49%/-50% plus -200 hate. Weaker than Turgur's Insects, so it is a different tool (multi-mob), not an upgrade."
+        }
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "Strictly increasing slow percentage from Drowsy through Turgur's Insects. Tigir`s Insects (58) breaks the chain: it is the AE version at only -50%, so Turgur's Insects remains the strongest single-target slow. Slows do not stack with each other; the stronger one lands and the weaker is refused or overwritten."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [
+          {
+            "line": "Enchanter slow line (Tepid Deeds -> Languid Pace -> Shiftless Deeds -> Cripple / Forlorn Deeds)",
+            "class": "Enchanter",
+            "detail": "Attack-speed debuffs occupy one slot on the mob; a shaman slow and an enchanter slow overwrite each other, strongest wins. Not covered by the P99 buff-lines page (that page is player buffs only).",
+            "source": "https://wiki.project1999.com/Buff_Lines"
+          },
+          {
+            "line": "Torpor / Stoicism line",
+            "class": "Shaman",
+            "detail": "The shaman HoT line carries its own -30% attack speed on the TARGET of the heal — irrelevant for mobs but it means you cannot Torpor a slowed pet without interaction.",
+            "source": "https://everquest.allakhazam.com/db/spell.html?spell=1576"
+          }
+        ],
+        "stacksWith": [
+          {
+            "line": "Cripple line (Disempower -> Cripple)",
+            "detail": "Different debuff (STR/AGI/DEX/AC), stacks with slow."
+          },
+          {
+            "line": "Malo line",
+            "detail": "Resist debuff, stacks with slow."
+          }
+        ],
+        "notes": "The slow line is the shaman's defining group contribution. Duration also grows across the line (2m30s at the low end, 5.1-6.5 minutes for Turgur's)."
+      },
+      "sources": [
+        "https://wiki.project1999.com/Buff_Lines",
+        "https://everquest.allakhazam.com/db/spell.html?spell=1576"
+      ]
+    },
+    {
+      "id": "malo",
+      "name": "Malo line (resist debuff)",
+      "category": "resist-debuff",
+      "sharedWith": [],
+      "members": [
+        {
+          "name": "Malaise",
+          "level": 18,
+          "inDb": true,
+          "note": "-15 to -20 all four resists. P99 classic Shaman 19."
+        },
+        {
+          "name": "Malisement",
+          "level": 32,
+          "inDb": true,
+          "note": "-36 to -40. P99 classic Shaman 34."
+        },
+        {
+          "name": "Malosi",
+          "level": 48,
+          "inDb": true,
+          "note": "-59/-60. P99 classic Shaman 49."
+        },
+        {
+          "name": "Malosini",
+          "level": 57,
+          "inDb": true,
+          "note": "-60 all four, longer duration than Malo. Resistible."
+        },
+        {
+          "name": "Malo",
+          "level": 60,
+          "inDb": true,
+          "note": "-45 all four, 13 minutes. UNRESISTIBLE on live EQ — this is why it is not simply outclassed by Malosini."
+        }
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "NOT strict at the top. Malosini debuffs more (-60 vs -45) and lasts longer, and it overwrites Malo, but Malo is unresistible while Malosini can be resisted. Against high-resist raid targets the correct play is Malo (guaranteed landing), then Malosini on top if it will stick. Everything below Malosi is a clean strict upgrade."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [
+          {
+            "line": "Malo line members",
+            "class": "Shaman",
+            "detail": "Malosini overwrites Malo and Malaise/Malisement because it is the stronger debuff.",
+            "source": "https://www.project1999.com/forums/archive/index.php/t-179329.html"
+          }
+        ],
+        "stacksWith": [
+          {
+            "line": "Tashan line (Tashan -> Tashani -> Tashania -> Tashanian)",
+            "detail": "Enchanter resist debuffs are a separate line and STACK with the Malo line: the standard raid sequence is Tashan (unresistible -MR), then Malo (unresistible, all four), then Malosini. All enchanter debuffs in this family are unresistible."
+          },
+          {
+            "line": "Insidious line",
+            "detail": "Insidious Fever/Malady/Decay debuff DISEASE resist specifically and stack with Malo's four-resist debuff on live EQ."
+          },
+          {
+            "line": "Cripple line, Slow line",
+            "detail": "Different debuff categories entirely."
+          }
+        ],
+        "notes": "Malo-line landing is the shaman's raid job alongside slow. Note Legends re-tiers Malosini to 57 (below Malo at 60), preserving the classic ordering that Malo is the level-60 spell."
+      },
+      "sources": [
+        "https://www.project1999.com/forums/archive/index.php/t-179329.html",
+        "https://everquest.allakhazam.com/db/spell.html?spell=1578",
+        "https://everquest.allakhazam.com/db/spell.html?spell=1577"
+      ]
+    },
+    {
+      "id": "insidious",
+      "name": "Insidious line (disease resist debuff)",
+      "category": "resist-debuff",
+      "sharedWith": [],
+      "members": [
+        {
+          "name": "Insidious Fever",
+          "level": 17,
+          "inDb": true,
+          "note": "-19 to -35 disease resist. P99 classic Shaman 20."
+        },
+        {
+          "name": "Insidious Malady",
+          "level": 38,
+          "inDb": true,
+          "note": "-49 to -60. P99 classic Shaman 39."
+        },
+        {
+          "name": "Insidious Decay",
+          "level": 52,
+          "inDb": true,
+          "note": "DISCREPANCY: Legends lists only -36 to -42 disease resist, i.e. WEAKER than Insidious Malady (-49 to -60) which it is supposed to upgrade. On live EQ Insidious Decay is the stronger spell."
+        }
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "Strict on classic sources (Fever -> Malady -> Decay), but NOT strict as the Legends file describes it: Insidious Decay at level 52 shows a smaller disease-resist debuff than Insidious Malady at 38. Either the Legends magnitudes are re-tuned or the data is wrong — flagged as a discrepancy."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [
+          {
+            "line": "Insidious line members",
+            "class": "Shaman",
+            "detail": "Self-overwriting.",
+            "source": "https://wiki.project1999.com/Buff_Lines"
+          }
+        ],
+        "stacksWith": [
+          {
+            "line": "Malo line",
+            "detail": "Different debuff line; used together to floor a target's disease resist before disease DoTs."
+          }
+        ],
+        "notes": "Purpose-built to land the shaman disease DoT line (Sicken -> Pox of Bertoxxulous) on resistant targets."
+      },
+      "sources": [
+        "https://wiki.project1999.com/Buff_Lines"
+      ]
+    },
+    {
+      "id": "cripple",
+      "name": "Cripple line (STR/AGI/AC debuff)",
+      "category": "stat-debuff",
+      "sharedWith": [
+        "Enchanter"
+      ],
+      "members": [
+        {
+          "name": "Disempower",
+          "level": 12,
+          "inDb": true,
+          "note": "STA/STR/AC debuff. P99 classic Shaman 14."
+        },
+        {
+          "name": "Listless Power",
+          "level": 29,
+          "inDb": true,
+          "note": "AGI/STR/AC. Level matches classic."
+        },
+        {
+          "name": "Incapacitate",
+          "level": 41,
+          "inDb": true,
+          "note": "P99 classic Shaman 44."
+        },
+        {
+          "name": "Cripple",
+          "level": 53,
+          "inDb": true,
+          "note": "DEX/AGI/STR/AC, the strongest. Shared name with the Enchanter 53 spell. Level matches classic."
+        }
+      ],
+      "replacement": {
+        "strict": true,
+        "note": "Strictly increasing debuff magnitudes and duration; the top member also adds a DEX component the lower ones lack."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [
+          {
+            "line": "Cripple (enchanter version) and the enchanter Weakness/Enfeeblement line",
+            "class": "Enchanter",
+            "detail": "Same debuff family on the mob; strongest wins.",
+            "source": "https://wiki.project1999.com/Buff_Lines"
+          }
+        ],
+        "stacksWith": [
+          {
+            "line": "Slow line",
+            "detail": "Attack speed vs stats — different debuff slots, routinely stacked."
+          },
+          {
+            "line": "Malo line",
+            "detail": "Resist debuff, stacks."
+          }
+        ],
+        "notes": "Cripple + Turgur's Insects is the classic shaman \"full mitigation\" pair on a raid mob."
+      },
+      "sources": [
+        "https://wiki.project1999.com/Buff_Lines"
+      ]
+    },
+    {
+      "id": "cannibalize",
+      "name": "Cannibalize line (HP to mana)",
+      "category": "utility",
+      "sharedWith": [],
+      "members": [
+        {
+          "name": "Cannibalize",
+          "level": 23,
+          "inDb": true,
+          "note": "Base name. P99 classic Shaman 34. -50 HP for +20 to +28 mana."
+        },
+        {
+          "name": "McMerin's Feast",
+          "level": 38,
+          "inDb": true,
+          "note": "Occupies the Cannibalize II slot on Legends (-67 HP for +30 to +36 mana). Not found in classic P99 sources under this name — likely a Legends rename of Cannibalize II."
+        },
+        {
+          "name": "Cannibalize III",
+          "level": 54,
+          "inDb": true,
+          "note": "RANK of the Cannibalize base name — counts as the same line member under the ranks rule, listed separately here for coverage. -74 HP for +36 to +38 mana."
+        },
+        {
+          "name": "Cannibalize IV",
+          "level": 58,
+          "inDb": true,
+          "note": "RANK of the Cannibalize base name. -148 HP for +81 to +82 mana — by far the best HP-to-mana ratio."
+        }
+      ],
+      "replacement": {
+        "strict": true,
+        "note": "Strictly improving HP-to-mana conversion ratio: Cannibalize ~0.5 mana/HP, Cannibalize IV ~0.55 mana/HP at a much larger chunk size, so fewer casts and less downtime. Later members always replace earlier ones in practice. Note: these are instant self-casts, not buffs — there is no buff slot involved and no stacking question."
+      },
+      "missingOnLegends": [
+        "Cannibalize II"
+      ],
+      "stacking": {
+        "conflicts": [],
+        "stacksWith": [],
+        "notes": "Cannibalize is instant-cast and unbuff-like; the only interaction worth recording is with the Torpor line, which is the standard partner (Torpor heals the HP back that Cannibalize burns)."
+      },
+      "sources": [
+        "https://wiki.project1999.com/Buff_Lines",
+        "https://everquest.allakhazam.com/db/spell.html?spell=1576"
+      ]
+    },
+    {
+      "id": "dot-disease",
+      "name": "Disease DoT line",
+      "category": "dot",
+      "sharedWith": [],
+      "members": [
+        {
+          "name": "Sicken",
+          "level": 4,
+          "inDb": true
+        },
+        {
+          "name": "Affliction",
+          "level": 19,
+          "inDb": true
+        },
+        {
+          "name": "Scourge",
+          "level": 31,
+          "inDb": true
+        },
+        {
+          "name": "Plague",
+          "level": 49,
+          "inDb": true
+        },
+        {
+          "name": "Pox of Bertoxxulous",
+          "level": 59,
+          "inDb": true
+        }
+      ],
+      "replacement": {
+        "strict": true,
+        "note": "Strictly increasing damage per tick (1-11 -> 6 -> 24 -> 55 -> 111 on Legends). Two DoTs from the same line will not both tick on a target; the newer cast overwrites."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [
+          {
+            "line": "Disease DoT line members",
+            "class": "Shaman",
+            "detail": "Self-overwriting — one slot per DoT line on the mob.",
+            "source": "https://wiki.project1999.com/Buff_Lines"
+          }
+        ],
+        "stacksWith": [
+          {
+            "line": "Poison DoT line",
+            "detail": "Different DoT line, ticks alongside."
+          },
+          {
+            "line": "Infectious Cloud",
+            "detail": "AE DoT, separate."
+          },
+          {
+            "line": "Curse line (Curse, Odium)",
+            "detail": "Separate curse-counter line."
+          }
+        ],
+        "notes": "Pair with the Insidious line to floor disease resist first."
+      },
+      "sources": [
+        "https://wiki.project1999.com/Buff_Lines"
+      ]
+    },
+    {
+      "id": "dot-poison",
+      "name": "Poison DoT line",
+      "category": "dot",
+      "sharedWith": [],
+      "members": [
+        {
+          "name": "Tainted Breath",
+          "level": 8,
+          "inDb": true
+        },
+        {
+          "name": "Envenomed Breath",
+          "level": 24,
+          "inDb": true
+        },
+        {
+          "name": "Venom of the Snake",
+          "level": 37,
+          "inDb": true
+        },
+        {
+          "name": "Envenomed Bolt",
+          "level": 49,
+          "inDb": true,
+          "note": "Legends: 351 per tick over 36s — the shaman burst DoT."
+        },
+        {
+          "name": "Bane of Nife",
+          "level": 56,
+          "inDb": true,
+          "note": "Legends: 214 per tick over 7 ticks — more total damage than Envenomed Bolt but slower."
+        }
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "Strict through Venom of the Snake. At the top the two differ in shape rather than power: Envenomed Bolt (49) is a 6-tick burst at 351/tick, Bane of Nife (56) is a 7-tick DoT at 214/tick with a bigger up-front HP cost. Neither strictly replaces the other on the Legends numbers."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [
+          {
+            "line": "Poison DoT line members",
+            "class": "Shaman",
+            "detail": "Self-overwriting.",
+            "source": "https://wiki.project1999.com/Buff_Lines"
+          }
+        ],
+        "stacksWith": [
+          {
+            "line": "Disease DoT line",
+            "detail": "Different line, ticks alongside."
+          }
+        ],
+        "notes": ""
+      },
+      "sources": [
+        "https://wiki.project1999.com/Buff_Lines"
+      ]
+    },
+    {
+      "id": "dot-ae",
+      "name": "AE disease DoT",
+      "category": "dot",
+      "sharedWith": [],
+      "members": [
+        {
+          "name": "Infectious Cloud",
+          "level": 15,
+          "inDb": true,
+          "note": "Targeted AE, 5 HP/tick over 2.1 minutes plus 20 on cast."
+        }
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "Shaman never gets a higher-tier AE DoT in classic; Infectious Cloud stands alone."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [],
+        "stacksWith": [
+          {
+            "line": "Single-target DoT lines",
+            "detail": "Separate line, ticks alongside."
+          }
+        ],
+        "notes": "Historically used as a low-level AE pull/train tool rather than for damage."
+      },
+      "sources": [
+        "https://wiki.project1999.com/Buff_Lines"
+      ]
+    },
+    {
+      "id": "curse-dot",
+      "name": "Curse line",
+      "category": "dot",
+      "sharedWith": [],
+      "members": [
+        {
+          "name": "Curse",
+          "level": 34,
+          "inDb": true,
+          "note": "Curse counter 4 plus 148 HP/tick over 30s on Legends."
+        },
+        {
+          "name": "Odium",
+          "level": 43,
+          "inDb": true,
+          "note": "Curse counter 8, no damage component listed on Legends — pure curse-counter application."
+        }
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "Odium applies twice the curse counters but the Legends data shows it carrying no damage, so it does not replace Curse for damage purposes. Flagged: on live EQ Odium is a curse DoT and the missing damage effect may be a data gap."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [],
+        "stacksWith": [
+          {
+            "line": "Disease and poison DoT lines",
+            "detail": "Separate line."
+          }
+        ],
+        "notes": ""
+      },
+      "sources": [
+        "https://wiki.project1999.com/Buff_Lines"
+      ]
+    },
+    {
+      "id": "dd-cold",
+      "name": "Cold direct damage line",
+      "category": "nuke",
+      "sharedWith": [],
+      "members": [
+        {
+          "name": "Frost Rift",
+          "level": 4,
+          "inDb": true
+        },
+        {
+          "name": "Frost Strike",
+          "level": 23,
+          "inDb": true
+        },
+        {
+          "name": "Winter's Roar",
+          "level": 33,
+          "inDb": true
+        },
+        {
+          "name": "Blizzard Blast",
+          "level": 44,
+          "inDb": true
+        },
+        {
+          "name": "Ice Strike",
+          "level": 54,
+          "inDb": true
+        }
+      ],
+      "replacement": {
+        "strict": true,
+        "note": "Strictly increasing damage (15 -> 149 -> 263 -> 430 -> 675 at cap on Legends)."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [],
+        "stacksWith": [],
+        "notes": "Instant nukes — no stacking semantics. Included as a line purely for upgrade ordering."
+      },
+      "sources": [
+        "https://wiki.project1999.com/Buff_Lines"
+      ]
+    },
+    {
+      "id": "dd-other",
+      "name": "Poison / disease direct damage line",
+      "category": "nuke",
+      "sharedWith": [],
+      "members": [
+        {
+          "name": "Burst of Flame",
+          "level": 1,
+          "inDb": true,
+          "note": "Fire-based, the level-1 nuke."
+        },
+        {
+          "name": "Burst of Flame",
+          "level": 1,
+          "inDb": true,
+          "note": "DUPLICATE RECORD in the input file — the identical spell appears twice at level 1. Not a separate spell."
+        },
+        {
+          "name": "Spirit Strike",
+          "level": 14,
+          "inDb": true,
+          "note": "Magic-based."
+        },
+        {
+          "name": "Shock of the Tainted",
+          "level": 34,
+          "inDb": true,
+          "note": "Disease-based."
+        },
+        {
+          "name": "Blast of Poison",
+          "level": 42,
+          "inDb": true
+        },
+        {
+          "name": "Shock of Venom",
+          "level": 47,
+          "inDb": true
+        }
+      ],
+      "replacement": {
+        "strict": true,
+        "note": "Strictly increasing damage. Grouped together as the non-cold nuke progression; the resist types differ across members (fire, magic, disease, poison), which matters against resistant targets."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [],
+        "stacksWith": [],
+        "notes": "Instant nukes — no stacking semantics."
+      },
+      "sources": [
+        "https://wiki.project1999.com/Buff_Lines"
+      ]
+    },
+    {
+      "id": "dd-ae",
+      "name": "AE direct damage line",
+      "category": "nuke",
+      "sharedWith": [],
+      "members": [
+        {
+          "name": "Poison Storm",
+          "level": 22,
+          "inDb": true,
+          "note": "60 damage, targeted AE."
+        },
+        {
+          "name": "Gale of Poison",
+          "level": 36,
+          "inDb": true,
+          "note": "122 damage."
+        },
+        {
+          "name": "Torrent of Poison",
+          "level": 55,
+          "inDb": true,
+          "note": "540 damage."
+        }
+      ],
+      "replacement": {
+        "strict": true,
+        "note": "Strictly increasing AE damage."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [],
+        "stacksWith": [],
+        "notes": ""
+      },
+      "sources": [
+        "https://wiki.project1999.com/Buff_Lines"
+      ]
+    },
+    {
+      "id": "heals",
+      "name": "Direct heal line",
+      "category": "heal",
+      "sharedWith": [
+        "Cleric",
+        "Druid",
+        "Paladin",
+        "Ranger"
+      ],
+      "members": [
+        {
+          "name": "Minor Healing",
+          "level": 1,
+          "inDb": true,
+          "note": "Shared: Cleric 1, Druid 1, Paladin 9, Ranger 9, Shaman 1."
+        },
+        {
+          "name": "Light Healing",
+          "level": 9,
+          "inDb": true,
+          "note": "Shared with Cleric 5, Druid 9."
+        },
+        {
+          "name": "Healing",
+          "level": 19,
+          "inDb": true,
+          "note": "Shared with Cleric 14, Druid 19."
+        },
+        {
+          "name": "Greater Healing",
+          "level": 29,
+          "inDb": true,
+          "note": "Shared with Cleric 24, Druid 29."
+        },
+        {
+          "name": "Spirit Salve",
+          "level": 40,
+          "inDb": true,
+          "note": "Shaman-only."
+        },
+        {
+          "name": "Superior Healing",
+          "level": 45,
+          "inDb": true,
+          "note": "P99 classic Shaman 51 (Cleric 34). Legends re-tiers to 45, i.e. BELOW Spirit Salve is preserved but the gap narrows."
+        },
+        {
+          "name": "Kragg's Salve",
+          "level": 50,
+          "inDb": true,
+          "note": "Shaman-only, 688 HP on Legends."
+        },
+        {
+          "name": "Chloroblast",
+          "level": 55,
+          "inDb": true,
+          "note": "Shared with Druid. A separate high-efficiency heal rather than a strict tier of this chain — 385 HP but much cheaper per point than Kragg's Salve."
+        }
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "Strictly increasing HP healed from Minor Healing through Kragg's Salve. Chloroblast (55) breaks strictness: it heals LESS than Kragg's Salve (385 vs 688) but at a far better mana-per-HP ratio, so it is the efficiency heal and Kragg's Salve is the emergency heal. Both stay in the book."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [],
+        "stacksWith": [],
+        "notes": "Direct heals have no buff slot and no stacking semantics. P99 notes that at low level the \"buff heals\" Inner Fire and Courage are more mana-efficient than Minor Healing or Light Healing, which is why shamans lead with Inner Fire."
+      },
+      "sources": [
+        "https://wiki.project1999.com/Healing_Spell_Lines",
+        "https://wiki.project1999.com/Buff_Lines"
+      ]
+    },
+    {
+      "id": "hot-torpor",
+      "name": "Torpor line (HoT with attack-speed penalty)",
+      "category": "heal-over-time",
+      "sharedWith": [],
+      "members": [
+        {
+          "name": "Impassivity",
+          "level": 16,
+          "inDb": true,
+          "note": "60 HP/tick over 24s, -30% attack speed on the target. NOT found in classic P99/Allakhazam sources — appears to be a Legends-added lower tier of the Torpor line."
+        },
+        {
+          "name": "Nonchalance",
+          "level": 30,
+          "inDb": true,
+          "note": "120 HP/tick, -30% attack speed. Same caveat: not verified in classic sources."
+        },
+        {
+          "name": "Stoicism",
+          "level": 44,
+          "inDb": true,
+          "note": "VERIFIED CLASSIC: Allakhazam lists Stoicism as a Shaman level 44 spell healing 200 HP every 6 seconds for 24 seconds while vastly decreasing attack rate. Legends level matches exactly."
+        },
+        {
+          "name": "Torpor",
+          "level": 60,
+          "inDb": true,
+          "note": "VERIFIED CLASSIC: Shaman 60. 300 HP/tick, -70/90% movement and -30% attack speed. The signature shaman spell."
+        }
+      ],
+      "replacement": {
+        "strict": true,
+        "note": "Strictly increasing HP per tick (60 -> 120 -> 200 -> 300) with the same -30% attack-speed penalty throughout, so each member cleanly replaces the last. The penalty means these are self-cast downtime heals or emergency tank heals, never a combat HoT on a DPS."
+      },
+      "missingOnLegends": [
+        "Quiescence"
+      ],
+      "stacking": {
+        "conflicts": [
+          {
+            "line": "Snare-HoT line (Snails/Tortoises/Slugs/Sloths Healing)",
+            "class": "Shaman",
+            "detail": "Same HoT effect family with a different rider (movement snare instead of attack slow); expect them to overwrite each other. The Legends patch notes describe the snare HoTs as \"alternatives to Rancor and Stoicism\", which implies they occupy the same role and slot.",
+            "source": "https://www.gnollguard.com/news"
+          },
+          {
+            "line": "Slow line (on the buff target)",
+            "class": "Shaman/Enchanter",
+            "detail": "The -30% attack speed rider is a real attack-speed debuff on whoever receives the heal.",
+            "source": "https://everquest.allakhazam.com/db/spell.html?spell=1576"
+          }
+        ],
+        "stacksWith": [
+          {
+            "line": "Regeneration line",
+            "detail": "Different regen slot family — the Torpor line is a heal-over-time spell, not the +HP/tick buff line."
+          },
+          {
+            "line": "Cannibalize line",
+            "detail": "The classic shaman mana engine: Cannibalize down, Torpor back up."
+          }
+        ],
+        "notes": "Torpor + Cannibalize is the reason shamans could solo indefinitely in the classic era."
+      },
+      "sources": [
+        "https://everquest.allakhazam.com/db/spell.html?spell=1576",
+        "https://everquest.allakhazam.com/db/item.html?item=19127",
+        "https://everquest.allakhazam.com/db/spell.html?spell=3398",
+        "https://everquest.allakhazam.com/db/classes.html?class=9",
+        "https://www.gnollguard.com/news"
+      ]
+    },
+    {
+      "id": "hot-snare",
+      "name": "Snare-HoT line (Legends custom)",
+      "category": "heal-over-time",
+      "sharedWith": [],
+      "members": [
+        {
+          "name": "Snails Healing",
+          "level": 14,
+          "inDb": true,
+          "note": "60 HP/tick over 24s with -100% movement speed."
+        },
+        {
+          "name": "Tortoises Healing",
+          "level": 28,
+          "inDb": true,
+          "note": "120 HP/tick."
+        },
+        {
+          "name": "Slugs Healing",
+          "level": 42,
+          "inDb": true,
+          "note": "160 HP/tick."
+        },
+        {
+          "name": "Sloths Healing",
+          "level": 50,
+          "inDb": true,
+          "note": "300 HP/tick. Note targetType is \"Single\" here where the other three are \"Target Group Member or Self\" — possibly a data inconsistency."
+        }
+      ],
+      "replacement": {
+        "strict": true,
+        "note": "Strictly increasing HP per tick (60 -> 120 -> 160 -> 300), all with the same -100% movement snare on the recipient."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [
+          {
+            "line": "Torpor line",
+            "class": "Shaman",
+            "detail": "Legends patch notes present these as alternatives to the Rancor/Stoicism HoTs — same role, expect one HoT slot.",
+            "source": "https://www.gnollguard.com/news"
+          }
+        ],
+        "stacksWith": [
+          {
+            "line": "Regeneration line",
+            "detail": "Different mechanic (HoT spell vs +HP/tick buff)."
+          }
+        ],
+        "notes": "NOT CLASSIC. No member of this line appears in P99 or Allakhazam classic sources. Legends patch notes describe \"new Shaman spells\" Snails Healing, Slugs Healing and Sloths Healing as heal-over-time plus 100% snare. The trade is explicit: the snare version roots the recipient instead of slowing their swings, so it is castable on a tank mid-fight only if you want them anchored."
+      },
+      "sources": [
+        "https://www.gnollguard.com/news"
+      ]
+    },
+    {
+      "id": "root",
+      "name": "Root line",
+      "category": "control",
+      "sharedWith": [
+        "Druid",
+        "Enchanter",
+        "Necromancer",
+        "Wizard"
+      ],
+      "members": [
+        {
+          "name": "Root",
+          "level": 12,
+          "inDb": true,
+          "note": "48 seconds. P99 classic Shaman 14."
+        },
+        {
+          "name": "Instill",
+          "level": 33,
+          "inDb": true,
+          "note": "VERIFIED as a shaman root-line spell (Allakhazam spell 131, classic Shaman 34): roughly twice Root's duration for twice the mana. DATA GAP: the Legends record has NO effects array at all — the root effect is missing from the database entry."
+        },
+        {
+          "name": "Immobilize",
+          "level": 51,
+          "inDb": true,
+          "note": "1 minute."
+        },
+        {
+          "name": "Paralyzing Earth",
+          "level": 56,
+          "inDb": true,
+          "note": "3 minutes, the longest."
+        }
+      ],
+      "replacement": {
+        "strict": true,
+        "note": "Strictly increasing root duration. Like every root in EQ, all members break early on damage."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [
+          {
+            "line": "Any other root/snare",
+            "class": "Druid/Enchanter/Necromancer/Wizard",
+            "detail": "Roots do not stack; recasting refreshes or overwrites.",
+            "source": "https://everquest.allakhazam.com/db/spell.html?spell=131"
+          }
+        ],
+        "stacksWith": [],
+        "notes": "Instill's missing effects data is the clearest database bug in this list."
+      },
+      "sources": [
+        "https://everquest.allakhazam.com/db/spell.html?spell=131",
+        "https://wiki.project1999.com/Buff_Lines"
+      ]
+    },
+    {
+      "id": "dispel",
+      "name": "Dispel line",
+      "category": "utility",
+      "sharedWith": [
+        "Cleric",
+        "Druid",
+        "Enchanter",
+        "Magician",
+        "Necromancer",
+        "Wizard"
+      ],
+      "members": [
+        {
+          "name": "Cancel Magic",
+          "level": 19,
+          "inDb": true,
+          "note": "Cancel Magic (1)."
+        },
+        {
+          "name": "Nullify Magic",
+          "level": 44,
+          "inDb": true,
+          "note": "Cancel Magic (4)."
+        },
+        {
+          "name": "Annul Magic",
+          "level": 55,
+          "inDb": true,
+          "note": "Cancel Magic (9)."
+        }
+      ],
+      "replacement": {
+        "strict": true,
+        "note": "Strictly increasing dispel strength (1 -> 4 -> 9 levels of effect removed per attempt)."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [],
+        "stacksWith": [],
+        "notes": "Instant, no buff slot."
+      },
+      "sources": [
+        "https://wiki.project1999.com/Buff_Lines"
+      ]
+    },
+    {
+      "id": "cure-disease",
+      "name": "Disease cure line",
+      "category": "cure",
+      "sharedWith": [
+        "Cleric",
+        "Druid",
+        "Paladin",
+        "Shadow Knight"
+      ],
+      "members": [
+        {
+          "name": "Cure Disease",
+          "level": 1,
+          "inDb": true,
+          "note": "4 counters."
+        },
+        {
+          "name": "Counteract Disease",
+          "level": 22,
+          "inDb": true,
+          "note": "8 counters."
+        },
+        {
+          "name": "Abolish Disease",
+          "level": 48,
+          "inDb": true,
+          "note": "36 counters."
+        }
+      ],
+      "replacement": {
+        "strict": true,
+        "note": "Strictly increasing counters removed."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [],
+        "stacksWith": [],
+        "notes": ""
+      },
+      "sources": [
+        "https://wiki.project1999.com/Buff_Lines"
+      ]
+    },
+    {
+      "id": "cure-poison",
+      "name": "Poison cure line",
+      "category": "cure",
+      "sharedWith": [
+        "Cleric",
+        "Druid",
+        "Paladin"
+      ],
+      "members": [
+        {
+          "name": "Cure Poison",
+          "level": 2,
+          "inDb": true,
+          "note": "4 counters."
+        },
+        {
+          "name": "Counteract Poison",
+          "level": 26,
+          "inDb": true,
+          "note": "8 counters."
+        }
+      ],
+      "replacement": {
+        "strict": true,
+        "note": "Strictly increasing counters removed."
+      },
+      "missingOnLegends": [
+        "Abolish Poison"
+      ],
+      "stacking": {
+        "conflicts": [],
+        "stacksWith": [],
+        "notes": "Shaman has Abolish Disease but no equivalent top-tier poison cure in the Legends list; on live EQ Abolish Poison is a Cleric/Druid spell, so this may be correct rather than a gap."
+      },
+      "sources": [
+        "https://wiki.project1999.com/Buff_Lines"
+      ]
+    },
+    {
+      "id": "cure-curse",
+      "name": "Curse cure line",
+      "category": "cure",
+      "sharedWith": [
+        "Cleric",
+        "Druid"
+      ],
+      "members": [
+        {
+          "name": "Remove Minor Curse",
+          "level": 9,
+          "inDb": true,
+          "note": "2 counters."
+        },
+        {
+          "name": "Remove Lesser Curse",
+          "level": 24,
+          "inDb": true,
+          "note": "4 counters."
+        },
+        {
+          "name": "Remove Curse",
+          "level": 38,
+          "inDb": true,
+          "note": "4 counters — same magnitude as Remove Lesser Curse on the Legends data."
+        }
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "Strict from Remove Minor Curse to Remove Lesser Curse. Remove Curse (38) shows the SAME 4 counters as Remove Lesser Curse (24) in the Legends data, so it is not an upgrade as recorded — flagged as a probable magnitude bug."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [],
+        "stacksWith": [],
+        "notes": ""
+      },
+      "sources": [
+        "https://wiki.project1999.com/Buff_Lines"
+      ]
+    },
+    {
+      "id": "blind",
+      "name": "Blind line",
+      "category": "control",
+      "sharedWith": [
+        "Cleric",
+        "Paladin"
+      ],
+      "members": [
+        {
+          "name": "Flash of Light",
+          "level": 1,
+          "inDb": true,
+          "note": "Blind plus -5 attack, 12s."
+        },
+        {
+          "name": "Blinding Luminance",
+          "level": 39,
+          "inDb": true,
+          "note": "Blind plus -5 attack, 4 ticks."
+        }
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "Longer duration and better resist check at the top, but the same -5 attack rider; primarily a fleeing/pulling tool at both tiers."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [],
+        "stacksWith": [],
+        "notes": ""
+      },
+      "sources": [
+        "https://wiki.project1999.com/Buff_Lines"
+      ]
+    },
+    {
+      "id": "pets",
+      "name": "Spirit wolf pet line",
+      "category": "pet",
+      "sharedWith": [],
+      "members": [
+        {
+          "name": "Companion Spirit",
+          "level": 32,
+          "inDb": true,
+          "note": "Level 26 Spirit Wolf."
+        },
+        {
+          "name": "Vigilant Spirit",
+          "level": 37,
+          "inDb": true,
+          "note": "Level 29 Spirit Wolf."
+        },
+        {
+          "name": "Guardian Spirit",
+          "level": 41,
+          "inDb": true,
+          "note": "Level 32 Spirit Wolf."
+        },
+        {
+          "name": "Frenzied Spirit",
+          "level": 45,
+          "inDb": true,
+          "note": "Level 36 Spirit Wolf."
+        },
+        {
+          "name": "Summon Companion",
+          "level": 40,
+          "inDb": true,
+          "note": "NOT a tier — this is the \"Call Pet\" utility that teleports the existing pet to you."
+        },
+        {
+          "name": "Spirit of the Howler",
+          "level": 55,
+          "inDb": true,
+          "note": "Top pet (SpiritWolf237)."
+        }
+      ],
+      "replacement": {
+        "strict": true,
+        "note": "Strictly increasing pet level, and only one pet can exist at a time, so each replaces the last. Summon Companion is a utility that sits outside the chain."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [],
+        "stacksWith": [
+          {
+            "line": "Spirit Quickening",
+            "detail": "The shaman pet haste/AC/STR buff is cast ON the pet and is a separate spell (see standalone)."
+          }
+        ],
+        "notes": ""
+      },
+      "sources": [
+        "https://wiki.project1999.com/Buff_Lines"
+      ]
+    },
+    {
+      "id": "vision-ultra",
+      "name": "Night vision line",
+      "category": "vision",
+      "sharedWith": [
+        "Druid",
+        "Enchanter",
+        "Necromancer",
+        "Shadow Knight"
+      ],
+      "members": [
+        {
+          "name": "Serpent Sight",
+          "level": 6,
+          "inDb": true,
+          "note": "Infravision."
+        },
+        {
+          "name": "Ultravision",
+          "level": 26,
+          "inDb": true,
+          "note": "Ultravision — strictly better night vision."
+        }
+      ],
+      "replacement": {
+        "strict": true,
+        "note": "Ultravision supersedes infravision."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [
+          {
+            "line": "Shrew line",
+            "class": "Shaman",
+            "detail": "Spirit of the Shrew and Pack Shrew both carry ultravision.",
+            "source": "https://wiki.project1999.com/Buff_Lines"
+          },
+          {
+            "line": "Acumen",
+            "class": "Shaman",
+            "detail": "Acumen bundles Ultravision(1) with See Invisible(2), so it overwrites a standalone Ultravision.",
+            "source": "https://wiki.project1999.com/Buff_Lines"
+          }
+        ],
+        "stacksWith": [],
+        "notes": ""
+      },
+      "sources": [
+        "https://wiki.project1999.com/Buff_Lines"
+      ]
+    },
+    {
+      "id": "see-invis",
+      "name": "See Invisible line",
+      "category": "vision",
+      "sharedWith": [],
+      "members": [
+        {
+          "name": "Spirit Sight",
+          "level": 7,
+          "inDb": true,
+          "note": "See Invisible(1)."
+        },
+        {
+          "name": "Acumen",
+          "level": 56,
+          "inDb": true,
+          "note": "See Invisible(2) plus Ultravision(1) plus -10 stamina loss, 1h3m. A combination upgrade."
+        }
+      ],
+      "replacement": {
+        "strict": true,
+        "note": "Acumen strictly supersedes Spirit Sight and folds in Ultravision and a fatigue reduction."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [
+          {
+            "line": "Night vision line",
+            "class": "Shaman",
+            "detail": "Acumen carries its own Ultravision.",
+            "source": "https://wiki.project1999.com/Buff_Lines"
+          },
+          {
+            "line": "Fatigue line",
+            "class": "Shaman",
+            "detail": "Acumen carries a -10 stamina-loss component that may collide with Invigor / Extinguish Fatigue.",
+            "source": "https://wiki.project1999.com/Buff_Lines"
+          }
+        ],
+        "stacksWith": [],
+        "notes": ""
+      },
+      "sources": [
+        "https://wiki.project1999.com/Buff_Lines"
+      ]
+    },
+    {
+      "id": "bind-sight",
+      "name": "Bind Sight / magnification line",
+      "category": "vision",
+      "sharedWith": [],
+      "members": [
+        {
+          "name": "Vision",
+          "level": 17,
+          "inDb": true,
+          "note": "Bind Sight, +130% magnification, ultravision, 11 minutes."
+        },
+        {
+          "name": "Creeping Vision",
+          "level": 20,
+          "inDb": true,
+          "note": "Self-only magnification that DECAYS over its 1-minute duration — a different tool, not a tier."
+        },
+        {
+          "name": "Assiduous Vision",
+          "level": 36,
+          "inDb": true,
+          "note": "Same effects as Vision but 150 minutes instead of 11, and castable on others."
+        }
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "Assiduous Vision strictly replaces Vision (identical effects, 13x the duration). Creeping Vision is self-only, one minute, and decays — it belongs to the same family by effect but is not on the upgrade path."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [],
+        "stacksWith": [],
+        "notes": "Scouting utility; the ultravision rider means these also collide with the night vision line."
+      },
+      "sources": [
+        "https://wiki.project1999.com/Buff_Lines"
+      ]
+    },
+    {
+      "id": "invis-animals",
+      "name": "Invisibility versus Animals",
+      "category": "invisibility",
+      "sharedWith": [
+        "Druid",
+        "Ranger"
+      ],
+      "members": [
+        {
+          "name": "Invisibility versus Animals",
+          "level": 10,
+          "inDb": true,
+          "note": "Group/single lowercase-v record, 36 minutes."
+        },
+        {
+          "name": "Invisibility Versus Animals",
+          "level": 10,
+          "inDb": true,
+          "note": "DUPLICATE RECORD: same spell, capital \"Versus\", differing duration text (27-36 minutes) and targetType. Not a separate line member."
+        }
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "One spell; the two records differ only in capitalisation and duration wording."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [
+          {
+            "line": "Invisibility",
+            "class": "Shaman/Enchanter/Magician/Wizard",
+            "detail": "Invisibility and invis-versus-animals are separate effects and famously DO stack, which is the classic \"double invis\" travel trick.",
+            "source": "https://wiki.project1999.com/Buff_Lines"
+          }
+        ],
+        "stacksWith": [
+          {
+            "line": "Invisibility",
+            "detail": "Both can be up at once — different invisibility types."
+          }
+        ],
+        "notes": "The conflicts entry above is recorded deliberately: these two are commonly assumed to conflict and do not."
+      },
+      "sources": [
+        "https://wiki.project1999.com/Buff_Lines"
+      ]
+    },
+    {
+      "id": "summon-sustenance",
+      "name": "Summon food and drink",
+      "category": "utility",
+      "sharedWith": [
+        "Cleric",
+        "Druid",
+        "Enchanter",
+        "Magician",
+        "Necromancer",
+        "Wizard"
+      ],
+      "members": [
+        {
+          "name": "Summon Drink",
+          "level": 2,
+          "inDb": true
+        },
+        {
+          "name": "Summon Food",
+          "level": 6,
+          "inDb": true
+        }
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "Two different consumables, not an upgrade chain."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [],
+        "stacksWith": [],
+        "notes": ""
+      },
+      "sources": [
+        "https://wiki.project1999.com/Buff_Lines"
+      ]
+    },
+    {
+      "id": "imbue",
+      "name": "Imbue gem line",
+      "category": "utility",
+      "sharedWith": [
+        "Cleric",
+        "Druid",
+        "Enchanter",
+        "Magician",
+        "Necromancer",
+        "Paladin",
+        "Ranger",
+        "Shadow Knight",
+        "Wizard"
+      ],
+      "members": [
+        {
+          "name": "Imbue Amber",
+          "level": 29,
+          "inDb": true
+        },
+        {
+          "name": "Imbue Diamond",
+          "level": 29,
+          "inDb": true
+        },
+        {
+          "name": "Imbue Ivory",
+          "level": 29,
+          "inDb": true
+        },
+        {
+          "name": "Imbue Jade",
+          "level": 29,
+          "inDb": true
+        },
+        {
+          "name": "Imbue Sapphire",
+          "level": 29,
+          "inDb": true
+        },
+        {
+          "name": "Mass Imbue Amber",
+          "level": 29,
+          "inDb": true,
+          "note": "Batch version."
+        },
+        {
+          "name": "Mass Imbue Diamond",
+          "level": 29,
+          "inDb": true,
+          "note": "Batch version."
+        },
+        {
+          "name": "Mass Imbue Ivory",
+          "level": 29,
+          "inDb": true,
+          "note": "Batch version. DATA BUG: its effect string says \"Summon Item: Imbued Amber\" rather than Imbued Ivory."
+        },
+        {
+          "name": "Mass Imbue Jade",
+          "level": 29,
+          "inDb": true,
+          "note": "Batch version. Note there is NO Mass Imbue Sapphire record in the file, unlike the other four gems — see missingOnLegends."
+        }
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "Parallel spells, one per gem type, all at the same level. The Mass variants are batch versions of the same effect. No upgrade ordering exists."
+      },
+      "missingOnLegends": [
+        "Mass Imbue Sapphire"
+      ],
+      "stacking": {
+        "conflicts": [],
+        "stacksWith": [],
+        "notes": "Tradeskill/quest utility spells used for shaman class armor and jewelry components."
+      },
+      "sources": [
+        "https://wiki.project1999.com/Buff_Lines"
+      ]
+    },
+    {
+      "id": "fatigue",
+      "name": "Fatigue reduction line (Invigor line)",
+      "category": "utility",
+      "sharedWith": [
+        "Cleric",
+        "Druid",
+        "Enchanter",
+        "Paladin"
+      ],
+      "members": [
+        {
+          "name": "Invigor",
+          "level": 24,
+          "inDb": true,
+          "note": "-35 stamina loss, 3 ticks."
+        },
+        {
+          "name": "Extinguish Fatigue",
+          "level": 39,
+          "inDb": true,
+          "note": "-90 stamina loss, instant."
+        }
+      ],
+      "replacement": {
+        "strict": true,
+        "note": "Strictly larger fatigue removal."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [
+          {
+            "line": "Acumen",
+            "class": "Shaman",
+            "detail": "Acumen carries a -10 stamina-loss component in the same family.",
+            "source": "https://wiki.project1999.com/Buff_Lines"
+          }
+        ],
+        "stacksWith": [],
+        "notes": "Largely vestigial after the stamina system was de-emphasised."
+      },
+      "sources": [
+        "https://wiki.project1999.com/Buff_Lines"
+      ]
+    },
+    {
+      "id": "charm-animal",
+      "name": "Animal charm line",
+      "category": "control",
+      "sharedWith": [
+        "Druid"
+      ],
+      "members": [
+        {
+          "name": "Befriend Animal",
+          "level": 25,
+          "inDb": true,
+          "note": "Charms animals up to level 24."
+        },
+        {
+          "name": "Charm Animals",
+          "level": 32,
+          "inDb": true,
+          "note": "Charms animals up to level 33."
+        }
+      ],
+      "replacement": {
+        "strict": true,
+        "note": "Strictly higher level cap on the charm."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [],
+        "stacksWith": [],
+        "notes": ""
+      },
+      "sources": [
+        "https://wiki.project1999.com/Buff_Lines"
+      ]
+    },
+    {
+      "id": "form-bear",
+      "name": "Bear form line (self illusion)",
+      "category": "illusion-buff",
+      "sharedWith": [],
+      "members": [
+        {
+          "name": "Form of the Bear",
+          "level": 25,
+          "inDb": true,
+          "note": "+1 HP/tick, +5 WIS. NOT found in classic P99/Allakhazam sources — likely a Legends-added lower tier of Form of the Great Bear."
+        },
+        {
+          "name": "Form of the Great Bear",
+          "level": 55,
+          "inDb": true,
+          "note": "VERIFIED CLASSIC: Shaman 55 self-only, +2 HP/tick (HP Regeneration Slot 2 on P99) and +10 WIS (the only WIS buff a shaman can give themselves)."
+        }
+      ],
+      "replacement": {
+        "strict": true,
+        "note": "Strictly better regen and WIS at the top; both are self-only illusions."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [
+          {
+            "line": "Enchanter Wisdom line (Insight -> Brilliance -> Enlightenment)",
+            "class": "Enchanter",
+            "detail": "P99 files Form of the Great Bear's WIS in a SEPARATE \"Wisdom (Illusion, Shaman Self-Only)\" column, so it STACKS with Enlightenment — shaman WIS max is +76 vs +66 for every other class. Recorded here because the conflict is the intuitive expectation and is wrong.",
+            "source": "https://wiki.project1999.com/Buff_Lines"
+          },
+          {
+            "line": "Divine Purpose / Phantom Armor / Extended Regeneration",
+            "class": "Paladin/Magician/item",
+            "detail": "The +2 HP/tick sits in HP Regeneration Slot 2 with those buffs.",
+            "source": "https://wiki.project1999.com/Buff_Lines"
+          }
+        ],
+        "stacksWith": [
+          {
+            "line": "Regeneration line",
+            "detail": "Shaman regen is Slot 1, Form of the Great Bear is Slot 2 — they stack."
+          },
+          {
+            "line": "Enchanter Wisdom line",
+            "detail": "Separate column; shaman is the only class that can exceed +66 WIS."
+          }
+        ],
+        "notes": "Being an illusion, these also change the model and can affect faction/merchant interactions."
+      },
+      "sources": [
+        "https://wiki.project1999.com/Buff_Lines"
+      ]
+    }
+  ],
+  "standalone": [
+    {
+      "name": "True North",
+      "level": 1,
+      "note": "Instant self-cast that faces you north. No line, no upgrade."
+    },
+    {
+      "name": "Spirit Pouch",
+      "level": 2,
+      "note": "Summons a container. Shaman-only utility, no upgrade."
+    },
+    {
+      "name": "Gate",
+      "level": 5,
+      "note": "Teleport to bind point. Shared across almost every caster; no shaman upgrade."
+    },
+    {
+      "name": "Cure Blindness",
+      "level": 7,
+      "note": "Removes Blindness(1). No higher tier for shaman."
+    },
+    {
+      "name": "Sense Animals",
+      "level": 7,
+      "note": "Tracking-style utility, no upgrade."
+    },
+    {
+      "name": "Levitate",
+      "level": 10,
+      "note": "Consumes a Bat Wing. No shaman upgrade (Levitate is the only tier)."
+    },
+    {
+      "name": "Enduring Breath",
+      "level": 12,
+      "note": "Consumes Fish Scales. No upgrade tier for shaman."
+    },
+    {
+      "name": "Bind Affinity",
+      "level": 14,
+      "note": "Sets bind point. No upgrade."
+    },
+    {
+      "name": "Shrink",
+      "level": 15,
+      "note": "Reduces target size by 34%. Related to Tiny Companion (the pet version) but neither upgrades the other. The shaman signature utility for troll/ogre groups in dungeons."
+    },
+    {
+      "name": "Grow",
+      "level": 16,
+      "note": "Increases target size to 133%. Cosmetic counterpart to Shrink, not an upgrade of anything."
+    },
+    {
+      "name": "Tiny Companion",
+      "level": 16,
+      "note": "Shrinks the pet by 50%. Pet-target version of Shrink; not a tier of it."
+    },
+    {
+      "name": "Invisibility",
+      "level": 27,
+      "note": "Standard invisibility. STACKS with Invisibility versus Animals (the classic double-invis trick). No shaman upgrade tier — shaman never gets Improved Invisibility."
+    },
+    {
+      "name": "Spirit of the Puma",
+      "level": 50,
+      "note": "Adds a melee proc (Puma Maw) with a 400% rate mod for 60 seconds, castable on a group member. Shaman-only proc buff with no tier above or below it in the Legends list. Not present on the P99 buff-lines page."
+    },
+    {
+      "name": "Spirit Quickening",
+      "level": 50,
+      "note": "PET-ONLY buff: +30 STR, +19-21 AC, +20% attack speed for 60 minutes. Occupies no player buff line. Its haste is pet haste, so the player haste line does not apply."
+    }
+  ],
+  "unlinked": [
+    {
+      "info": "Buff-line stacking on P99 is expressed as numbered effect SLOTS, not as named lines. Two buffs conflict if and only if they appear under the same slot heading. This is why the shaman AC line (AC Slot 4) collides with the cleric Aegis line but not the cleric Heroism line (AC Slot 1), and why Aegolism blocks BOTH (it occupies slots 1 and 4).",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+    },
+    {
+      "info": "The whole-game HP ceiling is +1775 = Protection of the Glades (+470, druid AC-and-HP column) + Symbol of Marzin (+700, cleric HP-only column) + Focus of Spirit (+405, shaman Talisman/Shielding column) + Divine Strength (+200, paladin column). Four different columns, one from the shaman. This single row proves the Talisman line stacks with both cleric HP lines.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+    },
+    {
+      "info": "The shaman strength ceiling is +240 = Maniacal Strength (+68) + Focus of Spirit (+67) + Voice of the Berserker (+85) + Primal Essence (+20). Shamans cannot use bard Anthem songs on themselves for the Anthem column, which is why their max is 43 lower than a bard's +313.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+    },
+    {
+      "info": "Focus of Spirit is the ONLY spell P99 exempts from its own combination rule: \"If a buff (except Focus of Spirit) combines multiple lines they will be listed below it in separate columns. The combination buffs won't stack with the buffs underneath.\" Focus of Spirit's HP does not stack with the Talisman line, but its STR and DEX are treated as separate lines that DO stack with the shaman stat buffs.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+    },
+    {
+      "info": "Cross-class regen: shaman Regeneration/Chloroplast/Regrowth are literally the same spells the druid gets (at different levels), all in HP Regeneration Slot 1. A Fungi Covered Great Staff click (+15) ties Regrowth, so in the classic era the fungi staff made shaman regen redundant on anyone who owned one.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+    },
+    {
+      "info": "Item-worn regeneration stacks with spell regeneration but has its own combined cap of +15 HP/tick across all worn sources.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+    },
+    {
+      "info": "Enchanter Tashan-line resist debuffs are unresistible and stack with the shaman Malo line; the canonical raid order is Tashan, then Malo (unresistible), then Malosini (resistible, larger).",
+      "source": "https://www.project1999.com/forums/archive/index.php/t-179329.html"
+    },
+    {
+      "info": "Bard songs count against the same 15-buff limit as spells, so a shaman group-buffing into a bard group can push useful buffs off.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+    },
+    {
+      "info": "P99 Healing Spell Lines notes that Inner Fire is more mana-efficient per HP than Minor Healing, Light Healing, Healing OR Greater Healing — the shaman \"buff heal\" beats their own direct heals for a long stretch of levels.",
+      "source": "https://wiki.project1999.com/Healing_Spell_Lines"
+    },
+    {
+      "info": "Quiescence is the post-classic continuation of the Torpor line and, unlike Stoicism and Torpor, carries no snare or slow rider. It is absent from the Legends list.",
+      "source": "https://everquest.allakhazam.com/db/spell.html?spell=3398"
+    }
+  ],
+  "openQuestions": [
+    "Legends re-tiers roughly two thirds of the shaman book downward by 1-5 levels versus P99 classic (e.g. Talisman of Tnarg 34->32, Talisman of Altuna 44->40, Superior Healing 51->45, Cannibalize 34->23). The Talisman/Kragg, Deliriously Nimble, Talisman of the Cat/Brute/Rhino/Serpent/Raptor, Regrowth, Stoicism, Torpor and Celerity levels match classic exactly. Is the downward shift a deliberate levelling-curve change, or does it need auditing spell by spell?",
+    "Is the snare-HoT line (Snails / Tortoises / Slugs / Sloths Healing) confirmed Legends-custom? The Legends patch notes call Snails, Slugs and Sloths Healing new shaman spells and \"alternatives to Rancor and Stoicism\", but Tortoises Healing is not named in the notes I could reach, and gnollguard.com returned 403 to direct fetching.",
+    "Are Impassivity (16) and Nonchalance (30) real EQ spells or Legends-added lower tiers of the Torpor line? Stoicism (44) and Torpor (60) are both verified classic at exactly those levels, which makes two new tiers underneath look like a deliberate Legends addition.",
+    "Talisman of the Beast (level 8, GROUP +10 STR) appears in no classic source. Is it a Legends-added group Strengthen?",
+    "Insidious Decay (52) shows a WEAKER disease-resist debuff on Legends (-36 to -42) than Insidious Malady (38) does (-49 to -60). On live EQ the ordering is reversed. Data bug or deliberate re-tune?",
+    "Remove Curse (38) removes the same 4 curse counters as Remove Lesser Curse (24) in the Legends data. Probable magnitude bug.",
+    "Instill (33) has NO effects array in the Legends file. Allakhazam confirms it is a root-line spell of roughly double Root's duration; the effect data appears to be missing entirely.",
+    "Odium (43) lists only \"Increase Curse Counter by 8\" with no damage component, while Curse (34) does 148/tick. Is the DoT effect missing from the record?",
+    "The file contains three duplicate/near-duplicate records: Burst of Flame appears twice identically at level 1; Invisibility versus Animals appears twice at level 10 differing only in capitalisation and duration text; Turgur's Insects appears twice at level 51 differing only in the apostrophe character. These are 3 of the 209 rows and should probably be de-duplicated in the database.",
+    "Mass Imbue Sapphire is absent while the other four gems have both single and Mass variants, and Mass Imbue Ivory's effect string wrongly reads \"Summon Item: Imbued Amber\".",
+    "Spirit of Cheetah is a DRUID 60 self-only spell on P99 (+115%, 8 ticks). Legends gives it to Shaman at level 21 at +75%. Deliberate class re-assignment or a class-flag error?",
+    "Sloths Healing has targetType \"Single\" where the other three snare-HoTs are \"Target Group Member or Self\" — likely a target-type inconsistency.",
+    "Avatar and Primal Avatar are identical on Legends and both castable at 60. On classic EQ, Primal Avatar is the proc from Primal Velium Weapons rather than a second castable spell.",
+    "Does Infusion of Spirit's +45 STA share the buff slot with the shaman Stamina line? Community commentary implies it does (\"HoS along with Stamina beats IoS\"), but I found no primary slot-level source.",
+    "Confirm whether Spirit of Bih`Li (36) and Spirit of Scale (52) occupy the same movement-speed slot as Spirit of Wolf on Legends. Neither appears on the P99 buff-lines speed table, so the conflict is inferred from the fact that all movement speed is one slot in classic EQ."
+  ],
+  "sources": [
+    "https://wiki.project1999.com/Buff_Lines",
+    "https://wiki.project1999.com/Healing_Spell_Lines",
+    "https://wiki.project1999.com/Category:Talisman_line",
+    "https://everquest.allakhazam.com/db/spell.html?spell=1585",
+    "https://everquest.allakhazam.com/db/spell.html?spell=2525",
+    "https://everquest.allakhazam.com/db/spell.html?spell=3454",
+    "https://everquest.allakhazam.com/db/spell.html?spell=1576",
+    "https://everquest.allakhazam.com/db/spell.html?spell=3398",
+    "https://everquest.allakhazam.com/db/item.html?item=19127",
+    "https://everquest.allakhazam.com/db/spell.html?spell=131",
+    "https://www.project1999.com/forums/archive/index.php/t-179329.html",
+    "https://everquest.allakhazam.com/db/spell.html?spell=1578",
+    "https://everquest.allakhazam.com/db/spell.html?spell=1577",
+    "https://everquest.allakhazam.com/db/classes.html?class=9",
+    "https://www.gnollguard.com/news"
+  ]
+}

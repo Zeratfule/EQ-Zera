@@ -1,0 +1,340 @@
+// PROC ANALYTICS — the shapes for procs-per-minute, the active-state timeline, and the
+// two-tier "how much does X add" attribution (docs/plans/proc-analytics.md).
+//
+// A NEW shared file rather than an extension of shared/combat.ts, deliberately: three plans
+// are in flight against combat.ts at once, and this feature's whole type surface can live
+// beside it instead of inside it. The shipped precedent is shared/poisons.ts (split out of
+// logEvents.ts) and shared/buffTypes.ts (split out of types.ts).
+//
+// WORLD-MODEL POSITION (AGENTS.md):
+//   law 1 — every count here comes from a line the game printed. The one derived judgement
+//           ("this spell effect had no cast behind it, therefore it procced") is a LABELED
+//           inference with a stated window, and it may never name a SOURCE — only a
+//           co-occurrence. That is why `ProcLink` exists and `ProcSource` does not.
+//   law 5 — every rate is ABSENT below its sample floor, never 0. `1 proc in a 2-second pull`
+//           is not `30 ppm`.
+//   law 6 — the log carries NO per-hit marker for any stance or invocation bonus, so most of
+//           the roster's honest verdict is a sentence, not a number ('not-observable').
+//   law 8 — everything here is an ADDITIVE index over damage already counted. Not one damage
+//           total moves.
+
+// ---------------------------------------------------------------------------------------
+// The active-state timeline
+// ---------------------------------------------------------------------------------------
+
+/**
+ * What kind of state a span describes.
+ *
+ * `disc` is deliberately ABSENT: this log's only "discipline" lines are
+ * `You have been granted the following discipline: <Poison>` — the rogue poison grant list —
+ * not an activated combat discipline. There is no disc state to track, and adding the kind
+ * would invite someone to fill it.
+ */
+export type StateKind = 'stance' | 'invocation' | 'coat' | 'buff'
+
+/**
+ * How we know a span's edge. This is law 1 made into a field: a span's END is almost never
+ * printed by the game (97 `Instrument of Nife` applies against ONE observed fade in the whole
+ * 1.1M-line log), so an honest model has to carry the difference between "the game said so"
+ * and "we worked it out".
+ *
+ *   'observed'  — a line said so (`The poison dries from the blade.`, a wears-off message).
+ *   'inferred'  — a mutually-exclusive sibling replaced it (a new stance commit ends the
+ *                 previous stance; a re-apply of a permanent buff supersedes its own span).
+ *   'censored'  — the boundary is UNKNOWABLE: it was already active when the replay began, or
+ *                 an epoch / reset / player death severed it. NEVER shown as an end time.
+ *   'open'      — still active as of the last event.
+ */
+export type EdgeEvidence = 'observed' | 'inferred' | 'censored' | 'open'
+
+/** One interval of "state X was on". */
+export interface StateSpan {
+  kind: StateKind
+  /** Canonical join key — lowercased, rank-stripped (law 2: canonicalize at boundaries). */
+  key: string
+  /** Display name, raw casing (law 2: display raw). */
+  name: string
+  startTs: number
+  /** Absent while `endEvidence === 'open'`. */
+  endTs?: number
+  startEvidence: EdgeEvidence
+  endEvidence: EdgeEvidence
+}
+
+// ---------------------------------------------------------------------------------------
+// Proc rates
+// ---------------------------------------------------------------------------------------
+
+/**
+ * Where a counted proc came from.
+ *   'poison' — a rogue Strike emote. ALREADY modeled by Task #64's ProcAccum.strikes; the
+ *              unified lane list PROJECTS that map rather than counting it a second time.
+ *   'spell'  — a spell-effect line with no own cast behind it (see PROC_CAST_WINDOW_MS).
+ *   'slay'   — the `(Slay Undead)` melee paren modifier: a proc that rides a swing, so its
+ *              damage is NOT the damage it added (see ProcLaneView.marginalDamage).
+ *   'aa'     — an INNATE AA proc that rides a swing and is counted from the line's paren
+ *              modifier tally, the way `slay` is counted from the damage taxonomy. Today that
+ *              is `(Finishing Blow)` and only that (JOS-437, report 01M0DNQQ41G1YA20N4ZM07HVWG:
+ *              "The proc from Finishing Blow AA is not being listed anywhere (neither in melee
+ *              nor under procs). Since it's a proc similar to slay undead AA proc, it should
+ *              …[be]"). The reporter's analogy is the right one and the difference is only
+ *              where the count is READ: Slay Undead was pulled into a damage CATEGORY of its
+ *              own, so its swings left the melee lane and `byCategory` counts them; Finishing
+ *              Blow was left in `melee` — correctly, its damage is a weapon swing's — so the
+ *              only place it is counted is `SourceStat.mods`, which nothing rendered. Hence a
+ *              lane read from the tally, and hence a separate origin: an `aa` lane has NO
+ *              damage row of its own to tag (see `taggedSkills`), where a `slay` lane has the
+ *              merged Slay Undead row. Its damage is "damage on swings that procced" exactly
+ *              as slay's is, so it carries `marginalDamage` for the same reason.
+ *   'click'  — NOT A PROC AT ALL, and that is the whole point of the value (JOS-438,
+ *              report 01M0BS3FJW1YWP6ZNMM41HCMS2: "they are given ppm ratings in the dps
+ *              breakdown, but they are not procs"). An instant item click prints the same
+ *              nothing a proc does — one effect line, no cast line — so it reaches the same
+ *              detector; what separates them is the player's OWN inventory naming the clicky
+ *              (main/itemClickies.ts). A `click` lane counts the same firings and divides them
+ *              the same way, and every surface that prints a rate for one says CLICKS, never
+ *              procs. The reporter asked for exactly that: the rate they remember to press the
+ *              button at is worth knowing; calling it a proc rate is not.
+ */
+export type ProcOrigin = 'poison' | 'spell' | 'slay' | 'aa' | 'click'
+
+/**
+ * THREE denominators, all carried, none hidden. They answer different questions, and
+ * collapsing them into one number is how a proc meter starts lying:
+ *
+ *   ppmActive    — the headline. Procs per minute of ACTIVE combat time, using the meter's
+ *                  OWN active-time definition verbatim (capped 3s gaps between attributed
+ *                  hits — INCOMING damage included, because that is what the shipped
+ *                  `activeDps` already means; the UI states the caveat rather than silently
+ *                  redefining a shipped number).
+ *   ppmWall      — procs per minute of wall clock: "how often does this happen while I play".
+ *   per100Swings — the only MECHANICALLY correct figure for a chance-on-hit proc, and the one
+ *                  with no active-time ambiguity at all.
+ *
+ * Every rate is ABSENT (undefined) below its sample floor, never 0 (law 5).
+ */
+export interface ProcRateView {
+  count: number
+  ppmActive?: number
+  ppmWall?: number
+  /**
+   * YOUR melee swing attempts in this segment: melee + slay hits, plus your misses. The
+   * mechanical denominator. Main-hand vs off-hand and double/triple attack are
+   * undistinguishable in this log (law 6), so this is swings-AS-LOGGED and the field name
+   * says so.
+   */
+  swings: number
+  per100Swings?: number
+  /**
+   * THE SECONDS `ppmActive` ACTUALLY DIVIDED BY (2026-08-04, the owner's denominator report).
+   *
+   * A proc can only fire while its SOURCE is present: a rogue Strike needs its coat on the
+   * blades, an aura-granted proc needs the aura up. Dividing either by the whole segment
+   * understates the rate by exactly the time the source was absent — coat a slow venom for the
+   * last minute of a ten-minute session and a 30-per-minute proc reads as 3.
+   *
+   * So when the source's presence is MODELED — a coat span, a tracked proc-buff span — this is
+   * that span's active seconds inside the segment and `ppmActive` is per minute OF THAT WINDOW.
+   * When it is not, this is the segment's own active seconds and `sourceAmbiguous` is set.
+   * Present whenever `ppmActive` is.
+   */
+  sourceSec?: number
+  /**
+   * TRUE when `sourceSec` is the whole segment because the source window is UNKNOWN — a buff
+   * that predates the log window, a permanent aura with no wear-off, an item proc with no coat
+   * or buff evidence at all. The rate is then a LOWER BOUND that assumes the source was present
+   * throughout, and every surface that prints it has to say so (law 1: an assumption travels
+   * with its number). Absent ⇒ the window is known and the rate is over it exactly.
+   */
+  sourceAmbiguous?: boolean
+  /** The state span the denominator came from, for the hover ('Neurotoxic Poison'). Absent
+   *  when `sourceAmbiguous` — there is no window to name. */
+  sourceName?: string
+}
+
+/**
+ * ONE proc lane, unified across origins. A superset of the shipped `ProcLane` shape, so the
+ * Procs tab's existing rows keep rendering unchanged while the new sections read from here.
+ */
+export interface ProcLaneView {
+  name: string
+  count: number
+  origin: ProcOrigin
+  /** True when the LABEL is uncertain (a shared emote, a shared dispel tier) — the shipped
+   *  `~` treatment. The COUNT is always exact; only the name is in doubt. */
+  ambiguous?: boolean
+  rate: ProcRateView
+
+  // ---- TIER A: DIRECT attribution. MEASURED, not estimated. -----------------------------
+  /** Damage these proc lines carried. Already inside the segment's outgoing total. */
+  directDamage: number
+  /** Healing these proc lines carried (`You healed X for N hit points by Lifetap Strike.`). */
+  directHeal: number
+  /** `directDamage` as a percentage of the segment's outgoing total. */
+  pctOfOut: number
+  /** `directDamage / activeSec` — this proc's share of your DPS. EXACT for 'spell' and
+   *  'poison' lanes. For a 'slay' or an 'aa' lane it is the damage of swings that PROCCED,
+   *  which is NOT the damage the proc ADDED — see `marginalDamage`. */
+  dpsContribution: number
+  /**
+   * SWING-BORNE ORIGINS ONLY ('slay' and 'aa'), and an ESTIMATE with its assumption written
+   * into the type: a Slay Undead or Finishing Blow swing would have landed anyway for
+   * something. This is
+   *   procTotal − procHits × (mean ORDINARY melee hit in this segment)
+   * i.e. the excess over an ordinary swing. Absent for every other origin, where the proc's
+   * whole damage IS its marginal damage.
+   *
+   * The two read their baseline from slightly different places and the difference matters
+   * (JOS-437): a slay swing LEFT the melee category, so `melee` is already the ordinary body;
+   * a Finishing Blow swing did NOT, so its own hits are subtracted out of `melee` first.
+   *
+   * ONE KNOWN IMPRECISION, stated rather than fixed: the SLAY baseline still contains the
+   * segment's Finishing Blow swings, which run hot, so its divisor is a shade high and its
+   * marginal a shade low (in the W38 golden, ≈10 of 4,687). Unifying the two would change a
+   * shipped number for a rounding-scale gain on a ticket whose whole claim is that it moves
+   * nothing, so it was left measured instead of silently adjusted.
+   */
+  marginalDamage?: number
+
+  /**
+   * TIMES THIS LANE'S SPELL WAS RESISTED in the segment, read back out of the same per-skill
+   * resist counters the drill renders (2026-08-04). Present only when non-zero.
+   *
+   * A resist line names the spell (`A wanderer resisted your Weakening Strike!`) while an
+   * effect proc's LANDING names only the mob, so a ledger that showed `count` alone and a drill
+   * that showed resists alone described the same lane with two disjoint halves of its record —
+   * which is exactly the disagreement the owner reported. The pair is now on one row:
+   * `count` landed, `resisted` did not, and the rate below is over their sum.
+   */
+  resisted?: number
+  /** `resisted / (count + resisted)` as a percentage. Absent when nothing was resisted. */
+  resistPct?: number
+
+  /** Co-occurrence with tracked states. CORRELATION — see ProcLink. */
+  linked: ProcLink[]
+}
+
+/**
+ * THE IS-A-PROC JOIN (docs/plans/proc-visibility.md §2) — "this damage row is a detected proc,
+ * and here is the rate the ledger already counted for it".
+ *
+ * Built in MAIN, at view-build time, where both sources of "is a proc" live: the poison Strike
+ * roster (shared/poisons.ts, matched exactly) and the cast-less detector (procDetect.ts). The
+ * renderer never re-derives it — a drill row is annotated because the LEDGER has a lane for it,
+ * or not at all. No guessing, and no second definition of "proc" downstream.
+ *
+ * ONE TAG PER (skill row, lane). `skill` is the damage row's own name as `SkillView` carries it,
+ * so the join downstream is an equality on a name rather than a re-canonicalization; `lane` is
+ * the ledger row it belongs to, which may name SEVERAL Strikes when the emote is shared
+ * (`Asp Venom Strike / Cobra Venom Strike` — law 3), and the two differ exactly then.
+ *
+ * `rate` is the LANE's own `ProcRateView`, not a copy of its numbers: the drill annotation and
+ * the ledger row divide the same count by the same denominators, so they cannot disagree.
+ */
+export interface ProcSkillTag {
+  /** The damage row's skill name, verbatim (`SkillView.name`). */
+  skill: string
+  /** The ledger lane counting this skill's firings. Differs from `skill` for a shared emote. */
+  lane: string
+  origin: ProcOrigin
+  /** The lane's rates — the same object the ledger row renders. */
+  rate: ProcRateView
+  /** Active seconds `rate.ppmActive` divides by, so the annotation's hover can state its basis
+   *  without reaching for the segment. */
+  activeSec: number
+}
+
+/**
+ * How often a lane fired while a given state was active. THIS IS NOT CAUSATION, and the type
+ * is shaped so a consumer cannot pretend otherwise: it carries both counts AND the
+ * inactive-side EXPOSURE, because "it never fired without it" is only evidence when there was
+ * a meaningful chance to fire without it.
+ */
+export interface ProcLink {
+  kind: StateKind
+  key: string
+  name: string
+  withCount: number
+  withoutCount: number
+  /** `withCount / (withCount + withoutCount)`, 0..1. */
+  concentration: number
+  /** YOUR swing attempts logged while the state was INACTIVE in this segment. The denominator
+   *  of the claim "it never fired without it". */
+  inactiveSwings: number
+  /**
+   * 'exclusive'    — withoutCount === 0 AND the inactive exposure predicts >=
+   *                  MIN_EXPECTED_INACTIVE_PROCS firings at the lane's own active
+   *                  rate (the rate-aware gate; a flat swing floor could not tell
+   *                  "never fires without it" from "too few swings to expect one").
+   * 'correlated'   — concentration >= 0.8 with both sides sampled.
+   * 'weak'         — both sides sampled, concentration < 0.8.
+   * 'inconclusive' — the inactive side was never meaningfully sampled. The DEFAULT, and the
+   *                  honest answer for Instrument of Nife (289 inactive swings in 1.1M lines).
+   */
+  strength: 'exclusive' | 'correlated' | 'weak' | 'inconclusive'
+}
+
+// ---------------------------------------------------------------------------------------
+// TIER B: the counterfactual (a LATER wave — the shapes land here so the interval-query
+// surface below can be built against them, and so nothing has to reshape combat.ts twice)
+// ---------------------------------------------------------------------------------------
+
+/**
+ * The FOUR verdicts. Exactly four, and none may be rendered as another — the same discipline
+ * the shipped `SlowRollup` enforces for time-to-slow:
+ *   'measured'            — Tier A only. An exact number; no comparison was needed.
+ *   'estimate'            — Tier B cleared every gate. Rendered `~`, as a RANGE, with its
+ *                           confounds printed beside it.
+ *   'insufficient-sample' — the gates failed. Says WHICH arm is short, and by how much.
+ *   'not-observable'      — the effect has no per-hit marker AND no exclusive proc lane.
+ *                           Every stance, and most invocations. The honest answer is a
+ *                           sentence, not a number.
+ */
+export type AttributionVerdict = 'measured' | 'estimate' | 'insufficient-sample' | 'not-observable'
+
+export interface MarginalEstimate {
+  nActive: number
+  nInactive: number
+  /** MEDIAN outgoing DPS per eligible window, active arm vs inactive arm. Median, not mean:
+   *  one 8-minute boss window must not set the headline (the SlowRollup precedent). */
+  medDpsActive: number
+  medDpsInactive: number
+  iqrActive: [number, number]
+  iqrInactive: [number, number]
+  deltaDps: number
+  deltaPct: number
+  /** The same comparison on PROC damage alone, and on damage-per-swing alone. Reported
+   *  SEPARATELY on purpose: for spellblade the real log shows damage/swing flat (26.2 vs
+   *  26.3) while proc damage per minute is up ~40% (727.8 vs 518.5). Averaging those two into
+   *  one headline would hide the entire mechanism. */
+  medProcDpsActive: number
+  medProcDpsInactive: number
+  medDmgPerSwingActive: number
+  medDmgPerSwingInactive: number
+}
+
+export interface EffectAttribution {
+  kind: StateKind
+  key: string
+  name: string
+  verdict: AttributionVerdict
+  /** Tier A. `lanes` names the proc lanes rolled in, so the number is auditable. */
+  direct: { damage: number; heal: number; hits: number; dpsContribution: number; lanes: string[] }
+  /** Tier B. Present ONLY when `verdict === 'estimate'`. */
+  marginal?: MarginalEstimate
+  /** DECLARED, never corrected. Regression-adjusting an observational comparison over
+   *  uncontrolled EQ content would manufacture confidence; the UI prints the list. */
+  confounds: string[]
+  /** Why it is insufficient / not observable, in the words the UI prints. */
+  note?: string
+}
+
+export interface AttributionReport {
+  /** The zone-session id this describes. Tier B is Overall-scope only: a single pull has no
+   *  inactive sample, and a per-fight counterfactual would be an invitation to read noise. */
+  sessionId: string
+  windowSec: number
+  windowsTotal: number
+  windowsEligible: number
+  effects: EffectAttribution[]
+}

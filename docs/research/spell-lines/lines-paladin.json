@@ -1,0 +1,716 @@
+{
+  "class": "Paladin",
+  "lines": [
+    {
+      "id": "courage-heroism",
+      "name": "Courage line (Heroism line)",
+      "category": "hp-ac-buff",
+      "sharedWith": ["Cleric"],
+      "members": [
+        {"name": "Courage", "level": 8, "inDb": true, "note": "Cleric 1 / P99 Paladin 9; Legends 8"},
+        {"name": "Center", "level": 20, "inDb": true, "note": "Cleric 9 / P99 Paladin 22"},
+        {"name": "Daring", "level": 37, "inDb": true, "note": "Cleric 19 / P99 Paladin 39"},
+        {"name": "Valor", "level": 47, "inDb": true, "note": "Cleric 34 / P99 Paladin 49"},
+        {"name": "Resolution", "level": 60, "inDb": true, "note": "Cleric 44 / Paladin 60; last member the Paladin gets on Legends"}
+      ],
+      "replacement": {
+        "strict": true,
+        "note": "Each member strictly dominates the previous on both AC and Max HP in the Legends effect strings (Courage 4AC/20HP -> Center 6AC/95HP -> Daring 9AC/130HP -> Valor 13AC/200HP -> Resolution 16AC/250HP). Only non-strict factor is mana/duration, not magnitude. Because the whole line shares one buff slot, the newest member always overwrites the older."
+      },
+      "missingOnLegends": ["Austerity", "Blessing of Austerity", "Heroism", "Heroic Bond"],
+      "stacking": {
+        "conflicts": [
+          {"line": "Skin line", "class": "Druid / Ranger", "detail": "Skin Like Wood/Rock/Steel/Diamond/Nature and Natureskin occupy the same AC slot 1 + HP primary slot as the Courage line. A Paladin's Valor/Resolution and a Druid's Skin Like Nature overwrite each other; only the larger sticks.", "source": "https://wiki.project1999.com/Category:Heroism_line"},
+          {"line": "Inner Fire", "class": "Shaman", "detail": "Shaman Inner Fire is listed in the same AC-slot-1 / HP-primary column; explicitly named as non-stacking with the Heroism line.", "source": "https://wiki.project1999.com/Category:Heroism_line"},
+          {"line": "Protection of the Glades", "class": "Druid", "detail": "PotG (Druid 60, +24 AC / +470 HP) sits in the same 'Primary (AC and HP)' column as Courage/Center/Daring/Valor/Resolution, so it replaces the Paladin buff (and is far larger).", "source": "https://wiki.project1999.com/Buff_Lines"},
+          {"line": "Courage line (Cleric upper tiers)", "class": "Cleric", "detail": "Bravery, Fortitude, Heroism, Heroic Bond (group) are the same line at higher magnitude - a Cleric buff overwrites the Paladin's own cast. Paladin gets a truncated version of the Cleric line: no Bravery, no Fortitude, no Aegolism.", "source": "https://wiki.project1999.com/Buff_Lines"},
+          {"line": "Symbol line (Aegolism only)", "class": "Cleric", "detail": "Aegolism is an all-in-one buff that replaces Heroism + Symbol of Marzin + Aegis; it blocks and is blocked by all three lines.", "source": "https://wiki.project1999.com/Aegolism"}
+        ],
+        "stacksWith": [
+          {"line": "Symbol line", "detail": "HP-only Symbol buffs are a separate slot and stack with Courage-line HP/AC."},
+          {"line": "Aegis line", "detail": "Aegis/Holy Armor AC is slot 4, Courage AC is slot 1."},
+          {"line": "Shielding line (Enchanter/Magician/Necromancer/Wizard, self-only)", "detail": "Shielding HP is the Shielding/Talisman slot."},
+          {"line": "Talisman line (Shaman)", "detail": "Talisman of Tnarg/Altuna/Kragg, Focus of Spirit are a separate HP slot."},
+          {"line": "HP (Strength) line (Divine Vigor/Glory/Strength)", "detail": "Paladin's own Divine HP buffs are a separate HP slot and stack on top."}
+        ],
+        "notes": "This is the single most load-bearing conflict for a Paladin in a mixed group: the Paladin's own Center/Valor/Resolution and any Druid/Ranger Skin buff are the same slot. Legends re-tiers every member ~2 levels earlier than P99 (P99 Paladin 9/22/39/49/60 vs Legends 8/20/37/47/60)."
+      },
+      "sources": [
+        "https://wiki.project1999.com/Category:Heroism_line",
+        "https://wiki.project1999.com/Buff_Lines",
+        "https://wiki.project1999.com/Paladin",
+        "https://everquest.allakhazam.com/db/spelllist.html?type=pal&level=1&opt=And+Higher&action=search"
+      ]
+    },
+    {
+      "id": "symbol",
+      "name": "Symbol line",
+      "category": "hp-buff",
+      "sharedWith": ["Cleric"],
+      "members": [
+        {"name": "Symbol of Transal", "level": 24, "inDb": true, "note": "Cleric 14 / P99 Paladin 30; requires Cat's Eye Agate on classic"},
+        {"name": "Symbol of Ryltan", "level": 33, "inDb": true, "note": "Cleric 24 / P99 Paladin 39; requires Bloodstone"},
+        {"name": "Symbol of Pinzarn", "level": 46, "inDb": true, "note": "Cleric 34 / P99 Paladin 49; requires Jasper"},
+        {"name": "Symbol of Naltron", "level": 58, "inDb": true, "note": "Cleric 44 / Paladin 58; requires Peridot. Legends effect string is an UNKNOWN CALC (base 406, max 525) - matches the classic +525 value"}
+      ],
+      "replacement": {
+        "strict": true,
+        "note": "Strict on magnitude: 73 -> 158 -> 307 -> 525 max HP, single slot, newest overwrites. Practical exception: each tier needs a more expensive gem component and much more mana, so lower tiers stay useful for cheap buffing."
+      },
+      "missingOnLegends": ["Symbol of Marzin", "Naltron's Mark", "Aegolism"],
+      "stacking": {
+        "conflicts": [
+          {"line": "Symbol line (Cleric upper tiers)", "class": "Cleric", "detail": "Symbol of Marzin (+700) and the group Naltron's Mark (+446) are the same slot; a Cleric's Symbol overwrites the Paladin's.", "source": "https://wiki.project1999.com/Buff_Lines"},
+          {"line": "Aegolism", "class": "Cleric", "detail": "Aegolism is an all-in-one combination buff that occupies the Symbol slot as well as the Heroism and Aegis slots; it will not stack with any Symbol buff. Its stacking rule is literally 'Block new spell if slot 3 is effect Max Hitpoints and < 1100'.", "source": "https://wiki.project1999.com/Aegolism"}
+        ],
+        "stacksWith": [
+          {"line": "Courage/Heroism line", "detail": "Explicitly stated: Symbol spells stack with Heroism line."},
+          {"line": "Talisman line (Shaman)", "detail": "Explicitly stated."},
+          {"line": "Shielding line (int casters, self-only)", "detail": "Explicitly stated."},
+          {"line": "Skin line (Druid/Ranger)", "detail": "Skin line lives in the Heroism/AC-slot-1 column, so Symbol HP stacks with it."},
+          {"line": "HP (Strength) line", "detail": "Divine Vigor/Glory/Strength are a separate HP slot."}
+        ],
+        "notes": "Symbol is the Paladin's only HP buff that stacks on top of a Druid's Skin buff, which is why it is the buff to keep up when a Druid/Ranger is in group."
+      },
+      "sources": [
+        "https://wiki.project1999.com/Category:Symbol_line",
+        "https://wiki.project1999.com/Buff_Lines",
+        "https://wiki.project1999.com/Aegolism"
+      ]
+    },
+    {
+      "id": "aegis-ac",
+      "name": "Aegis line (Holy Armor line)",
+      "category": "ac-buff",
+      "sharedWith": ["Cleric", "Necromancer (Spirit Armor only)"],
+      "members": [
+        {"name": "Holy Armor", "level": 15, "inDb": true, "note": "Cleric 5 / Paladin 15"},
+        {"name": "Spirit Armor", "level": 30, "inDb": true, "note": "Cleric 19, Necromancer 16, Paladin 30. Confirmed member of the Aegis line on P99 - extends the anchor list, which omitted it"},
+        {"name": "Guard", "level": 39, "inDb": true, "note": "Cleric 29 / Paladin 39"},
+        {"name": "Armor of Faith", "level": 48, "inDb": true, "note": "Cleric 39 / P99 Paladin 49; Kunark era"},
+        {"name": "Shield of Words", "level": 60, "inDb": true, "note": "Cleric 49 / Paladin 60; top of the Paladin line on Legends"}
+      ],
+      "replacement": {
+        "strict": true,
+        "note": "Strictly increasing AC (6 -> 13 -> 19 -> 25 -> 31) with increasing duration; one slot, newest wins. Exception: mana cost grows steeply (20 -> 75 -> 80 -> 150), so Holy Armor stays the cheap low-level buff."
+      },
+      "missingOnLegends": ["Aegis", "Bulwark of Faith"],
+      "stacking": {
+        "conflicts": [
+          {"line": "Shield line (Haze/Mist/Cloud/Obscure/Shade/Shadow/Umbra)", "class": "Enchanter", "detail": "Same AC slot 4 - Umbra (+29) overwrites Shield of Words (+31) only if larger; they never coexist.", "source": "https://wiki.project1999.com/Buff_Lines"},
+          {"line": "Guardian line (Scale Skin/Turtle Skin/Protect/Shifting Shield/Guardian/Shroud of the Spirits)", "class": "Shaman", "detail": "Same AC slot 4.", "source": "https://wiki.project1999.com/Buff_Lines"},
+          {"line": "Phantom armor line (Phantom Leather/Chain/Plate/Armor)", "class": "Magician", "detail": "Same AC slot 4.", "source": "https://wiki.project1999.com/Buff_Lines"},
+          {"line": "Aegis line (Cleric upper tiers)", "class": "Cleric", "detail": "Aegis (+34) and Bulwark of Faith (+37) are the same slot and overwrite the Paladin's Shield of Words.", "source": "https://wiki.project1999.com/Buff_Lines"},
+          {"line": "Aegolism", "class": "Cleric", "detail": "Aegolism combines Heroism + Symbol of Marzin + Aegis; it occupies AC slots 1 AND 4, so it blocks the Aegis line entirely.", "source": "https://wiki.project1999.com/Aegolism"}
+        ],
+        "stacksWith": [
+          {"line": "Courage/Heroism line", "detail": "Explicitly stated on the Aegis line category page: stacks with Heroism line."},
+          {"line": "Skin line (Druid/Ranger)", "detail": "Explicitly stated: stacks with Skin line spells."},
+          {"line": "Yaulp line / Shielding line / coat line", "detail": "Those are AC slot 2, Aegis is AC slot 4."},
+          {"line": "Call of Earth (Ranger), Augment/Augmentation (Enchanter), Frenzy (Shaman)", "detail": "AC slot 3."}
+        ],
+        "notes": "Aegis is the Paladin's AC buff that stacks with a Druid's Skin line; Courage-line AC does not."
+      },
+      "sources": [
+        "https://wiki.project1999.com/Category:Aegis_line",
+        "https://wiki.project1999.com/Buff_Lines",
+        "https://wiki.project1999.com/Spirit_Armor"
+      ]
+    },
+    {
+      "id": "divine-hp",
+      "name": "Divine HP line (HP 'Strength' slot)",
+      "category": "hp-buff",
+      "sharedWith": [],
+      "members": [
+        {"name": "Divine Vigor", "level": 35, "inDb": true, "note": "Not on P99 (post-Velious); Allakhazam lists Paladin 35, matching Legends"},
+        {"name": "Divine Glory", "level": 53, "inDb": true, "note": "P99 Paladin 53, Velious era"},
+        {"name": "Divine Strength", "level": 60, "inDb": true, "note": "P99 Paladin 60, Velious era"}
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "Divine Strength (+200) strictly replaces Divine Glory (+100) - the P99 page calls it 'Upgrade from Divine Glory'. BUT on Legends Divine Vigor (L35) and Divine Glory (L53) both read +100 Max HP, so Divine Glory is not an upgrade at all on this server (it is only longer-established/cheaper?). Community sources describe live Divine Vigor as roughly +50, i.e. Legends appears to have buffed it. Flagged, not averaged."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [
+          {"line": "Strength of Nature", "class": "Ranger", "detail": "Divine Strength 'Stacks with every other hp buff except the Rangers' Strength of Nature' - same HP (Strength) slot.", "source": "https://wiki.project1999.com/Divine_Strength"},
+          {"line": "Divine HP line (own members)", "class": "Paladin", "detail": "Divine Vigor / Divine Glory / Divine Strength share the one slot.", "source": "https://wiki.project1999.com/Buff_Lines"}
+        ],
+        "stacksWith": [
+          {"line": "Courage/Heroism line", "detail": "Separate HP slot - this is the Paladin's stack-on-top HP buff."},
+          {"line": "Symbol line", "detail": "Separate slot."},
+          {"line": "Talisman line (Shaman) / Shielding line", "detail": "Separate slot."},
+          {"line": "Skin line (Druid/Ranger)", "detail": "Separate slot - stacks even though the Courage line does not."}
+        ],
+        "notes": "Only exclusion is the Ranger's Strength of Nature (+75)."
+      },
+      "sources": [
+        "https://wiki.project1999.com/Buff_Lines",
+        "https://wiki.project1999.com/Divine_Strength",
+        "https://everquest.allakhazam.com/db/spelllist.html?type=pal&level=1&opt=And+Higher&action=search"
+      ]
+    },
+    {
+      "id": "brells-group-hp",
+      "name": "Brell's line (group HP)",
+      "category": "hp-buff",
+      "sharedWith": [],
+      "members": [
+        {"name": "Brell's Steadfast Aegis", "level": 49, "inDb": true, "note": "Post-Velious, not on P99; Allakhazam lists Paladin 49, matching Legends. Group, +145 Max HP, 150 min"}
+      ],
+      "replacement": {"strict": true, "note": "Single member on Legends; on live the line continues Brell's Mountainous Barrier (60) -> Brell's Stalwart Shield (65), each a strict HP upgrade."},
+      "missingOnLegends": ["Brell's Mountainous Barrier", "Brell's Stalwart Shield"],
+      "stacking": {
+        "conflicts": [
+          {"line": "Divine HP line", "class": "Paladin", "detail": "REPORTED, UNVERIFIED: the Allakhazam entry describes Brell's Steadfast Aegis as 'a group spell along the same lines as Divine Glory', which would put it in the HP (Strength) slot and make it non-stacking with Divine Vigor/Glory/Strength. Not confirmed by a slot-level source; treat as open.", "source": "https://everquest.allakhazam.com/db/spell.html?spell=3578"},
+          {"line": "HP/ATK buffs", "class": "Beastlord / Ranger", "detail": "REPORTED, UNVERIFIED: community reports that Brell's HP will not stack with Beastlord or Ranger hp/atk buffs, while it does stack with the Cleric buff set.", "source": "https://everquest.allakhazam.com/db/spell.html?spell=3578"}
+        ],
+        "stacksWith": [
+          {"line": "Courage/Heroism line", "detail": "Reported to stack with everything Clerics carry."},
+          {"line": "Symbol line", "detail": "Reported to stack with everything Clerics carry."}
+        ],
+        "notes": "Post-classic spell, so the P99 Buff Lines page has no slot data for it. Highest-value open question in this file: whether it and Divine Glory/Strength share a slot."
+      },
+      "sources": [
+        "https://everquest.allakhazam.com/db/spell.html?spell=3578",
+        "https://everquest.allakhazam.com/db/spelllist.html?type=pal&level=1&opt=And+Higher&action=search"
+      ]
+    },
+    {
+      "id": "heals-single",
+      "name": "Healing line (single target)",
+      "category": "heal",
+      "sharedWith": ["Cleric"],
+      "members": [
+        {"name": "Minor Healing", "level": 1, "inDb": true, "note": "Cleric 1 / P99 Paladin 9; Allakhazam live Paladin 6, Legends 1"},
+        {"name": "Light Healing", "level": 10, "inDb": true, "note": "Cleric 5 / P99 Paladin 15"},
+        {"name": "Healing", "level": 20, "inDb": true, "note": "Cleric 14 / P99 Paladin 30"},
+        {"name": "Greater Healing", "level": 30, "inDb": true, "note": "Cleric 24 / P99 Paladin 39"},
+        {"name": "Superior Healing", "level": 46, "inDb": true, "note": "Cleric 34 / P99 Paladin 57"}
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "Magnitude is strictly increasing (20 -> 65 -> 175 -> 350 -> 600 on Legends), but lower tiers are never obsolete: mana efficiency and cast time make Light Healing/Healing the correct top-off heal. Instant spells, so no slot conflict."
+      },
+      "missingOnLegends": ["Salve"],
+      "stacking": {"conflicts": [], "stacksWith": [], "notes": "Instant heals - no buff slot, nothing to stack. Truncated Cleric line: Paladins never get Complete Healing (Cleric 39) or Remedy (Cleric 51)."},
+      "sources": [
+        "https://wiki.project1999.com/Paladin",
+        "https://wiki.project1999.com/Cleric",
+        "https://everquest.allakhazam.com/db/spelllist.html?type=pal&level=1&opt=And+Higher&action=search"
+      ]
+    },
+    {
+      "id": "heals-group",
+      "name": "Wave line (group heal)",
+      "category": "heal",
+      "sharedWith": [],
+      "members": [
+        {"name": "Wave of Life", "level": 39, "inDb": true, "note": "Post-Velious; Allakhazam Paladin 39, matching Legends. Not on P99"},
+        {"name": "Wave of Healing", "level": 55, "inDb": true, "note": "P99 Paladin 55, Velious era, NPC drop"}
+      ],
+      "replacement": {"strict": false, "note": "Legends effect strings make Wave of Life (201-219) look larger than Wave of Healing (220 flat) at low caster level and roughly equal at high level; mana cost is the real separator (Wave of Healing 450 mana on P99). Not a clean strict replacement on Legends - flagged."},
+      "missingOnLegends": ["Healing Wave of Prexus"],
+      "stacking": {"conflicts": [], "stacksWith": [], "notes": "Instant group heals - no buff slot."},
+      "sources": [
+        "https://everquest.allakhazam.com/db/spell.html?spell=3577",
+        "https://wiki.project1999.com/Paladin"
+      ]
+    },
+    {
+      "id": "heal-over-time",
+      "name": "Cleansing line (heal over time)",
+      "category": "heal-over-time",
+      "sharedWith": [],
+      "members": [
+        {"name": "Ethereal Cleansing", "level": 44, "inDb": true, "note": "First Paladin HoT; Allakhazam Paladin 44, matching Legends. Not on P99"},
+        {"name": "Celestial Cleansing", "level": 59, "inDb": true, "note": "P99 Paladin 59, Velious era"}
+      ],
+      "replacement": {"strict": true, "note": "Celestial Cleansing strictly replaces Ethereal Cleansing (Legends: 10 HP/tick for 24s vs 175 HP/tick for 4 ticks). Both occupy the same HoT buff slot, so they cannot be layered on one target."},
+      "missingOnLegends": ["Supernal Cleansing"],
+      "stacking": {
+        "conflicts": [
+          {"line": "Celestial Healing line", "class": "Cleric", "detail": "Cleric Celestial Healing (44) / Celestial Elixir (59) are the same HoT effect family and will not layer with the Paladin's Cleansing HoTs on one target.", "source": "https://wiki.project1999.com/Cleric"}
+        ],
+        "stacksWith": [
+          {"line": "HP Regeneration lines (Regeneration/Chloroplast, Divine Purpose, bard Hymn)", "detail": "Cleansing HoTs use the 'Increase Hitpoints v2' heal effect rather than the regen slots, so they add on top of regen buffs."}
+        ],
+        "notes": "The Cleric-line conflict is inferred from effect identity, not from an explicit stacking statement - moderate confidence."
+      },
+      "sources": [
+        "https://everquest.allakhazam.com/db/spell.html?spell=3683",
+        "https://everquest.allakhazam.com/db/spell.html?spell=1283",
+        "https://wiki.project1999.com/Paladin"
+      ]
+    },
+    {
+      "id": "hp-regen-self",
+      "name": "Divine Purpose (self HP regeneration)",
+      "category": "hp-regen-buff",
+      "sharedWith": [],
+      "members": [
+        {"name": "Divine Purpose", "level": 37, "inDb": true, "note": "P99 Paladin 39, Velious era; self only, drains mana to regen HP"}
+      ],
+      "replacement": {"strict": true, "note": "Single member; no Paladin upgrade exists in the level range."},
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [
+          {"line": "Phantom armor line", "class": "Magician", "detail": "HP Regeneration slot 2 - Phantom Leather/Chain/Plate/Armor self-regen shares the slot (Magician self-only, so only matters for the caster).", "source": "https://wiki.project1999.com/Buff_Lines"},
+          {"line": "Form of the Great Bear / Aura of Battle / Extended Regeneration", "class": "Shaman / item", "detail": "Also HP Regeneration slot 2 - a worn or clicked Aura of Battle regen effect competes with Divine Purpose.", "source": "https://wiki.project1999.com/Buff_Lines"}
+        ],
+        "stacksWith": [
+          {"line": "Regeneration line (Regeneration/Chloroplast/Regrowth/Pack lines)", "detail": "Druid/Shaman regen is slot 1 - stacks with Divine Purpose."},
+          {"line": "Hymn of Restoration / Cantata line", "detail": "Bard regen is layer 2 - stacks."},
+          {"line": "Skin Like Nature / Natureskin regen component", "detail": "HP Regeneration slot 4 - stacks."}
+        ],
+        "notes": "Divine Purpose costs 3 mana/tick for 8 HP/tick on Legends; it is a mana-to-HP converter, not a true buff upgrade path."
+      },
+      "sources": ["https://wiki.project1999.com/Buff_Lines", "https://wiki.project1999.com/Paladin"]
+    },
+    {
+      "id": "yaulp",
+      "name": "Yaulp line",
+      "category": "self-combat-buff",
+      "sharedWith": ["Cleric"],
+      "members": [
+        {"name": "Yaulp", "level": 9, "inDb": true, "note": "Cleric 1 / Paladin 9"},
+        {"name": "Yaulp II", "level": 38, "inDb": true, "note": "Cleric 19 / P99 Paladin 39"},
+        {"name": "Yaulp III", "level": 56, "inDb": true, "note": "Cleric 44 / Paladin 56"},
+        {"name": "Yaulp IV", "level": 60, "inDb": true, "note": "Cleric 53 / Paladin 60; adds ATK on top of AC/STR"}
+      ],
+      "replacement": {
+        "strict": true,
+        "note": "Strict on every stat (AC 6/8/12/15, STR 10/20/30/40, plus ATK on IV). Caveat: Legends lists Yaulp I-III as 'Permanent' duration and Yaulp IV as 4 ticks, whereas classic Yaulp is a short-duration self buff - so on Legends the earlier ranks may actually be preferable for uptime. Flagged as a Legends deviation."
+      },
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [
+          {"line": "Shielding line (Minor/Lesser/Major/Greater/Arch Shielding, Shield of the Magi)", "class": "Enchanter / Magician / Necromancer / Wizard (self-only)", "detail": "Yaulp's AC is AC slot 2, shared with the Shielding line and with Armor of Protection (Cleric self).", "source": "https://wiki.project1999.com/Buff_Lines"},
+          {"line": "Coat line (Thistlecoat/Barbcoat/Bramblecoat/Spikecoat/Thorncoat/Bladecoat)", "class": "Druid / Ranger (self-only)", "detail": "Same AC slot 2.", "source": "https://wiki.project1999.com/Buff_Lines"},
+          {"line": "Speed of the Shissar", "class": "item (Staff of the Serpent)", "detail": "Yaulp IV explicitly does not stack with Speed of the Shissar.", "source": "https://wiki.project1999.com/Yaulp_IV"}
+        ],
+        "stacksWith": [
+          {"line": "Strength (Primary) line (Strengthen/Spirit Strength/Storm Strength/Strength)", "detail": "Yaulp's STR sits in its own 'Short Duration: Yaulp' column, so it stacks with Shaman/Druid/Enchanter STR buffs."},
+          {"line": "Aegis line", "detail": "AC slot 4 vs Yaulp's slot 2."},
+          {"line": "Courage/Heroism line", "detail": "AC slot 1 vs Yaulp's slot 2."}
+        ],
+        "notes": "Practical note from Legends' own text on Reckless Strength: 'Yaulp becomes better here' - i.e. Yaulp STR overtakes a decaying Reckless Strength partway through."
+      },
+      "sources": ["https://wiki.project1999.com/Buff_Lines", "https://wiki.project1999.com/Yaulp_IV"]
+    },
+    {
+      "id": "reckless-strength",
+      "name": "Reckless Strength line (decaying STR)",
+      "category": "attribute-buff",
+      "sharedWith": ["Cleric"],
+      "members": [
+        {"name": "Reckless Strength", "level": 18, "inDb": true, "note": "Cleric 5 / P99 Paladin 22"},
+        {"name": "Frenzied Strength", "level": 52, "inDb": true, "note": "Cleric 34 / Paladin 52, Kunark era"}
+      ],
+      "replacement": {"strict": true, "note": "Frenzied Strength (+40 decaying) strictly replaces Reckless Strength (+20 decaying); same 3-minute decaying-STR mechanic, one slot."},
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [
+          {"line": "Reckless Strength line (own members)", "class": "Paladin / Cleric", "detail": "The two members share a slot.", "source": "https://wiki.project1999.com/Cleric"}
+        ],
+        "stacksWith": [
+          {"line": "Yaulp line (STR component)", "detail": "Yaulp STR is a separate 'Short Duration: Yaulp' column on the Buff Lines page."}
+        ],
+        "notes": "OPEN: the P99 Buff Lines page does not list Reckless/Frenzied Strength at all (the page is explicitly incomplete), so their slot relative to the Strength (Primary) line - Spirit Strength, Storm Strength, Strength - is unverified. Do not assert they stack with Shaman/Druid STR buffs."
+      },
+      "sources": ["https://wiki.project1999.com/Cleric", "https://wiki.project1999.com/Paladin", "https://wiki.project1999.com/Buff_Lines"]
+    },
+    {
+      "id": "self-haste",
+      "name": "Valor of Marr (self haste)",
+      "category": "haste-buff",
+      "sharedWith": [],
+      "members": [
+        {"name": "Valor of Marr", "level": 44, "inDb": true, "note": "Post-Velious, not on P99; Allakhazam Paladin 44, matching Legends. +25% melee haste, self"}
+      ],
+      "replacement": {"strict": true, "note": "Single member in the Legends range."},
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [
+          {"line": "Haste (Primary)", "class": "Enchanter / Shaman / item haste", "detail": "All spell and item haste lives in one primary haste slot (Quickness, Augmentation, Celerity, Swift Like the Wind, worn/clicked haste). A 25% self haste is overwritten by any larger Enchanter/Shaman haste and by most haste items.", "source": "https://wiki.project1999.com/Buff_Lines"}
+        ],
+        "stacksWith": [
+          {"line": "Haste (Ervaj / 'v2') - Melody of Ervaj, Composition of Ervaj", "detail": "Bard v2 haste is a second slot and stacks with primary haste.", "source": "https://wiki.project1999.com/Buff_Lines"}
+        ],
+        "notes": "Community summary matches: does not stack with the Enchanter/Shaman haste lines, does work alongside bard songs."
+      },
+      "sources": ["https://wiki.project1999.com/Buff_Lines", "https://everquest.allakhazam.com/db/spell.html?spell=2585"]
+    },
+    {
+      "id": "weapon-proc-self",
+      "name": "Weapon proc self-buffs",
+      "category": "proc-buff",
+      "sharedWith": [],
+      "members": [
+        {"name": "Instrument of Nife", "level": 15, "inDb": true, "note": "RE-TIERED: Allakhazam lists Paladin 26, Legends grants it at 15. Imbues weapon with a proc that damages undead"},
+        {"name": "Divine Might", "level": 45, "inDb": true, "note": "P99 Paladin 49, Kunark quest spell (The Bones of Darak Lightforge); ~65 point DD proc. Legends 45"}
+      ],
+      "replacement": {"strict": false, "note": "Divine Might is a general-purpose DD proc; Instrument of Nife procs against undead. Divine Might is the stronger buff overall but the two are not a clean upgrade chain - on live they are distinct chains (Nife line continues Touch/Ward/Light of Nife at 61-63)."},
+      "missingOnLegends": ["Ward of Nife", "Touch of Nife", "Light of Nife"],
+      "stacking": {
+        "conflicts": [
+          {"line": "Weapon proc self-buffs (each other)", "class": "Paladin", "detail": "INFERRED, UNVERIFIED: both are 'add melee proc' self buffs, and EQ allows only one proc buff on a character at a time, so casting one should overwrite the other. The P99 Buff Lines page does not cover proc buffs.", "source": "https://wiki.project1999.com/Buff_Lines"}
+        ],
+        "stacksWith": [
+          {"line": "All stat/AC/HP buff lines", "detail": "Proc buffs occupy no stat slot."}
+        ],
+        "notes": "Also conflicts with any other class's proc buff (Shaman Talisman of Jasada-type procs, Enchanter/Ranger proc buffs) by the same one-proc-at-a-time rule - unverified against a primary source."
+      },
+      "sources": [
+        "https://wiki.project1999.com/Paladin",
+        "https://everquest.allakhazam.com/db/spelllist.html?type=pal&level=1&opt=And+Higher&action=search"
+      ]
+    },
+    {
+      "id": "damage-absorb",
+      "name": "Divine Favor (damage absorption)",
+      "category": "absorb-buff",
+      "sharedWith": [],
+      "members": [
+        {"name": "Divine Favor", "level": 55, "inDb": true, "note": "P99 Paladin 55, Kunark era, Firiona Vie vendor. Legends: absorb 150 for 5 minutes"}
+      ],
+      "replacement": {"strict": true, "note": "Single member; no Paladin upgrade in range."},
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [
+          {"line": "Damage Absorption (Primary): Rune I-V (Enchanter), Shieldskin/Leatherskin/Steelskin/Diamondskin/Manaskin (Necromancer/Wizard/Shadow Knight)", "class": "Enchanter / Necromancer / Wizard", "detail": "INFERRED, UNVERIFIED: the P99 Buff Lines Damage Absorption (Primary) table does not list Divine Favor at all (the page is admittedly incomplete), so whether Divine Favor shares the Rune slot is unconfirmed. Assume conflict until verified.", "source": "https://wiki.project1999.com/Buff_Lines"}
+        ],
+        "stacksWith": [],
+        "notes": "Highest-uncertainty stacking claim in the Paladin set after Brell's."
+      },
+      "sources": ["https://wiki.project1999.com/Buff_Lines", "https://wiki.project1999.com/Paladin"]
+    },
+    {
+      "id": "stuns",
+      "name": "Stun line",
+      "category": "stun",
+      "sharedWith": ["Cleric"],
+      "members": [
+        {"name": "Cease", "level": 7, "inDb": true, "note": "Post-Velious Paladin stun; Allakhazam Paladin 7, matching Legends. Not on P99"},
+        {"name": "Desist", "level": 13, "inDb": true, "note": "Allakhazam Paladin 13, matching Legends. Not on P99"},
+        {"name": "Stun", "level": 28, "inDb": true, "note": "Cleric 5 / P99 Paladin 30"},
+        {"name": "Holy Might", "level": 42, "inDb": true, "note": "Cleric 19 / P99 Paladin 49; stun plus small DD"},
+        {"name": "Force", "level": 52, "inDb": true, "note": "Cleric 34 / Paladin 52, Kunark era; stun plus larger DD"}
+      ],
+      "replacement": {
+        "strict": true,
+        "note": "Strict by stun length then damage (1.0s -> 2.5s -> 4.0s -> 6.0s+29-60 -> 6.0s+74-90), all capped at target level 55. Practical exception: Cease/Desist are far cheaper and faster to cast, so they remain the cheap interrupt; and the 6-second stuns are effectively capped at 4 seconds for player-cast stuns per the Legends effect text."
+      },
+      "missingOnLegends": ["Force of Akera"],
+      "stacking": {"conflicts": [], "stacksWith": [], "notes": "Detrimental instants - no buff slot. Truncated Cleric line: Paladins do not get Sound of Force (Cleric 49) or Stun Command (Cleric 55)."},
+      "sources": [
+        "https://wiki.project1999.com/Paladin",
+        "https://wiki.project1999.com/Cleric",
+        "https://everquest.allakhazam.com/db/spelllist.html?type=pal&level=1&opt=And+Higher&action=search"
+      ]
+    },
+    {
+      "id": "smite-nukes",
+      "name": "Strike/Smite line (magic DD)",
+      "category": "nuke",
+      "sharedWith": ["Cleric"],
+      "members": [
+        {"name": "Strike", "level": 1, "inDb": true, "note": "Cleric 1"},
+        {"name": "Furor", "level": 8, "inDb": true, "note": "Cleric 5"},
+        {"name": "Smite", "level": 19, "inDb": true, "note": "Cleric 14"},
+        {"name": "Wrath", "level": 34, "inDb": true, "note": "Cleric 29"},
+        {"name": "Retribution", "level": 49, "inDb": true, "note": "Cleric 44"}
+      ],
+      "replacement": {"strict": true, "note": "Strictly increasing damage (8 -> 19 -> 83 -> 218 -> 516 on Legends); instants, so lower tiers only survive as cheap pulls."},
+      "missingOnLegends": [],
+      "stacking": {"conflicts": [], "stacksWith": [], "notes": "DISCREPANCY: this is the Cleric non-undead DD line. Neither P99 (classic-Velious) nor the live Allakhazam Paladin spell list gives Paladins Strike/Furor/Smite/Wrath/Retribution. Legends grants the Paladin the full Cleric smite line at Cleric level +3 to +5. Treat as a Legends addition, not a classic Paladin line."},
+      "sources": [
+        "https://wiki.project1999.com/Cleric",
+        "https://wiki.project1999.com/Paladin",
+        "https://everquest.allakhazam.com/db/spelllist.html?type=pal&level=1&opt=And+Higher&action=search"
+      ]
+    },
+    {
+      "id": "undead-nukes",
+      "name": "Undead nuke line (Ward Undead line)",
+      "category": "nuke-undead",
+      "sharedWith": ["Cleric"],
+      "members": [
+        {"name": "Ward Undead", "level": 1, "inDb": true, "note": "Cleric 5 / P99 Paladin 15; Legends re-tiers to 1 while the effect string still reads L5-L11 scaling"},
+        {"name": "Expulse Undead", "level": 30, "inDb": true, "note": "Cleric 14 / Paladin 30"},
+        {"name": "Dismiss Undead", "level": 46, "inDb": true, "note": "Cleric 24 / P99 Paladin 49"},
+        {"name": "Expel Undead", "level": 54, "inDb": true, "note": "Cleric 34 / Paladin 54, Kunark era"}
+      ],
+      "replacement": {"strict": true, "note": "Strictly increasing undead damage (41 -> 94 -> 162 -> 273). Instants, no slot."},
+      "missingOnLegends": [],
+      "stacking": {"conflicts": [], "stacksWith": [], "notes": "Truncated Cleric line: Paladins get 4 of the 6 tiers; Banish Undead (Cleric 44) and Exile Undead (Cleric 55) are Cleric-only. Live Paladins continue with Deny Undead (62), above Legends' range."},
+      "sources": ["https://wiki.project1999.com/Paladin", "https://wiki.project1999.com/Cleric"]
+    },
+    {
+      "id": "lull",
+      "name": "Lull line (pacify)",
+      "category": "pacify",
+      "sharedWith": ["Cleric"],
+      "members": [
+        {"name": "Lull", "level": 10, "inDb": true, "note": "Cleric 1 / P99 Paladin 15"},
+        {"name": "Soothe", "level": 25, "inDb": true, "note": "Cleric 9 / P99 Paladin 30"},
+        {"name": "Calm", "level": 43, "inDb": true, "note": "Cleric 19 / P99 Paladin 49"},
+        {"name": "Pacify", "level": 49, "inDb": true, "note": "Cleric 39 / P99 Paladin 51, Kunark era"}
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "Higher tiers raise the level cap they will land on (Legends reaction radius reads 15/30 -> 10/40 -> 5/50 -> 1/55) but the duration DROPS: Lull 2 min, Soothe 2m30s, Calm 42 sec, Pacify 42 sec. Lower tiers remain the better choice on low-level mobs, and the resist-check differences matter for pulling. Not a strict replacement."
+      },
+      "missingOnLegends": ["Quellious' Word of Tranquility"],
+      "stacking": {"conflicts": [], "stacksWith": [], "notes": "Detrimental-side effects; re-casting a different tier replaces the pacify effect on the same target."},
+      "sources": ["https://wiki.project1999.com/Paladin", "https://wiki.project1999.com/Cleric"]
+    },
+    {
+      "id": "root",
+      "name": "Root line",
+      "category": "root",
+      "sharedWith": ["Cleric"],
+      "members": [
+        {"name": "Root", "level": 19, "inDb": true, "note": "Cleric 9 / P99 Paladin 22"},
+        {"name": "Instill", "level": 54, "inDb": true, "note": "DISCREPANCY: classic sources call this spell 'Enstill' (Cleric 29 / Paladin 54, Kunark). Legends' record is named 'Instill', carries no effects array, and has a 1m36s duration, which matches Enstill's 96-second root"}
+      ],
+      "replacement": {"strict": true, "note": "Enstill/Instill roots for 96 seconds vs Root's 48; same effect slot, newest cast replaces. Root remains the cheaper cast."},
+      "missingOnLegends": ["Greater Immobilize"],
+      "stacking": {"conflicts": [], "stacksWith": [], "notes": "Root is broken by direct damage; the two members overwrite each other on one target. Legends record is missing its effects array entirely - a data gap worth fixing."},
+      "sources": ["https://wiki.project1999.com/Paladin", "https://wiki.project1999.com/Cleric"]
+    },
+    {
+      "id": "cure-poison",
+      "name": "Cure Poison line",
+      "category": "cure",
+      "sharedWith": ["Cleric"],
+      "members": [
+        {"name": "Cure Poison", "level": 5, "inDb": true, "note": "Cleric 1 / P99 Paladin 9"},
+        {"name": "Counteract Poison", "level": 34, "inDb": true, "note": "Cleric 24 / P99 Paladin 39"}
+      ],
+      "replacement": {"strict": true, "note": "Counteract Poison removes 8 poison counters vs Cure Poison's 4; strictly better per cast, Cure Poison stays cheaper."},
+      "missingOnLegends": [],
+      "stacking": {"conflicts": [], "stacksWith": [], "notes": "Truncated: Abolish Poison (Cleric 49) is Cleric-only; live Paladins get Eradicate Poison at 64, above Legends' range."},
+      "sources": ["https://wiki.project1999.com/Paladin", "https://wiki.project1999.com/Cleric"]
+    },
+    {
+      "id": "cure-disease",
+      "name": "Cure Disease line",
+      "category": "cure",
+      "sharedWith": ["Cleric"],
+      "members": [
+        {"name": "Cure Disease", "level": 11, "inDb": true, "note": "Cleric 5 / P99 Paladin 15"}
+      ],
+      "replacement": {"strict": true, "note": "Only one member present on Legends."},
+      "missingOnLegends": ["Counteract Disease"],
+      "stacking": {"conflicts": [], "stacksWith": [], "notes": "Counteract Disease is Paladin 56 on both P99 and Allakhazam but is absent from the Legends list - the clearest single-spell gap in the file."},
+      "sources": ["https://wiki.project1999.com/Paladin", "https://everquest.allakhazam.com/db/spelllist.html?type=pal&level=1&opt=And+Higher&action=search"]
+    },
+    {
+      "id": "cure-curse",
+      "name": "Remove Curse line",
+      "category": "cure",
+      "sharedWith": [],
+      "members": [
+        {"name": "Remove Minor Curse", "level": 19, "inDb": true, "note": "Allakhazam Paladin 19, matching Legends"},
+        {"name": "Remove Lesser Curse", "level": 34, "inDb": true, "note": "Allakhazam Paladin 34, matching Legends"},
+        {"name": "Remove Curse", "level": 45, "inDb": true, "note": "Allakhazam Paladin 45, matching Legends"}
+      ],
+      "replacement": {"strict": true, "note": "Counter removal 2 -> 4 -> 4 on Legends. NOTE: Remove Lesser Curse (34) and Remove Curse (45) both read 'Decrease Curse Counter by 4' in the Legends effects, so the level-45 spell is not an upgrade on magnitude - it presumably differs in resist/level cap. Flagged."},
+      "missingOnLegends": ["Remove Greater Curse", "Eradicate Curse"],
+      "stacking": {"conflicts": [], "stacksWith": [], "notes": "Curse counters are a post-classic mechanic - this line does not exist on P99 at all, so no classic-era stacking or line source is available."},
+      "sources": ["https://everquest.allakhazam.com/db/spelllist.html?type=pal&level=1&opt=And+Higher&action=search"]
+    },
+    {
+      "id": "dispel",
+      "name": "Cancel Magic line",
+      "category": "dispel",
+      "sharedWith": ["Cleric"],
+      "members": [
+        {"name": "Cancel Magic", "level": 32, "inDb": true, "note": "Cleric 14 / P99 Paladin 39"}
+      ],
+      "replacement": {"strict": true, "note": "Single member on Legends."},
+      "missingOnLegends": ["Nullify Magic"],
+      "stacking": {"conflicts": [], "stacksWith": [], "notes": "Nullify Magic is Paladin 58 on both P99 and Allakhazam but absent from Legends. Annul Magic (Cleric 53) is Cleric-only."},
+      "sources": ["https://wiki.project1999.com/Paladin", "https://wiki.project1999.com/Cleric"]
+    },
+    {
+      "id": "resist-magic",
+      "name": "Magic resistance line",
+      "category": "resist-buff",
+      "sharedWith": ["Cleric", "Druid", "Enchanter", "Shaman"],
+      "members": [
+        {"name": "Endure Magic", "level": 29, "inDb": true, "note": "Cleric 19, Druid 34, Enchanter 20, Shaman 19 / P99 Paladin 30, Velious era"},
+        {"name": "Resist Magic", "level": 55, "inDb": true, "note": "Cleric 44, Druid 49, Enchanter 39, Shaman 44 / Paladin 55"}
+      ],
+      "replacement": {"strict": true, "note": "+20 -> +40 Magic Resist, same slot, newest wins."},
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [
+          {"line": "Magic Resistance (Primary)", "class": "Cleric / Druid / Enchanter / Shaman", "detail": "Endure Magic and Resist Magic from any class are one primary MR slot; also blocked by the +50 Aura of Blue Petals flower click.", "source": "https://wiki.project1999.com/Buff_Lines"}
+        ],
+        "stacksWith": [
+          {"line": "Psalm of Mystic Shielding", "detail": "Bard psalm MR is a separate column."},
+          {"line": "Magic Shield (Shield of the Magi)", "detail": "Separate column on the Buff Lines MR table."}
+        ],
+        "notes": ""
+      },
+      "sources": ["https://wiki.project1999.com/Buff_Lines"]
+    },
+    {
+      "id": "resist-disease",
+      "name": "Disease resistance line",
+      "category": "resist-buff",
+      "sharedWith": ["Cleric", "Druid", "Necromancer", "Shadow Knight", "Shaman"],
+      "members": [
+        {"name": "Endure Disease", "level": 38, "inDb": true, "note": "Cleric 14, Druid 19, Necromancer 12, Shadow Knight 30, Shaman 9 / P99 Paladin 39"},
+        {"name": "Resist Disease", "level": 50, "inDb": true, "note": "Cleric 39, Druid 44, Necromancer 34, Shaman 34 / P99 Paladin 51, Kunark era"}
+      ],
+      "replacement": {"strict": true, "note": "+20 -> +40 Disease Resist, same slot."},
+      "missingOnLegends": [],
+      "stacking": {
+        "conflicts": [
+          {"line": "Disease Resistance (Primary)", "class": "Cleric / Druid / Necromancer / Shadow Knight / Shaman", "detail": "One primary DR slot across all classes; also blocked by Aura of Black Petals (+50 flower click).", "source": "https://wiki.project1999.com/Buff_Lines"}
+        ],
+        "stacksWith": [
+          {"line": "Psalm of Vitality", "detail": "Bard psalm DR is a separate column."},
+          {"line": "Aura of Antibody potions", "detail": "Item column."}
+        ],
+        "notes": ""
+      },
+      "sources": ["https://wiki.project1999.com/Buff_Lines"]
+    },
+    {
+      "id": "resist-poison",
+      "name": "Poison resistance line",
+      "category": "resist-buff",
+      "sharedWith": ["Cleric", "Druid", "Shaman"],
+      "members": [
+        {"name": "Endure Poison", "level": 21, "inDb": true, "note": "Cleric 9, Druid 19, Shaman 14 / P99 Paladin 22"}
+      ],
+      "replacement": {"strict": true, "note": "Only member the Paladin gets in range."},
+      "missingOnLegends": ["Resist Poison"],
+      "stacking": {
+        "conflicts": [
+          {"line": "Poison Resistance (Primary)", "class": "Cleric / Druid / Shaman", "detail": "Endure Poison / Resist Poison across classes share one PR slot; also blocked by Aura of Green Petals.", "source": "https://wiki.project1999.com/Buff_Lines"}
+        ],
+        "stacksWith": [
+          {"line": "Dead Man Floating (Necromancer)", "detail": "Separate column, +70 PR."},
+          {"line": "Psalm (bard) poison column", "detail": "Separate column."}
+        ],
+        "notes": "Truncated line: on P99 the Paladin never gets Resist Poison (Cleric 34 / Shaman 34); live Paladins get it at 61, above Legends' range. Endure Poison at 21 is the Paladin's permanent ceiling here."
+      },
+      "sources": ["https://wiki.project1999.com/Buff_Lines", "https://wiki.project1999.com/Paladin"]
+    },
+    {
+      "id": "resurrection",
+      "name": "Resurrection line",
+      "category": "resurrection",
+      "sharedWith": ["Cleric"],
+      "members": [
+        {"name": "Reanimation", "level": 22, "inDb": true, "note": "Allakhazam Paladin 22, matching Legends; not on P99"},
+        {"name": "Reconstitution", "level": 30, "inDb": true, "note": "Allakhazam Paladin 30; 10% exp"},
+        {"name": "Reparation", "level": 31, "inDb": true, "note": "Allakhazam Paladin 31; 20% exp"},
+        {"name": "Revive", "level": 39, "inDb": true, "note": "Cleric 29 / P99 Paladin 49 (0% exp). Legends places it at 39 between Reparation (20%) and Renewal (50%) but its effect string still says plain 'Resurrect'"},
+        {"name": "Renewal", "level": 49, "inDb": true, "note": "Allakhazam Paladin 49; 50% exp"},
+        {"name": "Restoration", "level": 55, "inDb": true, "note": "Allakhazam Paladin 55; 75% exp"},
+        {"name": "Resurrection", "level": 59, "inDb": true, "note": "Cleric 49 / Paladin 59, Kunark era; 90% exp"}
+      ],
+      "replacement": {
+        "strict": false,
+        "note": "Exp return climbs 0 -> 10 -> 20 -> ? -> 50 -> 75 -> 90%, so each tier replaces the previous for a normal rez. Exception: Revive (39) shows no exp restoration in the Legends data despite sitting above Reparation's 20% - either a data gap or a genuine ordering break. Second exception: lower tiers stay useful as cheap corpse summons (Resurrection costs 700 mana on P99)."
+      },
+      "missingOnLegends": [],
+      "stacking": {"conflicts": [], "stacksWith": [], "notes": "Truncated Cleric line: Reviviscence (Cleric 56), Word of Redemption and Divine Intervention (Cleric 60) are Cleric-only. Note the classic Paladin only had Revive (49) and Resurrection (59) - Legends' 7-deep chain is the post-classic (Luclin/PoP-era) list."},
+      "sources": [
+        "https://everquest.allakhazam.com/db/spelllist.html?type=pal&level=1&opt=And+Higher&action=search",
+        "https://wiki.project1999.com/Paladin",
+        "https://wiki.project1999.com/Cleric"
+      ]
+    },
+    {
+      "id": "invis-undead",
+      "name": "Invisibility versus Undead line",
+      "category": "utility-buff",
+      "sharedWith": ["Cleric"],
+      "members": [
+        {"name": "Invisibility versus Undead", "level": 17, "inDb": true, "note": "Cleric 14 / P99 Paladin 22. DUPLICATE RECORD: the Legends file has two level-17 entries for this spell"},
+        {"name": "Invisibility Versus Undead", "level": 17, "inDb": true, "note": "Second, differently-cased record of the same spell with a different effects string ('Invisibility(1)' vs 'Invisibility versus Undead') and target type Single vs Single Friendly. Almost certainly a duplicate to de-dupe"},
+        {"name": "Improved Invisibility to Undead", "level": 63, "inDb": true, "note": "Cleric 50 (group version) / Allakhazam Paladin 63, matching Legends. Self-only on Legends, 10 min"}
+      ],
+      "replacement": {"strict": false, "note": "Improved Invis to Undead is harder to break but is self-only on Legends and shorter (10 min vs 27 min), so it does not replace the castable-on-others version."},
+      "missingOnLegends": [],
+      "stacking": {"conflicts": [], "stacksWith": [], "notes": "Invisibility effects do not stack with regular invisibility or with each other; re-casting replaces."},
+      "sources": ["https://wiki.project1999.com/Paladin", "https://wiki.project1999.com/Cleric"]
+    },
+    {
+      "id": "summon-hammer",
+      "name": "Summoned hammer line",
+      "category": "summon-item",
+      "sharedWith": ["Cleric"],
+      "members": [
+        {"name": "Hammer of Wrath", "level": 14, "inDb": true, "note": "Cleric 9 / P99 Paladin 15; DMG 6, delay 32"},
+        {"name": "Hammer of Striking", "level": 23, "inDb": true, "note": "Cleric 24 / P99 Paladin 30; DMG 6, delay 29"}
+      ],
+      "replacement": {"strict": true, "note": "Hammer of Striking is the same damage at lower delay, so it strictly replaces Hammer of Wrath - at double the mana (50 -> 100)."},
+      "missingOnLegends": [],
+      "stacking": {"conflicts": [], "stacksWith": [], "notes": "Truncated Cleric line: Hammer of Requital (Cleric 44) and Unswerving Hammer (Cleric 54) are Cleric-only."},
+      "sources": ["https://wiki.project1999.com/Paladin", "https://wiki.project1999.com/Cleric"]
+    }
+  ],
+  "standalone": [
+    {"name": "Flash of Light", "level": 2, "note": "Blind + attack debuff. Cleric shares it at level 1; the Cleric upgrade Blinding Luminance (34) is Cleric-only, so the Paladin's version never upgrades."},
+    {"name": "True North", "level": 3, "note": "Utility self-facing spell; no line."},
+    {"name": "Sense the Dead", "level": 4, "note": "Undead detection; Cleric 9. No upgrade for either class."},
+    {"name": "Spook the Dead", "level": 9, "note": "Undead fear. Cleric 1. The undead-fear upgrades (Panic the Dead 29, Dread of Night 51) are Cleric-only, so the Paladin line is one member long."},
+    {"name": "Halo of Light", "level": 16, "note": "Summons a light source with 3 AC; Cleric 14. No upgrade."},
+    {"name": "Invigor", "level": 22, "note": "Stamina/fatigue restore; Cleric 9. Cleric's upgrade Extinguish Fatigue (19) is Cleric-only. Present on Legends at 22 although the live Allakhazam Paladin list no longer shows it."},
+    {"name": "Thunder of Karana", "level": 47, "note": "Mana drain (100). Allakhazam lists it as Paladin 47, matching Legends; it is not on P99 and has no Paladin upgrade in range."},
+    {"name": "Divine Aura", "level": 48, "note": "Short invulnerability, self only. Cleric 1 / P99 Paladin 55. The Cleric follow-up Divine Barrier (29) is Cleric-only. Not a buff-slot spell."},
+    {"name": "Flame of Light", "level": 50, "note": "Fire-based single-target DD, Velious era, NPC-drop spell on P99. Live continues into Light of Nife (63) and Light of Order (65), both above Legends' range, so it is standalone here."}
+  ],
+  "unlinked": [
+    {"info": "Buff-slot model that drives every stacking answer above: HP/AC buffs are grouped into columns - 'Primary (AC and HP)' = Courage/Heroism + Skin + Inner Fire + Protection of the Glades; 'Primary (HP-only, requires gem)' = Symbol line; 'Shielding / Talisman' = Shaman Talisman + int-caster Shielding + Armor of Protection; 'HP (Strength)' = Divine Vigor/Glory/Strength + Ranger Strength of Nature. Buffs under the same heading cannot stack; combination buffs (Aegolism) block every column they combine.", "source": "https://wiki.project1999.com/Buff_Lines"},
+    {"info": "AC is slotted separately from HP: AC slot 1 = Courage/Heroism + Skin lines; AC slot 2 = Yaulp + int-caster Shielding + druid/ranger coat line + Armor of Protection; AC slot 3 = Call of Earth, Augment/Augmentation, Frenzy; AC slot 4 = Aegis line (incl. Spirit Armor) + Shaman Guardian line + Enchanter Shield line + Magician Phantom line. A Paladin can therefore run Courage-line AC and Aegis-line AC and Yaulp AC simultaneously - three separate AC slots.", "source": "https://wiki.project1999.com/Buff_Lines"},
+    {"info": "Aegolism's implementation is a hard block, not a comparison: 'Block new spell if slot 3 is effect Max Hitpoints and < 1100'. That is why an Aegolism'd target refuses Symbol buffs and Protection of the Glades.", "source": "https://wiki.project1999.com/Aegolism"},
+    {"info": "'Blessing of the Page' / 'Blessing of the Squire' (named in the anchor set) are not Paladin spells - on Legends they are Cleric spells (Blessing of the Squire = Cleric 16, a heal-proc buff). No member of that line appears in the Paladin file, so it is not tagged here.", "source": "https://eqlbuildforge.com/spells/blessing-of-the-squire/"},
+    {"info": "Live-era Paladin spells inside Legends' level range that are absent from the Legends Paladin list and whose line membership could not be verified: Salve (1), Light of Life (52), Force of Akera (53), Quellious' Word of Tranquility (54), Austerity (55, described as an HP and AC buff - probably a Courage-line member between Valor and Resolution), Holy Aura (55), Breath of Tunare (56), Guard of Piety (56), Blessing of Austerity (58).", "source": "https://everquest.allakhazam.com/db/spelllist.html?type=pal&level=1&opt=And+Higher&action=search"},
+    {"info": "Paladin disciplines on live (Resistant 51, Fearless 54, Holyforge 55, Deflection 59, Sanctification 60) are not spells and are correctly absent from a spell table; noted only so their absence is not mistaken for a gap.", "source": "https://everquest.allakhazam.com/db/spelllist.html?type=pal&level=1&opt=And+Higher&action=search"},
+    {"info": "Level offsets: Legends' Paladin levels match the live Allakhazam Paladin list almost exactly (Cease 7, Desist 13, Reanimation 22, Divine Vigor 35, Wave of Life 39, Valor of Marr 44, Thunder of Karana 47, Brell's Steadfast Aegis 49, Instill 54, Improved Invis to Undead 63), NOT the P99 classic list, which is 2-9 levels later on almost every shared spell. Legends is best modelled as the post-classic Paladin list truncated near 63.", "source": "https://everquest.allakhazam.com/db/spelllist.html?type=pal&level=1&opt=And+Higher&action=search"},
+    {"info": "General rule for Paladins buffing in a mixed group: cast Symbol (HP-only slot) and Aegis-line AC freely; do not cast Courage-line buffs over a Druid/Ranger Skin buff or a Shaman's Inner Fire, and never over Protection of the Glades or Aegolism.", "source": "https://wiki.project1999.com/Category:Heroism_line"}
+  ],
+  "openQuestions": [
+    "Brell's Steadfast Aegis (49): does it share the HP (Strength) slot with Divine Vigor/Glory/Strength? Allakhazam's description calls it 'a group spell along the same lines as Divine Glory', which implies a conflict, but no slot-level source confirms it. If they do conflict, a Paladin cannot run Brell's + Divine Strength together and the Legends buff advice changes materially.",
+    "Divine Favor (55): the P99 Buff Lines Damage Absorption table omits it entirely, so it is unknown whether it shares the Rune/skin absorb slot with Enchanter Rune I-V and Necromancer/Wizard skin absorbs.",
+    "Reckless Strength (18) / Frenzied Strength (52): not listed on the P99 Buff Lines page; their slot relative to the Strength (Primary) line (Spirit Strength, Storm Strength, Strength) is unverified. Legends' own effect text for Reckless Strength contains player-written commentary ('Yaulp becomes better here', 'Click off before the last 40sec'), which suggests the effect string was hand-edited rather than generated.",
+    "Instrument of Nife (15) vs Divine Might (45): both are 'add melee proc' self buffs. Do they overwrite each other, and do they overwrite other classes' proc buffs? No classic source found; the one-proc-per-character assumption is inferred.",
+    "Divine Vigor (35) and Divine Glory (53) both read +100 Max HP on Legends, making Divine Glory pointless. Community reporting on the live spell puts Divine Vigor near +50. Is the Legends value intentional (a re-tier) or a data error?",
+    "Revive (39) shows no experience restoration while Reparation (31) restores 20% and Renewal (49) restores 50%. Is Revive genuinely a 0% corpse summon slotted at 39, or is the Legends effect string incomplete?",
+    "Remove Lesser Curse (34) and Remove Curse (45) both read 'Decrease Curse Counter by 4'. What actually differentiates them on Legends?",
+    "The Legends file contains two records for Invisibility versus Undead at level 17 with different casing, effects and target types. Which is canonical?",
+    "'Instill' (54) is almost certainly the classic 'Enstill' (root). Should the Legends name be treated as canonical or as a typo in the mirror? Its record also has no effects array.",
+    "Legends grants Paladins the full Cleric magic-DD line (Strike/Furor/Smite/Wrath/Retribution). Is this intentional server design, or has Cleric data leaked into the Paladin table? No classic or live source gives Paladins these spells.",
+    "Legends' Yaulp I-III are recorded as 'Permanent' duration where classic Yaulp is a short self buff. If accurate, the Yaulp upgrade order is inverted in practice (permanent Yaulp III beats a 4-tick Yaulp IV for uptime)."
+  ],
+  "sources": [
+    "https://wiki.project1999.com/Buff_Lines",
+    "https://wiki.project1999.com/Category:Heroism_line",
+    "https://wiki.project1999.com/Category:Symbol_line",
+    "https://wiki.project1999.com/Category:Aegis_line",
+    "https://wiki.project1999.com/Category:Skin_line",
+    "https://wiki.project1999.com/Category:Talisman_line",
+    "https://wiki.project1999.com/Aegolism",
+    "https://wiki.project1999.com/Divine_Strength",
+    "https://wiki.project1999.com/Yaulp_IV",
+    "https://wiki.project1999.com/Spirit_Armor",
+    "https://wiki.project1999.com/Paladin",
+    "https://wiki.project1999.com/Cleric",
+    "https://everquest.allakhazam.com/db/spelllist.html?type=pal&level=1&opt=And+Higher&action=search",
+    "https://everquest.allakhazam.com/db/spell.html?spell=3578",
+    "https://everquest.allakhazam.com/db/spell.html?spell=3577",
+    "https://everquest.allakhazam.com/db/spell.html?spell=3683",
+    "https://everquest.allakhazam.com/db/spell.html?spell=1283",
+    "https://everquest.allakhazam.com/db/spell.html?spell=2585"
+  ]
+}

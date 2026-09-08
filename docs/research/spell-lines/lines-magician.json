@@ -1,0 +1,2491 @@
+{
+ "class": "Magician",
+ "lines": [
+  {
+   "id": "mag-pet-air",
+   "name": "Air elemental pet line",
+   "category": "pet",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Elementalkin: Air",
+     "level": 4,
+     "inDb": true
+    },
+    {
+     "name": "Elementaling: Air",
+     "level": 8,
+     "inDb": true
+    },
+    {
+     "name": "Elemental: Air",
+     "level": 12,
+     "inDb": true
+    },
+    {
+     "name": "Minor Summoning: Air",
+     "level": 16,
+     "inDb": true
+    },
+    {
+     "name": "Lesser Summoning: Air",
+     "level": 20,
+     "inDb": true
+    },
+    {
+     "name": "Summoning: Air",
+     "level": 24,
+     "inDb": true
+    },
+    {
+     "name": "Greater Summoning: Air",
+     "level": 28,
+     "inDb": true
+    },
+    {
+     "name": "Minor Conjuration: Air",
+     "level": 33,
+     "inDb": true
+    },
+    {
+     "name": "Lesser Conjuration: Air",
+     "level": 38,
+     "inDb": true
+    },
+    {
+     "name": "Conjuration: Air",
+     "level": 43,
+     "inDb": true
+    },
+    {
+     "name": "Greater Conjuration: Air",
+     "level": 48,
+     "inDb": true
+    },
+    {
+     "name": "Vocarate: Air",
+     "level": 53,
+     "inDb": true,
+     "note": "Kunark/Velious tier (P99 era tags: Vocarate/Greater Vocaration)."
+    },
+    {
+     "name": "Greater Vocaration: Air",
+     "level": 59,
+     "inDb": true,
+     "note": "Kunark/Velious tier (P99 era tags: Vocarate/Greater Vocaration)."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strictly ordered within the element - each tier summons a higher-level elemental and the old pet must be dismissed (Reclaim Energy) before the new one is summoned. Two real exceptions: (1) pet level variance - every summon rolls a level inside the spell's range, so mages re-summon until they get a max-level pet, and a max-roll from the lower tier can briefly beat a min-roll from the new tier; (2) focus items - the lesser focus items (Torch of Alna / Shovel of Ponz / Broom of Trilon / Stein of Ulissa) raise HP of pets from spell levels 4-49, and the greater focus items (Staff of Elemental Mastery: Air/Earth/Fire/Water) add +1 to the pet level roll for spell levels 46-60. Element choice is situational, not a ladder: earth/water/air/fire are sidegrades of each other at the same tier."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "Pet summons are not buffs and occupy no buff slot. Only one pet at a time per caster; casting a new pet spell with a pet up fails (Legends inherits the classic single-pet rule)."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Magician",
+    "https://wiki.project1999.com/Pet_Guide"
+   ]
+  },
+  {
+   "id": "mag-pet-earth",
+   "name": "Earth elemental pet line",
+   "category": "pet",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Elementalkin: Earth",
+     "level": 5,
+     "inDb": true
+    },
+    {
+     "name": "Elementaling: Earth",
+     "level": 9,
+     "inDb": true
+    },
+    {
+     "name": "Elemental: Earth",
+     "level": 13,
+     "inDb": true
+    },
+    {
+     "name": "Minor Summoning: Earth",
+     "level": 17,
+     "inDb": true
+    },
+    {
+     "name": "Lesser Summoning: Earth",
+     "level": 21,
+     "inDb": true
+    },
+    {
+     "name": "Summoning: Earth",
+     "level": 25,
+     "inDb": true
+    },
+    {
+     "name": "Greater Summoning: Earth",
+     "level": 29,
+     "inDb": true
+    },
+    {
+     "name": "Minor Conjuration: Earth",
+     "level": 34,
+     "inDb": true
+    },
+    {
+     "name": "Lesser Conjuration: Earth",
+     "level": 39,
+     "inDb": true
+    },
+    {
+     "name": "Conjuration: Earth",
+     "level": 44,
+     "inDb": true
+    },
+    {
+     "name": "Greater Conjuration: Earth",
+     "level": 46,
+     "inDb": true
+    },
+    {
+     "name": "Vocarate: Earth",
+     "level": 51,
+     "inDb": true,
+     "note": "Kunark/Velious tier (P99 era tags: Vocarate/Greater Vocaration)."
+    },
+    {
+     "name": "Greater Vocaration: Earth",
+     "level": 57,
+     "inDb": true,
+     "note": "Kunark/Velious tier (P99 era tags: Vocarate/Greater Vocaration)."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strictly ordered within the element - each tier summons a higher-level elemental and the old pet must be dismissed (Reclaim Energy) before the new one is summoned. Two real exceptions: (1) pet level variance - every summon rolls a level inside the spell's range, so mages re-summon until they get a max-level pet, and a max-roll from the lower tier can briefly beat a min-roll from the new tier; (2) focus items - the lesser focus items (Torch of Alna / Shovel of Ponz / Broom of Trilon / Stein of Ulissa) raise HP of pets from spell levels 4-49, and the greater focus items (Staff of Elemental Mastery: Air/Earth/Fire/Water) add +1 to the pet level roll for spell levels 46-60. Element choice is situational, not a ladder: earth/water/air/fire are sidegrades of each other at the same tier."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "Pet summons are not buffs and occupy no buff slot. Only one pet at a time per caster; casting a new pet spell with a pet up fails (Legends inherits the classic single-pet rule)."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Magician",
+    "https://wiki.project1999.com/Pet_Guide"
+   ]
+  },
+  {
+   "id": "mag-pet-fire",
+   "name": "Fire elemental pet line",
+   "category": "pet",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Elementalkin: Fire",
+     "level": 3,
+     "inDb": true
+    },
+    {
+     "name": "Elementaling: Fire",
+     "level": 7,
+     "inDb": true
+    },
+    {
+     "name": "Elemental: Fire",
+     "level": 11,
+     "inDb": true
+    },
+    {
+     "name": "Minor Summoning: Fire",
+     "level": 15,
+     "inDb": true
+    },
+    {
+     "name": "Lesser Summoning: Fire",
+     "level": 19,
+     "inDb": true
+    },
+    {
+     "name": "Summoning: Fire",
+     "level": 23,
+     "inDb": true
+    },
+    {
+     "name": "Greater Summoning: Fire",
+     "level": 27,
+     "inDb": true
+    },
+    {
+     "name": "Minor Conjuration: Fire",
+     "level": 32,
+     "inDb": true
+    },
+    {
+     "name": "Lesser Conjuration: Fire",
+     "level": 37,
+     "inDb": true
+    },
+    {
+     "name": "Conjuration: Fire",
+     "level": 42,
+     "inDb": true
+    },
+    {
+     "name": "Greater Conjuration: Fire",
+     "level": 47,
+     "inDb": true
+    },
+    {
+     "name": "Vocarate: Fire",
+     "level": 52,
+     "inDb": true,
+     "note": "Kunark/Velious tier (P99 era tags: Vocarate/Greater Vocaration)."
+    },
+    {
+     "name": "Greater Vocaration: Fire",
+     "level": 58,
+     "inDb": true,
+     "note": "Kunark/Velious tier (P99 era tags: Vocarate/Greater Vocaration)."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strictly ordered within the element - each tier summons a higher-level elemental and the old pet must be dismissed (Reclaim Energy) before the new one is summoned. Two real exceptions: (1) pet level variance - every summon rolls a level inside the spell's range, so mages re-summon until they get a max-level pet, and a max-roll from the lower tier can briefly beat a min-roll from the new tier; (2) focus items - the lesser focus items (Torch of Alna / Shovel of Ponz / Broom of Trilon / Stein of Ulissa) raise HP of pets from spell levels 4-49, and the greater focus items (Staff of Elemental Mastery: Air/Earth/Fire/Water) add +1 to the pet level roll for spell levels 46-60. Element choice is situational, not a ladder: earth/water/air/fire are sidegrades of each other at the same tier."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "Pet summons are not buffs and occupy no buff slot. Only one pet at a time per caster; casting a new pet spell with a pet up fails (Legends inherits the classic single-pet rule)."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Magician",
+    "https://wiki.project1999.com/Pet_Guide"
+   ]
+  },
+  {
+   "id": "mag-pet-water",
+   "name": "Water elemental pet line",
+   "category": "pet",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Elementalkin: Water",
+     "level": 2,
+     "inDb": true
+    },
+    {
+     "name": "Elementaling: Water",
+     "level": 6,
+     "inDb": true
+    },
+    {
+     "name": "Elemental: Water",
+     "level": 10,
+     "inDb": true
+    },
+    {
+     "name": "Minor Summoning: Water",
+     "level": 14,
+     "inDb": true
+    },
+    {
+     "name": "Lesser Summoning: Water",
+     "level": 18,
+     "inDb": true
+    },
+    {
+     "name": "Summoning: Water",
+     "level": 22,
+     "inDb": true
+    },
+    {
+     "name": "Greater Summoning: Water",
+     "level": 26,
+     "inDb": true
+    },
+    {
+     "name": "Minor Conjuration: Water",
+     "level": 31,
+     "inDb": true
+    },
+    {
+     "name": "Lesser Conjuration: Water",
+     "level": 36,
+     "inDb": true
+    },
+    {
+     "name": "Conjuration: Water",
+     "level": 41,
+     "inDb": true
+    },
+    {
+     "name": "Greater Conjuration: Water",
+     "level": 49,
+     "inDb": true
+    },
+    {
+     "name": "Vocarate: Water",
+     "level": 54,
+     "inDb": true,
+     "note": "Kunark/Velious tier (P99 era tags: Vocarate/Greater Vocaration)."
+    },
+    {
+     "name": "Greater Vocaration: Water",
+     "level": 60,
+     "inDb": true,
+     "note": "Kunark/Velious tier (P99 era tags: Vocarate/Greater Vocaration)."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strictly ordered within the element - each tier summons a higher-level elemental and the old pet must be dismissed (Reclaim Energy) before the new one is summoned. Two real exceptions: (1) pet level variance - every summon rolls a level inside the spell's range, so mages re-summon until they get a max-level pet, and a max-roll from the lower tier can briefly beat a min-roll from the new tier; (2) focus items - the lesser focus items (Torch of Alna / Shovel of Ponz / Broom of Trilon / Stein of Ulissa) raise HP of pets from spell levels 4-49, and the greater focus items (Staff of Elemental Mastery: Air/Earth/Fire/Water) add +1 to the pet level roll for spell levels 46-60. Element choice is situational, not a ladder: earth/water/air/fire are sidegrades of each other at the same tier."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "Pet summons are not buffs and occupy no buff slot. Only one pet at a time per caster; casting a new pet spell with a pet up fails (Legends inherits the classic single-pet rule)."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Magician",
+    "https://wiki.project1999.com/Pet_Guide"
+   ]
+  },
+  {
+   "id": "mag-pet-monster-summoning",
+   "name": "Monster Summoning line",
+   "category": "pet",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Monster Summoning I",
+     "level": 30,
+     "inDb": true,
+     "note": "P99 era: Velious. Pet has an innate fire DD."
+    },
+    {
+     "name": "Monster Summoning II",
+     "level": 50,
+     "inDb": true,
+     "note": "P99 era: Velious."
+    },
+    {
+     "name": "Monster Summoning III",
+     "level": 60,
+     "inDb": true,
+     "note": "P99 era: Velious."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict tier ladder. Monster pets take the model of a random non-playable NPC in the current zone; HP roughly on par with an earth pet of the same level, but they are UNAFFECTED by mage pet focus items, which is the one place they lose to the elemental lines."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "Shares the single-pet rule with the elemental lines - a monster pet and an elemental pet cannot coexist."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Magician",
+    "https://wiki.project1999.com/Pet_Guide"
+   ]
+  },
+  {
+   "id": "mag-pet-heal",
+   "name": "Pet heal line (Renew/Refresh Summoning)",
+   "category": "pet-buff",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Renew Elements",
+     "level": 7,
+     "inDb": true,
+     "note": "P99 era: Kunark, classic level 8. Also cures 10 disease counters."
+    },
+    {
+     "name": "Renew Summoning",
+     "level": 18,
+     "inDb": true,
+     "note": "P99 classic level 20."
+    },
+    {
+     "name": "Refresh Summoning",
+     "level": 34,
+     "inDb": true,
+     "note": "Not on P99 (post-Velious). Adds poison and curse counter cures on top of disease."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict - each is a bigger pet-only heal plus a wider cure set. Practical exception at high level: mages stop healing and start \"chain casting\" pets instead, because pet HP outgrows the heal (P99 Pet Guide)."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "Instant heals - no buff slot, no stacking interaction. The counter-cure components do not conflict with cleric/shaman cures."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Magician",
+    "https://wiki.project1999.com/Pet_Guide"
+   ]
+  },
+  {
+   "id": "mag-pet-haste-burnout",
+   "name": "Burnout line (pet haste/STR/AC)",
+   "category": "pet-buff",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Burnout",
+     "level": 11,
+     "inDb": true,
+     "note": "STR +15, ~13-15% haste, AC +6."
+    },
+    {
+     "name": "Burnout II",
+     "level": 29,
+     "inDb": true,
+     "note": "STR up to +45, 29-35% haste, AC +7."
+    },
+    {
+     "name": "Burnout III",
+     "level": 47,
+     "inDb": true,
+     "note": "STR +50, 60% haste, AC +11."
+    },
+    {
+     "name": "Burnout IV",
+     "level": 55,
+     "inDb": true,
+     "note": "P99 era: Velious. STR +60, 65% haste, but NO AC component and only a 15 minute duration versus 60 minutes for I-III."
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Strict on haste/STR, but Burnout IV is a deliberate non-strict tip: it drops the AC component and cuts duration from 60 min to 15 min for +5% haste and +10 STR over Burnout III. Many mages keep casting Burnout III for long fights/AFK and save IV for burn windows."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Haste (Primary)",
+     "Strength (Primary)",
+     "AC (unlisted - pet-only buffs are not tabulated on P99 Buff_Lines)"
+    ],
+    "conflicts": [
+     {
+      "line": "Enchanter/bard spell haste cast on the pet (Celerity/Swift Like The Wind/Aanya's Quickening/Wonderous Rapidity, Anthem De Arms etc.)",
+      "class": "Enchanter/Bard",
+      "detail": "Spell haste is a single primary slot (P99 Buff_Lines \"Haste (Primary)\"). A haste spell landed on the pet and Burnout compete for that slot - only one spell haste can hold at a time, so hasting a mage pet risks stripping the whole Burnout buff (and with it the STR and AC).",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Burnout line members with each other",
+      "class": "Magician",
+      "detail": "Same spell family - a lower Burnout is overwritten by a higher one and cannot be re-landed while the higher holds.",
+      "source": "https://wiki.project1999.com/Magician"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Item haste worn by the pet (e.g. a haste weapon/robe handed to the pet)",
+      "detail": "Item haste is a separate bucket from spell haste and stacks with Burnout - the standard reason to hand a pet a haste item (P99 Pet Guide / Haste Guide)."
+     },
+     {
+      "line": "Shaman Strength line",
+      "detail": "Not verified for pets; Strength (Primary) on Buff_Lines is a shaman line, so a shaman STR buff on the pet would likely contest the STR component. Treated as an open question rather than an assertion."
+     }
+    ],
+    "notes": "P99 Buff_Lines does not tabulate pet-only buffs, so slot names here are inferred from the effect types (spell haste = primary haste slot). Confidence: medium."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Magician",
+    "https://wiki.project1999.com/Pet_Guide",
+    "https://wiki.project1999.com/Buff_Lines"
+   ]
+  },
+  {
+   "id": "mag-pet-speed",
+   "name": "Pet run speed line (Expedience/Velocity)",
+   "category": "pet-buff",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Expedience",
+     "level": 27,
+     "inDb": true,
+     "note": "P99 era: Velious. +20% movement, 12 min."
+    },
+    {
+     "name": "Velocity",
+     "level": 58,
+     "inDb": true,
+     "note": "P99 era: Kunark. +59-62% movement, 36 min."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict - Velocity is a straight upgrade in magnitude and duration."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Speed (Primary)"
+    ],
+    "conflicts": [
+     {
+      "line": "Spirit of Wolf / Scale of Wolf line cast on the pet",
+      "class": "Druid/Shaman/Ranger",
+      "detail": "All out-of-combat movement buffs share the single Speed (Primary) line on P99 Buff_Lines; a SoW landed on the pet and Expedience/Velocity overwrite each other.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Bard selo's songs affecting the pet",
+      "class": "Bard",
+      "detail": "Same speed line; the higher effective value holds.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [],
+    "notes": "Speed has only one line on Buff_Lines - there is no second slot to layer into."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Magician",
+    "https://wiki.project1999.com/Buff_Lines"
+   ]
+  },
+  {
+   "id": "mag-self-shielding",
+   "name": "Shielding line (self HP/AC/MR)",
+   "category": "buff-self",
+   "sharedWith": [
+    "Enchanter",
+    "Necromancer",
+    "Wizard"
+   ],
+   "members": [
+    {
+     "name": "Minor Shielding",
+     "level": 1,
+     "inDb": true,
+     "note": "P99 level 1. The only member of the line that is not flagged self-only in every table."
+    },
+    {
+     "name": "Lesser Shielding",
+     "level": 5,
+     "inDb": true,
+     "note": "P99 classic level 8."
+    },
+    {
+     "name": "Shielding",
+     "level": 16,
+     "inDb": true,
+     "note": "P99 level 16. First member with the MR component."
+    },
+    {
+     "name": "Major Shielding",
+     "level": 24,
+     "inDb": true,
+     "note": "P99 level 24."
+    },
+    {
+     "name": "Greater Shielding",
+     "level": 32,
+     "inDb": true,
+     "note": "P99 classic level 34."
+    },
+    {
+     "name": "Arch Shielding",
+     "level": 43,
+     "inDb": true,
+     "note": "P99 classic level 44."
+    },
+    {
+     "name": "Shield of the Magi",
+     "level": 54,
+     "inDb": true,
+     "note": "P99 era: Kunark, level 54. Line capstone: +250 HP / +42 AC / +24 MR at max level."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict - every tier raises HP, AC and (from Shielding up) MR together, and all members occupy the same three slots so a lower one is simply overwritten. Only practical exception: at low level Minor/Lesser Shielding can be worth keeping over a cleric/shaman buff that would contest the AC slot, but within the mage line itself there is no reason to cast a lower tier."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "AC Slot 2",
+     "HP (Shielding / Talisman)",
+     "MR (Magic Shield)"
+    ],
+    "conflicts": [
+     {
+      "line": "Coat line (Thistlecoat/Barbcoat/Bramblecoat/Spikecoat/Thorncoat/Bladecoat)",
+      "class": "Druid/Ranger",
+      "detail": "The self-only coats sit in AC Slot 2 alongside the Shielding line - a druid or ranger cannot run a coat and the Shielding line together, and a mage cannot receive one. (Coats occupy AC Slot 2 + Damage Shield Slot 3.)",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Armor of Protection",
+      "class": "Cleric",
+      "detail": "Self-only cleric buff in AC Slot 2 and in HP (Shielding / Talisman).",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Yaulp line (Yaulp -> Yaulp IV)",
+      "class": "Cleric/Paladin",
+      "detail": "AC Slot 2.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Talisman line (Tnarg/Altuna/Kragg) and Focus of Spirit",
+      "class": "Shaman",
+      "detail": "Shares the HP (Shielding / Talisman) heading with the Shielding line, so a shaman Talisman and Shield of the Magi do not stack on the HP component.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Cleric/druid/paladin/ranger AC+HP primary line (Courage/Center/Valor/Resolution/Heroism, Skin Like Wood -> Protection of the Glades)",
+      "detail": "AC Slot 1 and HP (Primary) - fully independent of AC Slot 2 / HP (Shielding)."
+     },
+     {
+      "line": "Phantom line (own AC Slot 4 line)",
+      "detail": "The mage stacks his own Shielding (AC Slot 2) with his own Phantom armor (AC Slot 4)."
+     },
+     {
+      "line": "Cleric Symbol line (Transal -> Marzin)",
+      "detail": "HP-only line requiring a gem; separate heading from HP (Shielding / Talisman)."
+     },
+     {
+      "line": "Enchanter Augmentation (AC Slot 3), ranger Call of Earth (AC Slot 3), bard AC songs (Layer 2)",
+      "detail": "Different slots - all layer on top."
+     },
+     {
+      "line": "Resist Magic / Group Resist Magic (MR Primary)",
+      "detail": "Shield of the Magi's MR is the separate \"Magic Shield\" line, so an enchanter Group Resist Magic stacks with it."
+     }
+    ],
+    "notes": "Identical spells for Enchanter/Magician/Necromancer/Wizard at identical levels on P99 - not four parallel lines, one line four classes learn. Self-only from Lesser Shielding upward."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Buff_Lines",
+    "https://wiki.project1999.com/Magician"
+   ]
+  },
+  {
+   "id": "mag-self-phantom",
+   "name": "Phantom armor line (self AC + regen)",
+   "category": "buff-self",
+   "sharedWith": [
+    "Cleric",
+    "Shaman",
+    "Enchanter",
+    "Necromancer",
+    "Paladin"
+   ],
+   "members": [
+    {
+     "name": "Phantom Leather",
+     "level": 13,
+     "inDb": true,
+     "note": "P99 classic level 16. +9 AC / +1 HP per tick at max."
+    },
+    {
+     "name": "Phantom Chain",
+     "level": 25,
+     "inDb": true,
+     "note": "P99 classic level 29. +13 AC / +2 regen."
+    },
+    {
+     "name": "Phantom Plate",
+     "level": 41,
+     "inDb": true,
+     "note": "P99 classic level 44. +18 AC / +3 regen."
+    },
+    {
+     "name": "Phantom Armor",
+     "level": 52,
+     "inDb": true,
+     "note": "P99 era: Kunark, level 52. +22 AC / +5 regen. On Legends the duration is 1h30m rather than the permanent-flagged lower tiers."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict - AC and regen both go up every tier and all four sit in the same two slots. The only reason to hold a lower tier is if a group buffer is putting a bigger AC Slot 4 buff (cleric Aegis, shaman Guardian, enchanter Umbra) on you, in which case the whole Phantom line is displaced regardless of tier."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "AC Slot 4",
+     "HP Regeneration Slot 2 (self-only)"
+    ],
+    "conflicts": [
+     {
+      "line": "Holy Armor -> Spirit Armor -> Guard -> Armor of Faith -> Shield of Words -> Aegis / Bulwark of Faith",
+      "class": "Cleric/Paladin",
+      "detail": "AC Slot 4. A cleric Aegis (+34) or Bulwark of Faith (+37) overwrites Phantom Armor (+22) and is a straight upgrade for the mage.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Haze -> Mist -> Cloud -> Obscure -> Shade -> Shadow -> Umbra",
+      "class": "Enchanter",
+      "detail": "AC Slot 4 (Umbra +29).",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Scale Skin -> Turtle Skin -> Protect -> Shifting Shield -> Guardian -> Shroud of the Spirits",
+      "class": "Shaman",
+      "detail": "AC Slot 4 (Shroud of the Spirits +28).",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Spirit Armor",
+      "class": "Necromancer",
+      "detail": "AC Slot 4 (+13), also cleric 19 / paladin 30.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Divine Purpose / Form of the Great Bear / Aura of Battle click / Extended Regeneration potion",
+      "class": "Paladin/Shaman/item",
+      "detail": "HP Regeneration Slot 2 - these contest the Phantom line's regen component even though their AC is elsewhere.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Cleric/druid AC Slot 1 line (Courage/Valor/Resolution/Heroism, Skin Like Wood -> Protection of the Glades)",
+      "detail": "Different slot - the mage runs Phantom + a cleric/druid AC buff at the same time."
+     },
+     {
+      "line": "Shielding line (AC Slot 2)",
+      "detail": "The mage's own two AC lines stack with each other."
+     },
+     {
+      "line": "Enchanter Augmentation / ranger Call of Earth (AC Slot 3)",
+      "detail": "Different slot."
+     },
+     {
+      "line": "Druid/shaman Regeneration -> Regrowth (HP Regen Slot 1), bard Hymn of Restoration (L2 Slot 1), Niv's Melody (L2 Slot 3)",
+      "detail": "Phantom regen is Slot 2, so it layers on top of a druid/shaman regen and bard regen songs - this is exactly how a mage reaches the +132 regen figure in the Buff_Lines class maximum table."
+     }
+    ],
+    "notes": "This is the known mage AC anchor: AC Slot 4, shared with cleric Aegis / shaman Guardian / enchanter Umbra / necro Spirit Armor. Second, less-known slot: HP Regeneration Slot 2, where the P99 maximum table credits the magician +5 from Phantom Armor."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Buff_Lines",
+    "https://wiki.project1999.com/Magician"
+   ]
+  },
+  {
+   "id": "mag-ds-single",
+   "name": "Damage shield line (single target)",
+   "category": "buff-ds",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Shield of Fire",
+     "level": 7,
+     "inDb": true,
+     "note": "P99 level 8. +5 DS / +10 FR at max."
+    },
+    {
+     "name": "Shield of Flame",
+     "level": 19,
+     "inDb": true,
+     "note": "P99 level 20. +9 DS / +15 FR."
+    },
+    {
+     "name": "Inferno Shield",
+     "level": 28,
+     "inDb": true,
+     "note": "P99 classic level 29. +15 DS / +20 FR."
+    },
+    {
+     "name": "Barrier of Combustion",
+     "level": 38,
+     "inDb": true,
+     "note": "P99 classic level 39. +20 DS / +22 FR."
+    },
+    {
+     "name": "Shield of Lava",
+     "level": 45,
+     "inDb": true,
+     "note": "P99 classic level 49 - Legends re-tiers this four levels earlier. +25 DS / +25 FR."
+    },
+    {
+     "name": "Cadeau of Flame",
+     "level": 56,
+     "inDb": true,
+     "note": "P99 era: Kunark, level 56. +33 DS / +33 FR - the highest single-target damage shield in the classic game, for any class."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict - DS value and fire resist both rise every tier, and every member sits in the same two slots, so a lower tier can never usefully coexist with a higher one. Only real-world exception is mana/duration: all are 15 minutes on Legends, so lower tiers stay in the book only for buffing low-level targets efficiently."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Damage Shield Slot 1",
+     "Fire Resist Slot 2"
+    ],
+    "conflicts": [
+     {
+      "line": "Shield of Thistles -> Shield of Barbs -> Shield of Brambles -> Shield of Spikes -> Shield of Thorns -> Shield of Blades (spell versions)",
+      "class": "Druid",
+      "detail": "Damage Shield Slot 1. The druid castable DS line is the same slot as every mage DS - they overwrite each other. The high-level mage DS (Cadeau of Flame +33) beats the best druid single-target (Shield of Blades +32), which is why the P99 druid guides warn that the mage DS will overwrite theirs.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Legacy of Thorn (group)",
+      "class": "Druid",
+      "detail": "Damage Shield Slot 1 (+28 group) - contests Boon of Immolation / Aegis of Ro.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Shield of Thistles / Brambles / Spikes (ranger versions of the druid spells)",
+      "class": "Ranger",
+      "detail": "Damage Shield Slot 1 - same spells, ranger levels 30/49/58.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Feedback",
+      "class": "Enchanter",
+      "detail": "Damage Shield Slot 1 (+11).",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Banshee Aura",
+      "class": "Necromancer/Shadow Knight",
+      "detail": "Damage Shield Slot 1 (+12).",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "O'Keils Radiation",
+      "class": "Wizard",
+      "detail": "Damage Shield Slot 1 (+2) AND Fire Resist Slot 2 (+10) - contests the mage DS on both of its slots.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Aegis of Bathezid (Regal Band of Bathezid click)",
+      "class": "item",
+      "detail": "Damage Shield Slot 1 (+25).",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Mage group damage shields (Boon of Immolation, Aegis of Ro)",
+      "class": "Magician",
+      "detail": "Same Damage Shield Slot 1 and Fire Resist Slot 2 - the group versions and the single-target versions overwrite each other. Aegis of Ro (+33 group) matches Cadeau of Flame (+33 single) exactly, so above 60 the group cast fully replaces the single cast.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Thistlecoat -> Barbcoat -> Bramblecoat -> Spikecoat -> Thorncoat -> Bladecoat",
+      "detail": "THE key damage-shield stacking fact: the druid/ranger self-only \"coat\" line is Damage Shield Slot 3, not Slot 1. A druid or ranger running a coat still takes a mage DS on top, and the two add (a Bladecoat druid gets +6 from the coat plus +33 Cadeau of Flame). The coats cost them AC Slot 2 instead."
+     },
+     {
+      "line": "Kilva's Skin of Flame (consumable) / Scorching Skin / Illusion: Fire Elemental / Frostreaver's Blessing / Shield of the Eighth / O'Keils Flickering Flame / Call of Earth",
+      "detail": "Damage Shield Slot 2 - stacks with the mage DS. Kilva's (+31) is the single biggest layer available on top of a mage DS."
+     },
+     {
+      "line": "Thorny Shield (Cloak of Thorns click)",
+      "detail": "Damage Shield Slot 4 (+1) - stacks with everything."
+     },
+     {
+      "line": "Psalm of Warmth / Psalm of Cooling",
+      "detail": "Bard Layer 2, Slot 1 (+36 with max instrument) - stacks."
+     },
+     {
+      "line": "McVaxius' Rousing Rondo",
+      "detail": "Bard Layer 2, Slot 4 (+22 with max instrument) - stacks."
+     }
+    ],
+    "notes": "Mage DS spells carry TWO buff-line memberships: Damage Shield Slot 1 and Fire Resist Slot 2. The fire-resist half is what blocks them against O'Keils Radiation even though the DS numbers look unrelated. P99 damage-shield maximum: +129 for a druid, +128 ranger, +127 everyone else, and the mage contribution to that maximum is Cadeau of Flame in Slot 1."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Buff_Lines",
+    "https://wiki.project1999.com/Damage_Shield",
+    "https://wiki.project1999.com/Magician"
+   ]
+  },
+  {
+   "id": "mag-ds-group",
+   "name": "Damage shield line (group)",
+   "category": "buff-ds",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Boon of Immolation",
+     "level": 53,
+     "inDb": true,
+     "note": "P99 era: Kunark, level 53. Group version of Shield of Lava (+25 DS / +25 FR)."
+    },
+    {
+     "name": "Aegis of Ro",
+     "level": 60,
+     "inDb": true,
+     "note": "P99 era: Kunark, level 60. Group version of Cadeau of Flame (+33 DS / +33 FR)."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict between the two, but non-strict against the single-target line: Boon of Immolation (53) only matches Shield of Lava, and is beaten by Cadeau of Flame (56, +33 single). Between 56 and 60 a mage genuinely chooses - group +25 or single-target +33 - which is the one legitimate \"keep the lower spell\" case in the mage DS family."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Damage Shield Slot 1",
+     "Fire Resist Slot 2"
+    ],
+    "conflicts": [
+     {
+      "line": "Mage single-target damage shield line",
+      "class": "Magician",
+      "detail": "Identical slots - casting Aegis of Ro on a group strips any Cadeau of Flame already on those members and vice versa.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Shield of Thistles -> Shield of Barbs -> Shield of Brambles -> Shield of Spikes -> Shield of Thorns -> Shield of Blades (spell versions)",
+      "class": "Druid",
+      "detail": "Damage Shield Slot 1. The druid castable DS line is the same slot as every mage DS - they overwrite each other. The high-level mage DS (Cadeau of Flame +33) beats the best druid single-target (Shield of Blades +32), which is why the P99 druid guides warn that the mage DS will overwrite theirs.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Legacy of Thorn (group)",
+      "class": "Druid",
+      "detail": "Damage Shield Slot 1 (+28 group) - contests Boon of Immolation / Aegis of Ro.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Shield of Thistles / Brambles / Spikes (ranger versions of the druid spells)",
+      "class": "Ranger",
+      "detail": "Damage Shield Slot 1 - same spells, ranger levels 30/49/58.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Feedback",
+      "class": "Enchanter",
+      "detail": "Damage Shield Slot 1 (+11).",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Banshee Aura",
+      "class": "Necromancer/Shadow Knight",
+      "detail": "Damage Shield Slot 1 (+12).",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "O'Keils Radiation",
+      "class": "Wizard",
+      "detail": "Damage Shield Slot 1 (+2) AND Fire Resist Slot 2 (+10) - contests the mage DS on both of its slots.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Aegis of Bathezid (Regal Band of Bathezid click)",
+      "class": "item",
+      "detail": "Damage Shield Slot 1 (+25).",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Thistlecoat -> Barbcoat -> Bramblecoat -> Spikecoat -> Thorncoat -> Bladecoat",
+      "detail": "THE key damage-shield stacking fact: the druid/ranger self-only \"coat\" line is Damage Shield Slot 3, not Slot 1. A druid or ranger running a coat still takes a mage DS on top, and the two add (a Bladecoat druid gets +6 from the coat plus +33 Cadeau of Flame). The coats cost them AC Slot 2 instead."
+     },
+     {
+      "line": "Kilva's Skin of Flame (consumable) / Scorching Skin / Illusion: Fire Elemental / Frostreaver's Blessing / Shield of the Eighth / O'Keils Flickering Flame / Call of Earth",
+      "detail": "Damage Shield Slot 2 - stacks with the mage DS. Kilva's (+31) is the single biggest layer available on top of a mage DS."
+     },
+     {
+      "line": "Thorny Shield (Cloak of Thorns click)",
+      "detail": "Damage Shield Slot 4 (+1) - stacks with everything."
+     },
+     {
+      "line": "Psalm of Warmth / Psalm of Cooling",
+      "detail": "Bard Layer 2, Slot 1 (+36 with max instrument) - stacks."
+     },
+     {
+      "line": "McVaxius' Rousing Rondo",
+      "detail": "Bard Layer 2, Slot 4 (+22 with max instrument) - stacks."
+     }
+    ],
+    "notes": "Group v2 targeting on Legends. Same two slots as the single-target line."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Buff_Lines",
+    "https://wiki.project1999.com/Damage_Shield"
+   ]
+  },
+  {
+   "id": "mag-self-elemental-resist",
+   "name": "Elemental Shield / Elemental Armor (self fire+cold resist)",
+   "category": "buff-resist",
+   "sharedWith": [
+    "Wizard"
+   ],
+   "members": [
+    {
+     "name": "Elemental Shield",
+     "level": 19,
+     "inDb": true,
+     "note": "P99 classic level 20. +15 FR / +15 CR. Not itemised on P99 Buff_Lines (only the top tier is), but it is the same line as Elemental Armor."
+    },
+    {
+     "name": "Elemental Armor",
+     "level": 41,
+     "inDb": true,
+     "note": "P99 classic level 44 (Magician 44 / Wizard 44 on Buff_Lines). +30 FR / +30 CR, self-only."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict - Elemental Armor doubles both resists and occupies the same slots."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Fire Resist Slot 4",
+     "Cold Resist (Flower/Armor line)"
+    ],
+    "conflicts": [
+     {
+      "line": "Aura of Cold potions (Minor/Potion/Greater Potion of Cold)",
+      "class": "item",
+      "detail": "Fire Resist Slot 4 - the potion and Elemental Armor overwrite each other. This is exactly why the Buff_Lines maximum table gives Magician/Wizard +319 fire resist and everyone else +314: the casters trade the +25 potion for their own +30.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Aura of White Petals (White Flower of Functionality)",
+      "class": "item",
+      "detail": "Cold Resist Flower/Armor line (+50) - beats Elemental Armor's +30 in that slot.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Endure Fire/Cold -> Resist Fire/Cold -> Circle of Winter/Summer (cleric/druid/ranger/shaman)",
+      "detail": "Resist Slot 1 (Primary) - stacks with Elemental Armor."
+     },
+     {
+      "line": "Mage damage shield line (Fire Resist Slot 2)",
+      "detail": "A mage running Cadeau of Flame (+33 FR) plus Elemental Armor (+30 FR) gets both."
+     },
+     {
+      "line": "O'Keils Flickering Flame",
+      "detail": "Fire Resist Slot 3 (wizard) - stacks."
+     },
+     {
+      "line": "Psalm of Cooling / Elemental Rhythms",
+      "detail": "Bard Layer 2, Slots 2 & 3 - stacks."
+     }
+    ],
+    "notes": "Self-only from Elemental Armor (the Buff_Lines row is tagged Self-Only for Magician 44 / Wizard 44). Legends lists Elemental Shield at 19 and Elemental Armor at 41 - both a few levels below the P99 classic requirement, consistent with Legends tracking modern live levels."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Buff_Lines",
+    "https://wiki.project1999.com/Magician"
+   ]
+  },
+  {
+   "id": "mag-nuke-fire-dd",
+   "name": "Fire direct damage line (Burst of Flame -> Char)",
+   "category": "nuke",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Burst of Flame",
+     "level": 1,
+     "inDb": true,
+     "note": "Appears TWICE in the Legends export as two identical level-1 rows - almost certainly a duplicate DB record, not two spells."
+    },
+    {
+     "name": "Burn",
+     "level": 4,
+     "inDb": true
+    },
+    {
+     "name": "Shock of Flame",
+     "level": 15,
+     "inDb": true,
+     "note": "Fire-based despite the \"Shock of\" name, which otherwise belongs to the summoned-weapon magic line."
+    },
+    {
+     "name": "Blaze",
+     "level": 31,
+     "inDb": true
+    },
+    {
+     "name": "Char",
+     "level": 52,
+     "inDb": true,
+     "note": "P99 era: Kunark."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict by damage; efficiency (damage per mana) is the only reason a mage keeps a lower tier, and the P99 \"Magician Offensive Spell Lines\" tables exist precisely to compare DPM across these tiers."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "Instant damage - no buff slot."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Magician",
+    "https://wiki.project1999.com/Magician_Offensive_Spell_Lines"
+   ]
+  },
+  {
+   "id": "mag-nuke-shock-weapon",
+   "name": "Summoned-weapon \"Shock of\" line (magic DD)",
+   "category": "nuke",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Shock of Blades",
+     "level": 7,
+     "inDb": true
+    },
+    {
+     "name": "Shock of Spikes",
+     "level": 23,
+     "inDb": true
+    },
+    {
+     "name": "Shock of Swords",
+     "level": 41,
+     "inDb": true
+    },
+    {
+     "name": "Shock of Steel",
+     "level": 57,
+     "inDb": true,
+     "note": "P99 era: Kunark."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict. This is the magic-resist-checked conjured-weapon line - kept alongside the fire line because many classic mobs are fire-resistant."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "Instant damage - no buff slot."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Magician",
+    "https://wiki.project1999.com/Magician_Offensive_Spell_Lines"
+   ]
+  },
+  {
+   "id": "mag-nuke-bolt",
+   "name": "Fire bolt line",
+   "category": "nuke",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Flame Bolt",
+     "level": 5,
+     "inDb": true
+    },
+    {
+     "name": "Bolt of Flame",
+     "level": 18,
+     "inDb": true
+    },
+    {
+     "name": "Cinder Bolt",
+     "level": 33,
+     "inDb": true
+    },
+    {
+     "name": "Lava Bolt",
+     "level": 47,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict by damage. Bolts are a distinct delivery type - they travel in a straight line, need line of sight and no intervening geometry, and are unusually mana-efficient, so mages keep the line current rather than abandoning it for the regular DD line."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "Instant damage - no buff slot."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Magician",
+    "https://wiki.project1999.com/Magician_Offensive_Spell_Lines"
+   ]
+  },
+  {
+   "id": "mag-nuke-pbae",
+   "name": "Point-blank AE line (Flux/Arc/Scintillation)",
+   "category": "nuke",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Fire Flux",
+     "level": 1,
+     "inDb": true
+    },
+    {
+     "name": "Flame Flux",
+     "level": 22,
+     "inDb": true
+    },
+    {
+     "name": "Flame Arc",
+     "level": 39,
+     "inDb": true
+    },
+    {
+     "name": "Scintillation",
+     "level": 51,
+     "inDb": true,
+     "note": "P99 era: Kunark."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict by damage."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "Instant damage - no buff slot."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Magician",
+    "https://wiki.project1999.com/Magician_Offensive_Spell_Lines"
+   ]
+  },
+  {
+   "id": "mag-nuke-rain-fire",
+   "name": "Fire rain line (targeted AE)",
+   "category": "nuke",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Column of Fire",
+     "level": 12,
+     "inDb": true
+    },
+    {
+     "name": "Rain of Fire",
+     "level": 17,
+     "inDb": true
+    },
+    {
+     "name": "Rain of Lava",
+     "level": 35,
+     "inDb": true
+    },
+    {
+     "name": "Sirocco",
+     "level": 55,
+     "inDb": true,
+     "note": "P99 era: Kunark."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict by damage per wave. Rains land in three waves on a ground target; a lower tier is never preferred except for mana."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "Instant damage - no buff slot."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Magician",
+    "https://wiki.project1999.com/Magician_Offensive_Spell_Lines"
+   ]
+  },
+  {
+   "id": "mag-nuke-rain-weapon",
+   "name": "Summoned-weapon rain line (targeted AE, magic)",
+   "category": "nuke",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Rain of Blades",
+     "level": 10,
+     "inDb": true
+    },
+    {
+     "name": "Rain of Spikes",
+     "level": 26,
+     "inDb": true
+    },
+    {
+     "name": "Rain of Swords",
+     "level": 49,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict by damage. Magic-checked counterpart to the fire rain line, same three-wave delivery."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "Instant damage - no buff slot."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Magician",
+    "https://wiki.project1999.com/Magician_Offensive_Spell_Lines"
+   ]
+  },
+  {
+   "id": "mag-nuke-los",
+   "name": "Line-of-sight nuke line",
+   "category": "nuke",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Scars of Sigil",
+     "level": 54,
+     "inDb": true,
+     "note": "P99 era: Kunark. 450 damage, magic-based."
+    },
+    {
+     "name": "Seeking Flame of Seukor",
+     "level": 59,
+     "inDb": true,
+     "note": "P99 era: Kunark. 1024 damage, fire-based."
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Not strict - both are line-of-sight (no target needed, hits the first thing in the path). They differ by resist check (Scars of Sigil magic, Seeking Flame fire), so both stay in the book."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "Instant damage - no buff slot."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Magician"
+   ]
+  },
+  {
+   "id": "mag-dot-elemental",
+   "name": "DD+DoT line (Elemental Maelstrom / Wrath of the Elements)",
+   "category": "dot",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Elemental Maelstrom",
+     "level": 43,
+     "inDb": true,
+     "note": "P99 era: Velious. 250 up front + 70/tick for 6 ticks."
+    },
+    {
+     "name": "Wrath of the Elements",
+     "level": 55,
+     "inDb": true,
+     "note": "P99 era: Velious. 350 up front + 90/tick for 5 ticks."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict by magnitude, but note the tick count drops from 6 to 5, so total damage rises less than the per-tick number suggests."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [
+     {
+      "line": "Itself",
+      "class": "Magician",
+      "detail": "A DoT will not stack with another copy of the same DoT, and the two members of this line share their damage-over-time slot - only one of the two holds on a target.",
+      "source": "https://wiki.project1999.com/Magician"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Other classes' DoTs",
+      "detail": "Different spell lines land in different DoT slots and stack normally (standard EQ DoT behaviour)."
+     }
+    ],
+    "notes": "Detrimental DoTs are outside the scope of P99 Buff_Lines, which only tabulates beneficial buffs."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Magician"
+   ]
+  },
+  {
+   "id": "mag-antisummoned",
+   "name": "Anti-summoned nuke line (Ward -> Exile Summoned)",
+   "category": "nuke",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Ward Summoned",
+     "level": 9,
+     "inDb": true
+    },
+    {
+     "name": "Expulse Summoned",
+     "level": 18,
+     "inDb": true
+    },
+    {
+     "name": "Dismiss Summoned",
+     "level": 25,
+     "inDb": true
+    },
+    {
+     "name": "Expel Summoned",
+     "level": 28,
+     "inDb": true
+    },
+    {
+     "name": "Banish Summoned",
+     "level": 48,
+     "inDb": true
+    },
+    {
+     "name": "Exile Summoned",
+     "level": 56,
+     "inDb": true,
+     "note": "P99 era: Kunark."
+    },
+    {
+     "name": "Banishment",
+     "level": 60,
+     "inDb": true,
+     "note": "P99 era: Kunark. Not a nuke - \"Destroy Target\": an outright kill/despawn against summoned targets, the capstone of the family rather than the next damage tier."
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Strict by damage from Ward Summoned to Exile Summoned. Banishment breaks the pattern: it destroys the target outright instead of dealing damage, so it is a different tool (and famously fails/resists on many raid-tier summoned mobs), not a straight replacement."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "Instant, target must be of the Construct/Elemental/Summoned body type."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Magician"
+   ]
+  },
+  {
+   "id": "mag-debuff-malo",
+   "name": "Malaise/Malo resist-debuff line",
+   "category": "debuff",
+   "sharedWith": [
+    "Shaman"
+   ],
+   "members": [
+    {
+     "name": "Malaise",
+     "level": 22,
+     "inDb": true,
+     "note": "P99 level 24, spelled the same. -15 to -20 all resists."
+    },
+    {
+     "name": "Malisement",
+     "level": 44,
+     "inDb": true,
+     "note": "P99 spells this \"Malaisement\" - same spell, spelling differs between the P99 wiki and the Legends DB. -36 to -40 all resists."
+    },
+    {
+     "name": "Malosi",
+     "level": 51,
+     "inDb": true,
+     "note": "P99 era: Kunark. -59/-60 all resists."
+    },
+    {
+     "name": "Malosini",
+     "level": 58,
+     "inDb": true,
+     "note": "P99 era: Kunark. -60 all resists with a much longer duration (18-20 min vs 11 min)."
+    },
+    {
+     "name": "Mala",
+     "level": 60,
+     "inDb": true,
+     "note": "P99 era: Kunark. Only -35 all resists on Legends - LOWER than Malosi/Malosini. Kept as a fast, cheap, low-aggro debuff rather than an upgrade."
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Not strict at the top. Malaise -> Malisement -> Malosi is a clean ladder; Malosini adds duration over Malosi; but Mala at 60 is weaker in magnitude (-35) than both and exists as a cheaper/faster alternative. Never assume Mala replaces Malosini."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Malo (resist debuff) line"
+    ],
+    "conflicts": [
+     {
+      "line": "Malaise / Malaisement / Malosini (shaman versions of the same spells)",
+      "class": "Shaman",
+      "detail": "Same spells, learned by shamans too - a shaman Malosini and a mage Malosini are one line and overwrite each other.",
+      "source": "https://wiki.project1999.com/Magician"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Tashan -> Tashania line",
+      "detail": "The enchanter magic-resist debuff line is a separate slot from the Malo line and the two stack - the standard \"Tash + Malo\" raid opener."
+     }
+    ],
+    "notes": "Detrimental debuffs are not covered by P99 Buff_Lines (buffs only); line membership here is from the P99 Magician spell list plus long-standing community practice. Whether Mala occupies the same slot as Malosini on Legends is an open question - it is listed in the same family here because of the shared name root and effect set."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Magician"
+   ]
+  },
+  {
+   "id": "mag-dispel",
+   "name": "Dispel line (Cancel -> Annul Magic)",
+   "category": "utility",
+   "sharedWith": [
+    "Enchanter",
+    "Wizard",
+    "Necromancer",
+    "Cleric",
+    "Druid",
+    "Shaman"
+   ],
+   "members": [
+    {
+     "name": "Cancel Magic",
+     "level": 10,
+     "inDb": true,
+     "note": "Cancel Magic (1) - strips one buff slot."
+    },
+    {
+     "name": "Nullify Magic",
+     "level": 32,
+     "inDb": true,
+     "note": "Cancel Magic (4) x2."
+    },
+    {
+     "name": "Annul Magic",
+     "level": 53,
+     "inDb": true,
+     "note": "P99 era: Kunark. Cancel Magic (9) x2."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict - each tier strips more, with a higher dispel level check. Widely shared across caster and priest classes at different levels."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "Dispels remove buffs; they do not occupy a slot themselves."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Magician"
+   ]
+  },
+  {
+   "id": "mag-eye-of-zomm",
+   "name": "Eye of Zomm scouting line",
+   "category": "utility",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Eye of Zomm",
+     "level": 6,
+     "inDb": true,
+     "note": "P99 classic level 8. 5-tick controllable eye."
+    },
+    {
+     "name": "Eye of Tallon",
+     "level": 57,
+     "inDb": true,
+     "note": "P99 era: Kunark. Adds invisibility, see invisible and 120% magnification to the eye, 1 minute duration."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict - Eye of Tallon is the same tool with far better vision and survivability. Rage of Zomm (55) shares the \"Zomm\" name but is a combat pet, NOT a member of this line."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "The eye is a temporary controllable NPC; it does not consume the caster's pet slot on classic rules."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Magician"
+   ]
+  },
+  {
+   "id": "mag-summon-staves",
+   "name": "Summoned caster staff line",
+   "category": "summon-item",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Staff of Tracing",
+     "level": 8,
+     "inDb": true,
+     "note": "Summons Summoned: Staff of Tracing."
+    },
+    {
+     "name": "Staff of Warding",
+     "level": 14,
+     "inDb": true
+    },
+    {
+     "name": "Staff of Runes",
+     "level": 24,
+     "inDb": true
+    },
+    {
+     "name": "Staff of Symbols",
+     "level": 33,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict - each staff carries a stronger clickable effect. Paired one-for-one with the summoned melee weapon line (Warding/Runes/Symbols): the staff is the caster clicky, the weapon is the pet-arming version of the same tier."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "Summoned items are TEMPORARY - they vanish on zone/log or when the caster dies, and cannot be traded."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Magician"
+   ]
+  },
+  {
+   "id": "mag-summon-melee-weapons",
+   "name": "Summoned melee weapon line (pet weapons)",
+   "category": "summon-item",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Summon Dagger",
+     "level": 1,
+     "inDb": true,
+     "note": "Summoned: Dagger."
+    },
+    {
+     "name": "Summon Fang",
+     "level": 9,
+     "inDb": true,
+     "note": "Summoned: Snake Fang."
+    },
+    {
+     "name": "Spear of Warding",
+     "level": 20,
+     "inDb": true,
+     "note": "Summoned: Spear of Warding - piercing counterpart to Staff of Warding."
+    },
+    {
+     "name": "Sword of Runes",
+     "level": 26,
+     "inDb": true,
+     "note": "Counterpart to Staff of Runes."
+    },
+    {
+     "name": "Dagger of Symbols",
+     "level": 35,
+     "inDb": true,
+     "note": "Counterpart to Staff of Symbols."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict by weapon damage/proc, but the practical use is arming the pet, and pets care about damage/delay ratio - a mage may hand the pet two different summoned weapons rather than two of the top one, and dropping a summoned weapon on a pet is permanent (the pet keeps it until it dies)."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "Temporary summoned items."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Magician",
+    "https://wiki.project1999.com/Pet_Guide"
+   ]
+  },
+  {
+   "id": "mag-summon-ammo",
+   "name": "Summoned ammunition line",
+   "category": "summon-item",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Summon Throwing Dagger",
+     "level": 15,
+     "inDb": true
+    },
+    {
+     "name": "Summon Arrows",
+     "level": 20,
+     "inDb": true
+    },
+    {
+     "name": "Quiver of Marr",
+     "level": 53,
+     "inDb": true,
+     "note": "P99 era: Kunark. Summons a quiver plus Summoned: Arrow of Marr."
+    },
+    {
+     "name": "Bandoleer of Luclin",
+     "level": 54,
+     "inDb": true,
+     "note": "P99 era: Kunark. Summons a bandoleer plus Summoned: Knife of Luclin (throwing)."
+    },
+    {
+     "name": "Pouch of Quellious",
+     "level": 55,
+     "inDb": true,
+     "note": "P99 era: Kunark. Summons a pouch plus Summoned: Shuriken of Quellious (throwing)."
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Not strict. The three high-level spells differ by ammunition TYPE, not just power: Quiver of Marr is archery ammo, Bandoleer of Luclin and Pouch of Quellious are thrown. A ranger wants Marr; a monk/rogue wants Quellious. All three stay in the book at 60."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "Temporary summoned items; the container plus a stack of ammo comes from one cast."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Magician"
+   ]
+  },
+  {
+   "id": "mag-summon-food-drink",
+   "name": "Summoned food & drink line",
+   "category": "summon-item",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Summon Food",
+     "level": 1,
+     "inDb": true,
+     "note": "Summoned: Black Bread."
+    },
+    {
+     "name": "Summon Drink",
+     "level": 1,
+     "inDb": true,
+     "note": "Summoned: Globe of Water."
+    },
+    {
+     "name": "Cornucopia",
+     "level": 21,
+     "inDb": true,
+     "note": "Bulk food - the food branch upgrade."
+    },
+    {
+     "name": "Everfount",
+     "level": 22,
+     "inDb": true,
+     "note": "Bulk drink - the drink branch upgrade."
+    },
+    {
+     "name": "Gift of Xev",
+     "level": 51,
+     "inDb": true,
+     "note": "P99 era: Kunark. Four-item summon covering the group."
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Two parallel branches (food / drink) that only merge at Gift of Xev. Cornucopia does not replace Summon Drink and Everfount does not replace Summon Food - the pairs are cast together. The low tiers stay useful because they are cheap single-item casts."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "Temporary summoned items. This line is the mage's classic social currency - handing out food/drink/bags is the entire \"summoner\" service economy."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Magician"
+   ]
+  },
+  {
+   "id": "mag-summon-bags",
+   "name": "Summoned container line",
+   "category": "summon-item",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Dimensional Pocket",
+     "level": 8,
+     "inDb": true,
+     "note": "4-slot, 100% weight reduction, GIANT size capacity."
+    },
+    {
+     "name": "Dimensional Hole",
+     "level": 30,
+     "inDb": true,
+     "note": "Larger capacity."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict - the Hole is a bigger Pocket. Both are temporary, so mages carry the spell rather than the bag."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "Temporary summoned items - items inside are lost when the container vanishes."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Magician"
+   ]
+  },
+  {
+   "id": "mag-summon-stones",
+   "name": "Summoned utility stones & light sources",
+   "category": "summon-item",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Summon Wisp",
+     "level": 3,
+     "inDb": true,
+     "note": "Summoned: Wisp Stone - light source."
+    },
+    {
+     "name": "Summon Heatstone",
+     "level": 15,
+     "inDb": true,
+     "note": "Summoned: Heatstone."
+    },
+    {
+     "name": "Summon Waterstone",
+     "level": 17,
+     "inDb": true,
+     "note": "Summoned: Waterstone."
+    },
+    {
+     "name": "Summon Coldstone",
+     "level": 29,
+     "inDb": true,
+     "note": "Summoned: Coldstone."
+    },
+    {
+     "name": "Summon Shard of the Core",
+     "level": 31,
+     "inDb": true,
+     "note": "P99 era: Velious, classic level 34."
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Not strict - these are different utilities wearing the same \"summoned stone\" shape (light, heat/cold survival, water breathing). A mage keeps all of them; the higher level ones do not obsolete Summon Wisp as a light source."
+   },
+   "missingOnLegends": [
+    "Enduring Breath (P99 Magician classic level 20) - absent from the Legends mage list even though Summon Waterstone, the item version of the same utility, is present."
+   ],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "Temporary summoned items. The effects they grant (endure fire/cold, enduring breath) DO occupy the corresponding resist/utility buff lines when clicked."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Magician"
+   ]
+  },
+  {
+   "id": "mag-vision",
+   "name": "Vision utility line",
+   "category": "utility",
+   "sharedWith": [
+    "Enchanter",
+    "Necromancer",
+    "Wizard",
+    "Shaman",
+    "Druid"
+   ],
+   "members": [
+    {
+     "name": "See Invisible",
+     "level": 16,
+     "inDb": true,
+     "note": "P99 level 16. 27 minutes on Legends, single-target or self."
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Only one member survives on Legends, so nothing to replace. On P99 the mage also gets Gaze (16), Serpent Sight (16) and Ultravision (29) in this utility family; Eye of Tallon (57) bundles see-invisible into its eye but does not replace this spell."
+   },
+   "missingOnLegends": [
+    "Gaze (P99 Magician level 16)",
+    "Serpent Sight (P99 Magician level 16) - infravision",
+    "Ultravision (P99 Magician classic level 29)"
+   ],
+   "stacking": {
+    "slots": [
+     "Vision (see invisible / infravision / ultravision are separate effects)"
+    ],
+    "conflicts": [
+     {
+      "line": "Other classes' See Invisible",
+      "class": "Enchanter/Necromancer/Wizard/Shaman/Druid",
+      "detail": "Same spell, one effect - refreshing rather than stacking.",
+      "source": "https://wiki.project1999.com/Magician"
+     },
+     {
+      "line": "Serpent Sight vs Ultravision",
+      "class": "self",
+      "detail": "The infravision and ultravision night-vision effects overwrite each other; see-invisible is independent of both.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "See Invisible with any night-vision buff",
+      "detail": "Different effects - they coexist."
+     }
+    ],
+    "notes": "Not tabulated on P99 Buff_Lines (vision buffs are outside its statistic tables); membership from the P99 Magician spell list."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Magician"
+   ]
+  },
+  {
+   "id": "mag-summon-orbs",
+   "name": "Summoned orb line",
+   "category": "summon-item",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Summon: Orb of Exploration",
+     "level": 42,
+     "inDb": true,
+     "note": "Not on the P99 classic list - post-Velious."
+    },
+    {
+     "name": "Summon Orb",
+     "level": 45,
+     "inDb": true,
+     "note": "P99 era: Kunark, classic level 44 (Summoned: Orb of Mastery)."
+    },
+    {
+     "name": "Summon Orb",
+     "level": 46,
+     "inDb": true,
+     "note": "SECOND row with the same name one level higher - see openQuestions. Probably a duplicate/re-tier artifact in the Legends DB rather than a distinct spell."
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Cannot be called strict while the two same-named level 45/46 rows are unresolved. Orb of Exploration is a utility/vision orb; Orb of Mastery is a caster stat item - different purposes."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "Temporary summoned items."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Magician",
+    "https://everquest.allakhazam.com/db/spelllist.html?type=mag&level=1&opt=And+Higher"
+   ]
+  },
+  {
+   "id": "mag-summon-modrod",
+   "name": "Modulating Rod line",
+   "category": "summon-item",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Modulating Rod",
+     "level": 44,
+     "inDb": true,
+     "note": "P99 classic level 44. Summons Summoned: Modulating Rod, whose click effect is \"Modulation\" (converts the holder's HP into mana)."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Single tier on Legends, so nothing to replace - but flagging the classic caveat: \"mod rod\" tiers on live (Modulating Rod -> Rod of Mystical Transvergence and friends) are LATER expansions. Anything the Legends DB shows beyond this one spell would be custom. Note also that the rod is cast on a target (\"Single Friendly (or Self)\"), which is the mechanic behind mages handing rods to the whole raid."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "The item's Modulation click converts HP to mana; it is not a buff and holds no slot."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Magician"
+   ]
+  },
+  {
+   "id": "mag-summon-phantom-armor-sets",
+   "name": "Summoned Phantom armor sets",
+   "category": "summon-item",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Summon Phantom Leather",
+     "level": 17,
+     "inDb": true,
+     "note": "Summons a bag containing a full set of wearable summoned leather."
+    },
+    {
+     "name": "Summon Phantom Chain",
+     "level": 25,
+     "inDb": true
+    },
+    {
+     "name": "Summon Phantom Plate",
+     "level": 38,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict by AC of the summoned set. IMPORTANT ANNOTATION: this is a different line from the Phantom Leather/Chain/Plate/Armor SELF-BUFF line despite the shared names - one summons wearable items into a bag (8 \"Summon Into Bag\" effects), the other is an AC Slot 4 buff. Do not merge them."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "Temporary summoned equipment; its worn AC is item AC and never touches the spell AC slots."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Magician",
+    "https://everquest.allakhazam.com/db/spelllist.html?type=mag&level=1&opt=And+Higher"
+   ]
+  },
+  {
+   "id": "mag-summon-jewelry-neck",
+   "name": "Summoned focus jewelry - neck (chokers)",
+   "category": "summon-item",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Summon Brass Choker",
+     "level": 2,
+     "inDb": true,
+     "note": "Jedah's Brass Choker: +2 AC/+5 HP/+5 mana, 15% chance not to consume a spell component on spells level 12 and lower."
+    },
+    {
+     "name": "Summon Silver Choker",
+     "level": 21,
+     "inDb": true
+    },
+    {
+     "name": "Summon Golden Choker",
+     "level": 50,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict by focus tier - each choker carries the same focus effect at a higher spell-level cap. Not on the P99 classic list: this whole summoned-focus-jewelry family is post-Velious (focus effects arrived with Luclin), so on Legends it is inherited from live rather than from classic."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "Focus effects are item properties, not buffs - they hold no buff slot, but only ONE focus of a given type applies at a time (the strongest eligible item wins)."
+   },
+   "sources": [
+    "https://everquest.allakhazam.com/db/spell.html?spell=2230",
+    "https://everquest.allakhazam.com/db/spelllist.html?type=mag&level=1&opt=And+Higher"
+   ]
+  },
+  {
+   "id": "mag-summon-jewelry-ear",
+   "name": "Summoned focus jewelry - ear (baubles)",
+   "category": "summon-item",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Summon Tarnished Bauble",
+     "level": 10,
+     "inDb": true,
+     "note": "Jolum's Tarnished Bauble: +2 AC/+5 HP/+5 mana, ear slot; the bauble line carries a ~15% mana preservation focus on direct damage."
+    },
+    {
+     "name": "Summon Shiny Bauble",
+     "level": 30,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict by focus tier. Post-Velious family (not on the P99 classic spell list)."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "Focus effects: only the best eligible focus of a type applies; two baubles in two ear slots do not add."
+   },
+   "sources": [
+    "https://everquest.allakhazam.com/db/spell.html?spell=2242",
+    "https://everquest.allakhazam.com/db/spelllist.html?type=mag&level=1&opt=And+Higher"
+   ]
+  },
+  {
+   "id": "mag-summon-jewelry-finger",
+   "name": "Summoned focus jewelry - finger (rings)",
+   "category": "summon-item",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Summon Tiny Ring",
+     "level": 16,
+     "inDb": true
+    },
+    {
+     "name": "Summon Twisted Ring",
+     "level": 37,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict by focus tier. Post-Velious family."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "Focus effect items, not buffs."
+   },
+   "sources": [
+    "https://everquest.allakhazam.com/db/spelllist.html?type=mag&level=1&opt=And+Higher"
+   ]
+  },
+  {
+   "id": "mag-summon-jewelry-wrist",
+   "name": "Summoned focus jewelry - wrist (bracelets)",
+   "category": "summon-item",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Summon Wooden Bracelet",
+     "level": 20,
+     "inDb": true,
+     "note": "Same level as Summon Jade Bracelet - two parallel wrist items with different focus effects, not a tier pair."
+    },
+    {
+     "name": "Summon Jade Bracelet",
+     "level": 20,
+     "inDb": true
+    },
+    {
+     "name": "Summon Opal Bracelet",
+     "level": 42,
+     "inDb": true
+    },
+    {
+     "name": "Summon Stone Bracelet",
+     "level": 44,
+     "inDb": true
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Not strict: two level-20 bracelets exist side by side (Wooden and Jade), which is the signature of two different focus effects rather than a ladder, and the same is likely true of Opal vs Stone at 42/44. Needs per-item focus-effect confirmation before asserting an upgrade order."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "Focus effect items. Two wrist slots exist, so a mage can genuinely wear two of these at once - but two copies of the SAME focus type do not stack."
+   },
+   "sources": [
+    "https://everquest.allakhazam.com/db/spelllist.html?type=mag&level=1&opt=And+Higher"
+   ]
+  },
+  {
+   "id": "mag-summon-apparel",
+   "name": "Summoned focus apparel (mantles, defender, blanket)",
+   "category": "summon-item",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Summon Linen Mantle",
+     "level": 8,
+     "inDb": true,
+     "note": "Shoulder-slot summoned focus item."
+    },
+    {
+     "name": "Summon Elemental Defender",
+     "level": 11,
+     "inDb": true,
+     "note": "Summoned shield/secondary-slot item - grouped here as summoned wearable gear; slot unconfirmed."
+    },
+    {
+     "name": "Summon Leather Mantle",
+     "level": 27,
+     "inDb": true,
+     "note": "Shoulder-slot upgrade of Summon Linen Mantle."
+    },
+    {
+     "name": "Summon Elemental Blanket",
+     "level": 48,
+     "inDb": true,
+     "note": "Highest summoned apparel piece on Legends; slot unconfirmed (back/shoulder)."
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Linen Mantle -> Leather Mantle is a clean pair; Elemental Defender and Elemental Blanket are folded in here because they are summoned wearables of the same family, but their equipment slots are unconfirmed and they may belong in their own lines. Post-Velious family (none appear on the P99 classic list)."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "Focus/stat items, not buffs."
+   },
+   "sources": [
+    "https://everquest.allakhazam.com/db/spelllist.html?type=mag&level=1&opt=And+Higher"
+   ]
+  },
+  {
+   "id": "mag-summon-misc-clickies",
+   "name": "Summoned utility clickies (flight ring, muzzle)",
+   "category": "summon-item",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Summon Ring of Flight",
+     "level": 37,
+     "inDb": true,
+     "note": "P99 classic level 39 - summons a levitation ring. This is why P99 mages also learn Levitation; on Legends the ring exists but the Levitation spell does not."
+    },
+    {
+     "name": "Summon: Muzzle of Mardu",
+     "level": 56,
+     "inDb": true,
+     "note": "P99 era: Kunark (Muzzle of Mardu)."
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Not a ladder - two unrelated utility summons kept together for tidiness. Neither replaces the other."
+   },
+   "missingOnLegends": [
+    "Levitation (P99 Magician classic level 39/44) - the self/target levitation spell is absent from the Legends mage list even though Summon Ring of Flight is present."
+   ],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "The Ring of Flight click puts Levitation on the user, which occupies the standard levitation buff line and will not stack with a druid/shaman levitate."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Magician"
+   ]
+  }
+ ],
+ "standalone": [
+  {
+   "name": "Flare",
+   "level": 1,
+   "category": "utility",
+   "note": "Cast Light - a bolt-delivered light source, the mage's level 1 torch. No upgrade line; Summon Wisp (3) supersedes it in practice by giving a permanent light ITEM."
+  },
+  {
+   "name": "True North",
+   "level": 1,
+   "category": "utility",
+   "note": "Universal caster utility, no tiers."
+  },
+  {
+   "name": "Reclaim Energy",
+   "level": 1,
+   "category": "pet",
+   "note": "Kills the pet and refunds mana. Never upgraded; the essential tool for re-rolling pet level variance (P99 Pet Guide: \"Reclaim Energy is your friend\")."
+  },
+  {
+   "name": "Summon Bandages",
+   "level": 2,
+   "category": "summon-item",
+   "note": "Summons 20 Summoned: Bandages. Single-tier - never upgraded in classic through Velious."
+  },
+  {
+   "name": "Sense Summoned",
+   "level": 3,
+   "category": "utility",
+   "note": "Points at the nearest summoned creature. Single tier."
+  },
+  {
+   "name": "Gate",
+   "level": 4,
+   "category": "travel",
+   "note": "Shared with every caster class; no mage-specific tiering."
+  },
+  {
+   "name": "Invisibility",
+   "level": 8,
+   "category": "utility",
+   "note": "Shared across caster classes. Its stacking rule is the classic one: invisibility, improved invisibility and invis-vs-undead do not stack with each other."
+  },
+  {
+   "name": "Bind Affinity",
+   "level": 12,
+   "category": "travel",
+   "note": "Shared caster utility; single tier."
+  },
+  {
+   "name": "Identify",
+   "level": 16,
+   "category": "utility",
+   "note": "Shared caster utility; single tier."
+  },
+  {
+   "name": "Tiny Companion",
+   "level": 19,
+   "category": "pet-buff",
+   "note": "Shrinks the pet by 50% - cosmetic/practical (dungeon pathing), no tiers."
+  },
+  {
+   "name": "Summon Companion",
+   "level": 36,
+   "category": "pet-buff",
+   "note": "P99 era: Velious. \"Call Pet\" - teleports the existing pet to the caster. No tiers."
+  },
+  {
+   "name": "Bounce",
+   "level": 42,
+   "category": "buff-self",
+   "note": "NOT on the P99 classic list. Live/LDoN-era spell (Magician 42, 72 adventure points, North Ro camp): +40% chance to reflect spells for 12 seconds, 2 minute recast. Legends level matches live exactly."
+  },
+  {
+   "name": "Primal Remedy",
+   "level": 44,
+   "category": "pet-buff",
+   "note": "NOT on the P99 classic list. Legacy of Ykesha quest spell (Vera/Vira, Gunthak/Temple of Sol Ro): a pet heal-over-time (120 HP/tick for 30s) used to top the pet off between casts of the main pet heal, and lower aggro than a direct heal. Deliberately NOT placed in the Renew/Refresh Summoning line - different mechanic and different acquisition."
+  },
+  {
+   "name": "Ward of Calliav",
+   "level": 46,
+   "category": "pet-buff",
+   "note": "NOT on the P99 classic list. LDoN-era pet rune (mage version bought with adventure points at Mistmoore Catacombs) - pet absorbs several hits before taking damage. The Legends absorb value (11747) is far above the live classic-era value and looks re-tuned; flag for magnitude review."
+  },
+  {
+   "name": "Call of the Hero",
+   "level": 55,
+   "category": "utility",
+   "note": "P99 era: Kunark. The mage signature summon-a-player spell. Single tier, no upgrades."
+  },
+  {
+   "name": "Rage of Zomm",
+   "level": 55,
+   "category": "pet",
+   "note": "P99 era: Kunark. Summons an attacking Zomm pet (\"Summon Pet: Burnout\" in the Legends effect text). Shares the Zomm name with Eye of Zomm/Eye of Tallon but is a combat pet, not a scouting eye - deliberately not in that line."
+  },
+  {
+   "name": "Bristlebane`s Bundle",
+   "level": 52,
+   "category": "summon-item",
+   "note": "P99 era: Kunark. Novelty party bundle (Summoned: Cake, Ale, Spinning Bottle, A Firework). Not an upgrade of the food/drink line - it is the joke spell, kept separate."
+  },
+  {
+   "name": "Dyzil`s Deafening Decoy",
+   "level": 56,
+   "category": "pet",
+   "note": "P99 era: Kunark. Summons a decoy pet used to pull/hold aggro. Single tier, unrelated to the elemental pet ladders."
+  },
+  {
+   "name": "Valiant Companion",
+   "level": 59,
+   "category": "pet-buff",
+   "note": "P99 era: Velious. Grants the pet fear immunity for 3.5 minutes. Single tier."
+  },
+  {
+   "name": "Manastorm",
+   "level": 59,
+   "category": "nuke",
+   "note": "P99 era: Kunark. Targeted AE that deals 675 damage AND drains 50 mana. Kept out of the fire/weapon rain lines because of the mana-drain component and because it is the only mana-draining mage AE."
+  }
+ ],
+ "unlinked": [],
+ "openQuestions": [
+  "The Legends export contains TWO identical \"Burst of Flame\" rows at level 1 (same effects, same type). Treated as one spell here; recommend de-duplicating the DB record.",
+  "Two rows named \"Summon Orb\" at level 45 and level 46. P99/classic has a single Summon Orb (classic level 44, summons Summoned: Orb of Mastery). Is the level 46 row a distinct live spell, a re-tier artifact, or a duplicate record?",
+  "Mala (60) is only -35 all resists on Legends, below Malosi (51, -59/-60) and Malosini (58, -60). On live, Mala is the lower-magnitude quick-cast member of the family. Does it occupy the same debuff slot as Malosini on Legends (i.e. overwrite it), or a separate one? Not resolvable from P99, which does not tabulate debuff slots.",
+  "Ward of Calliav on Legends absorbs \"up to 11747 damage\" - orders of magnitude above the classic/LDoN-era value. Either the Legends DB is showing a scaled/max-level figure or the spell has been re-tuned. Needs a magnitude check against the server data, not against web sources.",
+  "Burnout stacking with enchanter/bard haste ON A PET is inferred from the shared \"Haste (Primary)\" line - P99 Buff_Lines does not tabulate pet-only buffs, so this is medium confidence rather than sourced fact.",
+  "Summon Elemental Defender (11) and Summon Elemental Blanket (48) are grouped with the summoned mantles as \"summoned focus apparel\" on the assumption they are wearable focus items. Their equipment slots were not confirmed from a source.",
+  "Summon Wooden Bracelet and Summon Jade Bracelet are both level 20. Confirm whether they carry different focus effects (expected) before treating either as an upgrade of the other."
+ ],
+ "sources": [
+  "https://wiki.project1999.com/Buff_Lines",
+  "https://wiki.project1999.com/Magician",
+  "https://wiki.project1999.com/Pet_Guide",
+  "https://wiki.project1999.com/Damage_Shield",
+  "https://wiki.project1999.com/Magician_Offensive_Spell_Lines",
+  "https://everquest.allakhazam.com/db/spelllist.html?type=mag&level=1&opt=And+Higher",
+  "https://everquest.allakhazam.com/db/spell.html?spell=3699 (Primal Remedy)",
+  "https://everquest.allakhazam.com/db/spell.html?spell=4079 (Ward of Calliav)",
+  "https://everquest.allakhazam.com/db/spell.html?spell=4099 (Bounce)",
+  "https://everquest.allakhazam.com/db/spell.html?spell=2230 (Summon Brass Choker)",
+  "https://everquest.allakhazam.com/db/spell.html?spell=2242 (Summon Tarnished Bauble)"
+ ],
+ "notes": [
+  "LEVELS: Legends levels track modern/live Allakhazam, not P99 classic. P99 grants magician spells in 4-5 level tiers (1/4/8/12/16/20/24/29/34/39/44/49...), while Legends spreads them one per level. Every level difference recorded in member notes is that systematic offset, not a data error.",
+  "ERA TAGS in member notes (\"P99 era: Kunark/Velious\") come from the era column of the P99 Magician spell table.",
+  "MISSING FROM LEGENDS (whole-class sweep against the P99 classic-through-Velious magician list): Gaze (16), Serpent Sight (16), Enduring Breath (20), Ultravision (29), Levitation (39). Everything else on the P99 list is present on Legends. Nothing else is missing.",
+  "PRESENT ON LEGENDS BUT NOT CLASSIC (post-Velious, inherited from live rather than Legends-custom): the entire summoned focus jewelry/apparel family (chokers, baubles, rings, bracelets, mantles, Elemental Defender, Elemental Blanket), the Summon Phantom Leather/Chain/Plate armor-set summons, Summon: Orb of Exploration, Refresh Summoning, Primal Remedy (LoY quest), Bounce (LDoN), Ward of Calliav (LDoN). No spell in the Legends list is unattested on live - there are no clearly Legends-invented spells in this class.",
+  "STACKING MODEL: slot-based per P99 Buff_Lines. Buffs listed under the same heading do not stack; a spell that touches several statistics appears under several headings and blocks in each of them independently."
+ ]
+}

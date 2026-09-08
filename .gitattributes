@@ -1,0 +1,21 @@
+# JOS-251 — LINE ENDINGS FOR THE FILES A SCRAPER WRITES, and only those.
+#
+# This machine runs `core.autocrlf=true`, so git checks a text file out with CRLF and normalises it
+# back to LF on the way in. That works for hand-edited source. It does NOT work for a file a script
+# rewrites: `scripts/scrape-spells.ts` writes exactly the bytes the MediaWiki API returned (LF) and
+# `JSON.stringify` output (LF), so after every run the working tree holds LF where git expects
+# CRLF — and `git status` reports 1,963 modified files forever while `git diff` correctly reports
+# no change at all. That is the "stray noise in the tree" the integration rules forbid, and it is
+# worst exactly where it matters most: the whole point of the revision-keyed cache is that a
+# re-scrape produces a VISIBLY empty diff.
+#
+# `eol=lf` tells git to check these out the way the scraper writes them. The stored blobs do not
+# change (they were already LF); only the checkout does.
+scripts/sources/cache/** text eol=lf
+src/main/data/spells.json text eol=lf
+
+# The `/outputfile` dumps under tests/fixtures/ are the owner's REAL exports, committed VERBATIM,
+# and tests/outputsAchievements.test.mts asserts their bytes (CRLF, no BOM, 64,539 bytes). A
+# checkout that normalised them to LF failed that suite, so git is told not to touch them at all.
+tests/fixtures/Primitive_freeport-Achievements.txt -text
+tests/fixtures/Primitive_freeport-Inventory.txt -text

@@ -1,0 +1,17 @@
+[package]
+name = "parity"
+description = "Prints (or diffs) the eqlog parser's serialized event stream for one log file (JOS-469)"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+publish.workspace = true
+
+[dependencies]
+eqlog = { path = "../eqlog" }
+fold = { path = "../fold" }
+serde_json.workspace = true
+
+[features]
+# `cargo build --release -p parity --features profile`: the stage report adds the combat phase split.
+profile = ["fold/profile"]

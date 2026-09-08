@@ -1,0 +1,2765 @@
+{
+ "class": "Wizard",
+ "lines": [
+  {
+   "id": "wiz-dd-fire",
+   "name": "Fire Direct Damage (Shock of Fire line)",
+   "category": "nuke-single-fire",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Shock of Fire",
+     "level": 4,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "Fire Bolt",
+     "level": 5,
+     "inDb": true,
+     "note": "P99 L8; Legends L5. P99 target type \"Line of Sight\"; Legends \"Single\"."
+    },
+    {
+     "name": "Flame Shock",
+     "level": 15,
+     "inDb": true,
+     "note": "P99 L16 for 102-110; Legends L15 for 145-175 - magnitude disagreement, not averaged."
+    },
+    {
+     "name": "Inferno Shock",
+     "level": 26,
+     "inDb": true,
+     "note": "P99 L29 for 237-250; Legends L26 for 430-550."
+    },
+    {
+     "name": "Conflagration",
+     "level": 43,
+     "inDb": true,
+     "note": "P99 L44 for 590-625; Legends L43 flat 900."
+    },
+    {
+     "name": "Draught of Fire",
+     "level": 51,
+     "inDb": true,
+     "note": "Kunark efficiency nuke: far better mana/cast-time than Conflagration despite similar damage."
+    },
+    {
+     "name": "Sunstrike",
+     "level": 60,
+     "inDb": true,
+     "note": ""
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Damage rises monotonically, but the newest spell is not always the best. P99 explicitly warns \"just because a spell has a bigger damage number doesn't always mean that spell is the best spell in that line.\" The Kunark Draughts (215 mana / 3s cast) beat the older big-ticket nukes on both mana efficiency and DPS, so Conflagration stays situational (burst) rather than being retired."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "Instant detrimental nukes - no buff slots involved."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Wizard/Spell_Lines",
+    "https://wiki.project1999.com/Wizard_Spells_By_Type"
+   ]
+  },
+  {
+   "id": "wiz-dd-cold",
+   "name": "Cold Direct Damage (Shock of Frost line)",
+   "category": "nuke-single-cold",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Frost Bolt",
+     "level": 1,
+     "inDb": true,
+     "note": "Legends 9-14; P99 4-7. Two L1 cold spells coexist (Frost Bolt and Shock of Frost) - neither replaces the other at L1."
+    },
+    {
+     "name": "Shock of Frost",
+     "level": 1,
+     "inDb": true,
+     "note": "DUPLICATE DB ROWS: two \"Shock of Frost\" entries both at L1, one for 4-6 (matches P99) and one for 11-28. Treated as one line member; the second row is almost certainly a re-tuned/duplicate spell id on Legends."
+    },
+    {
+     "name": "Shock of Ice",
+     "level": 8,
+     "inDb": true,
+     "note": "Legends 46-58; P99 34-38."
+    },
+    {
+     "name": "Frost Shock",
+     "level": 24,
+     "inDb": true,
+     "note": "Legends 276-314; P99 169-187."
+    },
+    {
+     "name": "Ice Shock",
+     "level": 34,
+     "inDb": true,
+     "note": "Legends 410-490; P99 310-320."
+    },
+    {
+     "name": "Ice Comet",
+     "level": 49,
+     "inDb": true,
+     "note": "DISAGREEMENT: Legends 808; P99 classic 1110-1120. Legends is LOWER here, the opposite direction from the rest of the line. Flagged, not averaged."
+    },
+    {
+     "name": "Draught of Ice",
+     "level": 57,
+     "inDb": true,
+     "note": "Lower raw damage than Ice Comet but ~2x the mana efficiency and half the cast time - the practical replacement."
+    },
+    {
+     "name": "Ice Spear of Solist",
+     "level": 60,
+     "inDb": true,
+     "note": ""
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Not strict. Ice Comet (400 mana, 6.3s) remains a burst/alpha tool while Draught of Ice (215 mana, 3s) is the sustained-damage spell; Legends further muddies this by dropping Ice Comet to 808 damage. Frost Bolt and Shock of Frost are siblings at L1, not an upgrade pair."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://wiki.project1999.com/Wizard/Spell_Lines",
+    "https://wiki.project1999.com/Wizard_Spells_By_Type"
+   ]
+  },
+  {
+   "id": "wiz-dd-magic",
+   "name": "Magic Direct Damage (Shock of Lightning line)",
+   "category": "nuke-single-magic",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Shock of Lightning",
+     "level": 10,
+     "inDb": true,
+     "note": "P99 L12."
+    },
+    {
+     "name": "Lightning Bolt",
+     "level": 16,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "Lightning Shock",
+     "level": 37,
+     "inDb": true,
+     "note": "P99 L39."
+    },
+    {
+     "name": "Rend",
+     "level": 47,
+     "inDb": true,
+     "note": "P99 L49."
+    },
+    {
+     "name": "Voltaic Draught",
+     "level": 54,
+     "inDb": true,
+     "note": ""
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Magic-resist nukes exist to bypass fire/cold-resistant mobs; the line is otherwise a clean damage ramp. Rend (280 mana, 6.3s) vs Voltaic Draught (215 mana, 3s) is the same efficiency-over-raw-damage inversion seen in the fire and cold lines."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://wiki.project1999.com/Wizard/Spell_Lines",
+    "https://wiki.project1999.com/Wizard_Spells_By_Type"
+   ]
+  },
+  {
+   "id": "wiz-dd-ministun",
+   "name": "Interrupt Nukes / Mini-Stun (Force line)",
+   "category": "nuke-single-magic-interrupt",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Force Snap",
+     "level": 17,
+     "inDb": true,
+     "note": "NOT on the P99 wizard list. Legends carries a 1.00 sec/55 stun and 218-252 damage at L17, which is far above the L16 Lightning Bolt curve (130-157). Possibly Legends-custom or a live-only spell; flagged."
+    },
+    {
+     "name": "Force Shock",
+     "level": 20,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "Thunder Strike",
+     "level": 28,
+     "inDb": true,
+     "note": "P99 L29."
+    },
+    {
+     "name": "Force Strike",
+     "level": 41,
+     "inDb": true,
+     "note": "P99 L44."
+    },
+    {
+     "name": "Draught of Jiva",
+     "level": 55,
+     "inDb": true,
+     "note": ""
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict within the sub-line. P99 splits these from the true stun line by the tell \"Stuns with 0 second duration are intended to interrupt spell casting mobs\" - these are nukes that happen to interrupt, not crowd control. P99 also warns all stun-component spells are high-aggro."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://wiki.project1999.com/Wizard/Spell_Lines"
+   ]
+  },
+  {
+   "id": "wiz-stun-clash-discord",
+   "name": "Stun Lock (Tishan/Markar Clash and Discord)",
+   "category": "stun-single",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Tishan's Clash",
+     "level": 19,
+     "inDb": true,
+     "note": "P99 L20. 5 sec stun, low damage."
+    },
+    {
+     "name": "Markar`s Clash",
+     "level": 47,
+     "inDb": true,
+     "note": "P99 L49. 8 sec stun."
+    },
+    {
+     "name": "Tishan`s Discord",
+     "level": 51,
+     "inDb": true,
+     "note": "5 sec stun, 260 damage - a Clash with a real nuke attached."
+    },
+    {
+     "name": "Markar`s Discord",
+     "level": 56,
+     "inDb": true,
+     "note": "8 sec stun, 750 damage."
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Two interleaved pairs, not one chain. Tishan = short (5s) cheap stun, Markar = long (8s) expensive stun; Discord is the Kunark damage-bearing version of each Clash. P99 notes player-cast stuns are often capped at 4 seconds, which compresses the Tishan/Markar distinction in practice. Clash remains in the book after Discord for cheap chain-stunning."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "Stun is not a stacking buff slot; chain-stunning is limited by cast time and by mob stun immunity, not slot contention."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Wizard/Spell_Lines"
+   ]
+  },
+  {
+   "id": "wiz-lures",
+   "name": "Lures (resist-lowering nukes)",
+   "category": "nuke-single-lure",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Enticement of Flame",
+     "level": 44,
+     "inDb": true,
+     "note": "Fire. Legends 482-500; P99 360."
+    },
+    {
+     "name": "Lure of Frost",
+     "level": 52,
+     "inDb": true,
+     "note": "Cold, 640."
+    },
+    {
+     "name": "Lure of Flame",
+     "level": 55,
+     "inDb": true,
+     "note": "Fire, 640. Replaces Enticement of Flame."
+    },
+    {
+     "name": "Lure of Lightning",
+     "level": 58,
+     "inDb": true,
+     "note": "Magic, 680."
+    },
+    {
+     "name": "Lure of Ice",
+     "level": 60,
+     "inDb": true,
+     "note": "Cold, 825. Replaces Lure of Frost."
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "SITUATIONAL, NOT STRICT - the defining exception in the wizard book. Lures carry a built-in resist adjustment and are, per P99, \"very hard for mobs to resist, as long as the mob is not immune to that resist type.\" They trade damage-per-mana against landability: at 320 mana for 640-825 damage they are strictly worse than the Draughts (215 mana for ~690) on a low-resist mob, and strictly better on a high-resist raid target. Within the line, replacement is per-element only: Lure of Ice replaces Lure of Frost (cold) and Lure of Flame replaces Enticement of Flame (fire); Lure of Lightning (magic) replaces nothing and is replaced by nothing."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://wiki.project1999.com/Wizard/Spell_Lines",
+    "https://wiki.project1999.com/Lure_of_Frost",
+    "https://wiki.project1999.com/Lure_of_Ice"
+   ]
+  },
+  {
+   "id": "wiz-ae-quad",
+   "name": "Quad-Kite Targeted AE (Column/Pillar/Circle line)",
+   "category": "nuke-targeted-ae",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Column of Frost",
+     "level": 8,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "Pillar of Fire",
+     "level": 15,
+     "inDb": true,
+     "note": "P99 L16."
+    },
+    {
+     "name": "Column of Lightning",
+     "level": 24,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "Circle of Force",
+     "level": 31,
+     "inDb": true,
+     "note": "P99 L34."
+    },
+    {
+     "name": "Pillar of Frost",
+     "level": 51,
+     "inDb": true,
+     "note": "Legends spell text explicitly chains this one: \"replacing Circle of Force and being replaced by Pillar of Lightning\" - honored as a Legends-authored line statement."
+    },
+    {
+     "name": "Pillar of Lightning",
+     "level": 54,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "Pillar of Flame",
+     "level": 57,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "Thunderbold",
+     "level": 54,
+     "inDb": true,
+     "note": "SITUATIONAL BRANCH: P99 lists it in the Quad AE table, but it carries a 3.0 sec stun and 600 flat damage. It is a stun-AE, not a damage upgrade over Pillar of Lightning (828-848) - and it is a high-aggro spell."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict along the main chain (Column of Frost -> Pillar of Fire -> Column of Lightning -> Circle of Force -> Pillar of Frost -> Pillar of Lightning -> Pillar of Flame), and Legends' own spell descriptions state the chain explicitly. Thunderbold is the one exception: it sits at the same level as Pillar of Lightning with materially less damage and is kept for its stun. Note the whole chain rotates element (cold -> fire -> magic -> magic -> cold -> magic -> fire), so an earlier member is occasionally still the right pick against an element-resistant camp."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://wiki.project1999.com/Wizard/Spell_Lines"
+   ]
+  },
+  {
+   "id": "wiz-ae-pbae",
+   "name": "Point-Blank AE (Numbing Cold -> Jyll line)",
+   "category": "nuke-pbae",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Numbing Cold",
+     "level": 1,
+     "inDb": true,
+     "note": "Legends flat 14; P99 6-7."
+    },
+    {
+     "name": "Fingers of Fire",
+     "level": 5,
+     "inDb": true,
+     "note": "P99 L8."
+    },
+    {
+     "name": "Project Lightning",
+     "level": 14,
+     "inDb": true,
+     "note": "P99 L16."
+    },
+    {
+     "name": "Cast Force",
+     "level": 24,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "Thunderclap",
+     "level": 30,
+     "inDb": true,
+     "note": "P99 L34. Carries a 0-second interrupt stun; high aggro."
+    },
+    {
+     "name": "Supernova",
+     "level": 45,
+     "inDb": true,
+     "note": "P99 L49. 875 mana - the expensive one."
+    },
+    {
+     "name": "Jyll`s Static Pulse",
+     "level": 53,
+     "inDb": true,
+     "note": "Magic, 495 + interrupt stun."
+    },
+    {
+     "name": "Jyll`s Zephyr of Ice",
+     "level": 56,
+     "inDb": true,
+     "note": "Cold, 594."
+    },
+    {
+     "name": "Jyll's Wave of Heat",
+     "level": 59,
+     "inDb": true,
+     "note": "Fire, 638-648."
+    },
+    {
+     "name": "Winds of Gelid",
+     "level": 60,
+     "inDb": true,
+     "note": "Cold, 1260, 875 mana."
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Strict up through Supernova. From L53 the three Jyll spells are an element triplet (magic / cold / fire) at similar damage and mana, so they coexist rather than replace each other; pick by mob resistance. Winds of Gelid is the raw-damage top but at 875 mana it does not retire the Jyll spells on efficiency. Supernova is likewise not retired by Jyll's Static Pulse on damage alone."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://wiki.project1999.com/Wizard/Spell_Lines"
+   ]
+  },
+  {
+   "id": "wiz-ae-rains",
+   "name": "AE Rains (Icestrike -> Storm -> Tears line)",
+   "category": "nuke-rain",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Icestrike",
+     "level": 6,
+     "inDb": true,
+     "note": "P99 L4; Legends L6. Damage agrees exactly (16)."
+    },
+    {
+     "name": "Firestorm",
+     "level": 12,
+     "inDb": true,
+     "note": "Legends 41; P99 28."
+    },
+    {
+     "name": "Lightning Storm",
+     "level": 23,
+     "inDb": true,
+     "note": "P99 L24. Legends 115; P99 75."
+    },
+    {
+     "name": "Energy Storm",
+     "level": 26,
+     "inDb": true,
+     "note": "P99 L29. Legends 238; P99 96 - large disagreement."
+    },
+    {
+     "name": "Lava Storm",
+     "level": 32,
+     "inDb": true,
+     "note": "P99 L34. Legends 401; P99 128 - large disagreement."
+    },
+    {
+     "name": "Frost Storm",
+     "level": 41,
+     "inDb": true,
+     "note": "P99 L44. Legends 512; P99 250."
+    },
+    {
+     "name": "Tears of Druzzil",
+     "level": 52,
+     "inDb": true,
+     "note": "Magic."
+    },
+    {
+     "name": "Tears of Solusek",
+     "level": 55,
+     "inDb": true,
+     "note": "Fire."
+    },
+    {
+     "name": "Tears of Prexus",
+     "level": 58,
+     "inDb": true,
+     "note": "Cold."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict by level within the Storm chain. The three Tears at 52/55/58 are an element triplet like the Jylls - Prexus does not make Druzzil useless, it makes it the magic option. Rains land in successive waves and hit anything that wanders into the area, so they are a pull/area tool rather than a single-target damage upgrade."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "MAGNITUDE DISAGREEMENT, unresolved: Legends rain damage runs 1.5x-4x the P99 classic numbers (Energy Storm 238 vs 96, Lava Storm 401 vs 128). The likeliest explanation is that one source reports per-wave damage and the other reports the total across waves, but the ratio is not consistent (Icestrike agrees exactly at 16), so this is left flagged rather than reconciled."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Wizard/Spell_Lines"
+   ]
+  },
+  {
+   "id": "wiz-ae-alkabor",
+   "name": "Al'Kabor Spiral Line (targeted AE, no snare-safe radius)",
+   "category": "nuke-targeted-ae-secondary",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Frost Spiral of Al'Kabor",
+     "level": 12,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "Fire Spiral of Al'Kabor",
+     "level": 18,
+     "inDb": true,
+     "note": "P99 L20."
+    },
+    {
+     "name": "Shock Spiral of Al'Kabor",
+     "level": 28,
+     "inDb": true,
+     "note": "P99 L29."
+    },
+    {
+     "name": "Force Spiral of Al'Kabor",
+     "level": 35,
+     "inDb": true,
+     "note": "P99 L39. Adds a 0-second interrupt stun."
+    },
+    {
+     "name": "Wrath of Ap'Sagor",
+     "level": 48,
+     "inDb": true,
+     "note": "P99 L49. Same line per P99 despite the name change."
+    },
+    {
+     "name": "Inferno of Al`Kabor",
+     "level": 53,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "Retribution of Al`Kabor",
+     "level": 56,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "Vengeance of Al`Kabor",
+     "level": 59,
+     "inDb": true,
+     "note": "Interrupt stun."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict by level. P99 files this entire chain under \"Junk\" with the note \"These spells are absolutely junk spells\" - they are targeted AEs that cost roughly twice the mana of the Column/Pillar quad line for comparable damage and a worse radius. The Kunark members (Inferno/Retribution/Vengeance) are genuinely usable raid AEs; the classic Spirals are not. Note that at L53-59 these out-damage the concurrent Pillar spells but at 625-700 mana."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://wiki.project1999.com/Wizard/Spell_Lines"
+   ]
+  },
+  {
+   "id": "wiz-ae-gravity",
+   "name": "Gravity AEs (knock-up)",
+   "category": "nuke-targeted-ae-utility",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Gravity Flux",
+     "level": 43,
+     "inDb": true,
+     "note": "P99 L44. Legends 242-270; P99 214. Toss Up(100)."
+    },
+    {
+     "name": "Invert Gravity",
+     "level": 59,
+     "inDb": true,
+     "note": "Toss Up(350)."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict, but both are utility-first: the value is the Toss Up displacement (raid positioning, knocking flyers/climbers down) rather than the damage, which is low for the level and mana."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://wiki.project1999.com/Wizard/Spell_Lines"
+   ]
+  },
+  {
+   "id": "wiz-mana-knockback",
+   "name": "Mana Knockback Nukes",
+   "category": "nuke-single-utility",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Mana Ignition",
+     "level": 44,
+     "inDb": true,
+     "note": "400 damage, Pushback_Target(30) + Pushback_Caster(30)."
+    },
+    {
+     "name": "Mana Detonation",
+     "level": 50,
+     "inDb": true,
+     "note": "800 damage, Pushback(60) both ways."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict. NOT on the P99 wizard list - no classic-era analogue. Both push the caster as well as the target, so they are self-repositioning tools, not general-purpose nukes. Likely a live/Legends-era addition; damage-per-mana is unremarkable, the knockback is the point."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://eqlbase.com/classes/wizard/"
+   ]
+  },
+  {
+   "id": "wiz-root",
+   "name": "Root Line",
+   "category": "control-root",
+   "sharedWith": [
+    "Druid",
+    "Cleric",
+    "Enchanter",
+    "Necromancer",
+    "Shaman (partial - Root is widely shared)"
+   ],
+   "members": [
+    {
+     "name": "Root",
+     "level": 3,
+     "inDb": true,
+     "note": "P99 L4. 48 sec."
+    },
+    {
+     "name": "Instill",
+     "level": 17,
+     "inDb": true,
+     "note": "NAME DISCREPANCY RESOLVED: the P99 Wizard/Spell Lines page spells this \"Enstill\" at L20; the canonical spell name is \"Instill\" (Allakhazam spell id 131), which is what Legends uses, at L17. Legends duration 1m36s = exactly 2x Root. NOTE: this DB row has NO effects[] array at all - a data gap worth fixing; it should read \"Root\"."
+    },
+    {
+     "name": "Immobilize",
+     "level": 39,
+     "inDb": true,
+     "note": "1 minute."
+    },
+    {
+     "name": "Paralyzing Earth",
+     "level": 48,
+     "inDb": true,
+     "note": "P99 L49. 3 minutes."
+    },
+    {
+     "name": "Fetter",
+     "level": 58,
+     "inDb": true,
+     "note": "3 minutes, but only 75 mana vs Paralyzing Earth's 100 - a mana upgrade, not a duration upgrade."
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Mostly strict, with two wrinkles. (1) Duration is not monotonic in the Legends data - Instill at L17 lasts 1m36s but Immobilize at L39 lasts only 1m. (2) Fetter does not extend Paralyzing Earth's 3-minute duration; it is cheaper (75 vs 100 mana) at a higher level cap. Lower-level roots stay useful because root break chance scales with the level gap, and cheap roots matter for root-rotting."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Root (Slot 1)"
+    ],
+    "conflicts": [
+     {
+      "line": "Root",
+      "class": "Druid / Cleric / Enchanter / Necromancer / Shaman",
+      "detail": "All root spells share the root effect; a new root overwrites and RE-ROLLS the break timer. Two casters rooting the same mob is a net loss.",
+      "source": "https://wiki.project1999.com/Wizard/Spell_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Snare (Bonds of Force, Atol's Spectral Shackles)",
+      "detail": "Snare is a movement-rate debuff in a different effect slot from Root; both can be on a mob at once, which is exactly the quad-kite setup (snare the pull, root the stragglers)."
+     }
+    ],
+    "notes": "Root breaks on damage in classic EQ, which is why the wizard root line is a kiting/escape tool rather than an offensive one. Elnerick's Entombment of Ice deliberately violates this by bundling damage and root in one cast - see standalone."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Wizard/Spell_Lines",
+    "https://everquest.allakhazam.com/db/spell.html?spell=131"
+   ]
+  },
+  {
+   "id": "wiz-ae-snare",
+   "name": "AE Snare (quad-kite snares)",
+   "category": "control-snare",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Bonds of Force",
+     "level": 27,
+     "inDb": true,
+     "note": "P99 L29. DISAGREEMENT: Legends -35% movement; P99 -55%. Not averaged."
+    },
+    {
+     "name": "Atol`s Spectral Shackles",
+     "level": 51,
+     "inDb": true,
+     "note": "-60% movement, 2.5 minutes."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict. P99: \"These are your quad kiting snares as they will snare 4 mobs close to each other.\" The -35% vs -55% disagreement on Bonds of Force materially changes whether a wizard can outrun a snared pull, so it is worth resolving before this feeds any guidance UI."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Movement Rate (Slot 1)"
+    ],
+    "conflicts": [
+     {
+      "line": "Snare",
+      "class": "Druid (Snare/Ensnare), Necromancer (Clinging Darkness line), Ranger, Shadow Knight",
+      "detail": "Movement-rate debuffs share a slot; the strongest holds and a weaker one will not land over it.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Haste/Speed of the Shissar and other movement buffs on the mob",
+      "class": "n/a",
+      "detail": "Mob movement buffs and player snares contend in the same movement-rate slot.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Root",
+      "detail": "Different effect slot - a rooted mob can also be snared, which is what keeps quad-kiting recoverable when root breaks."
+     }
+    ],
+    "notes": "Targeted AE, so it lands on the whole cluster - the mechanic that makes wizard quad-kiting possible at all."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Wizard/Spell_Lines",
+    "https://wiki.project1999.com/Buff_Lines"
+   ]
+  },
+  {
+   "id": "wiz-shielding",
+   "name": "Shielding Line (int-caster self HP/AC/MR)",
+   "category": "buff-self-hp-ac",
+   "sharedWith": [
+    "Enchanter",
+    "Magician",
+    "Necromancer"
+   ],
+   "members": [
+    {
+     "name": "Minor Shielding",
+     "level": 1,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "Lesser Shielding",
+     "level": 6,
+     "inDb": true,
+     "note": "P99 L8."
+    },
+    {
+     "name": "Shielding",
+     "level": 15,
+     "inDb": true,
+     "note": "P99 L16. Adds the MR component (+12)."
+    },
+    {
+     "name": "Major Shielding",
+     "level": 23,
+     "inDb": true,
+     "note": "P99 L24."
+    },
+    {
+     "name": "Greater Shielding",
+     "level": 33,
+     "inDb": true,
+     "note": "P99 L34."
+    },
+    {
+     "name": "Arch Shielding",
+     "level": 44,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "Shield of the Magi",
+     "level": 54,
+     "inDb": true,
+     "note": "Kunark capstone. Unlike the rest of the line it is not Permanent duration - 1h30m on Legends."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict. Each member is a straight numeric upgrade of the same three effects (Max HP / AC / MR) in the same slots, and they self-overwrite. The only reason to keep a lower one memmed is mana at low level."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "HP (Shielding / Talisman)",
+     "AC (Slot 2)",
+     "Magic Resist (Magic Shield)"
+    ],
+    "conflicts": [
+     {
+      "line": "Talisman (Talisman of Tnarg / Altuna / Kragg, Focus of Spirit)",
+      "class": "Shaman",
+      "detail": "P99 Buff_Lines files the Shielding line and the Shaman Talisman line in ONE table, \"HP (Shielding / Talisman)\". They do not stack; the larger value holds. Talisman of Tnarg (+150) equals Arch Shielding (+150); Talisman of Altuna (+250) equals Shield of the Magi (+250); Focus of Spirit (+405) beats everything a wizard can self-cast.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Armor of Protection",
+      "class": "Cleric",
+      "detail": "Cleric self-only Armor of Protection (+225) sits in the same HP (Shielding/Talisman) table - relevant only to clerics but confirms the slot is class-agnostic.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Shielding line (same names)",
+      "class": "Enchanter / Magician / Necromancer",
+      "detail": "Identical self-only spells for all four int casters - same slot, same values.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "HP (Primary) - Cleric Symbol line, Druid/Shaman group HP buffs",
+      "detail": "P99 Buff_Lines keeps \"HP (Primary)\" as a separate table from \"HP (Shielding / Talisman)\", so a wizard running Shield of the Magi still gains full value from a cleric Symbol."
+     },
+     {
+      "line": "AC buffs in other slots (Slot 1, 3, 4, 7, 8, 9)",
+      "detail": "The Shielding line's AC is specifically Slot 2, so it stacks with the many AC sources P99 catalogues in the other AC slots."
+     },
+     {
+      "line": "Magic Resist - Group Resist Magic (Enchanter), Psalm of Mystic Shielding (Bard)",
+      "detail": "P99's Magic Resistance table gives Shield of the Magi its own \"Magic Shield\" column (+24, int casters only) alongside Primary (+55) and Psalm (+196) - all three add."
+     }
+    ],
+    "notes": "This is the established anchor from the prior wave and it holds up: HP slot shared with shaman Talismans, AC in Slot 2, MR in its own column."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Wizard/Spell_Lines",
+    "https://wiki.project1999.com/Buff_Lines"
+   ]
+  },
+  {
+   "id": "wiz-damage-absorb",
+   "name": "Damage Absorption / Skin Line (physical rune)",
+   "category": "buff-self-rune",
+   "sharedWith": [
+    "Necromancer",
+    "Shadow Knight (partial)"
+   ],
+   "members": [
+    {
+     "name": "Shieldskin",
+     "level": 13,
+     "inDb": true,
+     "note": "P99 L16. +55 absorb."
+    },
+    {
+     "name": "Leatherskin",
+     "level": 21,
+     "inDb": true,
+     "note": "P99 L24. +118."
+    },
+    {
+     "name": "Steelskin",
+     "level": 30,
+     "inDb": true,
+     "note": "P99 L34. +230."
+    },
+    {
+     "name": "Diamondskin",
+     "level": 40,
+     "inDb": true,
+     "note": "P99 L44. +394."
+    },
+    {
+     "name": "Manaskin",
+     "level": 52,
+     "inDb": true,
+     "note": "+521 to +600 absorb PLUS 1 mana/tick. Carries its own Legends stacking rule: \"Block new spell if slot 5 is effect 'Mana' and < 20\" - i.e. it refuses to land over a stronger mana-regen buff in that slot."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict - identical effect, monotonically increasing absorb, self-overwriting. Manaskin is the one member that adds a second reason to cast it (mana regen), which is why wizards keep it up permanently rather than only before pulls."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Damage Absorption (Primary)"
+    ],
+    "conflicts": [
+     {
+      "line": "Rune I-V",
+      "class": "Enchanter",
+      "detail": "DECISIVE: P99 Buff_Lines puts the wizard skin line and the enchanter Rune line in the SAME \"Damage Absorption (Primary)\" table. They do NOT stack - highest value holds. Ordering: Rune V (700) > Manaskin (600) > Rune IV (394) = Diamondskin (394) > Rune III (230) = Steelskin (230) > Rune II (118) = Leatherskin (118) > Rampage (90) > Rune I (55) = Shieldskin (55). An enchanter runing a wizard who has Manaskin up is a downgrade unless it is Rune V.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Skin line (same names)",
+      "class": "Necromancer (all), Shadow Knight (Shieldskin 34, Steelskin 56, Diamondskin 59)",
+      "detail": "Same self-only spells, same slot.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Barrier of Force (Staff of the Four click)",
+      "class": "item",
+      "detail": "+800, the only thing that beats Rune V in the table.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Manasink / Ward of Calrena (magic absorption)",
+      "detail": "P99 Buff_Lines keeps \"Damage Absorption, Magic\" as a completely separate category from \"Damage Absorption (Primary)\". A wizard can run Manaskin AND Manasink simultaneously - one eats melee, one eats spell damage."
+     },
+     {
+      "line": "Shielding line",
+      "detail": "Different slot entirely (HP vs absorb); always run both."
+     },
+     {
+      "line": "Damage Absorption (Berserker / Shield of Song / March / GM Item)",
+      "detail": "P99 catalogues these as separate sub-tables, so bard Shield of Song adds on top of a wizard skin."
+     }
+    ],
+    "notes": ""
+   },
+   "sources": [
+    "https://wiki.project1999.com/Wizard/Spell_Lines",
+    "https://wiki.project1999.com/Buff_Lines"
+   ]
+  },
+  {
+   "id": "wiz-magic-absorb",
+   "name": "Magic Damage Absorption (spell runes)",
+   "category": "buff-self-rune-magic",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Ward of Calrena",
+     "level": 49,
+     "inDb": true,
+     "note": "Mitigate Spell Damage by 25%, 560 total. NOT on the P99 wizard list - a live-era addition Legends inherits. Targetable on a friendly, unlike Manasink."
+    },
+    {
+     "name": "Manasink",
+     "level": 58,
+     "inDb": true,
+     "note": "+250 Absorb Magic Damage, self-only."
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Not strict, and arguably not even one line - they use different mechanics. Ward of Calrena mitigates a PERCENTAGE (25%) up to a 560 pool; Manasink absorbs a FLAT 250 of magic damage. Against a large spell nuke Ward of Calrena is far better; against many small ones Manasink is comparable. P99 files Manasink under the physical Damage Absorption table on its spell-lines page, but its own Buff_Lines page correctly gives it a dedicated \"Damage Absorption, Magic (Manasink)\" slot."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Damage Absorption, Magic (Manasink)"
+    ],
+    "conflicts": [
+     {
+      "line": "Manasink",
+      "class": "Wizard",
+      "detail": "Manasink is the sole occupant of its P99 Buff_Lines slot, so nothing in the classic set contends with it. Whether Ward of Calrena shares that slot on Legends is UNVERIFIED - it uses a percentage-mitigation effect, which is mechanically a different effect id.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Damage Absorption (Primary) - wizard skins, enchanter Runes",
+      "detail": "Separate P99 Buff_Lines category; run both."
+     },
+     {
+      "line": "Song Shield / Psalm / Melody (Bard magic absorption)",
+      "detail": "P99 lists Song Shield, Psalm, Melody and Manasink as four separate sub-categories under \"Damage Absorption, Magic\", meaning all four add together."
+     }
+    ],
+    "notes": ""
+   },
+   "sources": [
+    "https://wiki.project1999.com/Wizard/Spell_Lines",
+    "https://wiki.project1999.com/Buff_Lines"
+   ]
+  },
+  {
+   "id": "wiz-damage-shield",
+   "name": "O'Keil's Damage Shield Line",
+   "category": "buff-damage-shield",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "O'Keils Radiation",
+     "level": 2,
+     "inDb": true,
+     "note": "DUPLICATE DB ROWS: two \"O'Keils Radiation\" entries, L2 and L4, with identical effects (+2 DS, +7-10 FR). P99 lists it at L8. Treated as one line member; the second row is a duplicate/re-tiered spell id."
+    },
+    {
+     "name": "O`Keil's Embers",
+     "level": 10,
+     "inDb": true,
+     "note": "+3 DS, +10 FR. NOT on P99 (Allakhazam spell id 2551, a Luclin-era live spell Legends inherits)."
+    },
+    {
+     "name": "O`Keil's Levity",
+     "level": 25,
+     "inDb": true,
+     "note": "+5 DS, +21 FR, Levitate(2), Infravision. Not on P99. Carries an explicit Legends stacking rule - see stacking."
+    },
+    {
+     "name": "O`Keil's Flickering Flame",
+     "level": 31,
+     "inDb": true,
+     "note": "+5 DS, +10 FR. P99 lists Flickering Flame at L34."
+    },
+    {
+     "name": "O`Keils Flickering Flame",
+     "level": 34,
+     "inDb": true,
+     "note": "SECOND DB ROW with a different apostrophe form (O`Keils vs O`Keil's) at L34, same effects. This is the P99/classic level. The two rows are a Legends data duplication, not two different spells - worth de-duping."
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "NOT strict, for a slot reason rather than a magnitude reason. Radiation, Embers and Levity all put their damage shield in DS Slot 1, so they overwrite each other AND get overwritten by any real damage shield (a magician's Shield of Lava is +25 vs Levity's +5). Flickering Flame puts its damage shield in DS SLOT 2, so it is NOT a replacement for the slot-1 members - it stacks on top of a magician DS. Levity is also kept for its Levitate + Infravision riders long after its +5 DS is irrelevant. In practice a wizard runs Flickering Flame plus whatever slot-1 DS a magician provides."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Damage Shield (Slot 1) - Radiation, Embers, Levity",
+     "Damage Shield (Slot 2) - Flickering Flame",
+     "Fire Resistance (Slot 3) - Flickering Flame"
+    ],
+    "conflicts": [
+     {
+      "line": "Damage Shield (Slot 1)",
+      "class": "Magician (Shield of Fire 8, Shield of Flame 20, Inferno Shield 29, Barrier of Combustion 39, Shield of Lava 49, Boon of Immolation 53, Cadeau of Flame 56, Aegis of Ro 60)",
+      "detail": "O'Keils Radiation (+2), Embers (+3) and Levity (+5) sit in DS Slot 1 alongside every magician DS. Highest holds; a magician DS always wins.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Damage Shield (Slot 1)",
+      "class": "Druid (Shield of Thistles 9, Barbs 19, Brambles 29, Spikes 39, Thorns 49, Shield of Blades 58, Legacy of Thorn 59), Ranger, Enchanter (Feedback 29), Necromancer/SK (Banshee Aura)",
+      "detail": "Same Slot 1 table.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Damage Shield (Slot 2)",
+      "class": "Enchanter (Illusion: Fire Elemental, +16), Ranger (Call of Earth, +4), items (Kilva's Skin of Flame +31, Scorching Skin +16, Frostreaver's Blessing +10, Shield of the Eighth +8)",
+      "detail": "O'Keils Flickering Flame (+5) is in Slot 2 and DOES contend with these - a wizard in Illusion: Fire Elemental or wearing a Kilva's Skin clicky loses the Flickering Flame DS.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Magician / Druid slot-1 damage shields",
+      "detail": "LOAD-BEARING: O'Keils Flickering Flame is the wizard's slot-2 DS, so it adds to any slot-1 DS. Wizard +5 on top of a magician's Shield of Lava +25 = +30 total. This is the one wizard damage shield actually worth casting in a group."
+     },
+     {
+      "line": "Fire Resistance",
+      "detail": "P99's Fire Resistance table gives Magician/Wizard a +319 cap built from Aura of Red Petals (slot 1, +50), Cadeau of Flame (slot 2, +33), O'Keils Flickering Flame (slot 3, +10), Elemental Armor (slot 4, +30) and Psalm of Cooling (+196) - all additive. Flickering Flame's fire resist stacks with Elemental Armor's."
+     }
+    ],
+    "notes": "Legends states its own rule on O'Keil's Levity in the spell data: \"Stacking: Block new spell if slot 1 is effect 'Damage Shield' and < 100\" - Levity refuses to overwrite an existing slot-1 damage shield below +100, which is a server-side guard against a wizard clobbering a magician's DS with a +5. Honored as a Legends-authored stacking statement and consistent with the P99 slot-1 model."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Wizard/Spell_Lines",
+    "https://wiki.project1999.com/Buff_Lines",
+    "https://everquest.allakhazam.com/db/spell.html?spell=2551"
+   ]
+  },
+  {
+   "id": "wiz-elemental-resist",
+   "name": "Elemental Resist (Fire/Cold self buff)",
+   "category": "buff-self-resist",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Elemental Shield",
+     "level": 20,
+     "inDb": true,
+     "note": "+15 Fire, +15 Cold."
+    },
+    {
+     "name": "Elemental Armor",
+     "level": 42,
+     "inDb": true,
+     "note": "P99 L44. +30 Fire, +30 Cold."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict - same two effects, doubled."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Fire Resistance (Slot 4)",
+     "Cold Resistance (Flower/Armor column)"
+    ],
+    "conflicts": [
+     {
+      "line": "Cold Resistance - Aura of White Petals (Plane of Mischief flower)",
+      "class": "item",
+      "detail": "P99's Cold Resistance table puts Elemental Armor (+30) in the same \"Flower/Armor\" column as Aura of White Petals (+50). A wizard holding a PoM flower loses 20 points by also running Elemental Armor's cold component - they do not add.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Fire Resistance - Aura of Cold",
+      "class": "item/potion",
+      "detail": "In P99's Fire Resistance table, Elemental Armor (+30, Magician/Wizard only) occupies the slot that non-casters fill with Aura of Cold (+25). Not additive with each other.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Circle of Summer / Circle of Winter (Druid)",
+      "detail": "Druid resist buffs sit in the Cold Resistance \"Primary\" column, separate from the Flower/Armor column - they add to Elemental Armor."
+     },
+     {
+      "line": "Cadeau of Flame (Magician) and O'Keils Flickering Flame (Wizard)",
+      "detail": "Fire resist slots 2 and 3 respectively; both add to Elemental Armor's slot-4 fire resist."
+     },
+     {
+      "line": "Psalm of Cooling (Bard)",
+      "detail": "Layer 2 - adds on top of everything, +196."
+     }
+    ],
+    "notes": "Fire and cold components live in different slots, so they can be individually overwritten - a wizard can end up with Elemental Armor's fire resist active while its cold resist is suppressed by a flower."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Wizard/Spell_Lines",
+    "https://wiki.project1999.com/Buff_Lines"
+   ]
+  },
+  {
+   "id": "wiz-resistant-skin",
+   "name": "Resistant Skin (Disease/Poison self buff)",
+   "category": "buff-self-resist",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Resistant Skin",
+     "level": 9,
+     "inDb": true,
+     "note": "P99 L12. +9-15 Disease, +11-15 Poison. Permanent duration on Legends."
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "A line of one - the wizard never gets a disease/poison resist upgrade. Listed as a line rather than a standalone so the stacking data has somewhere to live."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Poison Resistance (Primary)",
+     "Disease Resistance (Primary)"
+    ],
+    "conflicts": [
+     {
+      "line": "Talisman of Shadoo",
+      "class": "Shaman",
+      "detail": "ESTABLISHED ANCHOR, confirmed: Resistant Skin's poison component shares the poison-resist Primary slot. Talisman of Shadoo is +45 vs Resistant Skin's +15, so a shaman-buffed wizard should drop Resistant Skin. P99's Buff_Lines poison table only lists the maximum contributor per slot, which is why Resistant Skin does not appear there by name - the slot identity comes from the prior wave's anchor.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     },
+     {
+      "line": "Talisman of Jasinth",
+      "class": "Shaman",
+      "detail": "Same relationship on the disease side (+45 vs +15) in the Disease Resistance Primary column.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Aura of Green Petals / Aura of Black Petals (PoM flowers)",
+      "detail": "Flower column is separate from Primary; +50 each, additive."
+     },
+     {
+      "line": "Dead Man Floating (Necromancer)",
+      "detail": "P99 gives DMF its own poison-resist column (+70) - it adds to the Primary slot."
+     },
+     {
+      "line": "Psalm of Purity / Psalm of Vitality (Bard)",
+      "detail": "Layer 2, +196, additive."
+     }
+    ],
+    "notes": "CONFIDENCE NOTE: the slot assignment is carried from the prior wave's established anchor plus the structure of P99's resist tables, not from a line in Buff_Lines naming Resistant Skin. Treat as high-confidence but not directly quoted."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Wizard/Spell_Lines",
+    "https://wiki.project1999.com/Buff_Lines"
+   ]
+  },
+  {
+   "id": "wiz-familiar",
+   "name": "Familiar Line",
+   "category": "buff-self-familiar",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Minor Familiar",
+     "level": 25,
+     "inDb": true,
+     "note": "+10 all resists, +2 effective casting level. 6 hour duration."
+    },
+    {
+     "name": "Lesser Familiar",
+     "level": 45,
+     "inDb": true,
+     "note": "+15 all resists, +2 ECL, See Invisible(1), +1 mana/tick."
+    },
+    {
+     "name": "Familiar",
+     "level": 54,
+     "inDb": false,
+     "note": "Allakhazam spell id 2557: Wizard 54, 525 mana, +20 all resists, +4 effective casting level, see invisible, +75 max mana, +2 mana/tick. Summons a drake. NOT on Legends."
+    },
+    {
+     "name": "Greater Familiar",
+     "level": 60,
+     "inDb": false,
+     "note": "Allakhazam spell id 2560: Wizard 60, 650 mana, 16s cast, +25 all resists. NOT on Legends."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict - each familiar is a superset of the last (more resists, more effective casting level, more riders). Only one familiar can be active, so there is never a reason to cast a lower one once the higher is scribed."
+   },
+   "missingOnLegends": [
+    "Familiar (Wizard 54)",
+    "Greater Familiar (Wizard 60)"
+   ],
+   "stacking": {
+    "slots": [
+     "Familiar (dedicated buff slot)"
+    ],
+    "conflicts": [
+     {
+      "line": "Familiar",
+      "class": "Wizard (self only)",
+      "detail": "Casting a familiar dismisses and replaces the existing one. No other class contends.",
+      "source": "https://everquest.allakhazam.com/db/spell.html?spell=2557"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Essentially everything",
+      "detail": "The familiar buff carries its own effect slots and is not catalogued in P99 Buff_Lines at all - familiars are Luclin content and out of P99 scope. Its all-resists component is part of the familiar buff rather than an entry in the shared resist tables, so it adds to shaman/druid/bard resist buffs."
+     },
+     {
+      "line": "See Invisible (from Lesser Familiar slot 3)",
+      "detail": "Redundant with, and does not block, the See Invisible line - a wizard running Lesser Familiar can skip re-casting See Invisible."
+     }
+    ],
+    "notes": "UNVERIFIED AGAINST P99 - familiars post-date the P99 timeline. Stacking asserted from live behavior and from the spell effect layout on Allakhazam. This is the weakest stacking claim in this file."
+   },
+   "sources": [
+    "https://everquest.allakhazam.com/db/spell.html?spell=2553",
+    "https://everquest.allakhazam.com/db/spell.html?spell=2555",
+    "https://everquest.allakhazam.com/db/spell.html?spell=2557",
+    "https://everquest.allakhazam.com/db/spell.html?spell=2560"
+   ]
+  },
+  {
+   "id": "wiz-invisibility",
+   "name": "Invisibility Line",
+   "category": "buff-invis",
+   "sharedWith": [
+    "Enchanter",
+    "Magician",
+    "Necromancer"
+   ],
+   "members": [
+    {
+     "name": "Invisibility",
+     "level": 16,
+     "inDb": true,
+     "note": "20 minutes on Legends. Castable on others."
+    },
+    {
+     "name": "Improved Invisibility",
+     "level": 55,
+     "inDb": true,
+     "note": "Self-only, 10 minutes. P99: \"invaluable when you get it, because it lasts 10 minutes while all other invis spells can drop at random times.\""
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "NOT strict, and the reason is counterintuitive. Improved Invisibility has a SHORTER nominal duration (10 min vs 20) but is reliable - classic Invisibility rolls to drop each tick, so its effective duration is much shorter than 20 minutes. Improved Invisibility is also SELF-ONLY, so Invisibility stays in the book permanently for buffing groupmates."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Invisibility"
+    ],
+    "conflicts": [
+     {
+      "line": "Invisibility",
+      "class": "Enchanter, Magician, Necromancer, Druid (Superior Camouflage), Bard (Selo's Song of Travel does not, but Shauri's does)",
+      "detail": "One invisibility effect at a time; recasting resets it.",
+      "source": "https://wiki.project1999.com/Wizard/Spell_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Invisibility to Undead",
+      "detail": "A separate effect (Invisibility versus Undead) in its own slot - see standalone. Running both is how a wizard moves through a mixed camp."
+     },
+     {
+      "line": "See Invisible",
+      "detail": "Unrelated slots; a wizard can be invisible and see invisible simultaneously."
+     }
+    ],
+    "notes": ""
+   },
+   "sources": [
+    "https://wiki.project1999.com/Wizard/Spell_Lines"
+   ]
+  },
+  {
+   "id": "wiz-see-invis",
+   "name": "See Invisible Line",
+   "category": "buff-vision",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "See Invisible",
+     "level": 4,
+     "inDb": true,
+     "note": "See Invisible(1), 27 minutes. Castable on others."
+    },
+    {
+     "name": "Vision Shift",
+     "level": 40,
+     "inDb": true,
+     "note": "See Invisible + Infravision, 60 minutes. NOT on the P99 wizard list - a live-era addition (Wizard 40)."
+    },
+    {
+     "name": "Plainsight",
+     "level": 55,
+     "inDb": true,
+     "note": "See Invisible(2) + Ultravision(1), 1h12m. P99 files this under Infra/Ultravision."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict - each adds duration, a stronger see-invis level, and a better vision rider. Plainsight's See Invisible(2) also pierces improved invisibility, which See Invisible(1) does not."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "See Invisible",
+     "Infravision/Ultravision (see wiz-nightvision)"
+    ],
+    "conflicts": [
+     {
+      "line": "See Invisible",
+      "class": "all casters",
+      "detail": "One see-invisible effect; higher level wins.",
+      "source": "https://wiki.project1999.com/Wizard/Spell_Lines"
+     },
+     {
+      "line": "Infravision/Ultravision",
+      "class": "n/a",
+      "detail": "Plainsight's Ultravision and Vision Shift's Infravision contend with the Heat Sight / Chill Sight line - see wiz-nightvision.",
+      "source": "https://wiki.project1999.com/Wizard/Spell_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Lesser Familiar",
+      "detail": "Lesser Familiar grants See Invisible(1) as a rider, making the base See Invisible redundant from L45."
+     }
+    ],
+    "notes": "GROUPING NOTE: P99 splits these three across two tables (See Invisible under \"Utility Spells\", Plainsight under \"Infra/Ultravision\"). They are grouped here by primary effect because Plainsight strictly supersedes both of the others."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Wizard/Spell_Lines"
+   ]
+  },
+  {
+   "id": "wiz-nightvision",
+   "name": "Infravision / Ultravision Line",
+   "category": "buff-vision",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Heat Sight",
+     "level": 16,
+     "inDb": true,
+     "note": "Infravision."
+    },
+    {
+     "name": "Chill Sight",
+     "level": 38,
+     "inDb": true,
+     "note": "P99 L39. Ultravision - strictly better night vision than infravision."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict. Both are then superseded by Plainsight (L55, in the See Invisible line), which bundles Ultravision with See Invisible(2) - so this line effectively terminates at L55 into another line."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Infravision / Ultravision"
+    ],
+    "conflicts": [
+     {
+      "line": "Night vision",
+      "class": "Druid, Shaman, Enchanter, Necromancer, Magician, item clickies",
+      "detail": "One night-vision effect at a time; ultravision supersedes infravision.",
+      "source": "https://wiki.project1999.com/Wizard/Spell_Lines"
+     },
+     {
+      "line": "Plainsight (Wizard 55) / Vision Shift (Wizard 40)",
+      "class": "Wizard",
+      "detail": "Both carry vision riders that overwrite this line - Vision Shift's Infravision would DOWNGRADE an active Chill Sight ultravision if it lands after it. Order of casting matters.",
+      "source": "https://wiki.project1999.com/Wizard/Spell_Lines"
+     },
+     {
+      "line": "O'Keil's Levity",
+      "class": "Wizard",
+      "detail": "Levity carries Infravision in slot 4 - another way to accidentally overwrite Chill Sight's ultravision.",
+      "source": "https://wiki.project1999.com/Wizard/Spell_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "Racial infravision/ultravision",
+      "detail": "Innate racial vision is not a buff and is not overwritten; the spell only matters for races without it (Erudite, Human, Barbarian)."
+     }
+    ],
+    "notes": "Practical hazard worth surfacing in-app: three different wizard spells carry vision riders, and casting them in the wrong order downgrades night vision."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Wizard/Spell_Lines"
+   ]
+  },
+  {
+   "id": "wiz-magnification",
+   "name": "Magnification Line",
+   "category": "buff-vision",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Glimpse",
+     "level": 2,
+     "inDb": true,
+     "note": "P99 L4. +55% magnification, 13 seconds."
+    },
+    {
+     "name": "Gaze",
+     "level": 11,
+     "inDb": true,
+     "note": "P99 L12. +50%, 2m30s."
+    },
+    {
+     "name": "Sight",
+     "level": 19,
+     "inDb": true,
+     "note": "P99 L20. +40%, adds Infravision(1)."
+    },
+    {
+     "name": "Magnify",
+     "level": 29,
+     "inDb": true,
+     "note": "+30%, adds Ultravision(1)."
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "INVERTED LINE - the magnification magnitude DECREASES with level (55% -> 50% -> 40% -> 30%). What actually upgrades is duration (13 seconds to 2m30s) and the vision riders. So Glimpse remains the strongest zoom in the book. P99's own note on the whole line: \"Not very useful.\" Do not present this as a normal replacement chain."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Magnification",
+     "Infravision/Ultravision (riders on Sight and Magnify)"
+    ],
+    "conflicts": [
+     {
+      "line": "Infravision/Ultravision",
+      "class": "Wizard",
+      "detail": "Sight and Magnify carry vision riders that contend with Heat Sight / Chill Sight / Plainsight / O'Keil's Levity in the night-vision slot.",
+      "source": "https://wiki.project1999.com/Wizard/Spell_Lines"
+     }
+    ],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://wiki.project1999.com/Wizard/Spell_Lines"
+   ]
+  },
+  {
+   "id": "wiz-bind-sight",
+   "name": "Bind Sight Line",
+   "category": "utility-scouting",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Bind Sight",
+     "level": 16,
+     "inDb": true,
+     "note": "11 minutes on Legends."
+    },
+    {
+     "name": "Shifting Sight",
+     "level": 38,
+     "inDb": true,
+     "note": "P99 L39. Adds Infravision(1), 16 minutes, and is castable on a friendly."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict - longer duration plus an infravision rider. P99's note on the pair: \"Very useful!\" - this is the wizard's remote-scouting tool for pulls and corpse recovery."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [
+     {
+      "line": "Infravision/Ultravision",
+      "class": "Wizard",
+      "detail": "Shifting Sight's Infravision rider can overwrite Chill Sight's ultravision.",
+      "source": "https://wiki.project1999.com/Wizard/Spell_Lines"
+     }
+    ],
+    "stacksWith": [],
+    "notes": "Both drain stamina (Increase Stamina Loss by 2) while active."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Wizard/Spell_Lines"
+   ]
+  },
+  {
+   "id": "wiz-eye-of-zomm",
+   "name": "Eye of Zomm Line",
+   "category": "utility-scouting",
+   "sharedWith": [
+    "Magician (Eye of Zomm)"
+   ],
+   "members": [
+    {
+     "name": "Eye of Zomm",
+     "level": 8,
+     "inDb": true,
+     "note": "5 ticks."
+    },
+    {
+     "name": "Eye of Tallon",
+     "level": 57,
+     "inDb": true,
+     "note": "1 minute, and the eye is itself invisible with See Invisible(1) and +120% magnification."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict. Eye of Tallon is the raid-scouting version - the invisibility rider means it can fly into a camp without aggro."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "Summons a controllable pet-eye; occupies the pet slot while active, so it cannot coexist with Flaming Sword of Xuzl."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Wizard/Spell_Lines"
+   ]
+  },
+  {
+   "id": "wiz-light-source",
+   "name": "Summoned Light Source",
+   "category": "utility-summon",
+   "sharedWith": [
+    "most casters"
+   ],
+   "members": [
+    {
+     "name": "Sphere of Light",
+     "level": 1,
+     "inDb": true,
+     "note": "Summons a Light Globe."
+    },
+    {
+     "name": "Halo of Light",
+     "level": 9,
+     "inDb": true,
+     "note": "P99 L12. Summons a Halo of Light - brighter and longer-lived."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "Summons an item; no buff slot."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Wizard/Spell_Lines"
+   ]
+  },
+  {
+   "id": "wiz-shadowstep",
+   "name": "Shadowstep Line",
+   "category": "utility-movement",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Fade",
+     "level": 3,
+     "inDb": true,
+     "note": "P99 L4, 10 mana."
+    },
+    {
+     "name": "Shadow Step",
+     "level": 7,
+     "inDb": true,
+     "note": "P99 L8, 10 mana."
+    },
+    {
+     "name": "Yonder",
+     "level": 25,
+     "inDb": true,
+     "note": "P99 L29, 15 mana - the longest hop."
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Not strict. All three are the same Shadowstep effect at different distances and mana costs, and P99 files all three under \"Junk\". Yonder travels farthest but costs more; the shorter hops are better for precise repositioning (getting through a door, off a ledge). Kept as a line because they are mechanically identical."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "Instant self-teleport, no slot."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Wizard/Spell_Lines"
+   ]
+  },
+  {
+   "id": "wiz-cancel-magic",
+   "name": "Cancel Magic Line",
+   "category": "utility-dispel",
+   "sharedWith": [
+    "Cleric",
+    "Druid",
+    "Enchanter",
+    "Magician",
+    "Necromancer",
+    "Shaman",
+    "Paladin",
+    "Shadow Knight"
+   ],
+   "members": [
+    {
+     "name": "Cancel Magic",
+     "level": 11,
+     "inDb": true,
+     "note": "P99 L12. Cancel Magic(1) - one dispel attempt."
+    },
+    {
+     "name": "Nullify Magic",
+     "level": 34,
+     "inDb": true,
+     "note": "Cancel Magic(4) x2 - two attempts at level 4 strength."
+    },
+    {
+     "name": "Annul Magic",
+     "level": 53,
+     "inDb": true,
+     "note": "Cancel Magic(9) x2."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict - more attempts at higher dispel strength."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "DATA INCONSISTENCY IN LEGENDS: Cancel Magic is typed \"Utility Detrimental\" while Nullify Magic and Annul Magic are typed \"Beneficial\", despite all three being the same dispel effect. Likely a spellType classification bug worth fixing - it would make the three sort into different UI buckets."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Wizard/Spell_Lines"
+   ]
+  },
+  {
+   "id": "wiz-levitate",
+   "name": "Levitate Line",
+   "category": "buff-movement",
+   "sharedWith": [
+    "Druid",
+    "Shaman",
+    "Enchanter",
+    "Magician",
+    "Bard"
+   ],
+   "members": [
+    {
+     "name": "Levitate",
+     "level": 22,
+     "inDb": true,
+     "note": "P99 L24. 16 minutes, CONSUMES A BAT WING."
+    },
+    {
+     "name": "Levitation",
+     "level": 50,
+     "inDb": true,
+     "note": "16 minutes, no reagent. NOT on the P99 wizard list - a live-era addition Legends inherits."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict, and the upgrade is entirely about the reagent - same effect, same duration, but Levitation drops the Bat Wing cost. Note that a wizard effectively gets levitation much earlier via O'Keil's Levity (L25), which carries Levitate(2) as a rider."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [
+     "Levitate (Slot 1)"
+    ],
+    "conflicts": [
+     {
+      "line": "Levitate / Levitation",
+      "class": "Druid, Shaman, Enchanter, Magician, Bard (Selo's Song of Travel)",
+      "detail": "One levitate effect at a time.",
+      "source": "https://wiki.project1999.com/Buff_Lines"
+     }
+    ],
+    "stacksWith": [
+     {
+      "line": "O'Keil's Levity",
+      "detail": "Levity carries Levitate(2) in its SLOT 3, not slot 1, so it does not contend with a slot-1 Levitate - both can be present. This is the same slot-based logic that lets Flickering Flame's DS coexist with a magician's."
+     }
+    ],
+    "notes": "Levitation is suppressed in many zones (Plane of Sky excepted) and drops on zoning in classic behavior."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Wizard/Spell_Lines",
+    "https://wiki.project1999.com/Buff_Lines"
+   ]
+  },
+  {
+   "id": "wiz-imbue-fire-opal",
+   "name": "Imbue Fire Opal Line",
+   "category": "utility-summon",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Imbue Fire Opal",
+     "level": 26,
+     "inDb": true,
+     "note": "P99 L29. Summons one Imbued Fire Opal."
+    },
+    {
+     "name": "Mass Imbue Fire Opal",
+     "level": 28,
+     "inDb": true,
+     "note": "Not on P99 - live-era addition."
+    },
+    {
+     "name": "Greater Mass Imbue Fire Opal",
+     "level": 42,
+     "inDb": true,
+     "note": "Not on P99 - live-era addition."
+    }
+   ],
+   "replacement": {
+    "strict": true,
+    "note": "Strict - each produces more imbued gems per cast. P99 files the base spell under \"Junk\"; the value is tradeskill/quest component supply, not combat."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": "Requires the raw Fire Opal as a component."
+   },
+   "sources": [
+    "https://wiki.project1999.com/Wizard/Spell_Lines"
+   ]
+  },
+  {
+   "id": "wiz-gates-classic",
+   "name": "Travel - Gates (classic self-teleport set)",
+   "category": "transport-self-teleport",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Fay Gate",
+     "level": 20,
+     "inDb": true,
+     "note": "Self-only teleport. Destinations are parallel choices, not upgrades."
+    },
+    {
+     "name": "North Gate",
+     "level": 20,
+     "inDb": true,
+     "note": "Self-only teleport. Destinations are parallel choices, not upgrades."
+    },
+    {
+     "name": "Tox Gate",
+     "level": 20,
+     "inDb": true,
+     "note": "Self-only teleport. Destinations are parallel choices, not upgrades."
+    },
+    {
+     "name": "Cazic Gate",
+     "level": 24,
+     "inDb": true,
+     "note": "Self-only teleport. Destinations are parallel choices, not upgrades."
+    },
+    {
+     "name": "Combine Gate",
+     "level": 24,
+     "inDb": true,
+     "note": "Self-only teleport. Destinations are parallel choices, not upgrades."
+    },
+    {
+     "name": "Common Gate",
+     "level": 24,
+     "inDb": true,
+     "note": "Self-only teleport. Destinations are parallel choices, not upgrades."
+    },
+    {
+     "name": "Nek Gate",
+     "level": 24,
+     "inDb": true,
+     "note": "Self-only teleport. Destinations are parallel choices, not upgrades."
+    },
+    {
+     "name": "Ro Gate",
+     "level": 24,
+     "inDb": true,
+     "note": "Self-only teleport. Destinations are parallel choices, not upgrades."
+    },
+    {
+     "name": "West Gate",
+     "level": 24,
+     "inDb": true,
+     "note": "Self-only teleport. Destinations are parallel choices, not upgrades."
+    },
+    {
+     "name": "Great Divide Gate",
+     "level": 34,
+     "inDb": true,
+     "note": "Self-only teleport. Destinations are parallel choices, not upgrades."
+    },
+    {
+     "name": "Iceclad Gate",
+     "level": 34,
+     "inDb": true,
+     "note": "Self-only teleport. Destinations are parallel choices, not upgrades."
+    },
+    {
+     "name": "Cobalt Scar Gate",
+     "level": 39,
+     "inDb": true,
+     "note": "Self-only teleport. Destinations are parallel choices, not upgrades."
+    },
+    {
+     "name": "Wakening Lands Gate",
+     "level": 39,
+     "inDb": true,
+     "note": "Self-only teleport. Destinations are parallel choices, not upgrades."
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "NOT A REPLACEMENT LINE AT ALL. These are 13 parallel destinations at 150 mana each, grouped by MECHANIC (self-only teleport) rather than by upgrade. Each Gate is superseded, for a given destination, by that destination's Portal (group) and Translocate (single target) - see wiz-portals-classic and wiz-translocates-classic. Levels match P99 exactly, which is notable given how much of the rest of the book is re-tiered."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://wiki.project1999.com/Wizard/Spell_Lines"
+   ]
+  },
+  {
+   "id": "wiz-portals-classic",
+   "name": "Travel - Portals (classic group-teleport set)",
+   "category": "transport-group-teleport",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Fay Portal",
+     "level": 29,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "North Portal",
+     "level": 29,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "Tox Portal",
+     "level": 29,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "Cazic Portal",
+     "level": 34,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "Combine Portal",
+     "level": 34,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "Iceclad Portal",
+     "level": 34,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "Nek Portal",
+     "level": 34,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "Common Portal",
+     "level": 39,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "Great Divide Portal",
+     "level": 39,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "Ro Portal",
+     "level": 39,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "West Portal",
+     "level": 39,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "Cobalt Scar Portal",
+     "level": 44,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "Wakening Lands Portal",
+     "level": 44,
+     "inDb": true,
+     "note": ""
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Parallel destinations, not upgrades. Each Portal (300 mana, Group v1) is the group version of the same-destination Gate; a wizard keeps both because the Gate is half the mana when travelling alone. Levels match P99 exactly. Legends \"Iceclad Portal\" has an empty destination string (\"Teleport to\") - a data gap."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://wiki.project1999.com/Wizard/Spell_Lines"
+   ]
+  },
+  {
+   "id": "wiz-translocates-classic",
+   "name": "Travel - Translocates (classic single-target set)",
+   "category": "transport-translocate",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Translocate: Combine",
+     "level": 39,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "Translocate: Fay",
+     "level": 39,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "Translocate: North",
+     "level": 39,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "Translocate: Tox",
+     "level": 39,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "Translocate: Cazic",
+     "level": 44,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "Translocate: Common",
+     "level": 44,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "Translocate: Nek",
+     "level": 44,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "Translocate: Ro",
+     "level": 44,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "Translocate: West",
+     "level": 44,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "Translocate: Cobalt Scar",
+     "level": 49,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "Translocate: Great Divide",
+     "level": 49,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "Translocate: Iceclad",
+     "level": 49,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "Translocate: Wakening Lands",
+     "level": 49,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "Translocate",
+     "level": 50,
+     "inDb": true,
+     "note": "Sends the target to THEIR OWN BIND POINT rather than a fixed destination - the generalization that makes every destination-specific TL obsolete for a grouped target."
+    },
+    {
+     "name": "Translocate: Group",
+     "level": 52,
+     "inDb": true,
+     "note": "Group v2 bind-point translocate. The capstone of the entire transport tree."
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Parallel destinations up to L49, then two genuine upgrades: Translocate (L50) and Translocate: Group (L52) send targets to their bind rather than a fixed zone, which retires the destination-specific TLs for any grouped target. The destination TLs stay relevant only for sending someone somewhere that is NOT their bind. P99 note on the mechanic: the target must be grouped with the wizard, gets a confirmation box that persists 5 minutes, and the TL still fires if they disband."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://wiki.project1999.com/Wizard/Spell_Lines"
+   ]
+  },
+  {
+   "id": "wiz-evac-destination-classic",
+   "name": "Travel - Destination Evacuates (classic set)",
+   "category": "transport-evacuate",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Evacuate: North",
+     "level": 29,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "Evacuate: Fay",
+     "level": 34,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "Evacuate: Ro",
+     "level": 39,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "Evacuate: Nek",
+     "level": 44,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "Evacuate: West",
+     "level": 49,
+     "inDb": true,
+     "note": ""
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Parallel destinations, not upgrades - all 300 mana, all Group v1. These pull the group OUT of danger and dump them in a safe outdoor zone, unlike the same-zone Evacuate line. Levels match P99 exactly."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://wiki.project1999.com/Wizard/Spell_Lines"
+   ]
+  },
+  {
+   "id": "wiz-evac-samezone",
+   "name": "Same-Zone Evacuate Line",
+   "category": "transport-evacuate",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Lesser Evacuate",
+     "level": 18,
+     "inDb": true,
+     "note": "Group, 300 mana, teleports the group to a safe spot in the CURRENT zone. NOT on the P99 wizard list - Allakhazam spell id 2184, a live-era addition. Its existence at L18 dramatically changes early wizard survivability versus P99, where the first same-zone evac is Abscond at 52."
+    },
+    {
+     "name": "Abscond",
+     "level": 52,
+     "inDb": true,
+     "note": "SELF-ONLY same-zone evac, 600 mana."
+    },
+    {
+     "name": "Evacuate",
+     "level": 57,
+     "inDb": true,
+     "note": "Group v2 same-zone evac, 300 mana + 750 mana drain effect."
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Not strict - the three differ in target scope, not power. Lesser Evacuate (group) at L18 is superseded by Evacuate (group) at L57; Abscond is the self-only branch and is never replaced. A wizard keeps Abscond alongside Evacuate because self-evac does not scatter the group."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://wiki.project1999.com/Wizard/Spell_Lines",
+    "https://everquest.allakhazam.com/db/spell.html?spell=2184"
+   ]
+  },
+  {
+   "id": "wiz-relocations",
+   "name": "Relocations (Kunark one-way evacuates)",
+   "category": "transport-evacuate",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Tishan's Relocation",
+     "level": 36,
+     "inDb": true,
+     "note": "P99 L39. Evacuates the group to Skyfire Mountains. P99 warns twice that \"the port in is extremely dangerous and deadly\" and that this is \"not an understatement.\""
+    },
+    {
+     "name": "Markar's Relocation",
+     "level": 37,
+     "inDb": true,
+     "note": "P99 L39. Evacuates the group to Emerald Jungle."
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Neither replaces the other - two different Kunark destinations. Grouped separately from the classic destination evacs because they are Kunark-continent drops and carry real risk on arrival."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://wiki.project1999.com/Wizard/Spell_Lines"
+   ]
+  },
+  {
+   "id": "wiz-gates-live",
+   "name": "Travel - Gates (live re-tiered verbose set)",
+   "category": "transport-group-teleport",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "North Karana Gate",
+     "level": 18,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "Toxxulia Gate",
+     "level": 19,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "Greater Faydark Gate",
+     "level": 20,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "Grimling Gate",
+     "level": 20,
+     "inDb": true,
+     "note": "Grimling Forest is a LUCLIN zone - no classic or verbose Portal/Translocate counterpart exists on Legends, making this the only orphan destination in the transport tree."
+    },
+    {
+     "name": "Stonebrunt Gate",
+     "level": 21,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "West Commons Gate",
+     "level": 21,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "Nektulos Gate",
+     "level": 22,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "North Ro Gate",
+     "level": 22,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "Cazic Temple Gate",
+     "level": 23,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "West Karana Gate",
+     "level": 23,
+     "inDb": true,
+     "note": ""
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "LOAD-BEARING STRUCTURAL FINDING: Legends carries TWO complete, parallel teleport trees. This verbose-named set (\"North Karana Gate\") appears nowhere on P99 and is the modern live re-tiered teleport revamp, sitting 2-6 levels BELOW its terse classic twin (\"North Gate\", L20). Confusingly, these \"Gate\" spells teleport the GROUP on Legends, while the classic \"Gate\" spells are self-only - so the naming convention is inverted between the two trees. Destinations duplicate the classic set almost exactly (North Karana, Toxxulia, Greater Faydark, Nektulos, North Ro, Cazic Thule, West Karana, West Commonlands) plus two new ones (Stonebrunt, Grimling)."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://eqlbase.com/classes/wizard/",
+    "https://wiki.project1999.com/Wizard/Spell_Lines"
+   ]
+  },
+  {
+   "id": "wiz-portals-live",
+   "name": "Travel - Portals (live re-tiered verbose set)",
+   "category": "transport-group-teleport",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "North Karana Portal",
+     "level": 25,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "Greater Faydark Portal",
+     "level": 27,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "Stonebrunt Portal",
+     "level": 27,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "Toxxulia Portal",
+     "level": 28,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "Nektulos Portal",
+     "level": 32,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "Cazic Temple Portal",
+     "level": 33,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "West Commons Portal",
+     "level": 35,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "North Ro Portal",
+     "level": 36,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "West Karana Portal",
+     "level": 37,
+     "inDb": true,
+     "note": ""
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Parallel destinations. The live-set counterpart to wiz-portals-classic, again 2-7 levels lower (North Karana Portal L25 vs North Portal L29). No Grimling Portal exists."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://eqlbase.com/classes/wizard/"
+   ]
+  },
+  {
+   "id": "wiz-translocates-live",
+   "name": "Travel - Translocates (live re-tiered verbose set)",
+   "category": "transport-translocate",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Translocate: North Karana",
+     "level": 35,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "Translocate: Stonebrunt",
+     "level": 35,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "Translocate: Greater Faydark",
+     "level": 36,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "Translocate: Toxxulia",
+     "level": 37,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "Translocate: West Commons",
+     "level": 40,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "Translocate: Nektulos",
+     "level": 41,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "Translocate: West Karana",
+     "level": 42,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "Translocate: North Ro",
+     "level": 43,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "Translocate: Cazic Temple",
+     "level": 44,
+     "inDb": true,
+     "note": ""
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Parallel destinations. Sits 4-7 levels below the terse classic TL set for the same destinations (Translocate: North Karana L35 vs Translocate: North L39). Note the near-collision: \"Translocate: Cazic\" (L44, classic) and \"Translocate: Cazic Temple\" (L44, live) are the SAME destination at the SAME level - a genuine duplicate that will look like a bug in any UI that groups by destination."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://eqlbase.com/classes/wizard/"
+   ]
+  },
+  {
+   "id": "wiz-evac-destination-live",
+   "name": "Travel - Destination Evacuates (live re-tiered verbose set)",
+   "category": "transport-evacuate",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Evacuate: North Karana",
+     "level": 26,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "Evacuate: Greater Faydark",
+     "level": 32,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "Evacuate: South Ro",
+     "level": 38,
+     "inDb": true,
+     "note": "Same destination (-1044,125,12 in South Ro) as the classic \"Evacuate: Ro\" at L39."
+    },
+    {
+     "name": "Evacuate: Greater Nektulos",
+     "level": 42,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "Evacuate: West Karana",
+     "level": 47,
+     "inDb": true,
+     "note": ""
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Parallel destinations. Mirrors the classic evac set destination-for-destination, 1-3 levels lower each."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://eqlbase.com/classes/wizard/"
+   ]
+  },
+  {
+   "id": "wiz-planar-portals",
+   "name": "Alter Plane (planar group portals)",
+   "category": "transport-group-teleport",
+   "sharedWith": [],
+   "members": [
+    {
+     "name": "Alter Plane: Hate",
+     "level": 46,
+     "inDb": true,
+     "note": ""
+    },
+    {
+     "name": "Alter Plane: Sky",
+     "level": 46,
+     "inDb": true,
+     "note": ""
+    }
+   ],
+   "replacement": {
+    "strict": false,
+    "note": "Two destinations, no upgrade relationship. P99 note: \"Sky portal isn't really used much after guilds and their wizards obtain Amulet of the Void.\" These are raid-logistics spells - the wizard is the only class that can put a raid into Hate or Sky without an item."
+   },
+   "missingOnLegends": [],
+   "stacking": {
+    "slots": [],
+    "conflicts": [],
+    "stacksWith": [],
+    "notes": ""
+   },
+   "sources": [
+    "https://wiki.project1999.com/Wizard/Spell_Lines"
+   ]
+  }
+ ],
+ "standalone": [
+  {
+   "name": "Gate",
+   "level": 4,
+   "note": "Self-teleport to bind point. P99: \"special and always useful with no replacement in the line.\""
+  },
+  {
+   "name": "True North",
+   "level": 1,
+   "note": "Reports facing direction. No upgrade. P99 files under Junk."
+  },
+  {
+   "name": "Sense Summoned",
+   "level": 7,
+   "note": "Detects summoned items/creatures. No upgrade. P99 files under Junk."
+  },
+  {
+   "name": "Bind Affinity",
+   "level": 12,
+   "note": "Sets a bind point. No upgrade. Wizard/int-caster staple."
+  },
+  {
+   "name": "Identify",
+   "level": 16,
+   "note": "Reveals item lore. No upgrade."
+  },
+  {
+   "name": "Harvest",
+   "level": 32,
+   "note": "P99 L34. 1 mana for +161-251 mana, at the cost of a 10-second self-stun. The wizard mana engine. No classic upgrade (Harvest of Druzzil is a level 62 live spell, out of range here). P99: \"always useful with no replacement in the line.\""
+  },
+  {
+   "name": "Elnerick's Entombment of Ice",
+   "level": 35,
+   "note": "Allakhazam spell id 2554 - a Luclin-era live spell, NOT on P99. 295-325 cold damage PLUS Root in one cast (24 sec / 4 ticks). Mechanically it is the exception to the \"root breaks on damage\" rule that governs the root line; grouped standalone because it belongs to neither the cold DD line (it roots) nor the root line (it nukes)."
+  },
+  {
+   "name": "Concussion",
+   "level": 37,
+   "note": "P99 L39. Decrease Hate by 400 - the wizard aggro dump. P99: \"always useful with no replacement in the line.\" Distinct from the Force/interrupt line despite the similar-sounding name; this is the only true aggro-management spell a wizard gets."
+  },
+  {
+   "name": "Invisibility to Undead",
+   "level": 39,
+   "note": "Separate effect (Invisibility versus Undead) from the Invisibility line, in its own slot - can run alongside regular invisibility. 5 minutes. Velious-era on P99."
+  },
+  {
+   "name": "Bounce",
+   "level": 44,
+   "note": "Increase Chance to Reflect Spell by 40%, 12 seconds. NO CLASSIC ANALOGUE and not on the P99 wizard list - the strongest candidate for a genuinely Legends-custom wizard spell in this set. A 12-second self-buff window is an active-use mechanic rather than a maintained buff, which is unlike anything else in the classic wizard book. FLAGGED for owner confirmation."
+  },
+  {
+   "name": "Flaming Sword of Xuzl",
+   "level": 59,
+   "note": "Summons a SumSword pet. P99 files under Junk. No upgrade. Occupies the pet slot, so it cannot coexist with Eye of Zomm / Eye of Tallon."
+  },
+  {
+   "name": "Disintegrate",
+   "level": 60,
+   "note": "Destroy Target. P99 \"Specialty Nukes\". No line."
+  },
+  {
+   "name": "Hsagra's Wrath",
+   "level": 60,
+   "note": "2000 damage, target type \"Uber Giants\" only. Velious quest reward. Pairs conceptually with Porlos' Fury but neither replaces the other - different target restrictions."
+  },
+  {
+   "name": "Porlos' Fury",
+   "level": 60,
+   "note": "2000 damage, target type \"Uber Dragons\" only. Velious quest reward."
+  }
+ ],
+ "unlinked": [
+  {
+   "name": "Garrison's Mighty Mana Shock",
+   "level": 18,
+   "note": "Single-target magic direct damage, 272-333. NOT on the P99 wizard spell-lines page under any category. Deliberately left unlinked rather than forced into the magic DD line because its magnitude is wildly off-curve: at L18 it does roughly 2x the L16 Lightning Bolt (130-157) and more than the L37 Lightning Shock would suggest for its position. Either it is an Enchanter spell granted to wizards on Legends, or it is mis-tiered. Needs a source check before it is presented as a wizard nuke upgrade."
+  }
+ ],
+ "openQuestions": [
+  "Legends carries TWO complete parallel transport trees - the terse classic set (North Gate / North Portal / Translocate: North / Evacuate: North) and a verbose live re-tiered set (North Karana Gate / North Karana Portal / Translocate: North Karana / Evacuate: North Karana). Is this intentional on Legends, or is the classic set vestigial? 45 of the 235 wizard spells (19%) are duplicate-destination transport. Any UI that groups ports by destination will show doubles.",
+  "Naming inversion in the transport trees: classic \"X Gate\" spells are targetType Self, but the live \"X Gate\" spells (North Karana Gate etc.) are group teleports per their effect text. Confirm whether the live-set Gates really are group ports on Legends, or whether the effect text is copied from the Portal version.",
+  "Three DB rows appear to be true duplicates rather than distinct spells: two \"Shock of Frost\" at L1 (4-6 damage and 11-28 damage), two \"O'Keils Radiation\" (L2 and L4, identical effects), and \"O`Keil's Flickering Flame\" L31 vs \"O`Keils Flickering Flame\" L34 (identical effects, apostrophe differs). Recommend de-duping or tagging the canonical row.",
+  "\"Instill\" (L17) has NO effects[] array in the DB - the only spell in the set with the field entirely absent. It should read \"Root\". Confirmed as the root-line member (Allakhazam spell id 131); the P99 wiki spells it \"Enstill\" at L20, which appears to be the wiki's typo rather than a different spell.",
+  "AE rain magnitudes disagree with P99 by 1.5x-4x with no consistent ratio (Icestrike agrees exactly at 16, Lava Storm is 401 vs 128). Most likely a per-wave vs total-damage reporting difference, but the inconsistency means it cannot be resolved by a single conversion factor.",
+  "Ice Comet is 808 on Legends vs 1110-1120 on P99 - the ONLY nuke in the book where Legends is materially LOWER. Every other re-tuned nuke went up. Worth confirming it is not a data-entry truncation.",
+  "Bonds of Force is -35% movement on Legends vs -55% on P99. This is the quad-kiting snare; the difference decides whether a wizard can outrun a snared pull, so it is load-bearing for any kiting guidance.",
+  "\"Force Snap\" (L17, 218-252 damage + 1-sec stun) and \"Bounce\" (L44, 40% spell reflect, 12 sec) could not be located on P99 or Allakhazam as wizard spells. Both are candidates for Legends-custom content. Bounce in particular has no classic-era analogue in any class.",
+  "\"Mana Ignition\" (L44) and \"Mana Detonation\" (L50) - single-target nukes with symmetric caster+target pushback - are absent from P99. Confirm whether these are live spells Legends inherits or Legends-authored.",
+  "Familiar line is truncated on Legends at Lesser Familiar (L45). Familiar (Wizard 54) and Greater Familiar (Wizard 60) exist on live Allakhazam but not in this DB. Is that a deliberate Legends cap or a gap?",
+  "Ward of Calrena (L49) uses percentage spell-damage mitigation while Manasink (L58) uses flat magic absorption. Whether they share a stacking slot on Legends is unverified - P99 only catalogues Manasink.",
+  "Legends spellType classification: Cancel Magic is \"Utility Detrimental\" while Nullify Magic and Annul Magic are \"Beneficial\", though all three are the same dispel. Likely a classification bug."
+ ],
+ "sources": [
+  "https://wiki.project1999.com/Wizard/Spell_Lines",
+  "https://wiki.project1999.com/Buff_Lines",
+  "https://wiki.project1999.com/Wizard_Spells_By_Type",
+  "https://wiki.project1999.com/Lure_of_Frost",
+  "https://wiki.project1999.com/Lure_of_Ice",
+  "https://everquest.allakhazam.com/db/spell.html?spell=131",
+  "https://everquest.allakhazam.com/db/spell.html?spell=2184",
+  "https://everquest.allakhazam.com/db/spell.html?spell=2551",
+  "https://everquest.allakhazam.com/db/spell.html?spell=2553",
+  "https://everquest.allakhazam.com/db/spell.html?spell=2554",
+  "https://everquest.allakhazam.com/db/spell.html?spell=2555",
+  "https://everquest.allakhazam.com/db/spell.html?spell=2557",
+  "https://everquest.allakhazam.com/db/spell.html?spell=2560",
+  "https://eqlbase.com/classes/wizard/"
+ ]
+}

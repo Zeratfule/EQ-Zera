@@ -1,0 +1,38 @@
+stage baseline: 141.8 MB, 1723857 lines, 1723854 events (tz=America/New_York)
+  cumulative                          wall        rate
+  lines (split+materialize)           91 ms   1558.1 MB/s
+  + parse                           5270 ms     26.9 MB/s
+  + serialize (ev.finish)           5474 ms     25.9 MB/s
+  + fold (20 modules + combat)     18570 ms      7.6 MB/s
+  per-stage share of the full fold:
+    lines                             91 ms    0.5%
+    parse                           5179 ms   27.9%
+    serialize                        204 ms    1.1%
+    modules+combat                 13096 ms   70.5%
+  (serialized 519411369 bytes of NDJSON)
+  [retired] the deleted round trip (Event::from_json over the same events): 2755 ms, 1723854 values
+  dispatch floor (21 kind checks/event, minus the serialize pass): ~386 ms (1464613 hits)
+  attribution pass (21249 ms wall incl. observer cost); consumers by share:
+    combat                       7945 ms   59.0%
+    buffs                        2071 ms   15.4%
+    resist                       1522 ms   11.3%
+    respawn                       502 ms    3.7%
+    detectors                     295 ms    2.2%
+    buffTimers                    108 ms    0.8%
+    combo                          82 ms    0.6%
+    roster                         75 ms    0.6%
+    observedSpellRanks             71 ms    0.5%
+    progression                    69 ms    0.5%
+    kills                          67 ms    0.5%
+    consider                       61 ms    0.5%
+    alerts                         60 ms    0.4%
+    spellSets                      59 ms    0.4%
+    leveling                       58 ms    0.4%
+    loot                           54 ms    0.4%
+    itemTiers                      54 ms    0.4%
+    eventFeed                      53 ms    0.4%
+    classUnlocks                   53 ms    0.4%
+    turnins                        51 ms    0.4%
+    character                      50 ms    0.4%
+    outputFiles                    50 ms    0.4%
+    wrap (was reparse)             47 ms    0.4%
