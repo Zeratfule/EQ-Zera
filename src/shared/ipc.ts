@@ -681,6 +681,30 @@ export const IPC = {
   // `webContents.capturePage`. Returns {ok, path?, canceled?, error?}.
   characterShareImage: 'character:shareImage',
 
+  // ---- sharing a character profile AS A LINK (docs/plans/share-links.md) ----
+  // Three more channels, and every one of them is main-only network. The renderer performs no
+  // fetch (`connect-src 'self'` makes that structurally impossible) and this feature widens no
+  // CSP: the origin is compiled in (src/main/share/net.ts), the publish is main's, and the
+  // PRIVATE DELETE TOKEN the service hands back at creation is stored in main and never crosses
+  // this boundary in either direction.
+  //
+  // renderer -> main: publish the card as a link. Args: ({rect, profile}) - the same renderer
+  // rectangle `character:shareImage` takes, validated at the handler the same way, because main
+  // photographs the card itself rather than trusting the renderer for bytes. Main re-sanitizes
+  // the profile, wraps it in the `EQC1` envelope, PUTs over this character's existing record when
+  // there is one and POSTs otherwise, then records the result. Returns
+  // {ok:true, url, updated} | {ok:false, error} where `error` is a short user-facing sentence -
+  // it never rejects, and no failure reaches the renderer as a stack.
+  characterShareLink: 'character:shareLink',
+  // renderer -> main: stop a link serving (ruling 4). Args: ({id}). Main looks the delete token
+  // up in its own store, DELETEs the record and forgets it. Returns {ok} | {ok:false, error}.
+  characterShareRevoke: 'character:shareRevoke',
+  // renderer -> main: the links this install has published, WITHOUT their delete tokens
+  // (ShareLinkView). Args: ({name, classes}) narrows it to one character's records, and the
+  // matching is done HERE rather than in the renderer so "the same character" has one definition
+  // (shared/shareLinks.ts `shareLinkKey`) shared with the publish path. Returns ShareLinkView[].
+  characterShareLinks: 'character:shareLinks',
+
   // ---- map viewer (docs/plans/map-viewer.md §4.2) ----
   // Main owns `fs` and owns effectiveEqRoot(), so main reads and parses `<eqRoot>\maps` and
   // the renderer receives columnar typed arrays (~690 KB worst case, once per zone change).

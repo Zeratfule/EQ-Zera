@@ -14,6 +14,11 @@
 //
 // THE CARD IS THE SAME COMPONENT the Share dialog draws, from the same wire value. What a sharer
 // checked before copying is exactly what a reader sees.
+//
+// A LINK IS A PASTE TOO (docs/plans/share-links.md). `character:readShare` recognizes a
+// share.eqzera.com link and fetches it FROM MAIN — the renderer performs no fetch, so nothing here
+// changes but the placeholder: the same box, the same button, and the same validator's prose for
+// every failure, whether the profile came out of a string or off the wire.
 
 import { type JSX, useCallback, useState } from 'react'
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField, Typography } from '@mui/material'
@@ -77,7 +82,7 @@ export default function ViewSharedProfile({ onClose }: { onClose: () => void }):
               fullWidth
               multiline
               maxRows={3}
-              placeholder="Paste a share string that starts with EQC1-"
+              placeholder="Paste a share string or a share.eqzera.com link"
               value={pasted}
               onChange={(e) => {
                 setPasted(e.target.value)

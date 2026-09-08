@@ -60,6 +60,8 @@ const NO_SCORES = '[data-testid="character-share-no-scores"]'
 const COPY_STRING = '[data-testid="character-share-copy-string"]'
 const COPY_IMAGE = '[data-testid="character-share-copy-image"]'
 const COPY_TEXT = '[data-testid="character-share-copy-text"]'
+const COPY_LINK = '[data-testid="character-share-copy-link"]'
+const LINK_ERROR = '[data-testid="character-share-link-error"]'
 const CLOSE = '[data-testid="character-share-close"]'
 
 const VIEW = '[data-testid="character-share-view"]'
@@ -174,6 +176,17 @@ async function stepActions(page: Page): Promise<string> {
   // and writes a NativeImage to the OS clipboard; 'Copied' is that write having happened. What the
   // image LOOKS like is not something a spec can assert without becoming a screenshot test.
   check('Copy image reports that the card reached the clipboard', (await pressed(page, COPY_IMAGE)) === 'Copied')
+
+  // COPY LINK, WITH THE ENDPOINT DARK. `share.eqzera.com` is a live host, and the harness must
+  // never publish a real record, so an `EQ_E2E` build compiles with NO share origin at all
+  // (src/main/share/net.ts) and a publish is structurally impossible rather than merely unlikely.
+  // What is asserted here is therefore the OUTCOME REPORTING: main answers a sentence, the button
+  // says so or the row prints it, and - the part that matters - the dialog still works afterwards.
+  const linkFlash = await pressed(page, COPY_LINK)
+  const linkError = (await countOf(page, LINK_ERROR)) === 1 ? await textOf(page, LINK_ERROR) : ''
+  check('Copy link reports its outcome rather than going quiet', linkFlash !== '' || linkError !== '', `${linkFlash} | ${linkError}`)
+  check('…and the dialog is still on screen', (await countOf(page, CARD)) === 1)
+  check('…and Copy share string still works after it', (await pressed(page, COPY_STRING)) === 'Copied')
 
   await page.click(CLOSE, { timeout: 15_000 })
   check('…and the dialog closes', await settleGone(page, CARD, { timeoutMs: 15_000 }))

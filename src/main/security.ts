@@ -80,7 +80,12 @@ export const EXTERNAL_LINK_ALLOWLIST: readonly ExternalLinkRule[] = [
   { host: 'github.com', pathPrefix: '/Zeratfule/EQ-Zera' },
   // The project this fork grew from, linked from Preferences → Thanks (ThanksSetting.tsx). A
   // credit that names a repository should be able to open it; nothing else under github.com is.
-  { host: 'github.com', pathPrefix: '/jmoyers/everquest-companion' }
+  { host: 'github.com', pathPrefix: '/jmoyers/everquest-companion' },
+  // A share link the user just published (docs/plans/share-links.md). `/s` is the HTML page and
+  // the ONLY route a browser is meant to open — the JSON reads (`/p`), the card (`/c`) and the
+  // whole `/api` surface are main's business and stay shut, which is the narrowest scope that
+  // serves the link (owner ruling, JOS-263).
+  { host: 'share.eqzera.com', pathPrefix: '/s' }
 ]
 
 /**

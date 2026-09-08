@@ -109,6 +109,26 @@ test('the github.com entry is scoped to THIS repo, not to the host (JOS-263)', (
   assert.equal(allowedExternalUrl('https://evil.com/Zeratfule/EQ-Zera/releases'), null)
 })
 
+test('the share-link entry buys the HTML page and nothing else on that host', () => {
+  // docs/plans/share-links.md: a published link is `https://share.eqzera.com/s/<id>`, and that one
+  // page is the whole reason the host is on this list. Everything else the service serves is
+  // main-process business (the JSON read, the card, the create/update/delete API), so a link that
+  // named one of those routes is not a link the app should ever hand to a browser.
+  assert.equal(allowedExternalUrl('https://share.eqzera.com/s/abc'), 'https://share.eqzera.com/s/abc')
+  assert.equal(allowedExternalUrl('https://share.eqzera.com/api/v1/shares'), null)
+  // An http spelling is a silent downgrade, not a fallback - one scheme, no exceptions.
+  assert.equal(allowedExternalUrl('http://share.eqzera.com/s/abc'), null)
+  // The rest of the host, including the routes the app itself talks to.
+  assert.equal(allowedExternalUrl('https://share.eqzera.com/'), null)
+  assert.equal(allowedExternalUrl('https://share.eqzera.com/p/abc'), null)
+  assert.equal(allowedExternalUrl('https://share.eqzera.com/c/abc.png'), null)
+  // Segment-aware, like every other scoped entry: `/settings` merely starts with the prefix.
+  assert.equal(allowedExternalUrl('https://share.eqzera.com/settings'), null)
+  // EXACT host: a suffix match would open `share.eqzera.com.evil.com`.
+  assert.equal(allowedExternalUrl('https://share.eqzera.com.evil.com/s/abc'), null)
+  assert.equal(allowedExternalUrl('https://evil.com/s/abc'), null)
+})
+
 test('the prefilled ISSUE link the feedback dialog builds actually opens', () => {
   // The dark-build ways-out row hands `githubIssueUrl`'s output to an `<a target="_blank">`, which
   // main turns into `shell.openExternal` THROUGH this function. Two ways that silently fails: a

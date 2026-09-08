@@ -12,6 +12,7 @@ import { ipcRenderer } from 'electron'
 import { IPC } from '../shared/ipc'
 import type { CharacterSheet } from '../shared/characterSheet'
 import type { CharacterProfileShare } from '../shared/characterShare'
+import type { ShareLinkOwner, ShareLinkView } from '../shared/shareLinks'
 import type { EqModelHands, EqModelPayload, EqModelWear, ItemLook } from '../shared/eqModel'
 
 /** What `character:readShare` answers: a profile to draw, or prose saying why not. */
@@ -26,6 +27,15 @@ export interface CharacterShareImageResult {
   canceled?: boolean
   error?: string
 }
+
+/**
+ * What `character:shareLink` answers. `updated` means the SAME url now carries the new card, which
+ * is what lets a link posted last week keep showing this week's gear. `error` is already
+ * user-facing prose - the publish never rejects (src/main/share/links.ts).
+ */
+export type CharacterShareLinkResult =
+  | { ok: true; url: string; updated: boolean }
+  | { ok: false; error: string }
 
 /** The card's DOM rectangle, in CSS pixels. Main scales it by the window's zoom and clamps it. */
 export interface ShareCardRect {
@@ -55,5 +65,14 @@ export const characterApi = {
     op: 'copy' | 'save',
     name?: string
   ): Promise<CharacterShareImageResult> =>
-    ipcRenderer.invoke(IPC.characterShareImage, { rect, op, name })
+    ipcRenderer.invoke(IPC.characterShareImage, { rect, op, name }),
+  /** Publish the card at `rect` as a share.eqzera.com link, replacing this character's if it has one. */
+  shareCharacterLink: (rect: ShareCardRect, profile: CharacterProfileShare): Promise<CharacterShareLinkResult> =>
+    ipcRenderer.invoke(IPC.characterShareLink, { rect, profile }),
+  /** Stop a published link serving. Main holds the token that can do it; this only names the link. */
+  revokeCharacterLink: (id: string): Promise<{ ok: boolean; error?: string }> =>
+    ipcRenderer.invoke(IPC.characterShareRevoke, { id }),
+  /** The links this install has published, tokens stripped. `who` narrows it to one character. */
+  listCharacterLinks: (who?: ShareLinkOwner): Promise<ShareLinkView[]> =>
+    ipcRenderer.invoke(IPC.characterShareLinks, who)
 }
