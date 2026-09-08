@@ -51,7 +51,9 @@
     "typecheck": "npm run typecheck:node && npm run typecheck:web",
     "build:engine": "tsx scripts/build-engine.mts",
     "dist": "npm run build && npm run build:engine && electron-builder --win",
-    "dist:dir": "npm run build && npm run build:engine && electron-builder --win --dir"
+    "dist:dir": "npm run build && npm run build:engine && electron-builder --win --dir",
+    "share:dev": "wrangler dev --config share-server/wrangler.toml",
+    "share:deploy": "wrangler deploy --config share-server/wrangler.toml"
   },
   "dependencies": {
     "@emotion/react": "^11.13.3",
@@ -98,7 +100,8 @@
     "tsx": "^4.19.2",
     "typescript": "^5.6.3",
     "typescript-eslint": "^8.65.0",
-    "vite": "^7.3.6"
+    "vite": "^7.3.6",
+    "wrangler": "^4.130.0"
   },
   "overrides": {
     "builder-util-runtime": "^9.7.0",

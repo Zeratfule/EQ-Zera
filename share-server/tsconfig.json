@@ -1,0 +1,27 @@
+{
+  // The worker's own program. It exists because share-server/ is in NEITHER root tsconfig:
+  // tsconfig.node.json is the Electron main/preload/shared/scripts program and tsconfig.web.json
+  // is the renderer's, and adding a Workers-runtime directory to either would mean one file set
+  // type-checked under two conflicting sets of globals. ESLint's `projectService` resolves every
+  // file through its NEAREST tsconfig.json, so this file is also what gives the worker sources
+  // full type-aware linting under the root `npm run lint`.
+  //
+  // `types: []` is deliberate: a Worker has no Node globals, and @types/node would let a
+  // `process.env` or a `Buffer` compile here and then fail at the edge.
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "types": [],
+    "noEmit": true
+  },
+  "include": ["src/**/*"]
+}

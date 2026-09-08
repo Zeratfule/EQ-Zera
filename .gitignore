@@ -14,6 +14,13 @@ release/
 .vite/
 devlog.txt
 
+# THE SHARE WORKER's local state (share-server/, docs/plans/share-links.md). `.wrangler/` is
+# miniflare's per-machine dev cache (a local KV simulation and a workerd build tree); `dist/` is
+# what `wrangler deploy` bundles on the way out. Both are regenerable in one command and neither
+# is a fact about the service — the source and wrangler.toml are.
+share-server/.wrangler/
+share-server/dist/
+
 # THE ENGINE (engine/, JOS-459). `target/` is cargo's build directory — hundreds of MB of object
 # files and dependency builds, machine-specific and fully regenerable. `Cargo.lock` is deliberately
 # NOT ignored: it is the reproducibility record for a workspace whose committed artifact
