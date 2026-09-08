@@ -208,3 +208,4 @@ body:has(.eqz-page){background:#0c0a1f}
 .eqz-screens .eqz-shot{display:block;color:inherit;text-decoration:none!important}
 .eqz-screens .eqz-shot:hover{border-color:#a98fe0}
 .eqz-screens figcaption{display:block}
+.eqz-support-note b{color:#efeaff}
