@@ -20,6 +20,8 @@ import { registerResistIpc } from './resist'
 import { registerRespawnIpc } from './respawn'
 import { registerCharacterIpc } from './character'
 import { registerCharacterSheetIpc } from './characterSheet'
+// Sharing a character profile (EQ Zera): the string codec's two doors and the card screenshot.
+import { registerCharacterShareIpc } from './characterShare'
 import { registerEqModelIpc } from './eqModel'
 import { registerItemLookIpc } from './itemLook'
 import { registerClipboardIpc } from './clipboard'
@@ -85,6 +87,7 @@ export function registerIpc(): void {
   // itself survives, tenantless, for whatever surface lands on main before its review next
   // (../unreleased.ts explains what it is for and how to adopt it).
   registerCharacterSheetIpc()
+  registerCharacterShareIpc()
   registerEqModelIpc()
   registerItemLookIpc()
   registerOutputsIpc()

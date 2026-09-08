@@ -142,6 +142,28 @@ export const RELEASE_NOTES: readonly ReleaseNote[] = [
   // and before v1.19.0 was cut. The 1.17.0 and 1.18.0 entries below never shipped as tags of their
   // own; they are kept as the honest record of what arrived when, and the panel shows all three.
   {
+    version: '1.20.0',
+    date: '2026-09-08',
+    entries: [
+      {
+        kind: 'new',
+        text: 'Share your character. The Character tab has a Share button that builds a card with your gear, tiers, totals and Tank, DPS, Healer and Solo scores. Copy it as an image, save it as a PNG, or copy a share string and a plain-text summary for chat.'
+      },
+      {
+        kind: 'new',
+        text: 'View a shared profile. Paste another player\x27s EQ Zera share string on the Character tab to see their card in your app. Junk or tampered strings are refused with a plain reason.'
+      },
+      {
+        kind: 'changed',
+        text: 'The desktop and Start Menu shortcut tooltip now reads EQ Zera - the EverQuest Legends desktop toolkit. The installer rewrites the shortcuts on update.'
+      },
+      {
+        kind: 'fixed',
+        text: 'Pasting a character share string into the settings share box now points you to the Character tab instead of saying this version cannot show it.'
+      }
+    ]
+  },
+  {
     version: '1.19.4',
     date: '2026-09-08',
     entries: [

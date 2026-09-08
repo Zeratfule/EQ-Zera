@@ -273,3 +273,10 @@ refresh and community counts (need the GitHub repo).
 - A new original EQZ icon (`scripts/gen-icon.mts`, `docs/plans/app-icon.md`), a purpose-drawn tray
   icon; the inherited voice pack removed with a store migration (schema 15) re-pointing stored alerts.
 - Build tab item names show the item card on hover; Preferences → Thanks credits EverQuest Companion.
+
+## Owner requests, 2026-09-08 night (v1.19.4, v1.20.0)
+
+- v1.19.4: the celebration overlay label, the share file picker and the engine start-up messages say EQ Zera (the fix had landed after v1.19.3 and was never tagged).
+- v1.20.0: character profile sharing, phase 1 (no server). Share button on the Character tab: a 720px share card (model snapshot, 24 gear cells with icons and tiers, totals, Tank/DPS/Healer/Solo meters) copied or saved as PNG through `character:shareImage` (main validates the rectangle, clamps it into the content box, multiplies by the zoom factor), a share string through the existing EQC1 envelope (kind 'character', ~1.5k chars for the fixture), and a plain-text summary. View a shared profile renders a pasted string read-only. Phase 2 (hosted link) needs a small server; pair it with the automatic feedback pipeline.
+- v1.20.0: package.json description (the shortcut tooltip) no longer says companion.
+- Signing: the completed identity validation was a Private one; PublicTrust needs a Public individual validation (government ID). Waiting on Jack.

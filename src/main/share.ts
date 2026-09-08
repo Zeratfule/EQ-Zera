@@ -121,11 +121,11 @@ export function previewShare(text: string, ui: UiPrefMap): SharePreview {
   }
 
   if (env.kind === 'character') {
-    // Designed, not built (profiles.ts forward-design section). Say so plainly instead of
-    // pretending there is nothing in the string.
+    // Built in EQ Zera 1.20.0, but it lives on the Character tab, not in this picker. Point there
+    // instead of pretending there is nothing in the string.
     return emptyPreview(
       text,
-      'That share string carries a character profile. This version can share settings and alerts only.'
+      'That share string carries a character profile. Paste it on the Character tab under View a shared profile.'
     )
   }
 

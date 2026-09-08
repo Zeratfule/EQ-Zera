@@ -657,6 +657,30 @@ export const IPC = {
    */
   itemLook: 'eqassets:itemLook',
 
+  // ---- sharing a character profile (EQ Zera; shared/characterShare.ts) ----
+  // Three channels rather than one, because the two string ones are the CODEC and the image one
+  // is a screenshot, and folding a screenshot into an `op` argument beside them would hide that.
+  //
+  // WHY THE CODEC IS OVER HERE AT ALL: `EQC1-` is deflate (src/main/shareCodec.ts), the renderer
+  // has no zlib, and a second encoder in the renderer would be a second wire format. So the Share
+  // dialog asks main to encode, exactly as the settings/alert surfaces do.
+  //
+  // renderer -> main: encode a CharacterProfileShare as a share string. The profile is
+  // RE-SANITIZED at the handler before it is encoded (a renderer value is untrusted; it is also
+  // how the wire shape is guaranteed). Returns the string, or null for a body with nothing in it.
+  characterShareString: 'character:shareString',
+  // renderer -> main: decode a pasted string into a profile, writing NOTHING. A character body is
+  // a SNAPSHOT and is read-only on import — this opens a viewer, it never merges into your store.
+  // Returns CharacterShareRead: {ok:true, profile, appVersion, createdAt} | {ok:false, error},
+  // where `error` is already user-facing prose (SHARE_ERROR_TEXT), never a stack.
+  characterShareRead: 'character:readShare',
+  // renderer -> main: capture the share card as a PNG and either put it on the clipboard or save
+  // it through the OS dialog. Args: ({rect, op, name}) where `rect` is the card's DOM rectangle in
+  // CSS pixels. VALIDATED AT THE HANDLER — finite, positive, scaled by the window's zoom factor
+  // and clamped into the content bounds — because a renderer-supplied rectangle reaches
+  // `webContents.capturePage`. Returns {ok, path?, canceled?, error?}.
+  characterShareImage: 'character:shareImage',
+
   // ---- map viewer (docs/plans/map-viewer.md §4.2) ----
   // Main owns `fs` and owns effectiveEqRoot(), so main reads and parses `<eqRoot>\maps` and
   // the renderer receives columnar typed arrays (~690 KB worst case, once per zone change).

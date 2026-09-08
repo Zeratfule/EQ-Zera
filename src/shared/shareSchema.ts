@@ -31,7 +31,16 @@ export const SHARE_PREFIX = 'EQC1-'
 /** Envelope schema version. Additive body changes bump this; decoders migrate forward. */
 export const SHARE_SCHEMA_VERSION = 1
 
-/** What a share string carries. 'character' is DESIGNED but not produced/consumed yet. */
+/**
+ * What a share string carries.
+ *
+ * 'character' was DESIGNED here and unclaimed for a long time (profiles.ts's forward-design
+ * section argued the envelope was already sufficient for it). It is produced and consumed now:
+ * `shared/characterShare.ts` owns the body and its sanitizer, `src/main/characterShare.ts` turns
+ * it into a string through the one codec, and the Character tab's Share dialog is the surface.
+ * A character body is a SNAPSHOT and therefore READ-ONLY on import - it opens a viewer, it never
+ * merges into your own store - which is why it is a separate kind rather than a growing blob.
+ */
 export type ShareKind = 'alerts' | 'settings' | 'character'
 
 /** The versioned wrapper every share string carries. */
@@ -151,7 +160,19 @@ export const SHARE_LIMITS = {
   maxWhereFields: 12,
   maxUiValueChars: 20 * 1024,
   /** A voice id is an engine-scoped opaque string (a SAPI voice URI is the long shape). */
-  maxVoiceIdChars: 256
+  maxVoiceIdChars: 256,
+  // ---- kind:'character' (shared/characterShare.ts) ----
+  /** Worn cells in a shared profile. The armory grid is twenty-four; the cap leaves headroom
+   *  for a cell this layout has not met without being a door for a hundred thousand of them. */
+  maxCharacterCells: 40,
+  /** Exaltations socketed into ONE worn item. Six is the whole of the real dump. */
+  maxCharacterExaltations: 16,
+  /** Classes in a loadout. EQ Legends gives three; the cap is generous and still bounded. */
+  maxCharacterClasses: 8,
+  /** Summed stat rows in one gear-totals list (stats, saves and unsummed are capped alike). */
+  maxCharacterStats: 60,
+  /** Stated values under ONE unsummed (percent-valued) stat - the two haste values, and room. */
+  maxStatValues: 8
 } as const
 
 // ------------------------------------------------------------------ canonical JSON + checksum

@@ -69,6 +69,10 @@ import GearStats from './GearStats'
 import SlotGrid from './SlotGrid'
 import { useCharacterSheet } from './useCharacterSheet'
 import { usePreviewLook, type PreviewState } from './usePreviewLook'
+// SHARING (EQ Zera). Both dialogs mount ONLY while they are open, which is what makes it
+// acceptable for the Share one to call `useBuild()` - see useCharacterShare.ts's header.
+import ShareDialog from './share/ShareDialog'
+import ViewSharedProfile from './share/ViewSharedProfile'
 
 /** The dump this tab is fed by, as the registry states it. */
 const INVENTORY = outputKind('inventory')
@@ -222,6 +226,58 @@ function SheetBody({ sheet, preview }: { sheet: CharacterSheet | null; preview: 
   )
 }
 
+/**
+ * THE TWO WAYS IN AND OUT OF A SHARE, one row, above the sheet they describe.
+ *
+ * Share is disabled without a dump for the honest reason: a share card IS the dump, and a button
+ * that opened an empty card would be teaching the wrong thing about what the feature reads. The
+ * viewer is never disabled - reading somebody else's character has nothing to do with having typed
+ * `/outputfile` yourself, and it is the half of this feature a brand new reader meets first.
+ */
+function ShareBar({ hasSheet }: { hasSheet: boolean }): JSX.Element {
+  const [sharing, setSharing] = useState(false)
+  const [viewing, setViewing] = useState(false)
+  return (
+    <Stack direction="row" spacing={1} sx={{ flexShrink: 0 }} data-testid="character-share-bar">
+      <Button
+        size="small"
+        variant="outlined"
+        data-testid="character-share"
+        disabled={!hasSheet}
+        onClick={() => {
+          setSharing(true)
+        }}
+      >
+        Share
+      </Button>
+      <Button
+        size="small"
+        variant="text"
+        data-testid="character-share-view"
+        onClick={() => {
+          setViewing(true)
+        }}
+      >
+        View a shared profile
+      </Button>
+      {sharing && (
+        <ShareDialog
+          onClose={() => {
+            setSharing(false)
+          }}
+        />
+      )}
+      {viewing && (
+        <ViewSharedProfile
+          onClose={() => {
+            setViewing(false)
+          }}
+        />
+      )}
+    </Stack>
+  )
+}
+
 export interface CharacterViewProps {
   /** The item a deep link asked to see on the model, or null for the sheet as the dump wrote it. */
   previewItem: string | null
@@ -258,6 +314,9 @@ export default function CharacterView({ previewItem, previewNonce, onPreviewAppl
     // the fold to nothing.
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, minHeight: '100%', p: 0.5 }}>
       <CharacterIdentity />
+
+      {/* SHARING (EQ Zera), directly under the identity it is about to put on a card. */}
+      <ShareBar hasSheet={sheet !== null} />
 
       {/* Only once the read has settled: a card that flashes before the dump loads would teach
           a command to someone who already ran it. */}

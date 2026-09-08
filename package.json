@@ -2,7 +2,7 @@
   "name": "eq-zera",
   "version": "0.1.0",
   "license": "FSL-1.1-MIT",
-  "description": "EQ Zera - EverQuest Legends companion - real-time log analysis and Plane of Sky quest tracking",
+  "description": "EQ Zera - the EverQuest Legends desktop toolkit. Live log parsing, overlays, quests, gear and crafting.",
   "main": "./out/main/index.js",
   "author": "Jack (EQ Zera fork of everquest-companion by Josh Moyers)",
   "private": true,

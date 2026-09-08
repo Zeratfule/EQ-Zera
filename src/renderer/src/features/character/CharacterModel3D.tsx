@@ -290,7 +290,23 @@ export function CharacterModel3D({ model, spin }: { model: EqModelPayload; spin:
     if (!el) return
     const width = el.clientWidth || 260
     const height = 340
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
+    // `preserveDrawingBuffer` IS WHAT MAKES THE FIGURE SHAREABLE — and what it buys is a GUARANTEE,
+    // not a fix, which is worth stating precisely because it is easy to measure the wrong thing.
+    //
+    // WebGL is permitted to clear the drawing buffer after every composite, so `canvas.toDataURL()`
+    // on the default renderer is a race against the compositor: it answers real pixels or a fully
+    // transparent image depending on when the read lands. This flag removes the race. MEASURED
+    // 2026-09-08 against the real install: the snapshot came back with ~70k non-transparent pixels
+    // BOTH with the flag and without it — which proves nothing, because the e2e window is never
+    // shown (`EQ_E2E=1`) and a window Chromium is not compositing never reaches the clear. The
+    // share button is pressed on a VISIBLE window, at an arbitrary moment, and that is the case no
+    // harness here can measure. So the flag stays on the guarantee rather than on an observation.
+    //
+    // It is not free, and the cost is small: the driver keeps one 260x340 buffer per frame on a
+    // canvas that is already skinning a mesh at 60 Hz. The alternative — re-rendering into an
+    // offscreen target on demand — needs a second camera, a second render target and a second
+    // opinion about framing, to answer a question one flag answers.
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true, preserveDrawingBuffer: true })
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
     renderer.setSize(width, height)
     el.appendChild(renderer.domElement)
@@ -374,6 +390,30 @@ export function CharacterModel3D({ model, spin }: { model: EqModelPayload; spin:
   }, [model])
 
   return <div ref={host} data-testid="character-model-3d" style={{ width: '100%', height: 340 }} />
+}
+
+/**
+ * THE LAST FRAME THE FIGURE DREW, as a PNG data URL — what the share card pins in place of a live
+ * scene (features/character/share/).
+ *
+ * It reads the canvas out of the DOM rather than taking a ref, because the reader of this is a
+ * DIALOG and the figure is on the page BEHIND it: there is no props path between them, and adding
+ * one would mean the model card holding a snapshot nobody has asked for yet. One query against the
+ * testid this component already carries is the whole mechanism.
+ *
+ * Null is an ordinary answer, not a failure: a machine with no EverQuest install draws the stylised
+ * doll and has no canvas at all, and the card says what it can say instead. `preserveDrawingBuffer`
+ * (above) is what makes the non-null case reliably return pixels rather than a transparent frame.
+ */
+export function characterModelSnapshot(): string | null {
+  const canvas = document.querySelector<HTMLCanvasElement>('[data-testid="character-model-3d"] canvas')
+  if (!canvas) return null
+  try {
+    return canvas.toDataURL('image/png')
+  } catch {
+    // A tainted or zero-sized canvas throws rather than answering; the card simply has no figure.
+    return null
+  }
 }
 
 /**
