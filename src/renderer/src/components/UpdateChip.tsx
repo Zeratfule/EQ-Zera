@@ -124,13 +124,16 @@ function ReadyChip({
       >
         <RestartAltIcon fontSize="small" />
         <Box sx={{ minWidth: 0, flexGrow: 1 }}>
-          <Typography variant="body2" sx={{ fontWeight: 600, lineHeight: 1.2 }}>
+          {/* Caption size like the available chip below it (owner, 2026-09-08: body2 did not fit
+              the rail). */}
+          <Typography variant="caption" sx={{ display: 'block', fontWeight: 700, lineHeight: 1.3 }} noWrap>
             Restart to update
           </Typography>
           {version && (
             <Typography
               variant="caption"
-              sx={{ display: 'block', opacity: 0.75, lineHeight: 1.2, fontFamily: 'monospace' }}
+              noWrap
+              sx={{ display: 'block', opacity: 0.75, lineHeight: 1.3, fontFamily: 'monospace' }}
             >
               v{version}
             </Typography>
