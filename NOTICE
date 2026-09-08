@@ -11,8 +11,10 @@ Under the FSL the original author's product names and trademarks are not license
 this fork is therefore distributed under the name "EQ Zera" and is not affiliated
 with or endorsed by the original author.
 
-Bundled data is scraped from eqlwiki.com under that wiki's terms. The bundled
-Alan Rickman voice pack is from utensils/openpeon-alan-rickman-soundpack (CC-BY-4.0).
+Bundled data is scraped from eqlwiki.com under that wiki's terms. The bundled sound
+pack (resources/soundpacks/eq-zera-console/) is original to this fork, synthesized by
+scripts/gen-sounds.mts. Sound packs installed from the in-app browser are third-party
+and carry their own licenses and attribution in their own manifests.
 
 Bundled fonts (src/renderer/src/assets/fonts/): Orbitron, Copyright 2009 The Orbitron Project
 Authors (github.com/theleagueof/orbitron), and Share Tech Mono, Copyright 2012 Carrois Type

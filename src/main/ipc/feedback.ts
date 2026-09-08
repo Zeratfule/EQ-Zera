@@ -16,6 +16,13 @@
 // Nothing here reaches past `src/main/feedback/index.ts`: the façade is the whole surface, and
 // the slicer/queue/transport stay private to it. Registration is one line in
 // `src/main/ipc/index.ts`, owned by the IPC-surface agent.
+//
+// ONE MODULE IS IMPORTED BESIDE THE FAÇADE AND NOT THROUGH IT: `../feedback/mail`. It shares
+// nothing with the slicer, the queue or the transport — it neither reads the log nor touches the
+// network — and it is deliberately importable in the node test runner, which the façade (Electron
+// `dialog`, the window registry) is not. Re-exporting it through index.ts would pull Electron
+// into `tests/feedbackMail.test.mts` for no gain. If the façade ever grows a mail concern, that
+// is the moment to fold it in.
 
 import { ipcMain } from 'electron'
 import { IPC } from '../../shared/ipc'
@@ -28,6 +35,7 @@ import {
   saveSliceToFile,
   submitFeedback
 } from '../feedback'
+import { openFeedbackMail } from '../feedback/mail'
 
 /** The window selector's ONLY legal values (15 / 30 / 60 minutes). */
 function isWindowChoice(v: unknown): v is (typeof LOG_WINDOW_CHOICES)[number] {
@@ -65,6 +73,14 @@ export function registerFeedbackIpc(): void {
 
   // The achievements dump, on the identical no-arguments terms (JOS-441).
   ipcMain.handle(IPC.feedbackBuildAchievements, async () => await buildAchievementsPreview())
+
+  // Open the user's mail client on a report to the COMPILED feedback address. The renderer hands
+  // over a subject and a body and nothing else — no address, no URL, no scheme — and mail.ts
+  // validates both against their caps and asserts the recipient before the OS is asked anything.
+  // Answers false for input it refused, so the dialog's status line tracks what actually opened.
+  ipcMain.handle(IPC.feedbackOpenMail, async (_e, subject: unknown, body: unknown) =>
+    await openFeedbackMail(subject, body)
+  )
 
   // Submit. NEVER rejects: a network failure resolves with `{ok:false, queued:true}`.
   ipcMain.handle(IPC.feedbackSubmit, async (_e, draft: unknown, opts: unknown) => {

@@ -12,15 +12,15 @@ import { existsSync, readFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import {
-  ALAN_RICKMAN_PACK_ID,
   DEFAULT_ALERT_PACK_ID,
   DEFAULT_ALERT_SOUNDS,
-  DEFAULT_PACK,
   DEFAULT_PACKS,
   DEFAULT_PACK_IDS,
   LEGACY_ALERT_PACK_IDS,
+  REMOVED_VOICE_PACK_ID,
   REQUIRED_SOUND_IDS,
-  migrateAlertSoundRef
+  migrateAlertSoundRef,
+  migrateRemovedVoicePackRef
 } from '../src/main/data/defaultPacks'
 import { GROUP_PACK_ID } from '../src/shared/alertGroups'
 import { soundCategorySlug } from '../src/shared/soundPacks'
@@ -40,9 +40,11 @@ test('the shipped default is the bundled console pack, and nothing is provisione
   assert.equal(RENDERER_DEFAULT_PACK_ID, DEFAULT_ALERT_PACK_ID, 'the renderer mirror agrees')
   assert.deepEqual(DEFAULT_PACKS, [], 'first launch downloads nothing')
   assert.deepEqual(DEFAULT_PACK_IDS, [])
-  assert.equal(DEFAULT_PACK.name, ALAN_RICKMAN_PACK_ID, 'the retired default is still described, for the migration tables')
   assert.equal(LEGACY_ALERT_PACK_IDS.includes(DEFAULT_ALERT_PACK_ID), false)
-  assert.equal(LEGACY_ALERT_PACK_IDS.includes(ALAN_RICKMAN_PACK_ID), false, 'Alan Rickman refs are left alone - the pack is still installable')
+  // The removed voice pack is NOT on the fleet-wide list: it moves through the ordered store
+  // chain instead (14 -> 15), which is one pass over the stores that have not had it rather than
+  // a re-run of the whole retired-pack table for everybody. tests/storeMigrationsVoicePack.test.mts.
+  assert.equal(LEGACY_ALERT_PACK_IDS.includes(REMOVED_VOICE_PACK_ID), false)
 })
 
 test('the pack is on disk, its manifest is its own, and every file it names is a WAV', () => {
@@ -100,6 +102,10 @@ test('migration rewrites every retired-pack sound onto a REAL cue, keeping the c
   assert.equal(migrateAlertSoundRef({ packId: 'bastion', soundId: 'resource-limit-4' }).soundId, DEFAULT_ALERT_SOUNDS.buffFade)
   const keep = { packId: DEFAULT_ALERT_PACK_ID, soundId: DEFAULT_ALERT_SOUNDS.questComplete }
   assert.deepEqual(migrateAlertSoundRef(keep), keep)
-  const alan = { packId: ALAN_RICKMAN_PACK_ID, soundId: 'task-complete-task-complete-07' }
-  assert.deepEqual(migrateAlertSoundRef(alan), alan, 'an installed Alan Rickman ref is not rewritten')
+  // The removed voice pack is the OTHER migration's business, and it lands on a real cue too.
+  const removed = { packId: REMOVED_VOICE_PACK_ID, soundId: 'task-complete-task-complete-07' }
+  assert.deepEqual(migrateAlertSoundRef(removed), removed, 'not the fleet-wide rewrite’s job')
+  const moved = migrateRemovedVoicePackRef(removed)
+  assert.equal(moved.packId, DEFAULT_ALERT_PACK_ID)
+  assert.ok(ids.has(moved.soundId), `removed-pack ref -> real id (${moved.soundId})`)
 })

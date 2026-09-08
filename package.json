@@ -23,7 +23,6 @@
     "scrape:page-era": "tsx scripts/scrape-page-era.ts",
     "refresh:data": "tsx scripts/refresh-data.mts",
     "fetch:images": "tsx scripts/fetch-wiki-images.mts",
-    "fetch:packs": "tsx scripts/fetch-packs.mts",
     "fetch:item-models": "tsx scripts/fetch-item-models.mts",
     "engine:baseline": "tsx scripts/engine-baseline.mts",
     "gen:icon": "tsx scripts/gen-icon.mts",

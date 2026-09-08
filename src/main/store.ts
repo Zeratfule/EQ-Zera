@@ -621,7 +621,7 @@ const DEFAULT_ALERT_PREFS: AlertPrefs = { globalVolume: 0.7, muted: false }
 /**
  * One-time migration (Task #57): alerts authored against a retired pack — the deleted
  * synthesized `default` pack, or the `peon`/`sc_marine`/`bastion` packs the app used to
- * provision — are re-pointed at the analogous Alan Rickman line (mapping +
+ * provision — are re-pointed at the analogous shipped-pack line (mapping +
  * rationale: src/main/data/defaultPacks.ts). Without it an upgrading user's alerts go
  * silently mute once those pack dirs are gone.
  *

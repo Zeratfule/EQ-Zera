@@ -672,9 +672,20 @@ export function isStaleVersion(candidate: string | undefined, current: string | 
 export type UpdateChipState =
   /** An update is downloaded and staged: the one inviting, clickable state. */
   | { kind: 'ready'; version?: string; checkedAt?: number }
+  /**
+   * A newer build exists and NOTHING HAS BEEN DOWNLOADED YET (EQ Zera, 2026-09-08).
+   *
+   * It used to be a 'working' one-liner reading "Update found…", which was true for the two
+   * seconds it took the old automatic download to start. Since the owner asked for a notification
+   * the user CLICKS, nothing is fetched until somebody says so — so that state can now sit there
+   * for hours, and a muted, DISABLED, ellipsis-ended line claiming work is in progress would be a
+   * lie in the one place this app states facts about itself. It is an OFFER, so it looks like one:
+   * accent-coloured, clickable, and it names the version it will fetch.
+   */
+  | { kind: 'available'; version?: string; checkedAt?: number }
   /** Downloading in the background — a thin, calm progress affordance. */
   | { kind: 'downloading'; percent: number; version?: string; checkedAt?: number }
-  /** Transient work (checking / found-but-not-started): muted one-liner. */
+  /** Transient work (a check in flight): muted one-liner. */
   | { kind: 'working'; label: string; checkedAt?: number }
   /** The resting state: "checked 2h ago" (or "never"), click to check. `disabled` means the
    *  updater is off for this process (dev build) — render a truthful static note, not a
@@ -707,7 +718,7 @@ export function updateChipState(status: UpdateStatus, currentVersion?: string): 
       }
     case 'available':
       if (stale(status.version)) return { kind: 'quiet', checkedAt, failed: false }
-      return { kind: 'working', label: 'Update found…', checkedAt }
+      return { kind: 'available', version: status.version, checkedAt }
     case 'checking':
       return { kind: 'working', label: 'Checking for updates…', checkedAt }
     case 'error':
@@ -772,6 +783,10 @@ export function updateChipLine(ui: UpdateChipState, ctx: UpdateChipLineCtx): Upd
 
   // Transient work speaks for itself, and a check in flight outranks whatever the last one said —
   // including a failure, which the click is in the middle of retrying.
+  //
+  // 'available' and 'ready' never reach here: both are OFFERS with chips of their own (UpdateChip's
+  // AvailableChip / ReadyChip), and their words belong to those. A caller that asked anyway gets
+  // the resting line, which is the honest fallback rather than an invented one.
   if (ui.kind === 'working') return { label: ui.label, tip, failed: false }
   if (ctx.busy) return { label: 'Checking for updates…', tip, failed: false }
   // THE FAILURE BRANCH COMES BEFORE THE COOLDOWN, and that ordering IS the fix: the cooldown's

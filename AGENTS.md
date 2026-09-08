@@ -29,7 +29,7 @@ archive. Layout: `src/main` (Node), `src/preload`, `src/renderer`,
 `src/shared`, `tests/`, `scripts/`. Per-surface detail:
 docs/agents-archive.md.
 
-- Repo: `C:\Users\jmoye\everquest-companion` (public: github.com/jmoyers/everquest-companion).
+- Repo: `C:\Users\jackt\EQ Zera\app` (public: github.com/Zeratfule/EQ-Zera).
 - Game log: `C:\Users\Public\Daybreak Game Company\Installed Games\EverQuest
   Legends\Logs\eqlog_<Char>_<server>.txt` — but the path is auto-discovered +
   Settings-overridable now; NEVER hardcode, route through
@@ -138,6 +138,9 @@ docs/agents-archive.md.
     STANDALONE (the full-sweep-only pattern is broken) · fix shape diagnosed
     (wait for bounds to differ before settling); ticket JOS-232 filed —
     priority raised.
+  - `character-switch-storm.e2e` · 4 module deltas seen mid-storm under the
+    4-wide sweep, 0 when run alone · 1 sighting 2026-09-08 (after the five new
+    fold modules) · watch; a second sighting gets a serial reproduction.
   - `window-bounds.e2e` · close-time bounds write never lands under sweep
     load ("closing the window writes down where it was left — (none)",
     cascades into both relaunch-bounds checks) · 2 sightings (2026-08-12
@@ -596,15 +599,15 @@ alwaysOnTop, click-through pin).
   primitives (event kind + `where` match, raw regex, app signal) or
   composites `{any|all}` (same-event semantics only). Module evaluates
   live-only with cooldowns; renderer plays sounds. Sound packs live in
-  `resources/soundpacks` + userData; the ONE shipped default (Alan Rickman,
-  `src/main/data/defaultPacks.ts`) is gitignored audio and SELF-PROVISIONS
-  at startup from its pinned registry tag — seeded + suggested alert defs
-  reference its derived soundIds. App signals (bossDefeat, questComplete)
-  fire from single always-mounted detectors.
+  `resources/soundpacks` + userData; the ONE shipped default
+  (`eq-zera-console`, `src/main/data/defaultPacks.ts`) is ORIGINAL synthesized
+  audio, COMMITTED + bundled (nothing is downloaded) — seeded + suggested
+  alert defs reference its ids. App signals (bossDefeat, questComplete) fire
+  from single always-mounted detectors.
   **PRESENCE IS NOT PRECEDENCE: THE DEFAULT PACK IS A PREFERENCE, AND A
   DELETION IS A STATEMENT** (JOS-273, owner ruling 2026-08-13 — verbatim:
-  *if someone deletes alan rickman, they should be able to set a default and
-  it should persist*). Startup provisioning used to re-install the shipped
+  *if someone deletes [the shipped pack], they should be able to set a
+  default and it should persist*). Startup provisioning used to re-install the shipped
   pack with no memory of a deletion. Three parts, all in
   `src/shared/soundPacks.ts` (pure core) + `storeSoundPacks.ts` (accessors):
   (1) the PREFERENCE `soundPacks.defaultPackId` — honoured by every picker
@@ -1322,15 +1325,15 @@ the full per-lane evidence lives in docs/agents-archive.md.
   the fix; wrap the URL through the `url` route. Full story:
   docs/agents-archive.md.
 - Sound packs: og-packs registry (peonping.github.io/registry) —
-  browse/install ~350 packs in-app. The single shipped default
-  (`alan-rickman`, pinned tag) is GITIGNORED audio, self-provisioned via the
-  same installPack path (additive, retried with backoff — and since JOS-273
-  honouring the tombstone and the default-pack preference above). The
-  synthesized `default` chime pack is DELETED; alerts pointing at any
-  retired pack were rewritten by a ONE-TIME store migration
-  (`migrateAlertSounds`), so an upgrading user's alerts never go silently
-  mute. Pickers pre-select through the preference (`fallbackPack`), never
-  `packs[0]`.
+  browse/install ~350 third-party packs in-app; provisioning downloads
+  NOTHING (`DEFAULT_PACKS` is empty). **THE INHERITED VOICE PACK IS GONE**
+  (owner, 2026-09-08): no assets, registry entry, fetch script, credit line.
+  Its id survives ONLY as `REMOVED_VOICE_PACK_ID` (data/defaultPacks.ts),
+  because stored alerts still name it; schema step 14 → 15 re-points them
+  (and a `defaultPackId`) onto the shipped pack, same category. The synthesized
+  `default` pack is DELETED; other retired refs were rewritten by the stamped
+  `migrateAlertSounds`. Pickers pre-select through the preference
+  (`fallbackPack`), never `packs[0]`.
 - **BRING YOUR OWN SOUND (JOS-68): `my-sounds` is a RESERVED pack with its own
   ROOT.** The user's imports live in `<userData>/my-sounds/` (the ordinary
   pack shape), NOT under `soundpacks/` — the sibling root makes a registry
@@ -1530,14 +1533,14 @@ the full per-lane evidence lives in docs/agents-archive.md.
   merge them back into one job. All `uses:` are pinned to commit SHAs (a
   `@v4` tag is mutable) — re-resolve with
   `gh api repos/<o>/<a>/git/ref/tags/<t> --jq .object.sha` when bumping.
-  Tagged releases also publish `SHA256SUMS.txt` alongside the installer.
-- **Unsigned build ⇒ the GitHub account IS the trust root.** electron-updater
-  verifies the sha512 from the feed (so a tampered *download* fails), but with
-  no Authenticode publisher it cannot verify *who* built the release. Anyone
-  who can publish a release here can ship a silent, per-user, no-UAC update to
-  every install. Azure signing closes this (`verifyUpdateCodeSignature` turns
-  on for signed Windows builds); until then, tag/release access is the control.
-  See `SECURITY.md`, which states this plainly to users.
+- **Unsigned build ⇒ the GitHub account IS the trust root — and self-update is
+  ON (2026-09-08), so that is in force.** electron-updater verifies the feed's
+  sha512 (a tampered *download* fails), but `publisherName` is commented out, so
+  none reaches `app-update.yml` and the Authenticode check SKIPS: nothing
+  verifies *who* built a release. Anyone who can publish here ships a silent,
+  per-user, no-UAC update to every install. Restoring that line with the six
+  `AZURE_*` secrets (release.yml passes them) closes it; until then release
+  access is the control. `SECURITY.md` says so to users.
 ### Installer architecture
 
 - Build chain: `npm run dist` = `electron-vite build` → electron-builder
@@ -1593,13 +1596,13 @@ the full per-lane evidence lives in docs/agents-archive.md.
   `/S` from `${GetParameters}`/`${GetOptions}` instead.
 - Exe branding: `signAndEditExecutable:true` needs the winCodeSign cache —
   run `scripts/seed-wincodesign.ps1` once per machine. Icon via `gen:icon`.
-- Publish: `publish: github jmoyers/everquest-companion`; installer +
-  `.blockmap` + `latest*.yml` feeds under `release/<version>/`. Unsigned for
-  now (SmartScreen "More info → Run anyway" in README); Azure signing turns
-  on via repo secrets only — CI args are already conditional.
-- Auto-update: electron-updater in `src/main/updater.ts` — channel from
-  store; check at +10s then 30min; toast → quitAndInstall; dev-guarded on
-  `app.isPackaged` EXCEPT channel IPC (settings UI needs it in dev).
+- Publish: `publish: github Zeratfule/EQ-Zera`; installer + `.blockmap` +
+  `latest*.yml` under `release/<version>/`. Unsigned (SmartScreen "More info →
+  Run anyway"); signing arms itself once the six `AZURE_*` secrets exist.
+- Auto-update: ON, unsigned. electron-updater in `src/main/updater.ts`; check
+  ~45s after launch then every 4h; `autoDownload` OFF — the overlay CARD, nav
+  chip and Preferences all press `update:install`: download when available,
+  install when staged; dev-guarded on `app.isPackaged`.
 - First-run self-sufficiency: the default sound pack self-provisions from
   its pinned registry tag; spell DB/overlay baseline inlined in the main
   bundle; EQ dir resolves via env → registry → drive-sweep with the
@@ -1879,117 +1882,15 @@ plumbing proven). Reuses the tier-2 lifecycle via
   (the card WARNS there rather than explaining). The access violation is
   unidentified: this is a workaround to re-measure when Wine or Electron moves.
 
-## Cloud (feedback backend + future web) — state as of 2026-08-04
+## Cloud — EQ Zera has none (2026-09-08)
 
-- **AWS**: dedicated sub-account `eqcompanion` **001634075447** (org
-  management = `jmoyers` 383185690517), region **us-east-1**. CLI: profile
-  `eqc` assumes `OrganizationAccountAccessRole` via source profile
-  `windows-desktop-eqc` (owner-managed key). Terraform + AWS CLI installed
-  via winget. Full detail: docs/agents-archive.md.
-- **Terraform**: root `infra/`, state in s3 bucket
-  `eqcompanion-tf-state-dae027bf` (versioned, BPA) + lock table
-  `eqcompanion-tf-lock`. Deploys run from this machine with
-  `AWS_PROFILE=eqc`; CI only fmt/validate/bundle. **Standing authorization
-  (owner, 2026-08-05): NON-DESTRUCTIVE applies and migrations — additive
-  DDL, copy-first backfills with count verification, Lambda updates — may
-  be run by the agent directly. Anything that drops, overwrites, or loses
-  data (including "empty" shells until counts are VERIFIED) still gets
-  explicit owner approval first.** The 30-resource stack applied 2026-08-04.
-- **Store is Aurora DSQL** (owner: "I hate dynamodb"), not DynamoDB:
-  schema in `infra/schema.sql`, applied by `triage-feedback migrate`
-  (never yet run against a live cluster — it stops on and prints a bad
-  statement). Ingest connects as a DB role holding **INSERT ON report and
-  nothing else**; IAM tokens, zero passwords. DSQL laws: no FKs/triggers/
-  PLpgSQL, fixed Repeatable Read + OCC (retry only SQLSTATE 40001),
-  3,000-row txn cap (bounds every sweep), one DDL per txn,
-  `CREATE INDEX ASYNC`, jsonb young + unindexable (we use text).
-- **F2: DEPLOYED AND LIVE (2026-08-04)** — submit/idempotency/oversize
-  live-verified, kill switch OPEN, constants in net.ts. Two DSQL live
-  findings encoded: grants on the system-owned `public` schema are
-  unsupported, and `statement_timeout` cannot be SET (client-side
-  query_timeout only; db.ts). Verification detail + the SNS confirmation:
-  docs/agents-archive.md.
-- **ANALYTICS COHORT SPLIT — LIVE (2026-08-05, waves R+S, run under the
-  standing authorization).** The migration ran COPY-FIRST per owner ruling
-  (staging tables, row-count AND sum(n) verification, swap via DSQL's
-  documented `RENAME TO`; nothing dropped until its verified copy existed).
-  Runbook: infra/README.md "THE COHORT MIGRATION". **A ROTATED analyticsId
-  arrives unmarked — re-run `analytics owner-add`**; cohort mechanics live
-  in the USER/OWNER SPLIT bullet below.
-- **ANALYTICS OPERATIONS (how usage questions get answered):**
-  - Daily/adoption truth: `triage-feedback analytics digest --days N
-    --profile eqc` (user cohort by default; `--cohort all` prints both,
-    NEVER summed). Series history STARTS 2026-08-04 — there is no earlier
-    data and never will be.
-  - Live concurrency: CloudWatch `EQCompanion/Telemetry` `Heartbeats`,
-    `Channel=prod`, **Sum over 600s** ≈ concurrent sessions. **THE PERIOD
-    IS THE CLIENT'S HEARTBEAT CADENCE, NOT A CHOICE** (JOS-269 took it
-    5 min → 10 min). `liveSessions.ts BUCKET_MS` is the same number and the
-    two move together or the readout silently lies.
-  - Install truth is `analytics_install`; GitHub `download_count` is NOT
-    installs (the auto-updater dominates it). DAU can slightly exceed
-    installs across UTC day boundaries — artifact, not phantom users.
-  - The kill switch is cached in warm Lambdas for 60s — a 503 right after
-    `analytics open` is the cache, not a failure.
-  - **THE PULSE'S LIVE HALF IS A CLOUDWATCH READ, NOT A COUNTER** (JOS-39):
-    `liveSessions.ts` reads `Heartbeats` directly, merged at the two
-    presentation edges — never inside `buildAnalytics`, which stays pure.
-    The average age is labelled `est.`, can only under-claim, and is NULL —
-    never 0 — when nobody is alive.
-  - **`upgrades` IS DERIVED SERVER-SIDE**, once per version change;
-    downgrades count; disjoint from `newInstalls`. Pre-marking counter rows
-    carry no id and stay in the user cohort forever — read old days with
-    that in mind.
-- **Local dev story**: `scripts/dev-feedback-server.mts` — same contract,
-  same shared validator, failure knobs; the app reaches it via
-  `EQ_FEEDBACK_URL`, honored ONLY behind `!app.isPackaged` (packaged builds
-  must prove the env var does nothing).
-- **Usage analytics**: opt-OUT (owner decision over the integrator's opt-in
-  recommendation) but NOTHING transmits before the first-run notice renders;
-  allowlist schema; separate rotatable analyticsId; payload viewer +
-  TELEMETRY.md (plan: docs/plans/usage-analytics.md). A1/A2/A3 are ALL LIVE:
-  a second Lambda (`eqcompanion-telemetry-ingest`) behind `POST
-  /v1/telemetry`, aggregating on arrival into the three tables — NO
-  raw-event store — plus EMF metrics, a dashboard, `analytics
-  digest|wipe|open|close`, and the Triage → Analytics tab. **The endpoint is
-  LIT**: `TELEMETRY_API_URL` is a compiled-in constant;
-  tests/telemetryNet.test.mts pins the exact URL, the single fetch site, and
-  the consent gates (nothing before the notice; opt-out destroys buffer +
-  id). Full detail: docs/agents-archive.md.
-  **THE CADENCE IS A COST DIAL, THE CONTENT IS NOT (JOS-269, owner ruling
-  2026-08-12).** `FLUSH_INTERVAL_MS` 5 min and `HEARTBEAT_INTERVAL_MS`
-  10 min (flush.ts). Every event is a counter delta that sums server-side,
-  so batching harder loses NOTHING; every flush is one request through API
-  Gateway + Lambda + DSQL, which is the whole bill. The priced cost: a
-  KILLED session's duration coarsens to its last heartbeat. **THREE NUMBERS
-  ARE DERIVED FROM THESE AND MUST MOVE WITH THEM**: `liveSessions.ts
-  BUCKET_MS` (= the heartbeat, or Live halves), the "sessions in the last
-  10 min" tile note, and the sandbox smoke's `$telemetryDwellSec` (must
-  exceed ONE flush tick — nothing leaves the machine except on one;
-  `stopTelemetry` writes the ring, it does not POST). Changing WHAT is
-  collected is a different decision and remains owner law. Full note:
-  docs/agents-archive.md.
-  **THE ADDITIVE-FIELD RULE (JOS-39, and it is a deploy-skew law).** The app
-  auto-updates itself; the ingest Lambda is deployed by hand — so a shipped
-  client is regularly talking to an OLDER copy of the shared contract. A NEW
-  EVENT KIND is fatal under that skew: the shared validator fails the whole
-  batch, the endpoint answers 400, and `telemetryPermanentRefusal` (net.ts)
-  classes 400 as "these bytes will never be accepted" and DROPS the batch — so
-  the client throws away every counter it is carrying, on every flush, until
-  the deploy lands. A NEW OPTIONAL FIELD on an existing kind is free: the
-  validators CONSTRUCT their result field by field, so an older server simply
-  does not copy it across and accepts the batch. Add measurements as fields
-  (`linesParsed` rides on `sessionHeartbeat`/`sessionEnd`), and the client half
-  is then safe to ship BEFORE the additive apply.
-  **USER/OWNER SPLIT (2026-08-05, owner-directed, LIVE).** Every counter row
-  carries a `cohort` ('user'|'owner'), IN the PRIMARY KEY of
-  `usage_daily`/`usage_funnel_daily` and a nullable column on
-  `analytics_install`. Dev builds tag themselves SERVER-SIDE from
-  `env.channel` (no client change, no TELEMETRY.md change); the installed
-  copy is marked by hand with `analytics owner-add <analyticsId>`. Every
-  read defaults to the user cohort; `--cohort all` renders both SIDE BY SIDE
-  and nothing ever sums them. Rows aggregated before a marking keep their
-  cohort and the digest says so.
+The fork compiles NO feedback or telemetry endpoint (`src/main/feedback/net.ts`,
+`src/main/telemetry/net.ts`: empty URL constants, `endpointConfigured()` false), and `infra/` is
+unused. Feedback leaves the machine only by the user's own hand: the dialog opens their mail app
+addressed to the author, opens a GitHub issue, or copies the report (`shared/feedbackReport.ts`,
+`main/feedback/mail.ts`). Upstream's AWS/DSQL/S3 account of this section MOVED verbatim to
+docs/agents-archive.md ("MOVED FROM AGENTS.md 2026-09-08"); the disabled code it describes is still
+in the tree.
 ## Known open items
 
 - **Toolchain (JOS-63, landed 2026-08-06)**: electron 43.2.0 / vite 7.3.6 /

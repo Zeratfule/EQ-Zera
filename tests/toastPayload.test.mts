@@ -256,7 +256,7 @@ test('a stored config is normalized: the duration is clamped, retired keys are d
   // them rather than migrating them: nothing reads them, every reader defaults, and the next
   // write of this blob is what removes them from disk.
   const stored = normalizeToastConfig({
-    sound: { packId: 'alan-rickman', soundId: 'boss' },
+    sound: { packId: 'eq-zera-console', soundId: 'boss' },
     volume: 0.4,
     durationMs: 7000
   })
@@ -443,6 +443,46 @@ test('a death card names no item and no destination — both are dropped if a ca
 
 test('…and the card itself offers no action label, because it names no destination', () => {
   assert.equal(toastActionLabel(undefined), undefined)
+})
+
+// ---- the update card is MAIN'S, and the wire says so twice (EQ Zera, 2026-09-08) ---------------
+//
+// The updater's card is the only one in the app whose click downloads an executable and restarts
+// the process into it. It is built in main (shared/updateToast.ts) and pushed straight at the
+// overlay window, so nothing legitimate ever sends one over `toast:show` — which makes every
+// assertion below a statement about what an ATTACKER (or a bug in a renderer) can ask for. Two
+// independent refusals, either of which would be enough on its own:
+//
+//   * the KIND is not in TOAST_KINDS, so a request naming it is null before anything else is read;
+//   * `action` is not a field the validator copies, so it cannot ride in on an accepted kind.
+
+test('the `update` kind is REFUSED from a renderer request — main builds that card, nobody asks for it', () => {
+  assert.equal(validateToastRequest({ id: 'update:9.9.9', kind: 'update', title: 'EQ Zera 9.9.9 is ready' }), null)
+  // …including with the action that would arm it, and including a plausible-looking full payload.
+  assert.equal(
+    validateToastRequest({
+      id: 'update:9.9.9',
+      kind: 'update',
+      title: 'EQ Zera 9.9.9 is ready',
+      subtitle: 'Click to download and install',
+      action: 'updateInstall',
+      durationMs: 30_000
+    }),
+    null
+  )
+})
+
+test('…and `action` is STRIPPED from every kind that IS accepted, so it can never ride in', () => {
+  for (const action of ['updateInstall', 'updateDownload', 'anything']) {
+    const out = validateToastRequest({ ...boss, action })
+    assert.ok(out)
+    assert.equal('action' in out, false, `action ${action} survived on a boss kill`)
+    assert.deepEqual(Object.keys(out).sort(), ['id', 'kind', 'subtitle', 'title'])
+  }
+  // A card that DOES something is a card a renderer must never be able to conjure: the overlay
+  // renders a button from `action` alone, and main's handler runs whatever name comes back.
+  assert.equal('action' in (validateToastRequest({ ...ding, action: 'updateInstall' }) ?? {}), false)
+  assert.equal('action' in (validateToastRequest({ ...death, action: 'updateDownload' }) ?? {}), false)
 })
 
 test('a subtitle-only card is a legal payload — no item, no quests, no focus', () => {

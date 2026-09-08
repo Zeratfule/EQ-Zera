@@ -255,3 +255,21 @@ Every item above landed the same day, each behind its own unit suite and e2e spe
 Not done, on purpose: others' loot lines (the log has none), a plat total anywhere in shared code
 (the ladder is declared per surface), rarity in Zone Loot (needs a mob rescrape), in-app data
 refresh and community counts (need the GitHub repo).
+
+## Go-live and owner requests, 2026-09-08 evening (v1.19.0)
+
+- Repository: `github.com/Zeratfule/EQ-Zera`, public. CI (`.github/workflows/ci.yml`) on every
+  push and pull request; `release.yml` publishes the installer to GitHub Releases on a `v*` tag.
+- Self-update ON, unsigned: the feed and installer come over HTTPS from this repo's releases and the
+  installer is checked against the sha512 in `latest.yml`; `publisherName` is commented out so the
+  Authenticode check skips rather than fails. A card names a new version (click to download, click
+  to restart); the nav chip and Preferences offer the same. Signing: the six `AZURE_*` secrets are
+  already passed by `release.yml`; add them and restore `publisherName` (SETUP.md, "Releasing").
+- Feedback without a server: the dialog opens the sender's mail app addressed to the author, opens
+  a GitHub issue, or copies the whole report (`shared/feedbackReport.ts`, `main/feedback/mail.ts`).
+- The character model has race, sex and face controls (12 classic races + Iksar; faces measured from
+  the archives, `EqModelPayload.faces`/`defaultFace`); Vah Shir, Froglok and Drakkin are named as not
+  modelled yet (different archives and face schemes, see the research in the session).
+- A new original EQZ icon (`scripts/gen-icon.mts`, `docs/plans/app-icon.md`), a purpose-drawn tray
+  icon; the inherited voice pack removed with a store migration (schema 15) re-pointing stored alerts.
+- Build tab item names show the item card on hover; Preferences → Thanks credits EverQuest Companion.

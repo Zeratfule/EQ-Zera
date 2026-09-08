@@ -12,7 +12,9 @@ import type { CellUpgrade } from '../../../../shared/build/optimizer'
 import { PROFILE_LABEL } from '../../../../shared/build/profiles'
 import { FONTS } from '../../../../shared/palette'
 import { itemIconUrl } from '../../lib/ItemWindow'
-import { BUILD_CELLS, type BuildState } from './useBuild'
+// The item hover card, in this tab's one safe mode - see BuildItemName.tsx's header.
+import { BuildItemName } from './BuildItemName'
+import { BUILD_CELLS, type BuildState, type WornUnknown } from './useBuild'
 
 const SCORE_SX = { fontFamily: FONTS.mono, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' } as const
 
@@ -34,6 +36,38 @@ function Icon({ row }: { row: GearRow | null }): JSX.Element | null {
   return <img src={itemIconUrl(row.iconId)} alt="" width={20} height={20} style={{ flexShrink: 0, borderRadius: 3 }} />
 }
 
+/**
+ * The worn item's name: the Loot drill-down on click, the item window on hover.
+ *
+ * NO ROW, NO CARD. "empty" is not an item, and a dump line the index has no page for is a name we
+ * could not resolve - a card behind either would be a lookup for something that is not there. Both
+ * keep the plain line they have always had (law 1: silence, never an empty card).
+ */
+function SetRowName({
+  row,
+  unknown,
+  swapped,
+  onOpenLoot
+}: {
+  row: GearRow | null
+  unknown: WornUnknown | undefined
+  swapped: boolean
+  onOpenLoot: (item: string) => void
+}): JSX.Element {
+  const line = (
+    <Typography
+      variant="body2"
+      noWrap
+      onClick={row ? () => onOpenLoot(row.name) : undefined}
+      sx={{ minWidth: 0, flexGrow: 1, cursor: row ? 'pointer' : 'default', color: row ? (swapped ? 'primary.main' : 'text.primary') : 'text.disabled', '&:hover': row ? { textDecoration: 'underline' } : undefined }}
+    >
+      {row ? row.name : unknown ? `${unknown.name} (not in the item database)` : 'empty'}
+    </Typography>
+  )
+  if (!row) return line
+  return <BuildItemName name={row.name}>{line}</BuildItemName>
+}
+
 function SetRow({ cell, build, onOpenLoot }: { cell: PlanSlotId; build: BuildState; onOpenLoot: (item: string) => void }): JSX.Element {
   const row = build.set.get(cell) ?? null
   const swapped = build.swaps.has(cell)
@@ -44,14 +78,7 @@ function SetRow({ cell, build, onOpenLoot }: { cell: PlanSlotId; build: BuildSta
         {planSlotLabel(cell)}
       </Typography>
       <Icon row={row} />
-      <Typography
-        variant="body2"
-        noWrap
-        onClick={row ? () => onOpenLoot(row.name) : undefined}
-        sx={{ minWidth: 0, flexGrow: 1, cursor: row ? 'pointer' : 'default', color: row ? (swapped ? 'primary.main' : 'text.primary') : 'text.disabled', '&:hover': row ? { textDecoration: 'underline' } : undefined }}
-      >
-        {row ? row.name : unknown ? `${unknown.name} (not in the item database)` : 'empty'}
-      </Typography>
+      <SetRowName row={row} unknown={unknown} swapped={swapped} onOpenLoot={onOpenLoot} />
       {swapped && <Chip size="small" label="trying" color="primary" variant="outlined" sx={{ height: 18, fontSize: 9 }} />}
       {row && (
         <Typography variant="caption" sx={{ ...SCORE_SX, color: 'text.secondary' }}>
@@ -105,14 +132,18 @@ function UpgradeCell({ up, build, onOpenLoot }: { up: CellUpgrade; build: BuildS
         <Stack key={o.row.key} direction="row" spacing={1} alignItems="center" sx={{ py: 0.3, minWidth: 0 }}>
           <Icon row={o.row} />
           <Box sx={{ minWidth: 0, flexGrow: 1 }}>
-            <Typography
-              variant="body2"
-              noWrap
-              onClick={() => onOpenLoot(o.row.name)}
-              sx={{ cursor: 'pointer', '&:hover': { textDecoration: 'underline' } }}
-            >
-              {o.row.name}
-            </Typography>
+            {/* OWNER 2026-09-08: the name brings up the item window on hover. The click is
+                untouched - the card takes no pointer events and goes on pointerdown. */}
+            <BuildItemName name={o.row.name}>
+              <Typography
+                variant="body2"
+                noWrap
+                onClick={() => onOpenLoot(o.row.name)}
+                sx={{ cursor: 'pointer', '&:hover': { textDecoration: 'underline' } }}
+              >
+                {o.row.name}
+              </Typography>
+            </BuildItemName>
             <Typography variant="caption" color="text.secondary" noWrap sx={{ display: 'block' }}>
               {sourceText(o.row)}
             </Typography>

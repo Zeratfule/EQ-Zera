@@ -160,8 +160,7 @@ exact source URL, byte length and SHA-256 of every file it ships. Neither wiki i
 affiliated with this app. The same credit is in the app itself, under
 **Preferences → Thanks**.
 
-The bundled **Alan Rickman** voice pack comes from
-[utensils/openpeon-alan-rickman-soundpack](https://github.com/utensils/openpeon-alan-rickman-soundpack)
-and is licensed CC-BY-4.0. Packs you install from the in-app browser carry their own
-licenses and attribution (see each pack's manifest); none of them are part of this
-repository.
+The bundled sound pack (`resources/soundpacks/eq-zera-console/`) is original to this
+fork and synthesized by `npm run gen:sounds`. Packs you install from the in-app browser
+carry their own licenses and attribution (see each pack's manifest); none of them are
+part of this repository.

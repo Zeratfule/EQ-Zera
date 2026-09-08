@@ -6,7 +6,13 @@
 // mesh with a bone per vertex, the idle clip, the weapon meshes, and every texture those meshes
 // use as data URLs the renderer's CSP already admits (`img-src data:`). The archives live under
 // the configured EverQuest install (`effectiveEqRoot()` - never a hard-coded path), read ONCE and
-// kept: global_chr.s3d for the races, the six gequip*.s3d for the items.
+// kept: global_chr.s3d for the classic races, global4_chr.s3d for the Iksar, the gequip*.s3d for
+// the items.
+//
+// A FACE IS A HEAD TEXTURE, not a mesh (shared/eqModel.ts spells the naming out). The renderer
+// sends it inside the wear and the payload answers with the faces that archive really holds for
+// that actor (`faces`) and the one its bare head binds (`defaultFace`), so the picker offers
+// exactly what exists - 0..7 for a human male, 1..7 for a human female, whose head binds face 2.
 //
 // A HAND IS DRAWN BY MODEL FIRST. The sheet carries each worn item's `IT<n>` from the item table
 // (data/itemModels.json, keyed by the dump's own item id), so a monk's fist weapon draws as the
@@ -24,6 +30,7 @@ import { IPC } from '../../shared/ipc'
 import {
   WEAR_PARTS,
   type AttachPoint,
+  type EqModelClip,
   type EqModelHand,
   type EqModelHands,
   type EqModelMesh,
@@ -35,13 +42,22 @@ import {
 } from '../../shared/eqModel'
 import { effectiveEqRoot } from '../log/config'
 import { readPfs, type PfsArchive } from '../eqassets/pfs'
-import { readCharacter, readWld, type WldFile } from '../eqassets/wld'
+import { RACE_CODES, facesFor, readCharacter, readWld, type Skeleton, type WldFile } from '../eqassets/wld'
 import { readItem } from '../eqassets/wldItem'
 import { ddsToBmp, isDds } from '../eqassets/dds'
 import { readAnimation } from '../eqassets/wldAnim'
 import { logError } from '../errorLog'
 
-const RACES = { archive: 'global_chr.s3d', wld: 'global_chr.wld' }
+/**
+ * WHICH ARCHIVE A RACE LIVES IN. The classic twelve (`RACE_CODES`, both sexes) are all in
+ * global_chr.s3d; the Iksar are in global4_chr.s3d, on a 43-bone skeleton of their own. The
+ * other three playable races are deliberately NOT here - Vah Shir (vsm/vsf_chr.s3d) ship no
+ * face textures at all, Froglok name theirs by a different scheme entirely
+ * (globalfroglok_chr.s3d, `frmhesk<F>1.dds`), and Drakkin (drm/drf_chr.s3d) have no head mesh -
+ * so the picker names them and says this app has no model for them, rather than half-drawing one.
+ */
+const IKSAR = 'global4_chr.s3d'
+const CLASSIC = 'global_chr.s3d'
 const ITEM_ARCHIVES = ['gequip.s3d', 'gequip2.s3d', 'gequip3.s3d', 'gequip4.s3d', 'gequip5.s3d', 'gequip6.s3d', 'gequip8.s3d', 'gequip2026.s3d']
 const IDLE = 'P01'
 
@@ -104,6 +120,31 @@ function itemArchive(model: string): Loaded | null {
   return found
 }
 
+/** The archive a race actor reads from, cached per FILE by `archive` - the `itemArchive` idiom. */
+function raceArchive(code: string): Loaded | null {
+  const race = code.slice(0, 2)
+  if (race === 'IK') return archive(IKSAR)
+  return Object.hasOwn(RACE_CODES, race) ? archive(CLASSIC) : null
+}
+
+/** The highest face digit the `he00<F><P>` naming can carry (wld.ts `facesFor` says which exist). */
+const FACE_MAX = 7
+
+/**
+ * The idle, or NONE. A non-classic skeleton is a shape this reader has not measured, and a still
+ * figure is a better answer than the stylised doll: anything the animation reader throws on is
+ * logged and swallowed. (Measured: IKM carries its own P01; IKF carries no P01 and no human
+ * fallback lives in global4_chr.wld, so the Iksar female stands still.)
+ */
+function idleClip(wld: WldFile, code: string, skeleton: Skeleton): EqModelClip | null {
+  try {
+    return readAnimation(wld, code, skeleton, IDLE)
+  } catch (err) {
+    logError('main:eqModel', { message: 'no idle for ' + code, err })
+    return null
+  }
+}
+
 /** A bitmap as the renderer can show it: a BMP as is, a DDS decoded to one (the later item archives). */
 function bitmapDataUrl(bytes: Uint8Array): string | null {
   const buf = Buffer.from(bytes)
@@ -125,6 +166,9 @@ function collectTextures(pfs: PfsArchive, mesh: EqModelMesh, into: Record<string
 }
 
 const variant = (v: unknown): WearVariant | undefined => (v === 0 || v === 1 || v === 2 || v === 3 ? v : undefined)
+/** A face pick as the renderer sent it: an INTEGER 0..7, and nothing else - not a `WearVariant`. */
+const facePick = (v: unknown): number | undefined =>
+  typeof v === 'number' && Number.isInteger(v) && v >= 0 && v <= FACE_MAX ? v : undefined
 const tint = (v: unknown): Tint | undefined =>
   Array.isArray(v) && v.length === 3 && v.every((c) => typeof c === 'number' && c >= 0 && c <= 1) ? (v as Tint) : undefined
 
@@ -139,6 +183,8 @@ export function sanitizeWear(raw: unknown): EqModelWear {
   }
   const helm = variant(rec.helm)
   if (helm !== undefined) wear.helm = helm
+  const face = facePick(rec.face)
+  if (face !== undefined) wear.face = face
   const tints = typeof rec.tint === 'object' && rec.tint !== null ? (rec.tint as Record<string, unknown>) : {}
   for (const part of [...WEAR_PARTS, 'helm'] as const) {
     const t = tint(tints[part])
@@ -185,20 +231,24 @@ function weaponFor(hand: EqModelHand | undefined, attach: AttachPoint, textures:
 
 export function loadEqModel(code: unknown, wear?: unknown, hands?: unknown): EqModelPayload | null {
   if (typeof code !== 'string' || !/^[A-Z]{3}$/.test(code)) return null
-  const races = archive(RACES.archive)
+  const races = raceArchive(code)
   if (!races) return null
   const model = readCharacter(races.wld, code, { wear: sanitizeWear(wear), has: races.pfs.has })
   if (!model) return null
   const textures: Record<string, string> = {}
   for (const mesh of model.meshes) collectTextures(races.pfs, mesh, textures)
-  const idle = readAnimation(races.wld, code, model.skeleton, IDLE)
+  const idle = idleClip(races.wld, code, model.skeleton)
   const held = sanitizeHands(hands)
   const weapons: EqModelWeapon[] = []
   const primary = weaponFor(held.primary, 'R_POINT', textures)
   const secondary = weaponFor(held.secondary, 'L_POINT', textures)
   if (primary) weapons.push(primary)
   if (secondary) weapons.push(secondary)
-  return { actor: model.actor, bones: model.bones, meshes: model.meshes, clips: idle ? [idle] : [], weapons, textures }
+  const out: EqModelPayload = { actor: model.actor, bones: model.bones, meshes: model.meshes, clips: idle ? [idle] : [], weapons, textures }
+  const faces = facesFor(code, races.pfs.has)
+  if (faces.length > 0) out.faces = faces
+  if (model.defaultFace !== undefined) out.defaultFace = model.defaultFace
+  return out
 }
 
 export function registerEqModelIpc(): void {

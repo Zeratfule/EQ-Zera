@@ -95,7 +95,7 @@ async function seedSpeakingDef(page: Page): Promise<number> {
         name: 'Voice follows prefs',
         enabled: true,
         trigger: { type: 'event', kind: 'uncharm' },
-        sound: { packId: 'alan-rickman', soundId: 'attention' },
+        sound: { packId: 'eq-zera-console', soundId: 'attention' },
         cooldownMs: 0,
         audio: 'speech',
         // THE RETIRED OVERRIDE, stored exactly as an older build would have written it. It must be

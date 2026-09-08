@@ -28,12 +28,12 @@ engine/target/
 # engine` staged 5,118 build artifacts into a commit before this line existed.
 engine/target-*/
 
-# downloaded sound packs (audio binaries — `npm run fetch:packs` restores them; the app
-# also self-provisions the default pack at runtime). peon/sc_marine are no longer shipped
-# defaults but stay ignored so an existing dev's local copies never get committed.
-resources/soundpacks/alan-rickman/
-resources/soundpacks/peon/
-resources/soundpacks/sc_marine/
+# sound packs that are NOT ours. The shipped default (resources/soundpacks/eq-zera-console/) is
+# committed and bundled; peon/sc_marine and the spoken-word pack the fork used to carry are
+# third-party audio a dev may still have on disk from an older checkout, so they stay ignored and
+# can never be committed here.
+resources/soundpacks/*/
+!resources/soundpacks/eq-zera-console/
 
 # headless Electron e2e harness dumps DOM/screenshots here on a failed assertion
 tests/e2e/artifacts/

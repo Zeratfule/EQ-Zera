@@ -189,9 +189,12 @@ test('THE WIRING: a blocked PowerShell walks no backoff and names its cause', ()
   // and `updateOutcome` is the honest home the demotion leaves the count in (JOS-310's rule).
   assert.ok(handler.indexOf('noteUpdate(step,') > handler.indexOf("if (kind === 'blocked')"))
   // …and the sentence a stuck user sits with once the bounded retries are spent names the cause
-  // rather than the symptom.
-  const available = src.slice(src.indexOf("autoUpdater.on('update-available'"))
-  assert.match(available, /downloadBlocked\s*\n?\s*\? SIGNATURE_BLOCKED_PAUSED_MESSAGE/)
+  // rather than the symptom. It moved out of the 'update-available' handler and into `offerUpdate`
+  // when the notification card arrived (EQ Zera, 2026-09-08) — the paused STATUS is now what that
+  // function pushes INSTEAD of offering a card, which is the same ruling one step further on: a
+  // build whose download has failed three times is not something to put a button under.
+  const offer = src.slice(src.indexOf('function offerUpdate('), src.indexOf('function startDownload('))
+  assert.match(offer, /downloadBlocked\s*\n?\s*\? SIGNATURE_BLOCKED_PAUSED_MESSAGE/)
   assert.ok(SIGNATURE_BLOCKED_PAUSED_MESSAGE.length > 0)
   // The flag states something about NOW, so both ways out of the state clear it: a download that
   // landed, and a user who allowed PowerShell and pressed the button.

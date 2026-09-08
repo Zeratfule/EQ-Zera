@@ -369,7 +369,7 @@ export function describePackInstallFailure(err: unknown): string {
  * which attempt of how many, which class (with the status when there is one) — and then the CAUSE,
  * which is the whole ticket.
  *
- *   install 'alan-rickman' failed (attempt 3/3, http 404): GET https://github.com/… → 404
+ *   install 'sc_marine' failed (attempt 3/3, http 404): GET https://github.com/… → 404
  */
 export function packInstallFailureLine(
   name: string,

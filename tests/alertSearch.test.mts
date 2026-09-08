@@ -53,12 +53,12 @@ const src = (rel: string): string =>
 
 const PACKS: SoundPack[] = [
   {
-    id: 'alan-rickman',
-    name: 'Alan Rickman',
+    id: 'eq-zera-console',
+    name: 'EQ Zera Console',
     source: 'bundled',
     sounds: {
-      'charm-break': { file: 'charm.wav', label: 'I find myself requiring your attention' },
-      'boss-defeat': { file: 'boss.wav', label: 'The matter is settled' }
+      'charm-break': { file: 'charm.wav', label: 'Alarm, alternating' },
+      'boss-defeat': { file: 'boss.wav', label: 'Fanfare, ascending' }
     }
   },
   {
@@ -74,7 +74,7 @@ const CHARM: AlertDef = {
   name: 'Charm break',
   enabled: true,
   trigger: { type: 'event', kind: 'uncharm' },
-  sound: { packId: 'alan-rickman', soundId: 'charm-break' },
+  sound: { packId: 'eq-zera-console', soundId: 'charm-break' },
   note: 'Seeded default - fires when a charm spell wears off (you lose your pet).'
 }
 
@@ -93,7 +93,7 @@ const BOSS: AlertDef = {
   name: 'Raid target defeated',
   enabled: true,
   trigger: { type: 'app', signal: 'bossDefeat' },
-  sound: { packId: 'alan-rickman', soundId: 'boss-defeat' }
+  sound: { packId: 'eq-zera-console', soundId: 'boss-defeat' }
 }
 
 const PUMA: AlertDef = {
@@ -149,13 +149,13 @@ test('the TRIGGER KIND / event is searchable, composites and app signals include
 })
 
 test('the SOUND PACK is searchable by display name and by id', () => {
-  assert.deepEqual(found('rickman'), ['a1', 'a3'])
+  assert.deepEqual(found('zera'), ['a1', 'a3'])
   assert.deepEqual(found('peon'), ['a2', 'a5'])
 })
 
 test('the SOUND is searchable by id and by the pack’s own label', () => {
   assert.deepEqual(found('reveille'), ['a4'], 'the id, even when the pack is not installed')
-  assert.deepEqual(found('settled'), ['a3'], 'the label the sound picker shows')
+  assert.deepEqual(found('ascending'), ['a3'], 'the label the sound picker shows')
 })
 
 test('the SPEECH PHRASE is searchable', () => {
@@ -197,7 +197,7 @@ test('every facet the header promises is in the haystack, by construction', () =
 
 test('matching is case-insensitive in both directions', () => {
   assert.deepEqual(found('CHARM BREAK'), ['a1'])
-  assert.deepEqual(found('rIcKmAn'), ['a1', 'a3'])
+  assert.deepEqual(found('zErA'), ['a1', 'a3'])
 })
 
 test('the house tokenizer’s typo tolerance is inherited, not re-invented', () => {
@@ -211,7 +211,7 @@ test('a prefix finds the token it starts, so half a word is enough', () => {
 })
 
 test('EVERY query token must match — two words narrow, they never widen', () => {
-  assert.deepEqual(found('rickman charm'), ['a1'], 'a3 has the pack but not the word')
+  assert.deepEqual(found('zera charm'), ['a1'], 'a3 has the pack but not the word')
   assert.deepEqual(found('charm zzzzzzz'), [], 'one unanswerable token excludes the record')
 })
 
@@ -246,7 +246,7 @@ test('a query nothing answers leaves an empty list, not the full one', () => {
 test('the haystack is tokens, computed from the facets — the hook may cache it per list change', () => {
   const hay = alertHaystack(CHARM, indexPacks(PACKS))
   assert.deepEqual(hay, tokenize(alertFacets(CHARM, indexPacks(PACKS)).join(' ')))
-  assert.ok(hay.includes('uncharm') && hay.includes('rickman') && hay.includes('seeded'))
+  assert.ok(hay.includes('uncharm') && hay.includes('zera') && hay.includes('seeded'))
 })
 
 // ── 5. SOURCE PINS: the wiring, and the reorder that is not there ─────────────────────

@@ -1,6 +1,8 @@
-> **EQ Zera fork note.** This fork compiles in no telemetry or feedback endpoint and has auto-update
-> disabled, so the sections below describing data sent to the original author's AWS account do not
-> apply to EQ Zera builds. They are kept for reference.
+> **EQ Zera fork note.** This fork compiles in no telemetry or feedback endpoint, so the sections
+> below describing data sent to the original author's AWS account do not apply to EQ Zera builds.
+> They are kept for reference. Self-update **is** on, from this fork's own GitHub Releases and
+> **unsigned** — read "How updates are verified today" and "Code signing and the update trust
+> chain" below, which describe EQ Zera as it actually ships.
 
 # Security
 
@@ -10,12 +12,12 @@ it does not, and how you can verify that the copy you installed is the one we bu
 
 ## Reporting a vulnerability
 
-Email **[jmoyers+eqc@gmail.com](mailto:jmoyers+eqc@gmail.com)** — that inbox reaches the
-person who maintains this project directly and privately, so a vulnerability can be confirmed
+Email **[Zeratfule@gmail.com](mailto:Zeratfule@gmail.com)** — that inbox reaches the
+person who maintains this fork directly and privately, so a vulnerability can be confirmed
 and fixed before anything is public. Put enough to reproduce it in the mail; don't file it in
 a public issue.
 
-If you'd rather use GitHub, [private security advisories](https://github.com/jmoyers/everquest-companion/security/advisories/new)
+If you'd rather use GitHub, [private security advisories](https://github.com/Zeratfule/EQ-Zera/security/advisories/new)
 are an optional second channel when they're available on the repo — but the email above is the
 one that's always open, so prefer it if you're unsure.
 
@@ -175,8 +177,8 @@ and the whole stack is in this repo under [`infra/`](infra/).
 
 **Asking us to delete something.** The dialog shows a **report id** after a successful
 send — keep it. Quote that id in a
-[GitHub issue](https://github.com/jmoyers/everquest-companion/issues) (or, if you'd rather it
-not be public, email [jmoyers+eqc@gmail.com](mailto:jmoyers+eqc@gmail.com)) and say what you
+[GitHub issue](https://github.com/Zeratfule/EQ-Zera/issues) (or, if you'd rather it
+not be public, email [Zeratfule@gmail.com](mailto:Zeratfule@gmail.com)) and say what you
 want removed. Deleting a slice
 deletes the object outright and stamps the row so we can tell it was done. The
 description itself stays unless you ask for the whole report to go, in which case the
@@ -239,48 +241,78 @@ at boundaries we control:
 
 ## How updates are verified today
 
-1. The app polls **only** the GitHub Releases of this repository, over HTTPS. The
-   feed location is fixed at build time (`electron-builder.yml`); nothing in the
-   settings store or the renderer process can point it elsewhere.
+EQ Zera updates itself. When a check finds a newer release you get a card on the
+celebration overlay saying so; clicking it downloads the installer, and clicking
+the card again restarts into the new build. Nothing is downloaded until you click,
+and Preferences → Updates carries the same two buttons if you would rather work
+from there.
+
+1. The app polls **only** the GitHub Releases of `github.com/Zeratfule/EQ-Zera`,
+   over HTTPS. The feed location is fixed at build time (`electron-builder.yml`);
+   nothing in the settings store, the renderer process, or any file on disk can
+   point it elsewhere.
 2. The feed (`latest.yml` / `main.yml`) carries a **SHA-512** for the installer.
    `electron-updater` streams the download through a digest transform and aborts
    with `ERR_CHECKSUM_MISMATCH` on any mismatch. The same check is applied to
    differential (block-map) downloads and re-applied to an already-staged
-   installer before it is ever run.
+   installer before it is ever run. **A download that was tampered with in transit
+   therefore fails**, and that is what this layer protects: the bytes, not the author.
 3. Downgrades are refused (`allowDowngrade = false`), so a re-published or
    rolled-back release cannot walk an installation backwards.
-4. Every release also ships **`SHA256SUMS.txt`** so you can verify a manual
-   download yourself, independently of GitHub's TLS:
+4. The installer is applied per-user under `%LOCALAPPDATA%\Programs` with no
+   administrator prompt, because that is how it was installed in the first place.
+5. To check a manual download yourself, compare it against the `sha512` in
+   `latest.yml` on the same release page:
 
    ```powershell
-   certutil -hashfile everquest-companion-Setup.exe SHA256
+   certutil -hashfile eq-zera-Setup-<version>.exe SHA512
    ```
 
-   ```sh
-   sha256sum -c SHA256SUMS.txt
-   ```
+   (The value in `latest.yml` is base64; `certutil` prints hex. `[Convert]::ToBase64String(
+   [byte[]] -split ((certutil -hashfile <exe> SHA512)[1] -replace ' ','' -replace '..','$& '))`
+   converts one to the other.)
 
 ## Code signing and the update trust chain
 
-**Release builds are code-signed** ("Joshua Moyers", via Azure Artifact Signing;
-CI injects the signing arguments on tagged releases — see `.github/workflows/`).
-Two consequences:
+**EQ Zera releases are not code-signed, and self-update is on anyway.** That is a
+deliberate decision by this fork's owner, not an oversight, and it is a weaker
+guarantee than the upstream project's signed updates. What it means, plainly:
 
-1. SmartScreen: signed installers should not warn. If a warning appears while the
-   certificate's reputation is new, *More info → Run anyway* — and the signature
-   details on the exe are checkable either way (right-click → Properties →
-   Digital Signatures).
+1. SmartScreen will show "Windows protected your PC" the first time you run an
+   unsigned installer. *More info → Run anyway* installs it. There are no signature
+   details to inspect on the exe, because there is no signature.
 
-2. The update path: `electron-updater` verifies more than transport integrity.
-   Every download is checked byte-for-byte against the sha512 in the release
-   feed, AND (because `publisherName` is set in electron-builder.yml) the
-   downloaded installer's Authenticode publisher must match "Joshua Moyers" or
-   the update fails with `ERR_UPDATER_INVALID_SIGNATURE` before anything runs.
-   A compromised GitHub account alone is therefore no longer sufficient to ship
-   a malicious update to existing installs: the attacker would also need the
-   Azure signing identity. (Historical note: builds before v0.1.8 were unsigned
-   and did not verify publisher identity; they will update to signed builds,
-   and from then on the verification applies.)
+2. The update path verifies **integrity but not authorship**. Every download is
+   checked byte-for-byte against the sha512 in the release feed, so nobody can
+   corrupt or substitute a file in transit. But `publisherName` is commented out in
+   `electron-builder.yml`, which means no publisher name reaches the packaged
+   `app-update.yml`, which means `electron-updater`'s Authenticode check
+   (`NsisUpdater.verifySignature`) returns immediately and **skips verification
+   rather than failing it**. Nothing checks *who* built the release.
+
+3. **So the GitHub account is the trust root.** Anyone who could publish a release
+   to `Zeratfule/EQ-Zera` could ship a silent, per-user, no-UAC update to every
+   install. Tag and release access *is* the security control here. The release job
+   is the only one holding a repository-write token, it runs only on a pushed `v*`
+   tag, its third-party actions are pinned to commit SHAs, and dependency install
+   scripts are disabled — but none of that helps against someone holding the
+   account itself.
+
+4. **The check comes back with a certificate.** The day this project has one, the
+   `publisherName` line goes back into `electron-builder.yml` (matching the
+   certificate's subject CN exactly) and signing turns on in CI. From that build
+   onward, every downloaded update must carry a valid Authenticode signature from
+   that publisher or it is rejected with `ERR_UPDATER_INVALID_SIGNATURE` before
+   anything runs. No other change is needed, and nothing about the flow above
+   changes for the user. `SETUP.md`, "Releasing", carries the steps.
+
+If you would rather not have the app update itself under these terms, simply never
+press the download button: nothing is fetched until you do, and you can install
+releases by hand from the releases page instead. Note the one thing that *is*
+automatic afterwards — once you have downloaded an update, it is applied the next
+time you close the app even if you never press "Restart to install", because a
+staged build that is never applied is a download you paid for and did not get.
+Preferences → Updates always shows which of those states you are in.
 
 - **Release-pipeline hardening.** CI publishes only from a pushed `v*` tag;
   only that one job holds a repository-write token (every other path runs read-only);

@@ -25,7 +25,7 @@
               "id": "a2",
               "name": "Mez broke",
               "enabled": true,
-              "sound": { "packId": "alan-rickman", "soundId": "oh-dear" },
+              "sound": { "packId": "eq-zera-console", "soundId": "oh-dear" },
               "trigger": {
                 "type": "event",
                 "kind": "cc",
@@ -165,7 +165,7 @@
         "kind": "fire",
         "at": 1787181712000,
         "rule": "Mez broke",
-        "sound": "alan-rickman/oh-dear",
+        "sound": "eq-zera-console/oh-dear",
         "message": "a young puma has been mesmerized.",
         "captures": { "spell": "Mesmerization", "target": "a young puma" },
         "spell": "Mesmerization III"
@@ -177,7 +177,7 @@
         "kind": "fire",
         "at": 1787181795000,
         "rule": "Mez broke",
-        "sound": "alan-rickman/oh-dear",
+        "sound": "eq-zera-console/oh-dear",
         "message": "Mesmerization on a young puma is about to end",
         "captures": { "spell": "Mesmerization", "target": "a young puma" },
         "spell": "Mesmerization",

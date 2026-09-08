@@ -220,9 +220,9 @@ test('A LABEL NOTHING ANSWERS TO IS DROPPED, never played as somebody else', () 
 test('TWO DEFS WITH ONE NAME are separated by the SOUND the engine stated', () => {
   const defs = [
     def({ id: 'quiet', name: 'Slow landed', sound: { packId: 'classic', soundId: 'blip' } }),
-    def({ id: 'loud', name: 'Slow landed', sound: { packId: 'alan-rickman', soundId: 'oh-dear' } })
+    def({ id: 'loud', name: 'Slow landed', sound: { packId: 'eq-zera-console', soundId: 'oh-dear' } })
   ]
-  assert.equal(fireToFiring(fire({ rule: 'Slow landed', sound: 'alan-rickman/oh-dear' }), defs)?.alertId, 'loud')
+  assert.equal(fireToFiring(fire({ rule: 'Slow landed', sound: 'eq-zera-console/oh-dear' }), defs)?.alertId, 'loud')
   assert.equal(fireToFiring(fire({ rule: 'Slow landed', sound: 'classic/blip' }), defs)?.alertId, 'quiet')
 })
 

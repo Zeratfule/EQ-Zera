@@ -24,18 +24,30 @@
 # is the thing that complains, and it runs FIRST, before a minute of build time
 # is spent on a tag that cannot ship.
 #
+# WHAT THIS WORKFLOW PUBLISHES IS A LIVE UPDATE CHANNEL, NOT JUST A DOWNLOAD PAGE
+# (owner's call, 2026-09-08). Every existing install polls this repo's releases —
+# once about 45 s after launch, then every four hours with jitter — and offers the
+# new build to its user: a card on the celebration overlay, the nav chip, and
+# Preferences → Updates all say it is ready, and a click downloads it and restarts
+# into it. So A TAG REACHES EVERYBODY. There is no recall; the fix for a bad build
+# is another tag.
+#
 # UNSIGNED, AND THAT IS A STATED POSITION RATHER THAN AN OVERSIGHT. There is no
 # code-signing certificate for this fork yet, so:
-#   * no AZURE_* secrets exist and the `win.signtoolOptions.sign` hook
-#     (scripts/azure-sign.cjs) self-skips — the installer is unsigned and
+#   * the `win.signtoolOptions.sign` hook (scripts/azure-sign.cjs) self-skips
+#     while the AZURE_* secrets below are absent — the installer is unsigned and
 #     SmartScreen will warn on first run;
-#   * the app's SELF-UPDATE stays OFF (`AUTO_UPDATE_DISABLED` in
-#     src/main/updater.ts). electron-builder.yml sets `publisherName`, and
-#     electron-updater refuses any update whose Authenticode publisher does not
-#     match it — so flipping the constant before a certificate exists would ship
-#     an updater that can only ever fail. What this workflow publishes is a
-#     DOWNLOAD PAGE and a feed file, not a live update channel.
-# Turning both on is documented in SETUP.md, "Releasing".
+#   * `win.signtoolOptions.publisherName` is COMMENTED OUT in electron-builder.yml,
+#     so no publisher name reaches the packaged `app-update.yml` and
+#     electron-updater's Authenticode check skips rather than fails (with the name
+#     set against unsigned builds, every update would download and then be rejected
+#     forever). Integrity is still verified: the installer's sha512 in `latest.yml`
+#     is checked as it streams, so a TAMPERED DOWNLOAD FAILS. What is unverified is
+#     WHO built the release — which makes this repository's release access the trust
+#     root, and is why that access is the security control described below.
+# Adding the six AZURE_* secrets (they are already passed to the build step) and
+# uncommenting `publisherName` in the same change re-arms publisher verification,
+# with no edit to this file. SETUP.md, "Releasing", carries both halves.
 #
 # WHY THE RELEASE IS ASSEMBLED AS A DRAFT AND FLIPPED LIVE AT THE END.
 # electron-builder's GitHub publisher defaults to `releaseType: draft`, and we
@@ -186,10 +198,12 @@ jobs:
       # release natively writes only latest.yml, so without a byte copy named
       # main.yml any main-channel install would silently stop updating forever.
       # semver puts `X.Y.Z` above `X.Y.Z-main.N`, so those installs step up to
-      # the stable build on their next check. Nothing polls this fork's feed
-      # today (self-update is off), which is precisely why the bridge goes in
-      # now: the first release that ships without it is the one that strands
-      # whoever installed the release before.
+      # the stable build on their next check. This fork's app never sets a
+      # channel (src/main/updater.ts's `applyChannel` leaves it at the default,
+      # so both stored values resolve releases/latest -> latest.yml), which makes
+      # the copy belt and braces rather than load-bearing here — but it costs one
+      # upload, and the release that ships without it is the one that strands
+      # whoever is still on an install that does poll main.yml.
       #
       # THE ASSERTION IS THE POINT OF THIS STEP. See the header: this repo runs
       # the electron-builder major whose publisher exited without awaiting its
@@ -238,6 +252,12 @@ jobs:
           # installer WILL be blocked on first run and a user who does not know
           # the click-through will conclude the download is malware.
           #
+          # AND IT STATES THE UPDATE TERMS, because this page is where somebody
+          # decides whether to trust the thing. Self-update is ON and unsigned:
+          # the sha512 in latest.yml makes a tampered download fail, and nothing
+          # verifies WHO built a release. That is the same paragraph SECURITY.md
+          # carries; if one of the two changes, so does the other.
+          #
           # NO BACKTICKS IN THESE STRINGS. A backtick is PowerShell's escape
           # character inside a double-quoted string, so a markdown code span
           # written here would be silently eaten (or, on 5.1, turn into whatever
@@ -250,9 +270,18 @@ jobs:
             'yet. Windows SmartScreen will show "Windows protected your PC" on first run; click',
             '*More info -> Run anyway* to install it.',
             '',
-            'The app does **not** self-update. Automatic updates stay off until releases are signed,',
-            'because an unsigned update is one nobody can verify the author of. Watch this page for',
-            'new versions and install them the same way.',
+            '**The app updates itself from this page.** An installed copy checks shortly after',
+            'launch and every few hours after that; when a newer build is out you get a card on the',
+            'celebration overlay saying so, and Preferences -> Updates says the same. Clicking',
+            'downloads it, and clicking again restarts into it. Nothing is downloaded until you',
+            'click, and a build you downloaded is applied the next time you close the app.',
+            '',
+            '**Updates are checked for integrity, not authorship.** The feed and the installer come',
+            'over HTTPS from this repository and the download is verified against the SHA-512 in',
+            'latest.yml, so a corrupted or substituted file fails. But because the build is unsigned',
+            'there is no publisher signature to check, so nobody can verify *who* produced a',
+            'release: access to publish here is the control. That check comes back automatically the',
+            'day this project has a code-signing certificate. SECURITY.md says all of this in full.',
             '',
             "What changed in this build is in the app's What's new panel (and in",
             'src/shared/releaseNotes.ts, which is where that panel reads it from).'

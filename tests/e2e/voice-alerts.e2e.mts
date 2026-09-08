@@ -465,7 +465,7 @@ async function stepCaptureAlert(page: Page, log: { appendAt: (at: Date, ...m: re
           type: 'raw',
           regex: "^\\[[^\\]]*\\] (?<player>[A-Za-z' `]{1,48}) growls with the spirit of the puma\\."
         },
-        sound: { packId: 'alan-rickman', soundId: 'task-acknowledge-task-acknowledge-05' },
+        sound: { packId: 'eq-zera-console', soundId: 'task-acknowledge-task-acknowledge-05' },
         cooldownMs: 0,
         audio: 'speech',
         speech: { mode: 'custom', phrase }

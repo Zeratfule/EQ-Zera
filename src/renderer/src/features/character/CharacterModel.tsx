@@ -21,8 +21,9 @@ import {
 } from '../../../../shared/characterModel'
 import { PALETTE, withAlpha } from '../../../../shared/palette'
 import { itemIconUrl } from '../../lib/ItemWindow'
-import { CharacterModel3D, useEqModel, useRaceCode } from './CharacterModel3D'
-import { MenuItem, Select } from '@mui/material'
+import { CharacterModel3D, useEqModel } from './CharacterModel3D'
+import { ModelPickers, useModelPrefs } from './ModelPickers'
+import { actorCode } from './modelPrefs'
 
 const HELM_KEY = 'eq.character.showHelm'
 const ORNAMENT_KEY = 'eq.character.ornaments'
@@ -145,31 +146,25 @@ function Figure({ looks, previewSlot }: { looks: Map<ModelSlotId, SlotLook>; pre
   )
 }
 
-/** The classic races, both genders, by the actor code the game's own files use. */
-const RACES: readonly { code: string; label: string }[] = [
-  ['HU', 'Human'], ['BA', 'Barbarian'], ['ER', 'Erudite'], ['EL', 'Wood Elf'], ['HI', 'High Elf'], ['DA', 'Dark Elf'],
-  ['HA', 'Half Elf'], ['DW', 'Dwarf'], ['TR', 'Troll'], ['OG', 'Ogre'], ['HO', 'Halfling'], ['GN', 'Gnome']
-].flatMap(([code, label]) => [
-  { code: `${code}M`, label: `${label} · male` },
-  { code: `${code}F`, label: `${label} · female` }
-])
-
-/** The game's model when the install is there; the stylised doll otherwise. */
+/**
+ * The game's model when the install is there; the stylised doll otherwise.
+ *
+ * THE FACE RIDES INSIDE THE WEAR, merged over what the sheet decided. That is deliberate: the
+ * `useEqModel` cache key is the wear and the hands by value, so a face change is a new payload
+ * exactly like a new breastplate is - and the camera, which is kept per ACTOR, holds still through
+ * it. Changing race or sex changes the actor and re-frames the figure, which is the right answer
+ * for a different body.
+ */
 function ModelOrDoll({ looks, previewSlot }: { looks: Map<ModelSlotId, SlotLook>; previewSlot?: ModelSlotId }): JSX.Element {
-  const [race, setRace] = useRaceCode()
-  const wear = useMemo(() => wearFromLooks(looks), [looks])
+  const prefs = useModelPrefs()
+  const worn = useMemo(() => wearFromLooks(looks), [looks])
+  const wear = useMemo(() => (prefs.face === undefined ? worn : { ...worn, face: prefs.face }), [worn, prefs.face])
   const hands = useMemo(() => handsFromLooks(looks), [looks])
-  const { model, ready } = useEqModel(race, wear, hands)
+  const { model, ready } = useEqModel(actorCode(prefs.race, prefs.sex), wear, hands)
   return (
     <>
       {model ? <CharacterModel3D model={model} /> : ready ? <Figure looks={looks} previewSlot={previewSlot} /> : <Box sx={{ height: 340 }} />}
-      <Select size="small" value={race} onChange={(e) => setRace(e.target.value)} fullWidth sx={{ mt: 0.5 }} data-testid="character-model-race">
-        {RACES.map((r) => (
-          <MenuItem key={r.code} value={r.code}>
-            {r.label}
-          </MenuItem>
-        ))}
-      </Select>
+      <ModelPickers prefs={prefs} faces={model?.faces} defaultFace={model?.defaultFace} />
       {ready && !model && (
         <Typography variant="caption" color="text.disabled" sx={{ display: 'block', mt: 0.5 }}>
           The game's model files were not found under the configured EverQuest folder, so this is the stylised figure.

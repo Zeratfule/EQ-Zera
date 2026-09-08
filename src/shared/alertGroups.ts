@@ -20,7 +20,7 @@
 // four client-side notices ("too far away", "out of range", "cannot see", "Insufficient
 // Mana"), the two invisibility lines and the block notice.
 //
-// SOUNDS mirror the shipped Alan Rickman pack the same way suggestions.ts does — the ids are
+// SOUNDS mirror the shipped `eq-zera-console` pack the same way suggestions.ts does — the ids are
 // repeated as literals because a renderer module cannot import from src/main. They are
 // declared in src/main/data/defaultPacks.ts (`DEFAULT_ALERT_SOUNDS`) so provisionPacks
 // verifies they resolved after an install; keep the two lists in sync.

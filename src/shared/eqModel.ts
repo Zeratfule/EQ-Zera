@@ -81,6 +81,15 @@ export interface EqModelWeapon {
  * are `<race><part><variant><index>.bmp`, variants 00 bare · 01 leather · 02 chain · 03 plate
  * (measured on this client's global_chr.s3d) - plus a separate head MESH per helm kind
  * (`<race>HE01..03`). A part left undefined stays bare.
+ *
+ * THE HEAD IS THE OTHER NAMING RULE, and it is not the armour one. A face is a head TEXTURE,
+ * `<race>he00<F><P>.bmp`: `F` is the face (0-7) and `P` the piece - 1 and 2 are the face itself,
+ * higher pieces (hair, beards, ears) exist at face 0 only on the races that carry them, and head
+ * textures also appear on a few BODY meshes (HUF, ERM, OGM, HOF neck strips). So a face pick
+ * substitutes the F digit and KEEPS the piece, over every drawn mesh, and only where the archive
+ * really has the file: HUF and DWF have no face 0 at all and their bare heads bind face 2
+ * (`hufhe0021.bmp`). Which faces exist is MEASURED per actor and travels on the payload
+ * (`faces`, `defaultFace`) - the renderer never guesses one.
  */
 export const WEAR_PARTS = ['ch', 'ua', 'fa', 'hn', 'lg', 'ft'] as const
 export type WearPart = (typeof WEAR_PARTS)[number]
@@ -88,6 +97,12 @@ export type WearVariant = 0 | 1 | 2 | 3
 export type EqModelWear = Partial<Record<WearPart, WearVariant>> & {
   /** the helm mesh to draw: 0 bare head, 1..3 the helm kinds; undefined = bare */
   helm?: WearVariant
+  /**
+   * WHICH FACE THE HEAD WEARS: the `F` digit above, an integer 0..7 and deliberately NOT a
+   * `WearVariant` - it indexes a different set of files and nothing the player equips moves it.
+   * Undefined leaves every head texture exactly as the archive bound it.
+   */
+  face?: number
   /** dye per part, when the item table states a colour */
   tint?: Partial<Record<WearPart | 'helm', Tint>>
 }
@@ -116,6 +131,10 @@ export interface EqModelPayload {
   weapons: EqModelWeapon[]
   /** bitmap file name → data URL, for every texture a drawn mesh group references */
   textures: Record<string, string>
+  /** the faces this actor's archive really has: the `F` digits with a piece-1 head texture, ascending */
+  faces?: number[]
+  /** the `F` digit the bare head binds with no pick at all (2 for HUF and DWF, which have no face 0) */
+  defaultFace?: number
 }
 
 /**

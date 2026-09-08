@@ -40,7 +40,7 @@ function def(over: Partial<AlertDef> = {}): AlertDef {
     name: 'Charm break',
     enabled: true,
     trigger: { type: 'event', kind: 'uncharm' },
-    sound: { packId: 'alan-rickman', soundId: 'attention' },
+    sound: { packId: 'eq-zera-console', soundId: 'attention' },
     ...over
   }
 }
@@ -55,7 +55,7 @@ function pack(id: string, sounds: string[]): SoundPack {
 }
 
 const PACKS: SoundPack[] = [
-  pack('alan-rickman', ['attention', 'charm-break']),
+  pack('eq-zera-console', ['attention', 'charm-break']),
   pack('peon', ['ready', 'attention'])
 ]
 
@@ -64,7 +64,7 @@ const PACKS: SoundPack[] = [
 test('a def with no audio fields flattens to the sound-only defaults', () => {
   assert.deepEqual(audioChoiceOf(def()), {
     audio: 'sound',
-    packId: 'alan-rickman',
+    packId: 'eq-zera-console',
     soundId: 'attention',
     mode: 'alertName',
     phrase: ''
@@ -72,7 +72,7 @@ test('a def with no audio fields flattens to the sound-only defaults', () => {
 })
 
 test('the OUTPUT select shows the def’s actual channel, never a hidden mode', () => {
-  assert.equal(outputValueOf(audioChoiceOf(def())), 'alan-rickman')
+  assert.equal(outputValueOf(audioChoiceOf(def())), 'eq-zera-console')
   assert.equal(outputValueOf(audioChoiceOf(def({ audio: 'speech' }))), OUTPUT_SPEECH)
 })
 
@@ -86,7 +86,7 @@ test("JOS-362: a def still storing the retired 'both' is shown on the channel it
   assert.equal(outputValueOf(audioChoiceOf(spoken)), OUTPUT_SPEECH)
   const played = def({ audio: 'both' })
   assert.equal(audioChoiceOf(played).audio, 'sound')
-  assert.equal(outputValueOf(audioChoiceOf(played)), 'alan-rickman', 'a pack entry, which exists')
+  assert.equal(outputValueOf(audioChoiceOf(played)), 'eq-zera-console', 'a pack entry, which exists')
 })
 
 test("JOS-362: the resolution is a READ — the def keeps saying 'both' until it is edited", () => {
@@ -107,14 +107,14 @@ test("JOS-362: the resolution is a READ — the def keeps saying 'both' until it
 test('editing a sound-only alert through the row leaves NO voice keys on the def', () => {
   const before = def()
   const after = applyAudioChoice(before, withSoundId(audioChoiceOf(before), 'charm-break'))
-  assert.deepEqual(after, def({ sound: { packId: 'alan-rickman', soundId: 'charm-break' } }))
+  assert.deepEqual(after, def({ sound: { packId: 'eq-zera-console', soundId: 'charm-break' } }))
   assert.equal('audio' in after, false, "absent means 'sound' — the pre-voice shape, unchanged")
   assert.equal('speech' in after, false)
 })
 
 test('switching a spoken alert back to a pack DELETES the audio key rather than blanking it', () => {
   const spoken = def({ audio: 'speech' })
-  const back = applyAudioChoice(spoken, withOutput(audioChoiceOf(spoken), 'alan-rickman', PACKS))
+  const back = applyAudioChoice(spoken, withOutput(audioChoiceOf(spoken), 'eq-zera-console', PACKS))
   assert.equal('audio' in back, false)
   assert.deepEqual(back, def())
 })
@@ -128,7 +128,7 @@ test('choosing a pack IS choosing sound-only, and re-seeds a sound that pack has
   assert.equal(next.soundId, 'attention', 'peon happens to carry the same id — keep it')
 
   const other = withOutput(
-    audioChoiceOf(def({ sound: { packId: 'alan-rickman', soundId: 'charm-break' } })),
+    audioChoiceOf(def({ sound: { packId: 'eq-zera-console', soundId: 'charm-break' } })),
     'peon',
     PACKS
   )
@@ -138,7 +138,7 @@ test('choosing a pack IS choosing sound-only, and re-seeds a sound that pack has
 test('the voice output keeps the pack sound the alert already had', () => {
   const next = withOutput(audioChoiceOf(def()), OUTPUT_SPEECH, PACKS)
   assert.equal(next.audio, 'speech')
-  assert.equal(next.packId, 'alan-rickman')
+  assert.equal(next.packId, 'eq-zera-console')
   assert.equal(next.soundId, 'attention', 'a change of mind must be free')
 })
 
@@ -182,12 +182,12 @@ test('with NO pack resolved, an edit leaves the def’s sound exactly as it stat
   assert.deepEqual(writeBase(c, undefined), c, 'a write is applied to the def, not to the blank')
 
   const spoken = applyAudioChoice(def(), withOutput(writeBase(c, undefined), OUTPUT_SPEECH, []))
-  assert.deepEqual(spoken.sound, { packId: 'alan-rickman', soundId: 'attention' })
+  assert.deepEqual(spoken.sound, { packId: 'eq-zera-console', soundId: 'attention' })
   assert.equal(spoken.audio, 'speech')
 })
 
 test('with a pack resolved, the display normalizes a sound that pack does not carry', () => {
-  const c = audioChoiceOf(def({ sound: { packId: 'alan-rickman', soundId: 'gone' } }))
+  const c = audioChoiceOf(def({ sound: { packId: 'eq-zera-console', soundId: 'gone' } }))
   assert.equal(displayedChoice(c, PACKS[0]).soundId, 'attention', 'never a blank select')
   assert.deepEqual(writeBase(c, PACKS[0]), displayedChoice(c, PACKS[0]))
 })
@@ -243,27 +243,27 @@ test('an alert’s unrelated fields are never touched by an audio edit', () => {
 // failure mode the whole ticket is about.
 
 test('a resolvable alert says nothing at all', () => {
-  const quiet = soundNotice(audioChoiceOf(def()), PACKS, { defaultPackId: 'alan-rickman' })
+  const quiet = soundNotice(audioChoiceOf(def()), PACKS, { defaultPackId: 'eq-zera-console' })
   assert.equal(quiet, null, 'no chrome on the overwhelmingly common case')
 })
 
 test('a ref into an uninstalled pack names the pack that answers instead', () => {
   const d = def({ sound: { packId: 'portal-turret', soundId: 'task-complete-1' } })
-  const notice = soundNotice(audioChoiceOf(d), PACKS, { defaultPackId: 'alan-rickman' })
+  const notice = soundNotice(audioChoiceOf(d), PACKS, { defaultPackId: 'eq-zera-console' })
   assert.match(notice ?? '', /portal-turret/, 'it names what the def asked for…')
-  assert.match(notice ?? '', /alan-rickman/, '…and what is actually playing')
+  assert.match(notice ?? '', /eq-zera-console/, '…and what is actually playing')
 })
 
 test('nothing installed at all says the alert is silent', () => {
-  const notice = soundNotice(audioChoiceOf(def()), [], { defaultPackId: 'alan-rickman' })
+  const notice = soundNotice(audioChoiceOf(def()), [], { defaultPackId: 'eq-zera-console' })
   assert.match(notice ?? '', /silent/i)
 })
 
 test('a spoken-only alert is not nagged about a pack it never plays', () => {
   const d = def({ audio: 'speech', sound: { packId: 'portal-turret', soundId: 'gone' } })
-  assert.equal(soundNotice(audioChoiceOf(d), PACKS, { defaultPackId: 'alan-rickman' }), null)
+  assert.equal(soundNotice(audioChoiceOf(d), PACKS, { defaultPackId: 'eq-zera-console' }), null)
   // …but a def that still stores the retired 'both' with nothing to say resolves to its SOUND, and
   // a sound alert whose pack is gone is told (JOS-362 + JOS-273 together).
   const both = def({ audio: 'both', sound: { packId: 'portal-turret', soundId: 'gone' } })
-  assert.notEqual(soundNotice(audioChoiceOf(both), PACKS, { defaultPackId: 'alan-rickman' }), null)
+  assert.notEqual(soundNotice(audioChoiceOf(both), PACKS, { defaultPackId: 'eq-zera-console' }), null)
 })

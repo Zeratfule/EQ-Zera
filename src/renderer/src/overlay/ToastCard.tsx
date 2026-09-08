@@ -37,6 +37,7 @@
 
 import { type CSSProperties, type JSX, type MouseEvent, useEffect, useState } from 'react'
 import { TOAST_INTRO_BODY, toastActionLabel, type ToastItemCard, type ToastPayload } from '@shared/toast'
+import { updateActionLabel } from '@shared/updateToast'
 import { TOAST_ENTER_MS, TOAST_EXIT_MS } from './toastQueue'
 import { ToastQuestBlock } from './ToastQuestBlock'
 import { PALETTE, withAlpha } from '../../../shared/palette'
@@ -268,6 +269,24 @@ function RewardBlock({ item, onClick }: { item: ToastItemCard; onClick?: () => v
  * which is what gives the browser a FROM state to animate out of — set both at once and there
  * is no transition at all, only a jump.
  */
+/**
+ * WHAT A CLICK ON THIS CARD DOES, AND WHAT THE BUTTON OVER IT SAYS — one decision, in one place,
+ * so the two can never disagree (the JOS-334 rule, now with a second kind of click to keep honest).
+ *
+ * The order is the precedence: an ACTION card (the updater's, EQ Zera 2026-09-08) drives main and
+ * wins; otherwise a card with no reward block is its own deep link, exactly as before; a card whose
+ * reward block is the affordance, or which names no destination at all, returns nothing and stays
+ * unclickable. `label` is always derived from the same thing that produced `run`, which is what
+ * stops the button becoming decoration on a card that goes nowhere.
+ */
+function cardClick(payload: ToastPayload): { run?: () => void; label?: string } {
+  const act = payload.action
+  if (act) return { run: () => window.eqOverlay.toastAction(act), label: updateActionLabel(act) }
+  const focus = payload.focus
+  if (!focus || payload.item) return {}
+  return { run: () => window.eqOverlay.focusApp(focus), label: toastActionLabel(focus) }
+}
+
 function motionStyle(entering: boolean, exiting: boolean): CSSProperties {
   const hidden = entering || exiting
   return {
@@ -300,15 +319,12 @@ export function ToastCard({
 
   const focus = payload.focus
   const onOpen = focus ? (): void => window.eqOverlay.focusApp(focus) : undefined
-  // A card with NO reward block has no inner click target, so the card itself becomes one — the
-  // level-up toast (docs/plans/levelup-whats-new.md §2) is the first of those: a level is not a
-  // reward you can hold, but it still has somewhere to take you (the Leveling tab, at that
-  // level). Where a reward block exists it stays the only affordance, exactly as T6 wrote it.
-  const onCardClick = payload.item ? undefined : onOpen
-  // …and since JOS-334 it SAYS SO. The label is derived from the same focus that makes the card
-  // clickable, so the two can never disagree: no destination ⇒ no click target ⇒ no promise, and
-  // a destination the label module cannot name prints nothing rather than something invented.
-  const action = onCardClick ? toastActionLabel(focus) : undefined
+  // WHAT THIS CARD IS FOR, decided once (see `cardClick`): a card with no reward block is its own
+  // click target — the level-up toast (docs/plans/levelup-whats-new.md §2) was the first, a level
+  // being not a reward you can hold — and since JOS-334 it SAYS SO in a visible button rather than
+  // in a pointer cursor. Where a reward block exists it stays the only affordance (T6), and an
+  // updater card drives main instead of navigating.
+  const { run: onCardClick, label: action } = cardClick(payload)
 
   return (
     <div

@@ -62,7 +62,7 @@ const SEED_ENTRIES = [
   'message-overlay.json', // learned cast-message overlay (expensive to relearn)
   'item-knowledge-cache.json', // wiki item cache (incl. negative caching)
   'registry-cache.json', // sound-pack registry index
-  'soundpacks' // installed packs, incl. the provisioned alan-rickman default
+  'soundpacks' // packs the user installed from the registry browser
 ]
 
 /** Marker written into a seeded dir: what came from where, and when. */

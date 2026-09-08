@@ -25,6 +25,8 @@ import { farmPlan, type FarmItem, type FarmZone } from '../../../../shared/build
 import { FONTS } from '../../../../shared/palette'
 import { mergeItemSources, sourcesFor } from '../../lib/itemSources'
 import { eraHides } from '../planner/plannerData'
+// The item hover card, in this tab's one safe mode - see BuildItemName.tsx's header.
+import { BuildItemName } from './BuildItemName'
 import type { BuildState } from './useBuild'
 
 /** How many mob names one item lists before it says how many more there are. */
@@ -86,7 +88,15 @@ function FarmItemRow({ item, handlers }: { item: FarmItem; handlers: FarmHandler
     <Stack direction="row" spacing={1} alignItems="flex-start" sx={{ py: 0.25, minWidth: 0 }} data-testid="build-farm-item">
       <Box sx={{ minWidth: 0, flexGrow: 1 }}>
         <Typography variant="body2" noWrap component="div">
-          <LinkText text={item.row.name} onOpen={() => handlers.onOpenLoot(item.row.name)} />
+          {/* The item window on hover, the Loot drill-down on click (owner 2026-09-08). The anchor
+              is a plain span because `LinkText` is a function component that forwards neither the
+              ref nor the className MUI's Tooltip clones onto its child - `EffectRows`' precedent,
+              and layout-neutral inside a line that already ellipsizes. */}
+          <BuildItemName name={item.row.name}>
+            <span>
+              <LinkText text={item.row.name} onOpen={() => handlers.onOpenLoot(item.row.name)} />
+            </span>
+          </BuildItemName>
         </Typography>
         <MobLinks mobs={item.mobs} onOpenMob={handlers.onOpenMob} />
       </Box>

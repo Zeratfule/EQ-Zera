@@ -40,6 +40,10 @@ import {
 } from './appHarness.mjs'
 import { mainWindow } from './appWindow.mjs'
 import { launchOnFixture } from './logFixture.mjs'
+// The dark build's three ways out (mail / issue / clipboard) — its own module for the max-lines
+// reason every other `*Steps.mts` here exists, and it borrows this file's three readers so both
+// halves agree on what "disabled" and "typed" mean.
+import { stepWaysOut } from './feedbackWaysOutSteps.mjs'
 
 const DIALOG = '[data-testid="feedback-dialog"]'
 const DESCRIPTION = '[data-testid="feedback-description"]'
@@ -189,7 +193,17 @@ async function stepOpen(page: Page): Promise<boolean> {
  * the state the user actually sees today — and it must SAY so rather than letting Send fail.
  */
 async function stepDarkBuild(page: Page): Promise<void> {
-  const shown = await countOf(page, '[data-testid="feedback-unavailable"]')
+  // THE BANNER ARRIVES WITH THE CONTEXT, NOT WITH THE DIALOG. `dark` is
+  // `ctx !== null && !ctx.endpointConfigured`, and `feedbackContext()` is an IPC round trip that
+  // folds the perf timeline (one leg of which waits on the GPU process, capped at a second) — so
+  // a reader that samples the DOM the instant the dialog opens sees NO banner and concludes this
+  // build has an endpoint. It did: every run of this spec quietly skipped the whole step. The
+  // absence has to hold still before it is believed, exactly as `waitForPreviewMeta` does below.
+  const shown = await settle(
+    () => countOf(page, '[data-testid="feedback-unavailable"]'),
+    (n) => n > 0,
+    { timeoutMs: 20_000, pollMs: 200 }
+  )
   if (shown === 0) {
     note('this build reports an ingest endpoint — the dark-build state is not asserted this run')
     return
@@ -204,6 +218,12 @@ async function stepDarkBuild(page: Page): Promise<void> {
     '…and Send stays disabled in that build, however good the draft is',
     (await disabledState(page, SEND)) === true
   )
+  check(
+    '…and it names the three ways out instead of leaving the user at a dead button',
+    /send it by email/i.test(text) && /GitHub issue/i.test(text),
+    text.slice(0, 160)
+  )
+  await stepWaysOut(page, { disabledState, setDescription, textOf })
 }
 
 /**

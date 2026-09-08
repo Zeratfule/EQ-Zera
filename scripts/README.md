@@ -7,8 +7,7 @@ Node on PATH (`export PATH="/c/Program Files/nodejs:$PATH"` on this machine).
 
 | Script | `npm run` | What it does |
 | --- | --- | --- |
-| `gen-icon.mts` | `gen:icon` | Generates `build/icon.png` + `build/icon.ico` (dark panel + gold "EQ" mark) with zero deps. Re-run after editing the glyph. |
-| `fetch-packs.mts` | `fetch:packs` | Downloads the shipped voice pack (`alan-rickman`, pinned tag — see `src/main/data/defaultPacks.ts`) into `resources/soundpacks/`, converting the source `openpeon.json` to our `manifest.json` shape. **The audio is gitignored** (it stays out of the public repo) — run this after a fresh clone before `npm run dist`. Idempotent: only missing/empty files are re-downloaded. |
+| `gen-icon.mts` | `gen:icon` | Generates `build/icon.png`, `build/icon.ico` and `build/icon-tray.png` (the EQZ retro-wave cartridge mark, docs/plans/app-icon.md) with zero deps. Re-run after editing the design. |
 | `scrape-posky.ts` / `scrape-bosses.ts` | `scrape:posky` / `scrape:bosses` | Refresh quest / raid-target data (offline, committed output). |
 
 ## Fixture extractors (`tests/extract-*.mjs`) — run them under **tsx**

@@ -28,6 +28,7 @@ import { characterApi } from './characterApi'
 // The quest tracker's read/write pair (EQ Zera), split out for the same file-mass reason.
 import { questsApi } from './questsApi'
 import { craftApi } from './craftApi'
+import { feedbackApi } from './feedbackApi'
 // The `/outputfile` registry's one IPC shape (JOS-44) — command, why-clause, and the dump's own
 // mtime, per kind. Every surface fed by an export command reads this and nothing else.
 import type { OutputFileStatus } from '../shared/outputs/kinds'
@@ -666,6 +667,8 @@ const api = {
    *  is retried later; a 4xx resolves `{ok:false, queued:false}` and is not retried. */
   submitFeedback: (draft: FeedbackDraft, opts: SubmitOpts): Promise<SubmitResult> =>
     ipcRenderer.invoke(IPC.feedbackSubmit, draft, opts),
+  // ---- the way OUT of a dark build (src/preload/feedbackApi.ts): openFeedbackMail ----
+  ...feedbackApi,
 
   // ---- usage analytics (docs/plans/usage-analytics.md wave A1) ---------------------------
   //

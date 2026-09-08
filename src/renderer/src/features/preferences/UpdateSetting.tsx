@@ -8,6 +8,7 @@
 
 import { type JSX, useCallback, useEffect, useState } from 'react'
 import { Box, Button, Chip, LinearProgress, Link, Stack, Typography } from '@mui/material'
+import DownloadIcon from '@mui/icons-material/Download'
 import RefreshIcon from '@mui/icons-material/Refresh'
 import RestartAltIcon from '@mui/icons-material/RestartAlt'
 import type { UpdateStatus } from '@shared/types'
@@ -158,35 +159,47 @@ function UpdateError({ status }: { status: UpdateStatus }): JSX.Element | null {
   )
 }
 
-/** Relaunch when a build is staged, otherwise the manual check. */
+/**
+ * THE SAME TWO STEPS THE NOTIFICATION OFFERS (EQ Zera, 2026-09-08), in the panel.
+ *
+ * The update toast is a card over the game with one button on it: "Download and install" while a
+ * build is merely available, "Restart to install" once it is staged. This panel is the OTHER place
+ * those two steps live, and it has to carry both for a reason that is not symmetry: the
+ * celebration overlay can be switched off, and if it were the only door then switching it off
+ * would switch off updating. The wording is deliberately the same in both places, because a person
+ * who dismissed a card and came looking for it here should recognise what they are looking at.
+ *
+ * `window.eq.installUpdate()` drives both: main takes ONE STEP on the update, guarded by the state
+ * it is actually in (updater.ts's `advanceUpdate`), so a press on a stale panel is a no-op rather
+ * than a wrong action.
+ */
 function UpdateActions({
   status,
   ui,
-  ready,
   busy,
   cooldown,
   onCheck
 }: {
   status: UpdateStatus
   ui: UpdateChipState
-  ready: boolean
   busy: boolean
   cooldown: boolean
   onCheck: () => void
 }): JSX.Element {
+  const advance = (): void => void window.eq.installUpdate()
   return (
     <Stack direction="row" spacing={1}>
-      {ready ? (
-        <Button
-          variant="contained"
-          color="success"
-          size="small"
-          startIcon={<RestartAltIcon />}
-          onClick={() => void window.eq.installUpdate()}
-        >
-          Restart to update{ui.kind === 'ready' && ui.version ? ` - v${ui.version}` : ''}
+      {ui.kind === 'ready' && (
+        <Button variant="contained" color="success" size="small" startIcon={<RestartAltIcon />} onClick={advance}>
+          Restart to install{ui.version ? ` - v${ui.version}` : ''}
         </Button>
-      ) : (
+      )}
+      {ui.kind === 'available' && (
+        <Button variant="contained" size="small" startIcon={<DownloadIcon />} onClick={advance} data-testid="pref-update-download">
+          Download and install{ui.version ? ` - v${ui.version}` : ''}
+        </Button>
+      )}
+      {ui.kind !== 'ready' && (
         <Button
           variant="outlined"
           size="small"
@@ -215,7 +228,6 @@ export function UpdateSetting({
   const ui = updateChipState(status, version || undefined)
   const chip = chipLook(status, ui)
   const busy = checking || status.state === 'checking'
-  const ready = ui.kind === 'ready'
   const downloading = ui.kind === 'downloading'
 
   const checkNow = useCallback(async () => {
@@ -234,14 +246,7 @@ export function UpdateSetting({
       <UpdateHeadline status={status} chip={chip} busy={busy} />
       <UpdateProgress status={status} downloading={downloading} />
       <UpdateError status={status} />
-      <UpdateActions
-        status={status}
-        ui={ui}
-        ready={ready}
-        busy={busy}
-        cooldown={cooldown}
-        onCheck={() => void checkNow()}
-      />
+      <UpdateActions status={status} ui={ui} busy={busy} cooldown={cooldown} onCheck={() => void checkNow()} />
     </Stack>
   )
 }

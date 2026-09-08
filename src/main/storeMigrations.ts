@@ -73,6 +73,12 @@ import { normalizeProcessPriorityPrefs } from '../shared/processPriority'
 // ZERO-IMPORT contract, and its normalizer is the one answer to "what is a valid resist-evidence
 // pref block" that the store, the IPC handler and this migration all share.
 import { normalizeResistPrefs } from '../shared/resistPrefs'
+// The EIGHTH, and the only one that is not a shared/ prefs normalizer: data/defaultPacks.ts is a
+// pure DATA module (no Electron, no parser, no LogEvent union - it declares the shipped pack, its
+// cue ids and the table that says what a ref into a pack we no longer have becomes). Step 14 -> 15
+// re-points alerts off the removed voice pack, and re-spelling that table here would create a
+// second answer to "which cue does a dead ref become" that could drift from the live one.
+import { DEFAULT_ALERT_PACK_ID, REMOVED_VOICE_PACK_ID, migrateRemovedVoicePackRef } from './data/defaultPacks'
 
 /** A store file, parsed. Deliberately untyped: a migration's INPUT is a shape the current
  *  code no longer describes, so `StoreShape` would be a lie at every step but the last. */
@@ -85,7 +91,7 @@ export const SCHEMA_VERSION_KEY = 'schemaVersion'
  * The schema the code running right now expects. Bump by exactly one whenever a persisted
  * shape changes, and add the matching MIGRATIONS entry in the same commit.
  */
-export const CURRENT_SCHEMA_VERSION = 14
+export const CURRENT_SCHEMA_VERSION = 15
 
 export interface Migration {
   /** Version this step produces. Steps run in ascending `to` order, contiguously. */
@@ -644,6 +650,57 @@ const migrateToV14: Migration = {
   }
 }
 
+// -------------------------- 14 → 15: the inherited voice pack is removed (owner, 2026-09-08)
+//
+// THE RULING (owner, 2026-09-08): the spoken-word notification pack this fork inherited from
+// upstream comes out - it was somebody else's work, carried over with the code, and the fork ships
+// its own cues. The pack is gone from the app: nothing downloads it, bundles it, credits it or
+// names it. What is left behind is PERSISTED - an alert authored while it was the default still
+// stores its `{packId, soundId}` verbatim.
+//
+// SO THIS STEP MOVES THE ALERTS, and it is the only thing in the app that still knows the id
+// (src/main/data/defaultPacks.ts `REMOVED_VOICE_PACK_ID` - see its comment for why the fleet-wide
+// `LEGACY_ALERT_PACK_IDS` switch was the wrong lever). Each ref lands on the shipped pack's line of
+// the SAME CESP category, so a completion sting stays a completion line: the intent-preserving rule
+// the retired-pack rewrite established, applied once, in order, to one pack id.
+//
+// TWO SMALLER THINGS IN THE SAME BLOB, both about the same pack and neither worth its own step:
+// a `soundPacks.defaultPackId` naming it (every picker pre-selection and every newly authored
+// alert would otherwise keep pointing at it) is DROPPED, which means "use what the app ships"; and
+// its `removedPackIds` tombstone is dropped too, since that list exists only so provisioning can
+// skip a SHIPPED id and nothing ships this one any more. A preference naming any other pack is the
+// user's and is untouched.
+//
+// NOT DONE HERE, on purpose: the audio itself. A copy under `<userData>/soundpacks/` was installed
+// by the user's machine and is the user's file; a schema migration rewrites the store, never the
+// disk. If it is still there the pack simply behaves like any other pack they installed.
+function repointVoicePackAlert(alert: unknown): unknown {
+  if (!isPlainObject(alert) || !isPlainObject(alert.sound)) return alert
+  const { packId, soundId } = alert.sound
+  if (packId !== REMOVED_VOICE_PACK_ID || typeof soundId !== 'string') return alert
+  return { ...alert, sound: migrateRemovedVoicePackRef({ packId, soundId }) }
+}
+
+/** Drop the removed pack from the sound-pack prefs blob, keeping every other key as written. */
+function forgetVoicePackPrefs(raw: unknown): unknown {
+  if (!isPlainObject(raw)) return raw
+  const next = { ...raw }
+  if (next.defaultPackId === REMOVED_VOICE_PACK_ID) delete next.defaultPackId
+  const removed = next.removedPackIds
+  if (Array.isArray(removed)) next.removedPackIds = removed.filter((id) => id !== REMOVED_VOICE_PACK_ID)
+  return next
+}
+
+const migrateToV15: Migration = {
+  to: 15,
+  describe: `re-point alerts off the removed inherited voice pack onto ${DEFAULT_ALERT_PACK_ID}`,
+  migrate(data) {
+    if (Array.isArray(data.alerts)) data.alerts = (data.alerts as unknown[]).map(repointVoicePackAlert)
+    if ('soundPacks' in data) data.soundPacks = forgetVoicePackPrefs(data.soundPacks)
+    return data
+  }
+}
+
 /**
  * The chain, ascending. APPEND ONLY — never renumber, never edit a shipped step (a store
  * out there was migrated by the old text and will never run it again), never delete one:
@@ -662,7 +719,8 @@ export const MIGRATIONS: readonly Migration[] = [
   migrateToV11,
   migrateToV12,
   migrateToV13,
-  migrateToV14
+  migrateToV14,
+  migrateToV15
 ]
 
 /** Version recorded in `data`; anything absent, non-integer or < 1 means "pre-framework" ⇒ 1. */

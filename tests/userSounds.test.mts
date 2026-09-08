@@ -209,7 +209,7 @@ test('a hand-edited manifest cannot re-title the reserved pack', () => {
   importUserSoundFiles(root, [fakeAudio(join(tree, 'a'), 'ding.wav')])
   writeFileSync(
     join(root, 'manifest.json'),
-    JSON.stringify({ id: 'alan-rickman', name: 'Alan Rickman', sounds: readUserManifest(root).sounds })
+    JSON.stringify({ id: 'portal-turret', name: 'Portal Turret', sounds: readUserManifest(root).sounds })
   )
   const manifest = readUserManifest(root)
   assert.equal(manifest.id, USER_SOUNDS_PACK_ID)

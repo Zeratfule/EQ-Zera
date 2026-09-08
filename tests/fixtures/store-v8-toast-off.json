@@ -24,7 +24,7 @@
 				"signal": "bossDefeat"
 			},
 			"sound": {
-				"packId": "alan-rickman",
+				"packId": "peon",
 				"soundId": "victory"
 			}
 		}

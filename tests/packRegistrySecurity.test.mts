@@ -29,7 +29,7 @@ function pack(overrides: Partial<RegistryPack>): RegistryPack {
   return {
     name: 'good-pack',
     display_name: 'Good Pack',
-    source_repo: 'utensils/openpeon-alan-rickman-soundpack',
+    source_repo: 'utensils/openpeon-soundpack',
     source_ref: 'v1.1.2',
     source_path: '.',
     categories: ['task.complete'],
@@ -122,7 +122,7 @@ test('installPack REFUSES a poisoned source_* field before touching the filesyst
 // ---- fetchRegistry / readDiskCache drop bad rows and keep good ones --------------------
 
 test('sanitizeRegistryPacks drops poisoned rows and keeps the honest ones', () => {
-  const good1 = pack({ name: 'alan-rickman' })
+  const good1 = pack({ name: 'portal-turret' })
   const good2 = pack({ name: 'sc_marine', source_repo: 'PeonPing/og-packs', source_path: 'sc_marine' })
   const poisoned = [
     pack({ name: '../../../../Users/x/Documents' }),
@@ -137,13 +137,13 @@ test('sanitizeRegistryPacks drops poisoned rows and keeps the honest ones', () =
   // good registry" case).
   const oneGood = sanitizeRegistryPacks([poisoned[0], good1, poisoned[1]])
   assert.equal(oneGood.length, 1)
-  assert.equal(oneGood[0].name, 'alan-rickman')
+  assert.equal(oneGood[0].name, 'portal-turret')
 
   // Every good row is kept; every bad row is dropped.
   const mixed = sanitizeRegistryPacks([good1, ...poisoned, good2])
   assert.deepEqual(
     mixed.map((p) => p.name),
-    ['alan-rickman', 'sc_marine']
+    ['portal-turret', 'sc_marine']
   )
 
   // A fully-honest registry is passed through unchanged (nothing dropped).

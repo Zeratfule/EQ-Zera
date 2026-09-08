@@ -423,7 +423,13 @@ export const IPC = {
   // renderer -> main: run a check now ("Check for updates"). Resolves to the resulting
   // status; a no-op idle status in dev.
   checkForUpdates: 'update:checkNow',
-  // renderer -> main: apply the downloaded update now (quit + install + relaunch).
+  // renderer -> main: TAKE THE NEXT STEP ON THE UPDATE. Historically install-only, and the name
+  // is kept because the channel is the same one: with a build merely AVAILABLE it starts the
+  // download (nothing is fetched until a user asks — EQ Zera, 2026-09-08, `autoDownload` is off);
+  // with one DOWNLOADED it applies it (quit + install + relaunch). Main guards each half on the
+  // state it is actually in (updater.ts's `advanceUpdate`), so a press on a stale surface is a
+  // no-op rather than a wrong action. The nav chip, the Preferences buttons and the update
+  // notification card all press this one door.
   installUpdate: 'update:install',
   // renderer -> main: the running app's version (app.getVersion()), shown in Preferences.
   getAppVersion: 'app:getVersion',
@@ -721,6 +727,17 @@ export const IPC = {
   // attachAchievements}). Never rejects; a network failure resolves with {ok:false,
   // queued:true}. Returns SubmitResult.
   feedbackSubmit: 'feedback:submit',
+  // renderer -> main: open the user's mail client on a report to the compiled feedback address.
+  // Args (subject, body); returns boolean (the OS accepted it).
+  //
+  // WHY THIS IS ITS OWN DOOR AND NOT A WIDENING OF `allowedExternalUrl`. That function is
+  // https-ONLY and stays that way — it validates URLs built from WORLD DATA (wiki page titles),
+  // and `mailto:` reaches a registered protocol handler, so it is refused there by law and
+  // tests/security.test.mts pins the refusal. This channel takes NO address and NO URL: the
+  // recipient is a compiled constant, the scheme is fixed, and src/main/feedback/mail.ts asserts
+  // the assembled URL starts with exactly `mailto:<that address>?` before the OS sees it. The
+  // set of things it can open has one member, whatever the renderer says.
+  feedbackOpenMail: 'feedback:openMail',
 
   // ---- usage analytics (docs/plans/usage-analytics.md wave A1) ------------------------
   //

@@ -16,6 +16,12 @@
  * zone has items, an item has a gain and a cell, the toggle narrows, the chip and the item page
  * name the same cell. A number is printed as a note, never asserted as a constant.
  *
+ * AND SINCE 2026-09-08 IT ALSO WATCHES AN UPGRADE'S NAME EXPLAIN ITSELF. The owner asked the
+ * "Upgrades for <profile>" box to bring up the item tooltip on mouseover, so the names on that tab
+ * anchor the app's item hover card in its click-through mode. Both halves of that mode are asserted
+ * here (step 2): the card opens and names the item, and the "Swap in" button on the same row still
+ * answers for its own centre while it is open.
+ *
  * COUNTS COME FROM THE FOOTER on the Zone Loot half. The table is WINDOWED, so counting DOM rows
  * counts a viewport (zone-loot.e2e.mts's rule, inherited).
  *
@@ -41,6 +47,14 @@ const FARM_ZONE = '[data-testid="build-farm-zone"]'
 const FARM_ITEM = '[data-testid="build-farm-item"]'
 const FARM_MOB = '[data-testid="build-farm-mob"]'
 const MOBS_BACK = '[data-testid="mobs-back"]'
+
+/** The Upgrades panel, and the item names in it that now carry the item hover card. */
+const UPGRADES = '[data-testid="build-upgrades"]'
+const UPGRADE_NAME = `${UPGRADES} [data-testid="build-item-name"]`
+/** The "Swap in" buttons - the only buttons in that panel, and what the card must never eat. */
+const SWAP_IN = `${UPGRADES} button`
+/** Any MUI tooltip popper, whoever mounted it. The item card is one. */
+const POPPER = '.MuiTooltip-popper'
 
 const NAV_ZONELOOT = '[data-testid="nav-zoneloot"]'
 const ZONELOOT_VIEW = '[data-testid="zoneloot-view"]'
@@ -162,8 +176,48 @@ async function stepFarmPanel(page: Page): Promise<FarmReading | null> {
   return { profile: chosen, zones: names.map((n) => n.trim()), pickable, items }
 }
 
+/** What the browser thinks is on top of `sel` right now - the hit test a click would run. */
+function coveredByCard(page: Page, sel: string): Promise<boolean> {
+  return page.evaluate((s) => {
+    const el = document.querySelector(s)
+    if (!el) return true
+    const r = el.getBoundingClientRect()
+    const hit = document.elementFromPoint(Math.round(r.left + r.width / 2), Math.round(r.top + r.height / 2))
+    return hit === null || !(el.contains(hit) || hit === el)
+  }, sel)
+}
+
 /**
- * 2. A MOB NAME IN THE PANEL IS A LINK INTO THE MOBS TAB.
+ * 2. AN UPGRADE'S NAME BRINGS UP THE ITEM WINDOW (owner, 2026-09-08:
+ * *"'Upgrades for DPS' box should bring up item tool-tip on mouse over for the item also"*).
+ *
+ * The panel already says what a candidate is WORTH; the card says what it IS. It is the app's own
+ * item hover card (`lib/KnownItemTooltip`) in its click-through mode, so this step asserts BOTH
+ * halves of that bargain: the card opens and names the item the pointer is on, and the "Swap in"
+ * button on the same row still answers for its own centre while the card is up. The second half is
+ * the JOS-143 regression in the form it would come back in here - a card that explains an item by
+ * taking the click that swaps it in has cost more than it gave.
+ *
+ * The name is read from the DOM, never stated: which item the optimizer likes is data (the header).
+ */
+async function stepUpgradeCard(page: Page): Promise<void> {
+  if (!check('the Upgrades panel offers an item name to hover', await appears(page, UPGRADE_NAME, 20_000))) return
+  const item = await textOf(page, UPGRADE_NAME)
+  await page.hover(UPGRADE_NAME, { timeout: 15_000 })
+  const cards = await settle(() => countOf(page, POPPER), (n) => n > 0, { timeoutMs: 10_000 })
+  if (!check(`hovering "${item}" opens a hover card`, cards > 0, String(cards))) return
+  const card = await textOf(page, POPPER)
+  check("…and the card is that item's own window", card.includes(item), card.slice(0, 140))
+  note(`upgrade card for ${item}: ${card.replace(/\s+/g, ' ').slice(0, 120)}`)
+  check('…while the Swap in button beside it still answers for its own centre', !(await coveredByCard(page, SWAP_IN)))
+  // Leave the tab as the next steps expect it: pointer off the name, card gone.
+  await page.mouse.move(4, 4)
+  const left = await settle(() => countOf(page, POPPER), (n) => n === 0, { timeoutMs: 8000 })
+  check('…and it goes with the pointer', left === 0, String(left))
+}
+
+/**
+ * 3. A MOB NAME IN THE PANEL IS A LINK INTO THE MOBS TAB.
  *
  * Conditional, and the header says why: the opener is an optional prop until App.tsx threads
  * `routing.openMob` into `BuildBranch`.
@@ -185,7 +239,7 @@ async function stepFarmMobLink(page: Page): Promise<void> {
 }
 
 /**
- * 3. THE ZONE LOOT TABLE CHIPS THE SAME UPGRADES.
+ * 4. THE ZONE LOOT TABLE CHIPS THE SAME UPGRADES.
  *
  * The zone comes from the farm panel, which is the point: the two surfaces are reading one verdict,
  * so a zone the Build tab called worth farming must contain a chipped row.
@@ -226,7 +280,7 @@ async function stepZoneLootChips(page: Page, farm: FarmReading): Promise<boolean
 }
 
 /**
- * 4. THE ITEM PAGE SAYS IT IN A SENTENCE.
+ * 5. THE ITEM PAGE SAYS IT IN A SENTENCE.
  *
  * Reached the way a reader reaches it - by clicking the item name on the row that just wore the
  * chip - so what is proved is that the two surfaces agree about the SAME item, not that a verdict
@@ -262,6 +316,7 @@ async function main(): Promise<void> {
     await stepReady(page)
     const farm = await stepFarmPanel(page)
     if (farm) {
+      await stepUpgradeCard(page)
       await stepFarmMobLink(page)
       if (await stepZoneLootChips(page, farm)) await stepItemPage(page)
     } else {

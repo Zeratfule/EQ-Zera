@@ -77,10 +77,19 @@ export const EXTERNAL_LINK_ALLOWLIST: readonly ExternalLinkRule[] = [
   { host: 'eqlwiki.com' },
   { host: 'www.eqlwiki.com' },
   { host: 'wiki.project1999.com' },
-  { host: 'github.com', pathPrefix: '/Zeratfule/EQ-Zera' }
+  { host: 'github.com', pathPrefix: '/Zeratfule/EQ-Zera' },
+  // The project this fork grew from, linked from Preferences → Thanks (ThanksSetting.tsx). A
+  // credit that names a repository should be able to open it; nothing else under github.com is.
+  { host: 'github.com', pathPrefix: '/jmoyers/everquest-companion' }
 ]
 
-const ALLOWED_LINK_RULES = new Map(EXTERNAL_LINK_ALLOWLIST.map((r) => [r.host, r] as const))
+/**
+ * Host → every rule for it. A host may carry more than one path scope (github.com does since the
+ * Thanks page linked the upstream repository, 2026-09-08); a Map keyed by host alone kept only the
+ * last one written and silently refused the app's own releases link.
+ */
+const ALLOWED_LINK_RULES = new Map<string, ExternalLinkRule[]>()
+for (const r of EXTERNAL_LINK_ALLOWLIST) ALLOWED_LINK_RULES.set(r.host, [...(ALLOWED_LINK_RULES.get(r.host) ?? []), r])
 
 /**
  * Is `pathname` the allowed subtree itself, or something inside it?
@@ -138,10 +147,12 @@ export function allowedExternalUrl(raw: unknown): string | null {
   if (u.protocol !== 'https:') return null
   if (u.username !== '' || u.password !== '') return null
   if (u.port !== '') return null
-  const rule = ALLOWED_LINK_RULES.get(u.hostname)
-  if (!rule) return null
-  if (rule.pathPrefix !== undefined && !isUnderPathPrefix(u.pathname, rule.pathPrefix)) return null
-  return u.toString()
+  const rules = ALLOWED_LINK_RULES.get(u.hostname)
+  if (!rules) return null
+  // Any rule for the host admits the link: a host-wide rule has no prefix to check; a scoped one
+  // admits only its own subtree, and two scoped rules never overlap (segment-aware prefixes).
+  const admitted = rules.some((rule) => rule.pathPrefix === undefined || isUnderPathPrefix(u.pathname, rule.pathPrefix))
+  return admitted ? u.toString() : null
 }
 
 /** Where the app's own pages live, for `isInternalPageUrl`. */
@@ -241,7 +252,7 @@ export function isInsideDir(path: string, dir: string): boolean {
  * (`../../../Users/x/Documents`) would make `join()` resolve outside those roots, turning the
  * channel into a "read any .wav/.mp3/.ogg next to a manifest.json" primitive.
  *
- * The ids in play are registry pack names (`alan-rickman`, `sc_marine`) — lowercase words,
+ * The ids in play are registry pack names (`eq-zera-console`, `sc_marine`) — lowercase words,
  * digits, dash, underscore, dot. So this is an ALLOWLIST of characters, not a blocklist of
  * traversal spellings: no separators, no drive letters, no `..`, no absolute paths, and
  * nothing that could be a Windows ADS (`:`) or a UNC prefix can survive it. A leading dot is
@@ -264,7 +275,7 @@ export function isSafePackId(id: unknown): id is string {
 //     subpath) — a `..` or an absolute/drive path escapes the archive root.
 //
 // Same posture as isSafePackId: tight ALLOWLISTS of the shapes the honest registry actually
-// uses (`utensils/openpeon-alan-rickman-soundpack`, `v1.1.2`, `.` or `sounds/foo`), not a
+// uses (`peonping/og-packs`, `v1.1.2`, `.` or `sounds/foo`), not a
 // blocklist of traversal spellings. Total over arbitrary input, unit-tested without Electron.
 
 /** GitHub `owner/repo`: exactly one slash, GitHub-shaped owner + repo, no `..`, no extra path. */

@@ -148,7 +148,7 @@ async function saveProbe(page: Page): Promise<number> {
         name,
         enabled: true,
         trigger: { type: 'raw', regex },
-        sound: { packId: 'alan-rickman', soundId: 'task-acknowledge-task-acknowledge-05' },
+        sound: { packId: 'eq-zera-console', soundId: 'task-acknowledge-task-acknowledge-05' },
         cooldownMs: 0,
         // THE THROTTLE, OFF FOR THIS DEF ONLY — the header's whole argument. A coalescing def would
         // report one sound whether the cutover worked or not.

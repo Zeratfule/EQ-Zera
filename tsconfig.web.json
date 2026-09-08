@@ -60,6 +60,8 @@
     // …and `questsApi.ts` (the quest tracker's read/write pair), likewise.
     "src/preload/questsApi.ts",
     "src/preload/craftApi.ts",
+    // …and `feedbackApi.ts` (the dark build's mail door), likewise.
+    "src/preload/feedbackApi.ts",
     // …and `knowledge.ts` (the spell/item/mob lookups, JOS-293), likewise.
     "src/preload/knowledge.ts",
     // …and `overlaySnap.ts` (the overlay-snapping switch, JOS-217), likewise.

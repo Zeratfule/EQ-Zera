@@ -1,8 +1,8 @@
 /**
  * Headless Electron integration test for THE DEFAULT SOUND PACK (JOS-273).
  *
- * THE OWNER'S RULING, verbatim: "if someone deletes alan rickman, they should be able to set a
- * default and it should persist." `tests/defaultPackPreference.test.mts` pins the preference, the
+ * THE OWNER'S RULING, verbatim: "if someone deletes [the shipped pack], they should be able to
+ * set a default and it should persist." `tests/defaultPackPreference.test.mts` pins the preference, the
  * tombstone and the resolution as pure rules — everything that is a function. Two claims are left
  * over and neither is a function:
  *

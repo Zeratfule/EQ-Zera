@@ -5,10 +5,10 @@
 // (an optional `license` string is copied verbatim from an imported pack's source
 //  manifest — e.g. the CC-BY-NC-4.0 of the peon/marine PeonPing packs.)
 // Two sources:
-//   (1) bundled  — `resources/soundpacks/*` for a SOURCE build (`npm run fetch:packs`
-//       writes the shipped alan-rickman pack there; the audio is gitignored, so a
-//       CI-built installer ships none and provisionPacks.ts fetches it at runtime
-//       instead). asarUnpack in electron-builder.yml keeps these on disk in production.
+//   (1) bundled  — `resources/soundpacks/*`. The shipped default (`eq-zera-console`) is
+//       COMMITTED there and named explicitly by electron-builder.yml, so a source
+//       checkout, `npm run dev` and every installer all have it and nothing is
+//       downloaded at first launch. asarUnpack keeps these on disk in production.
 //   (2) user     — `<userData>/soundpacks/<id>/`, so a user can drop their own
 //       audio (e.g. their real FF fanfare mp3) + a manifest and select it.
 //   (3) MINE     — `<userData>/my-sounds/`, the RESERVED pack the in-app importer writes
@@ -85,14 +85,13 @@ function realRoots(): SoundRoots {
   return { bundled: bundledRoots(), user: userRoot(), mine: userSoundsRoot() }
 }
 
-// ----- CESP → our-manifest conversion (shared with scripts/fetch-packs.mts) -----
+// ----- CESP → our-manifest conversion (registry installs) -----
 //
 // openpeon.com packs ship a CESP `openpeon.json` that groups sounds by category
 // (session.start, task.complete, …). Our manifest flattens them to soundId keys
-// with a human label prefixed by the category ("Complete · Work complete."). Both
-// the CLI (scripts/fetch-packs.mts, for the bundled default packs) and the in-app
-// registry installer (packRegistry.ts) run the SAME conversion so labels read
-// identically regardless of source.
+// with a human label prefixed by the category ("Complete · Work complete."). The
+// in-app registry installer (packRegistry.ts) runs it on every install, so a pack's
+// labels read identically however it arrived.
 
 /** Category → the label prefix our manifest uses so the picker reads well. */
 export const CESP_CATEGORY_LABEL: Record<string, string> = {

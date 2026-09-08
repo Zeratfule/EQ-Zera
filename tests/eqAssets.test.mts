@@ -8,7 +8,7 @@ import { existsSync, readFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { readPfs } from '../src/main/eqassets/pfs'
-import { RACE_CODES, readCharacter, readWld } from '../src/main/eqassets/wld'
+import { RACE_CODES, facesFor, readCharacter, readWld, type CharacterModel } from '../src/main/eqassets/wld'
 import { readItem } from '../src/main/eqassets/wldItem'
 import { ddsToBmp, isDds } from '../src/main/eqassets/dds'
 import { boneShortName, readAnimation } from '../src/main/eqassets/wldAnim'
@@ -23,6 +23,20 @@ const SKIP = present ? false : 'no EverQuest Legends install on this machine - r
 function races(): { pfs: ReturnType<typeof readPfs>; wld: ReturnType<typeof readWld> } {
   const pfs = readPfs(readFileSync(ARCHIVE))
   return { pfs, wld: readWld(pfs.read('global_chr.wld')!) }
+}
+
+/** The Iksar live in their own archive (JOS: "we want to represent everyone's characters"). */
+const GLOBAL4 = join(EQ, 'global4_chr.s3d')
+const SKIP4 = existsSync(GLOBAL4) ? false : 'no global4_chr.s3d on this machine - run where the game is'
+function iksar(): { pfs: ReturnType<typeof readPfs>; wld: ReturnType<typeof readWld> } {
+  const pfs = readPfs(readFileSync(GLOBAL4))
+  return { pfs, wld: readWld(pfs.read('global4_chr.wld')!) }
+}
+
+/** Every head texture a model's DRAWN groups bind, deduplicated and sorted. */
+function headTextures(model: CharacterModel): string[] {
+  const bound = model.meshes.flatMap((m) => m.groups.map((g) => m.materials[g.materialIndex]?.texture ?? ''))
+  return [...new Set(bound.filter((t) => /he\d{4}\.bmp$/.test(t)))].sort()
 }
 
 test('the archive lists its files and hands back the WLD and the bitmaps', { skip: SKIP }, () => {
@@ -208,4 +222,59 @@ test('an actor the WLD does not have is null, not a throw', { skip: SKIP }, () =
 test('bytes that are not a PFS or a WLD are refused with a plain error', () => {
   assert.throws(() => readPfs(new Uint8Array(64)), /not a PFS/)
   assert.throws(() => readWld(new Uint8Array(64)), /not a WLD/)
+})
+
+// ---- faces (EQ Zera, 2026-09-08; "we want to represent everyone's characters") ----------------
+//
+// A FACE IS A HEAD TEXTURE, `<race>he00<F><P>.bmp`: F the face, P the piece. The pick substitutes
+// F and KEEPS P, over every drawn mesh (head textures sit on some BODY meshes too), and only where
+// the archive really has the file.
+
+test('a face pick swaps the F digit, keeps the piece, and only where the archive has the file', { skip: SKIP }, () => {
+  const { pfs, wld } = races()
+  const bare = readCharacter(wld, 'HUM')!
+  assert.deepEqual(headTextures(bare), ['humhe0001.bmp', 'humhe0002.bmp'], 'the human male head is shipped wearing face 0')
+  const faced = readCharacter(wld, 'HUM', { wear: { face: 3 }, has: pfs.has })!
+  assert.deepEqual(headTextures(faced), ['humhe0031.bmp', 'humhe0032.bmp'], 'face 3 keeps both pieces and moves only the F digit')
+  for (const t of headTextures(faced)) assert.ok(pfs.has(t), `${t} is really in the archive`)
+  assert.deepEqual(facesFor('HUM', pfs.has), [0, 1, 2, 3, 4, 5, 6, 7], 'the human male has all eight faces')
+  assert.equal(bare.defaultFace, 0, 'and his bare head binds face 0')
+})
+
+test('the two races with no face 0 report [1..7] and bind face 2, and a pick they lack changes nothing', { skip: SKIP }, () => {
+  const { pfs, wld } = races()
+  for (const code of ['HUF', 'DWF']) {
+    const bare = readCharacter(wld, code)!
+    assert.deepEqual(facesFor(code, pfs.has), [1, 2, 3, 4, 5, 6, 7], `${code}: seven faces, numbered from one`)
+    assert.equal(bare.defaultFace, 2, `${code}: the bare head binds face 2`)
+    assert.ok(!pfs.has(`${code.toLowerCase()}he0001.bmp`), `${code}: there is no face 0 file at all`)
+    const zero = readCharacter(wld, code, { wear: { face: 0 }, has: pfs.has })!
+    assert.deepEqual(headTextures(zero), headTextures(bare), `${code}: a face the archive lacks leaves every texture alone`)
+    const five = readCharacter(wld, code, { wear: { face: 5 }, has: pfs.has })!
+    assert.ok(headTextures(five).every((t) => /he005\d\.bmp$/.test(t)), `${code}: face 5 reaches the body's neck strip too`)
+  }
+})
+
+test('the Iksar read out of global4_chr.s3d, faces and all, and their detail pieces survive the swap', { skip: SKIP4 }, () => {
+  const { pfs, wld } = iksar()
+  for (const code of ['IKM', 'IKF']) {
+    const model = readCharacter(wld, code)!
+    assert.ok(model.meshes.length >= 1, `${code}: at least one mesh`)
+    assert.ok(model.bones.length >= 20, `${code}: a skeleton (${String(model.bones.length)} bones)`)
+    assert.deepEqual(facesFor(code, pfs.has), [0, 1, 2, 3, 4, 5, 6, 7], `${code}: eight faces`)
+    assert.equal(model.defaultFace, 0, `${code}: the bare head binds face 0`)
+  }
+  // THE GUARD, MEASURED. The Iksar female's head binds SEVEN pieces of face 0 and only pieces 1
+  // and 2 exist at the other faces, so an unguarded substitution would blank five of them. (The
+  // classic archive binds two pieces per head and cannot show this at all.)
+  const bare = readCharacter(wld, 'IKF')!
+  assert.equal(headTextures(bare).length, 7, 'the Iksar female binds seven face-0 pieces')
+  const faced = readCharacter(wld, 'IKF', { wear: { face: 3 }, has: pfs.has })!
+  assert.deepEqual(headTextures(faced), ['ikfhe0003.bmp', 'ikfhe0004.bmp', 'ikfhe0005.bmp', 'ikfhe0006.bmp', 'ikfhe0007.bmp', 'ikfhe0031.bmp', 'ikfhe0032.bmp'], 'pieces 1 and 2 move to face 3; the five that exist at face 0 alone stay')
+  // The idle: the Iksar male carries his own P01, the female carries none and no human fallback
+  // lives in this archive - so she is a STILL figure rather than no figure at all.
+  const male = readAnimation(wld, 'IKM', readCharacter(wld, 'IKM')!.skeleton, 'P01')
+  assert.ok(male && male.frames > 1, 'IKM has an idle of its own')
+  assert.equal(male.name, 'P01', 'and it is not borrowed')
+  assert.equal(readAnimation(wld, 'IKF', bare.skeleton, 'P01'), null, 'IKF has none, and the payload carries no clip rather than no model')
 })

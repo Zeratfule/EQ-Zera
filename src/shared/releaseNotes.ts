@@ -138,6 +138,35 @@ export const RELEASE_NOTES: readonly ReleaseNote[] = [
   // EQ Zera's first release of its own (ROADMAP.md items 1 and 2). The version continues the
   // inherited line rather than restarting at 0.2.0: this list must ascend, and the comparison the
   // What's-new panel makes is by version, so a lower number here would read as ancient history.
+  // The first tagged EQ Zera release (2026-09-08, evening): what changed after roadmap 2 landed
+  // and before v1.19.0 was cut. The 1.17.0 and 1.18.0 entries below never shipped as tags of their
+  // own; they are kept as the honest record of what arrived when, and the panel shows all three.
+  {
+    version: '1.19.0',
+    date: '2026-09-08',
+    entries: [
+      {
+        kind: 'new',
+        text: 'EQ Zera updates itself. When a new version is published a card names it: click to download, click again to restart into it, and Preferences shows the same state. Updates come over HTTPS from the EQ Zera GitHub releases and are checked against the release feed, not yet code-signed.'
+      },
+      {
+        kind: 'new',
+        text: 'Your character, your face. The Character tab model has separate race, sex and face controls for the twelve classic races and Iksar, offering the faces the game files carry for each. Vah Shir, Froglok and Drakkin are named as not modelled yet rather than shown wrong.'
+      },
+      {
+        kind: 'new',
+        text: 'Sending feedback works without a server. The feedback dialog can open your mail app addressed to the EQ Zera author with the report filled in, open a GitHub issue with it, or copy the whole report. Log slices are saved as files and attached by hand.'
+      },
+      {
+        kind: 'changed',
+        text: 'A new EQZ app icon, original to this app. The inherited voice sound pack is gone; alerts that used it now play the EQ Zera console pack.'
+      },
+      {
+        kind: 'changed',
+        text: 'Item names in the Build tab upgrade list and the where-to-farm list show the item card on hover. Preferences - Thanks credits EverQuest Companion and its author as the base this app grew from.'
+      }
+    ]
+  },
   // Roadmap 2 (ROADMAP.md, 2026-09-08): the engine learned five more things the log says, and
   // the app grew the surfaces that read them. One release, because they shipped as one program.
   {

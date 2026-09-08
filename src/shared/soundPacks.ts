@@ -1,13 +1,13 @@
 // soundPacks.ts — WHICH PACK IS YOURS, WHICH ONES YOU THREW AWAY, AND WHAT PLAYS WHEN A REF
 // POINTS AT SOMETHING THAT IS GONE (JOS-273).
 //
-// THE DEFECT THIS ANSWERS, in the reporter's words: "I like Alan Rickman as much as the next
-// person, but it re-enables itself with every update and I have to delete it each time to use the
-// pack I want — can I just set one and it sticks." Nothing was resetting: the shipped pack was
+// THE DEFECT THIS ANSWERS, in the reporter's words: "I like the pack that ships as much as the
+// next person, but it re-enables itself with every update and I have to delete it each time to use
+// the pack I want — can I just set one and it sticks." Nothing was resetting: the shipped pack was
 // HARDCODED as the pack every picker pre-selects and every suggested/seeded alert uses, and
 // startup provisioning re-installed it whenever it was missing, additively and with no memory of
 // a deletion. There was simply nothing to set. The owner's ruling, verbatim law: "if someone
-// deletes alan rickman, they should be able to set a default and it should persist."
+// deletes the shipped pack, they should be able to set a default and it should persist."
 //
 // SO THERE ARE THREE THINGS HERE, and they are separable on purpose:
 //   1. THE PREFERENCE (`defaultPackId`) — the pack the pickers pre-select, the suggestion builder
@@ -183,7 +183,7 @@ export interface SoundFallback {
   defaultPackId: string
   /**
    * The line to prefer inside the resolved pack when the source id carries no recoverable
-   * category — the shipped pack's "A moment of your time, if you'd be so kind." in practice.
+   * category — the shipped pack's "needs your attention" alarm in practice.
    * Absent (or missing from that pack) falls through to the pack's first sound.
    */
   fallbackSoundId?: string

@@ -160,7 +160,7 @@ async function focusCycle(page: Page, id: string): Promise<boolean> {
         name: alertId,
         enabled: true,
         trigger: { type: 'raw', regex: 'never matches anything at all' },
-        sound: { packId: 'alan-rickman', soundId: 'task-acknowledge-task-acknowledge-05' },
+        sound: { packId: 'eq-zera-console', soundId: 'task-acknowledge-task-acknowledge-05' },
         cooldownMs: 0
       })
     },

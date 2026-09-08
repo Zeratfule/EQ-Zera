@@ -8,16 +8,26 @@
 // Windows it is achievable ONLY because of the installer shape we already ship
 // (per-user one-click NSIS). See the research block below for why.
 //
-// SHAPE OF THE FLOW
+// SHAPE OF THE FLOW — REWORKED FOR THIS FORK (EQ Zera, owner direction 2026-09-08):
+// "We also need a way to push updates to people's apps so they can see when there's
+// an available update, click on the notification when there is one, and it will just
+// automatically download and update from there." So the flow is no longer invisible;
+// it is a NOTIFICATION with a click on it, and nothing crosses the network until that
+// click happens.
 //   1. Check on a lazy cadence (shared/update.ts: ~45s after launch, then every
 //      4h +/- 25% jitter, exponential backoff on failure). Never a modal.
-//   2. On `update-available` we start the download OURSELVES (autoDownload is
-//      off — see "why autoDownload is off" below) into electron-updater's cache.
-//   3. On `update-downloaded` the build is STAGED, not installed. The left-nav
-//      chip lights up gold; a single 8s toast fires once. Nothing else happens.
-//   4. Either the user clicks the chip -> `update:install` -> quitAndInstall,
-//      or they never do and `autoInstallOnAppQuit` applies it silently the next
-//      time they close the app. Both paths are UI-less.
+//   2. On `update-available` we push a CARD at the celebration overlay ourselves —
+//      no renderer request, no validator, main to window (shared/updateToast.ts
+//      builds it). It says which build is ready and offers "Download and install".
+//      NOTHING is downloaded yet: `autoDownload` is off and the click is the trigger.
+//   3. The click comes back over `toast:action` as one of two names (main/toast.ts
+//      validates it) and lands in `runToastAction` below. `updateDownload` starts the
+//      download; the same card refreshes in place with a percentage as it runs.
+//   4. On `update-downloaded` the build is STAGED, not installed. The left-nav chip
+//      lights up gold and the same card comes back offering "Restart to install".
+//   5. Either the user takes that (or the Preferences button, or the chip) ->
+//      `update:install` -> quitAndInstall, or they never do and `autoInstallOnAppQuit`
+//      applies it silently the next time they close the app. Both apply paths are UI-less.
 //
 // DEV GUARD: electron-updater throws ("app-update.yml not found") when the app
 // is not packaged. We skip the machinery in that case (`npm run dev` stays
@@ -161,8 +171,16 @@ import {
   type UpdateLogSinks,
   type UpdateStep
 } from './updateLog'
+import {
+  updateAvailableToast,
+  updateDownloadedToast,
+  updateDownloadingToast,
+  updateFailedToast
+} from '../shared/updateToast'
+import { sendToToastOverlay, setToastUpdateActionHandler } from './toast'
 import { getUpdateChannel, getUpdateLastCheckedAt, setUpdateLastCheckedAt } from './store'
 import { classifyFailure, recordEvent } from './telemetry'
+import type { ToastUpdateAction } from '../shared/toast'
 
 const { autoUpdater } = electronUpdater
 
@@ -211,6 +229,11 @@ let consecutiveFailures = 0
 const downloadAttempts = new Map<string, number>()
 /** The version we asked electron-updater to download, while it is in flight. */
 let downloading: string | null = null
+/**
+ * The five-percent step the toast card last printed (-1 = nothing printed yet). The card refreshes
+ * on a step change rather than on every `download-progress` event; `refreshDownloadCard` owns why.
+ */
+let progressStep = -1
 /**
  * Set once this session's downloads have been failing on THIS PC'S POWERSHELL (JOS-421) — the
  * code-signature check that answers nothing (shared/update.ts's block reads the source).
@@ -415,6 +438,84 @@ function applyStagedUpdate(flushStore: () => void): void {
 }
 
 /**
+ * THE OFFER (EQ Zera, 2026-09-08). A newer build exists; say so ONCE, on the overlay the user is
+ * already looking at, and pull nothing until they answer.
+ *
+ * NOTHING IS DOWNLOADED HERE, and that is the change this ticket is. The old shape called
+ * `downloadUpdate()` from this point, which is the invisible model the upstream app wanted; the
+ * owner asked for a notification you click instead, so the network work now belongs to
+ * `startDownload` and the only thing that reaches it is a press on the card this function draws.
+ *
+ * TWO SILENCES, both of them the honest answer rather than an oversight:
+ *   * a version whose download has already failed `MAX_DOWNLOAD_ATTEMPTS` times gets the paused
+ *     STATUS and no card. Re-offering a button that has failed three times is not an offer.
+ *   * a download already in flight gets no second card: the one on screen is the one about it.
+ */
+function offerUpdate(version: string | undefined, push: (status: UpdateStatus) => void): void {
+  const key = version ?? 'unknown'
+  const attempts = downloadAttempts.get(key) ?? 0
+  if (attempts >= MAX_DOWNLOAD_ATTEMPTS) {
+    // ANTI-LOOP: a corrupt asset / a proxy that truncates would otherwise make us re-pull the same
+    // file every cycle forever. Say so quietly (the chip renders errors as the muted resting line;
+    // the text lives in Preferences). A MANUAL check resets this.
+    push({
+      state: 'error',
+      version,
+      // JOS-421: when the reason is this PC's PowerShell, say THAT — the attempt count is the
+      // symptom and the security software is the thing the user can do something about.
+      message: downloadBlocked
+        ? SIGNATURE_BLOCKED_PAUSED_MESSAGE
+        : `Download of v${key} failed ${String(attempts)} times - paused. Use "Check for updates" to retry.`
+    })
+    return
+  }
+  if (downloading !== null) return
+  sendToToastOverlay(updateAvailableToast(version))
+}
+
+/**
+ * THE CLICK. Start the download the offer card promised — from the card, from the Preferences
+ * button, and from nowhere else.
+ *
+ * Every guard here is one the old automatic path had: the bounded attempt counter (a hostile
+ * environment must not re-pull the same installer forever), the in-flight latch (`downloading` is
+ * also what tells the shared 'error' event which STEP failed), and the requirement that a check
+ * actually said 'available' — a click on a stale card must not start a download for a build the
+ * feed has since replaced.
+ */
+function startDownload(): void {
+  if (downloading !== null || lastStatus.state !== 'available') return
+  const version = lastStatus.version
+  const key = version ?? 'unknown'
+  const attempts = downloadAttempts.get(key) ?? 0
+  if (attempts >= MAX_DOWNLOAD_ATTEMPTS) return
+  downloadAttempts.set(key, attempts + 1)
+  downloading = key
+  progressStep = -1
+  sendToToastOverlay(updateDownloadingToast(version, 0))
+  // Rejections also surface as an 'error' event, which does the accounting — swallow here so
+  // nothing becomes an unhandled rejection.
+  void autoUpdater.downloadUpdate().catch(() => undefined)
+}
+
+/**
+ * REFRESH THE CARD IN PLACE, IN STEPS OF FIVE PERCENT.
+ *
+ * electron-updater emits `download-progress` per chunk — hundreds of events for one installer —
+ * and every one of them would otherwise be an IPC message into an always-on-top window that
+ * re-renders and re-reads its own layout. The STATUS push keeps every event (Preferences draws a
+ * real progress bar from it); the CARD, which prints an integer, is refreshed only when that
+ * integer's five-percent step changes. Same id every time, so the queue refreshes the card the
+ * user is already looking at instead of stacking twenty of them (shared/updateToast.ts's header).
+ */
+function refreshDownloadCard(version: string | undefined, percent: number): void {
+  const step = Math.floor(Math.max(0, Math.min(100, percent)) / 5)
+  if (step === progressStep) return
+  progressStep = step
+  sendToToastOverlay(updateDownloadingToast(version, percent))
+}
+
+/**
  * Wire up the electron-updater events. Lifted out of `initUpdater` for size only — every
  * handler below is unchanged, and they all read/write the module-level counters.
  */
@@ -434,30 +535,7 @@ function registerUpdaterEvents(
       return
     }
     checkDone({ state: 'available', version })
-
-    const key = version ?? 'unknown'
-    const attempts = downloadAttempts.get(key) ?? 0
-    if (attempts >= MAX_DOWNLOAD_ATTEMPTS) {
-      // ANTI-LOOP: a corrupt asset / a proxy that truncates would otherwise make
-      // us re-download the same file every cycle forever. Stop pulling it
-      // automatically and say so quietly (the chip renders errors as the muted
-      // resting line; the text lives in Preferences). A MANUAL check resets this.
-      push({
-        state: 'error',
-        version,
-        // JOS-421: when the reason is this PC's PowerShell, say THAT — the attempt count is the
-        // symptom and the security software is the thing the user can do something about.
-        message: downloadBlocked
-          ? SIGNATURE_BLOCKED_PAUSED_MESSAGE
-          : `Download of v${key} failed ${attempts} times - paused. Use "Check for updates" to retry.`
-      })
-      return
-    }
-    downloadAttempts.set(key, attempts + 1)
-    downloading = key
-    // Rejections also surface as an 'error' event, which does the accounting —
-    // swallow here so nothing becomes an unhandled rejection.
-    void autoUpdater.downloadUpdate().catch(() => undefined)
+    offerUpdate(version, push)
   })
 
   autoUpdater.on('update-not-available', () => {
@@ -467,14 +545,13 @@ function registerUpdaterEvents(
     checkDone({ state: 'idle' })
   })
 
-  autoUpdater.on('download-progress', (p) =>
+  autoUpdater.on('download-progress', (p) => {
     // Carry the known version forward so the progress row can name the build.
-    push({
-      state: 'downloading',
-      percent: Math.round(p?.percent ?? 0),
-      version: downloading ?? lastStatus.version
-    })
-  )
+    const percent = Math.round(p?.percent ?? 0)
+    const version = downloading ?? lastStatus.version
+    push({ state: 'downloading', percent, version })
+    refreshDownloadCard(version, percent)
+  })
 
   autoUpdater.on('update-downloaded', (info) => {
     const version: string | undefined = info?.version
@@ -501,6 +578,11 @@ function registerUpdaterEvents(
     // in other apps. Pushing an idempotent state instead of firing an event is
     // what makes re-emission harmless here.
     push({ state: 'ready', version })
+    // …AND THE CARD SAYS THE SECOND HALF (EQ Zera, 2026-09-08): the same id as the offer and the
+    // progress line, so what the user sees is the card they already answered finishing its
+    // sentence. Re-emission is harmless here for the same reason the status push is idempotent —
+    // one id is one card — and `runCheck` stops checking from 'ready' anyway.
+    sendToToastOverlay(updateDownloadedToast(version))
   })
 
   autoUpdater.on('error', (err) => {
@@ -550,33 +632,51 @@ function registerUpdaterEvents(
     if (kind === 'blocked') downloadBlocked = true
     else consecutiveFailures++
     noteUpdate(step, err ?? 'unknown error')
-    checkDone({ state: 'error', message: describeUpdateFailure(err) })
+    const message = describeUpdateFailure(err)
+    checkDone({ state: 'error', message })
+    // THE FAILURE CARD IS THE DOWNLOAD'S, NEVER THE CHECK'S (EQ Zera, 2026-09-08). A card over the
+    // game is the loudest surface this app has, and the product rule it must not break is older
+    // than this feature: the ONLY loud state is 'ready', and a failed CHECK is not the user's
+    // problem (shared/update.ts, JOS-307). A failed DOWNLOAD is different in exactly the way that
+    // matters here — the user pressed "Download and install" thirty seconds ago and is waiting for
+    // it — so that one, and only that one, gets an answer where the question was asked. Everything
+    // else stays in the chip's muted line and in Preferences, unchanged.
+    if (step === 'download') sendToToastOverlay(updateFailedToast(message))
   })
 }
 
 /**
- * FORK SWITCH (EQ Zera). The upstream app self-updated from the original author's GitHub
- * Releases via `app-update.yml`. This fork is held in the same "disabled" state the dev
- * build uses: no timers, no network, and the renderer renders its already-designed
- * "updates off" chip.
+ * FORK SWITCH (EQ Zera). ON since 2026-09-08, and UNSIGNED — which is the owner's explicit call
+ * for a personal fork, not an oversight, so it is written down here in the file that acts on it.
  *
- * THE FEED NOW EXISTS AND THIS CONSTANT STILL SAYS TRUE, ON PURPOSE. `electron-builder.yml`
- * carries a `publish:` block (github Zeratfule/EQ-Zera) and `.github/workflows/release.yml`
- * publishes an installer plus `latest.yml`/`main.yml` on every `v*` tag — so the first of
- * the two preconditions is met and the second is not. Those releases are UNSIGNED: there is
- * no code-signing certificate, so `scripts/azure-sign.cjs` self-skips. And
- * `win.signtoolOptions.publisherName` IS set, which means `NsisUpdater.verifySignature`
- * rejects every downloaded update whose Authenticode publisher does not match it. Flipping
- * this to `false` today would not produce "updates with a warning" — it would produce an
- * updater that downloads a build and then refuses it, every time, forever.
+ * WHAT SELF-UPDATE MEANS IN THIS FORK, exactly:
+ *   * THE FEED AND THE INSTALLER COME OVER HTTPS from `github.com/Zeratfule/EQ-Zera`. The address
+ *     is compiled in (`electron-builder.yml`'s `publish:` block, written into `app-update.yml` at
+ *     package time); nothing in the settings store, the renderer or any file on disk can point it
+ *     somewhere else. `.github/workflows/release.yml` puts the installer, its `.blockmap`,
+ *     `latest.yml` and the `main.yml` bridge copy on every `v*` tag's release.
+ *   * INTEGRITY IS SHA-512, and it is real: the feed carries the installer's digest, and
+ *     electron-updater streams the download through a digest transform, aborting with
+ *     `ERR_CHECKSUM_MISMATCH` on any mismatch — including for differential (block-map) downloads
+ *     and for an already-staged file re-validated before it runs. A TAMPERED DOWNLOAD FAILS.
+ *   * AUTHENTICODE VERIFICATION IS OFF, because there is no certificate yet.
+ *     `win.signtoolOptions.publisherName` is commented out in `electron-builder.yml`, so no
+ *     publisher name reaches `app-update.yml`, and `NsisUpdater.verifySignature` returns null
+ *     immediately (`NsisUpdater.js:84-99`) — it SKIPS all checking rather than failing it. WHO
+ *     built the release is therefore unverified: the GitHub account is the trust root, and anyone
+ *     who could publish a release there could ship a silent, per-user, no-UAC update to every
+ *     install. That is a weaker guarantee than the upstream app's signed updates, and it is
+ *     stated to users in SECURITY.md rather than left to be discovered.
  *
- * Flip to `false` in the same change that gives CI a real certificate (the six `AZURE_*`
- * secrets the sign hook reads, or a `CSC_LINK`/`CSC_KEY_PASSWORD` pair), and only after
- * confirming the certificate's subject CN matches `publisherName` exactly. SETUP.md,
- * "Releasing", spells out both switches.
+ * THE DAY A CERTIFICATE EXISTS, ONE LINE COMES BACK. Restore `publisherName` under
+ * `signtoolOptions` (matching the certificate's subject CN character for character) and turn
+ * signing on; nothing in this file changes. SETUP.md, "Releasing", carries both halves.
+ *
+ * The constant stays, rather than the branch being deleted, because the DEV guard below shares it:
+ * `npm run dev` is never packaged, so the machinery is skipped there either way.
  */
 function autoUpdateDisabled(): boolean {
-  return true
+  return false
 }
 const AUTO_UPDATE_DISABLED = autoUpdateDisabled()
 
@@ -615,7 +715,10 @@ export function initUpdater(
     lastStatus = { state: 'idle', disabled: true }
     ipcMain.handle(IPC.installUpdate, noInstallInDev)
     ipcMain.handle(IPC.checkForUpdates, () => lastStatus)
-    logInfo('[eq-zera] Auto-update disabled (fork: no release feed configured).')
+    // No toast action handler is registered on this path, so the `toast:action` channel is UNARMED
+    // for the whole life of an unpackaged process: nothing here can build an update card, and a
+    // message naming one is dropped by main/toast.ts with no handler to reach.
+    logInfo('[eq-zera] Auto-update skipped (unpackaged build).')
     return
   }
 
@@ -648,8 +751,10 @@ export function initUpdater(
   //   (a) the anti-loop guard — a version whose download has already failed
   //       MAX_DOWNLOAD_ATTEMPTS times must stop being re-pulled every cycle;
   //   (b) the updated-away guard — never pull a build we already run.
-  // Behaviour is otherwise identical: we call downloadUpdate() immediately, so
-  // downloads are still fully automatic and silent.
+  // AND SINCE 2026-09-08 IT IS ALSO THE FEATURE. The owner asked for a notification the user
+  // CLICKS, so the veto is no longer a veto at all: nothing is pulled until `startDownload` runs,
+  // and the only things that call it are the card's button and the Preferences button. A person on
+  // a metered connection who never answers the card never spends a byte on an installer.
   // WHERE THE LIBRARY'S OWN DIAGNOSTICS GO (JOS-295). Set before anything else can make it talk:
   // until now electron-updater logged its whole life — including a full stack for every error
   // event — to its default logger, which is `console`, which in a packaged app is a stdout nobody
@@ -684,13 +789,44 @@ export function initUpdater(
   const sinks: StatusSinks = { push, checkDone, retryOnResume: () => schedule('resume') }
   registerUpdaterEvents(currentVersion, sinks)
 
-  // renderer -> main: apply the downloaded update NOW. Guarded on 'ready' because BaseUpdater
-  // latches `quitAndInstallCalled` on the first call and ignores every later one — we get exactly
-  // one shot, so we do not spend it on a stale click.
-  ipcMain.handle(IPC.installUpdate, () => {
+  /**
+   * ONE STEP FORWARD, WHATEVER PRESSED IT (EQ Zera, 2026-09-08).
+   *
+   * The toast card's two buttons and the Preferences panel's one button are the same two steps of
+   * one flow, so they run the same two functions. `startDownload` is guarded on 'available' and
+   * `applyStagedUpdate` on 'ready', which is what makes a press on a stale surface a no-op rather
+   * than a wrong action: BaseUpdater latches `quitAndInstallCalled` on the first call and ignores
+   * every later one, so we get exactly one install shot and must not spend it on a stale click.
+   */
+  const advanceUpdate = (): void => {
+    if (lastStatus.state === 'available') {
+      startDownload()
+      return
+    }
     if (lastStatus.state !== 'ready') return
     applyStagedUpdate(flushStore)
-  })
+  }
+
+  /**
+   * ARM THE CARD (EQ Zera, 2026-09-08). `main/toast.ts` validated the name against the two-member
+   * union before this ran; this is the only place that decides what either member DOES, and it is
+   * a closed switch over that union rather than a lookup — the widest thing a click on an overlay
+   * card can reach is these two calls.
+   */
+  const runToastAction = (action: ToastUpdateAction): void => {
+    if (action === 'updateInstall') {
+      if (lastStatus.state === 'ready') applyStagedUpdate(flushStore)
+      return
+    }
+    startDownload()
+  }
+  setToastUpdateActionHandler(runToastAction)
+
+  // renderer -> main: take the next step on the update. Historically install-only, and the channel
+  // still carries that name (shared/ipc.ts); since the notification rework it also starts the
+  // DOWNLOAD when one is merely available, so that a user with the celebration overlay switched
+  // off still has a way to say yes. Both halves are the guarded functions above.
+  ipcMain.handle(IPC.installUpdate, advanceUpdate)
 
   /**
    * Run one check. `manual` = the user pressed the button in Preferences: it

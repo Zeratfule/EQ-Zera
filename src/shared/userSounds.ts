@@ -33,8 +33,8 @@ export const USER_SOUNDS_PACK_NAME = 'My sounds'
 export const USER_SOUND_EXTENSIONS = ['wav', 'mp3', 'ogg'] as const
 
 /**
- * The one size guard, stated once. 25 MB is far past any alert sting (the whole 60-line
- * Alan Rickman pack is 1.9 MB) and far short of a video file dropped in by mistake — the
+ * The one size guard, stated once. 25 MB is far past any alert sting (a whole 60-line
+ * spoken-word pack is under 2 MB) and far short of a video file dropped in by mistake — the
  * bytes are read into memory, base64'd and shipped over IPC on every play, so an absurd
  * file is refused politely instead of wedging the alert path.
  */

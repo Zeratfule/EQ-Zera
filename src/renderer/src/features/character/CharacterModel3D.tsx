@@ -7,8 +7,9 @@
 // attachment bone (`R_POINT` / `L_POINT` / `SHIELD_POINT`). Everything arrives in the game's own
 // Z-up frame and the whole figure is rotated once.
 //
-// The race and gender are the one thing the app cannot read from any file, so they are a picker
-// here, remembered in localStorage the way CarryAll remembers its lane.
+// The race, the sex and the face are the things the app cannot read from any file, so they are
+// three pickers (ModelPickers.tsx / modelPrefs.ts), remembered in localStorage the way CarryAll
+// remembers its lane. This file draws whatever payload they ask for.
 
 import { type JSX, useEffect, useRef, useState } from 'react'
 import * as THREE from 'three'
@@ -355,29 +356,6 @@ export function CharacterModel3D({ model }: { model: EqModelPayload }): JSX.Elem
   }, [model])
 
   return <div ref={host} data-testid="character-model-3d" style={{ width: '100%', height: 340 }} />
-}
-
-const RACE_KEY = 'eq.character.race'
-const DEFAULT_RACE = 'HUM'
-
-export function useRaceCode(): [string, (code: string) => void] {
-  const [code, setCode] = useState(() => {
-    try {
-      const v = localStorage.getItem(RACE_KEY)
-      return v && /^[A-Z]{3}$/.test(v) ? v : DEFAULT_RACE
-    } catch {
-      return DEFAULT_RACE
-    }
-  })
-  const set = (next: string): void => {
-    setCode(next)
-    try {
-      localStorage.setItem(RACE_KEY, next)
-    } catch {
-      /* storage refused; the pick still holds for this session */
-    }
-  }
-  return [code, set]
 }
 
 /**

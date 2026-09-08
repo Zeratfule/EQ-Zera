@@ -34,8 +34,8 @@
 				"kind": "uncharm"
 			},
 			"sound": {
-				"packId": "alan-rickman",
-				"soundId": "alan-rickman/attention"
+				"packId": "peon",
+				"soundId": "peon/attention"
 			}
 		}
 	],

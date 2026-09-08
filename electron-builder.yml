@@ -13,9 +13,9 @@ files:
   - package.json
   # THE WIKI ART SHIPS (JOS-198). 780 files, 3.75 MB — 751 item icons and 29 boss portraits,
   # committed to the repo so this list is all that is needed and no build step touches a wiki.
-  # Named EXPLICITLY rather than `resources/**`: the soundpack directories beside it are
-  # gitignored, self-provisioned at runtime, and up to hundreds of MB on a dev machine, so a
-  # broad glob would put whatever a developer happened to have downloaded into the installer.
+  # Named EXPLICITLY rather than `resources/**`: any OTHER soundpack directory beside it is a
+  # third-party pack a developer installed locally - gitignored, not ours to redistribute, and up
+  # to hundreds of MB - so a broad glob would put whatever they downloaded into the installer.
   # `asarUnpack: resources/**` below then moves this out of the archive; src/main/bundledImages.ts
   # probes both addresses.
   - resources/wiki-images/**
@@ -159,29 +159,26 @@ asarUnpack:
 # `electron-builder install-app-deps`), or it would ship built against the wrong ABI.
 npmRebuild: false
 
-# RELEASE HOSTING: ON. SELF-UPDATE: STILL OFF. Those are two switches, and this
-# block is only the first of them.
+# RELEASE HOSTING: ON. SELF-UPDATE: ON, UNSIGNED (owner's call, 2026-09-08).
 #
 # What this block does: it tells electron-builder where a `--publish` run
 # uploads to, so `.github/workflows/release.yml` can hand a `v*` tag to
 # `electron-builder --win --publish always` and get a GitHub Release carrying
-# the installer, its .blockmap and `latest.yml`. That is the whole job — a
-# download page for humans, plus the feed file a future updater would read.
+# the installer, its .blockmap and `latest.yml`. It ALSO makes electron-builder
+# write `app-update.yml` into the package — the file electron-updater reads to
+# find the feed — so this block is what compiles the update source in. Nothing
+# in the settings store or the renderer can point it anywhere else.
 # (`channel` is per-release: latest vs main. release.yml uploads a byte copy of
 # latest.yml named main.yml so the 'main' channel, which is the app's default,
 # resolves to stable builds instead of stalling forever.)
 #
-# What it does NOT do: turn self-updates on. Declaring a publish target also
-# makes electron-builder write `app-update.yml` into the package, which is the
-# file electron-updater needs — but the app never gets that far, because
-# `AUTO_UPDATE_DISABLED` in src/main/updater.ts holds the updater in its
-# disabled state. That constant stays `true` until releases here are SIGNED,
-# and the reason is `win.signtoolOptions.publisherName` below: with a publisher
-# name set, electron-updater's NsisUpdater.verifySignature REJECTS every
-# downloaded update whose Authenticode publisher does not match it. Unsigned
-# releases plus a live updater is not "updates that work with a warning", it is
-# an updater that can only ever fail. Flip the constant in the same change that
-# adds the signing secrets, never before. SETUP.md, "Releasing", has both steps.
+# The other switch — `AUTO_UPDATE_DISABLED` in src/main/updater.ts — is now
+# `false`, so a tagged release reaches every install on its next check. What
+# protects that download is the sha512 in `latest.yml`, verified by
+# electron-updater as it streams (a tampered download aborts); what does NOT
+# protect it is Authenticode, because there is no certificate yet and
+# `publisherName` is commented out below. See that comment, SECURITY.md and
+# SETUP.md, "Releasing" — all three say the same thing in the same words.
 publish:
   provider: github
   owner: Zeratfule
@@ -219,13 +216,38 @@ win:
     # arguments instead. It self-skips when the AZURE_* env is absent, so local
     # dist builds stay unsigned; CI injects the env and signs.
     sign: scripts/azure-sign.cjs
-    # UPDATE SIGNATURE VERIFICATION (do not remove): electron-updater's
-    # NsisUpdater.verifySignature SKIPS all checking when publisherName is null —
-    # a signed build alone protects nothing on the update path. This name must
-    # exactly match the certificate subject CN (Azure profile eq-companion-public).
-    # With it set, every downloaded update must carry a valid Authenticode
-    # signature from this publisher or it is rejected before install.
-    publisherName: EQ Zera
+    # UPDATE SIGNATURE VERIFICATION — DELIBERATELY OFF (owner's call, 2026-09-08),
+    # and this line is the whole of it. Restoring it is the ONLY change needed
+    # the day a certificate exists.
+    #
+    #   publisherName: EQ Zera
+    #
+    # WHAT THE NAME DOES. app-builder-lib copies it into `app-update.yml`
+    # (PublishManager.getAppUpdatePublishConfiguration -> computedPublisherName),
+    # and electron-updater's NsisUpdater.verifySignature reads it from there:
+    # non-null means every downloaded update must carry a valid Authenticode
+    # signature from that exact publisher or the update is rejected with
+    # ERR_UPDATER_INVALID_SIGNATURE; NULL MEANS IT RETURNS IMMEDIATELY AND SKIPS
+    # ALL CHECKING (NsisUpdater.js:84-99).
+    #
+    # WHY IT IS OFF. There is no code-signing certificate for this fork, so
+    # scripts/azure-sign.cjs self-skips and every release is unsigned. With the
+    # name still set, a live updater would download a build and then refuse it,
+    # every time, forever — an updater that can only fail. The owner's decision
+    # is that self-update ships NOW anyway: the feed and the installer come over
+    # HTTPS from github.com/Zeratfule/EQ-Zera and the sha512 in latest.yml is
+    # verified, so a TAMPERED DOWNLOAD still fails; what is unverified is WHO
+    # built the release, which makes the GitHub account the trust root. That is a
+    # weaker guarantee than the upstream app's signed updates and it is stated to
+    # users in SECURITY.md rather than left to be discovered.
+    #
+    # WITH THE LINE COMMENTED OUT, NO PUBLISHER NAME REACHES app-update.yml:
+    # computedPublisherName falls through to the certificate's own subject CN,
+    # and with no CSC_LINK/certificateFile there is no certificate to read, so it
+    # resolves null. (Consequence worth knowing: a future CSC_LINK certificate
+    # would put its CN there AUTOMATICALLY and re-enable verification; the Azure
+    # hook would not, because it never gives app-builder-lib a cert to inspect —
+    # that road needs this line back by hand.)
 
 # One-click installer (Discord model): double-click installs per-user under
 # %LOCALAPPDATA%\Programs (no UAC prompt), then launches. Friendly for friends

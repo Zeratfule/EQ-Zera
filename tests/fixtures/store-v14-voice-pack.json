@@ -1,0 +1,138 @@
+{
+	"schemaVersion": 14,
+	"byCharacter": {
+		"fixture_freeport": {
+			"inventory": {},
+			"completedQuests": [],
+			"combo": {
+				"corrections": []
+			}
+		}
+	},
+	"activeLogPath": "C:\\Fixture\\Logs\\eqlog_Fixture_freeport.txt",
+	"alerts": [
+		{
+			"id": "charm-break",
+			"name": "Charm break",
+			"enabled": true,
+			"trigger": {
+				"type": "event",
+				"kind": "uncharm"
+			},
+			"sound": {
+				"packId": "alan-rickman",
+				"soundId": "input-required-input-required-02"
+			}
+		},
+		{
+			"id": "raid-target",
+			"name": "Raid target defeated",
+			"enabled": true,
+			"trigger": {
+				"type": "app",
+				"signal": "bossDefeat"
+			},
+			"sound": {
+				"packId": "alan-rickman",
+				"soundId": "task-complete-task-complete-07"
+			}
+		},
+		{
+			"id": "hand-edited",
+			"name": "A ref with no category in its id",
+			"enabled": true,
+			"trigger": {
+				"type": "app",
+				"signal": "questComplete"
+			},
+			"sound": {
+				"packId": "alan-rickman",
+				"soundId": "attention"
+			}
+		},
+		{
+			"id": "mine",
+			"name": "My own fanfare",
+			"enabled": false,
+			"trigger": {
+				"type": "event",
+				"kind": "loot"
+			},
+			"sound": {
+				"packId": "my-sounds",
+				"soundId": "ff-victory"
+			}
+		}
+	],
+	"alertPrefs": {
+		"globalVolume": 0.5,
+		"muted": false
+	},
+	"voice": {
+		"engine": "system",
+		"voiceId": null,
+		"rate": 1,
+		"volume": 1
+	},
+	"overlays": {
+		"fight": {
+			"open": true,
+			"locked": true,
+			"bgAlpha": 0.72,
+			"drill": null
+		},
+		"toast": {
+			"open": true,
+			"locked": true,
+			"bgAlpha": 0.72,
+			"drill": null,
+			"toast": {
+				"durationMs": 6000
+			}
+		},
+		"alertBanner": {
+			"open": true,
+			"locked": true,
+			"bgAlpha": 0.72,
+			"drill": null,
+			"alertBanner": {
+				"holdMs": 4000,
+				"maxLines": 4,
+				"introduced": true
+			}
+		}
+	},
+	"updateChannel": "main",
+	"cursorRing": {
+		"enabled": false,
+		"sizePx": 44,
+		"thicknessPx": 4,
+		"colorHex": "#ffffff"
+	},
+	"overlayAutoHide": {
+		"hideWhenNotRunning": true,
+		"hideWhenUnfocused": false
+	},
+	"telemetry": {
+		"enabled": true,
+		"noticeShown": true,
+		"analyticsId": null
+	},
+	"perfHud": {
+		"enabled": false
+	},
+	"processPriority": {
+		"yieldToGame": true
+	},
+	"resists": {
+		"includeNpcCasters": true
+	},
+	"alertSoundMigration": 1,
+	"soundPacks": {
+		"defaultPackId": "alan-rickman",
+		"removedPackIds": [
+			"alan-rickman",
+			"peon"
+		]
+	}
+}

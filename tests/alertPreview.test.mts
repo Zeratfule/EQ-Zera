@@ -26,7 +26,7 @@ function def(over: Partial<AlertDef> = {}): AlertDef {
     name: 'Charm break',
     enabled: true,
     trigger: { type: 'event', kind: 'uncharm' },
-    sound: { packId: 'alan-rickman', soundId: 'attention' },
+    sound: { packId: 'eq-zera-console', soundId: 'attention' },
     ...over
   }
 }

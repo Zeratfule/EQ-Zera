@@ -25,7 +25,7 @@
 				"kind": "uncharm"
 			},
 			"sound": {
-				"packId": "alan-rickman",
+				"packId": "peon",
 				"soundId": "attention"
 			}
 		},
@@ -38,7 +38,7 @@
 				"kind": "buffExpired"
 			},
 			"sound": {
-				"packId": "alan-rickman",
+				"packId": "peon",
 				"soundId": "attention"
 			},
 			"audio": "speech",
@@ -58,7 +58,7 @@
 				"signal": "bossDefeat"
 			},
 			"sound": {
-				"packId": "alan-rickman",
+				"packId": "peon",
 				"soundId": "victory"
 			},
 			"audio": "both",
@@ -76,7 +76,7 @@
 				"pattern": "You have been slain"
 			},
 			"sound": {
-				"packId": "alan-rickman",
+				"packId": "peon",
 				"soundId": "alarm"
 			},
 			"audio": "sound"

@@ -59,7 +59,7 @@ import {
 const TEST_ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 const read = (p: string): string => readFileSync(join(TEST_ROOT, p), 'utf8')
 
-const TARBALL = 'https://github.com/peonping/alan-rickman/archive/refs/tags/v1.0.1.tar.gz'
+const TARBALL = 'https://github.com/peonping/og-packs/archive/refs/tags/v1.0.1.tar.gz'
 
 /** EXACTLY what a refused response becomes — built by the real constructor, so a header the
  *  installer stops parsing takes these tests red with it. */

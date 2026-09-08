@@ -148,6 +148,22 @@ test('isStaleVersion never SUPPRESSES on an unknown comparison (never guess)', (
 
 const CURRENT = '1.4.0-main.100'
 
+/**
+ * 'available' IS AN OFFER, NOT A PROGRESS NOTICE (EQ Zera, 2026-09-08).
+ *
+ * It used to map to `working` — a muted, disabled "Update found…" — which was true for the two
+ * seconds the old automatic download took to start. Nothing is fetched until the user clicks now,
+ * so that state can sit for hours: a disabled line claiming work is in progress would be false in
+ * the one place the app states facts about itself, and a dead end besides. It gets its own kind,
+ * its own accent chip, and it names the version it will fetch.
+ */
+test('an available update is its own CLICKABLE kind, naming the build it will fetch', () => {
+  const s = updateChipState({ state: 'available', version: '9.9.9', checkedAt: 5 }, CURRENT)
+  assert.equal(s.kind, 'available')
+  assert.equal(s.kind === 'available' && s.version, '9.9.9')
+  assert.equal(s.checkedAt, 5)
+})
+
 test('ready is the ONE loud state', () => {
   const s = updateChipState({ state: 'ready', version: '1.4.0-main.101', checkedAt: 5 }, CURRENT)
   assert.equal(s.kind, 'ready')
@@ -204,9 +220,8 @@ test('an ERROR is quiet, never loud — the message survives for Preferences', (
   assert.equal(s.checkedAt, 9, 'a failed check still counts as a check')
 })
 
-test('checking + available are transient "working" one-liners; idle is quiet', () => {
+test('checking is the transient "working" one-liner; idle is quiet', () => {
   assert.equal(updateChipState({ state: 'checking' }, CURRENT).kind, 'working')
-  assert.equal(updateChipState({ state: 'available', version: '9.9.9' }, CURRENT).kind, 'working')
   const idle = updateChipState({ state: 'idle', checkedAt: 42 }, CURRENT)
   assert.equal(idle.kind, 'quiet')
   assert.equal(idle.kind === 'quiet' && idle.failed, false)
@@ -518,9 +533,10 @@ test('a check IN FLIGHT outranks the failure it is retrying', () => {
   const busy = line({ state: 'error', message: 'boom', checkedAt: 7 }, { busy: true })
   assert.equal(busy.label, 'Checking for updates…')
   assert.equal(busy.failed, false, 'no failure styling while the retry is running')
-  // …and the transient working states speak for themselves.
+  // …and the one transient working state speaks for itself. ('available' used to be a second one,
+  // reading "Update found…"; since the download became a CLICK it is an OFFER with a chip of its
+  // own — see the chip-state test below — and never reaches this line builder at all.)
   assert.equal(line({ state: 'checking' }).label, 'Checking for updates…')
-  assert.equal(line({ state: 'available', version: '9.9.9' }).label, 'Update found…')
 })
 
 test('the resting line is unchanged for everything that did NOT fail', () => {

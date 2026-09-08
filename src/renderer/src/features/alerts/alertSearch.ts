@@ -3,7 +3,7 @@
 // WHAT THE USER GETS: one box above the alerts list. Type into it and the list narrows to the
 // alerts that answer. What you can type is deliberately WIDE, because what a person remembers
 // about an alert a month later is rarely its name — it is the spell it watches, or the line it
-// speaks, or "the one that plays the Rickman sting". So the haystack is every facet the alert
+// speaks, or "the one that plays the alarm sting". So the haystack is every facet the alert
 // carries:
 //
 //   name            the display name, which is the only facet a narrow search would have had

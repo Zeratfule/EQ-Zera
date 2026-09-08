@@ -17,7 +17,8 @@ import type { OverlayTextSizePrefs } from '../shared/overlayTextScale'
 import type { OverlayBgAlphaPrefs } from '../shared/overlayBgAlpha'
 import type { ScopeSelection } from '../shared/scopeSelection'
 import type { BuffAllowPrefs } from '../shared/buffAllow'
-import type { ToastPayload } from '../shared/toast'
+import { TOAST_ACTION_CHANNEL } from '../shared/toast'
+import type { ToastPayload, ToastUpdateAction } from '../shared/toast'
 import type { AlertBannerPayload } from '../shared/alertBanner'
 import type { ConCardPayload } from '../shared/conCard'
 
@@ -324,6 +325,21 @@ const overlayApi = {
     ipcRenderer.on(IPC.onToast, listener)
     return () => ipcRenderer.removeListener(IPC.onToast, listener)
   },
+
+  /**
+   * "The card you gave me was pressed" (EQ Zera, 2026-09-08) — the update toast's button, and the
+   * only thing this bridge sends that is not about a window or a selection.
+   *
+   * IT SENDS A NAME BACK, NOT A COMMAND. The overlay does not know what `updateDownload` means and
+   * has no way to find out: main built the card, main put the action on it, and main matches the
+   * returned name against a two-member closed union (`isToastUpdateAction`) before anything runs.
+   * So the widest thing an overlay window can do through this door is ask for one of the two steps
+   * its own card was already offering — never an arbitrary install, never a path, never a URL.
+   *
+   * Fire-and-forget like `focusApp`, for the same reason: a card never waits on the process it
+   * just asked to restart the app.
+   */
+  toastAction: (action: ToastUpdateAction): void => ipcRenderer.send(TOAST_ACTION_CHANNEL, action),
 
   /**
    * ALERT BANNER (JOS-378): one validated line to render, pushed by main. Self-contained by the

@@ -24,7 +24,7 @@
 				"kind": "uncharm"
 			},
 			"sound": {
-				"packId": "alan-rickman",
+				"packId": "peon",
 				"soundId": "attention"
 			},
 			"note": "Seeded default — written long before voice alerts existed."
@@ -41,7 +41,7 @@
 				}
 			},
 			"sound": {
-				"packId": "alan-rickman",
+				"packId": "peon",
 				"soundId": "settled"
 			},
 			"volume": 0.8,
@@ -61,7 +61,7 @@
 				"regex": "\\] You have entered"
 			},
 			"sound": {
-				"packId": "alan-rickman",
+				"packId": "peon",
 				"soundId": "settled"
 			},
 			"audio": "shout",

@@ -56,7 +56,7 @@ function def(over: Partial<AlertDef> = {}): AlertDef {
     name: 'Charm break',
     enabled: true,
     trigger: { type: 'event', kind: 'uncharm' },
-    sound: { packId: 'alan-rickman', soundId: 'attention' },
+    sound: { packId: 'eq-zera-console', soundId: 'attention' },
     ...over
   }
 }
@@ -245,7 +245,7 @@ test('the identity is what is HEARD — not the alert id, and not an unspoken na
   const b = def({ id: 'b', name: 'Clarity faded' })
   assert.equal(heardAs(a), heardAs(b))
   // A different pack sound IS a different thing to hear.
-  const c = def({ id: 'c', sound: { packId: 'alan-rickman', soundId: 'task-error-task-error-01' } })
+  const c = def({ id: 'c', sound: { packId: 'eq-zera-console', soundId: 'task-error-task-error-01' } })
   assert.notEqual(heardAs(a), heardAs(c))
   // A spoken firing and a sound firing differ even on the same words: one of them plays a sound.
   assert.notEqual(audioIdentity(a, { sound: false, speak: 'go' }), heardAs(a, 'go'))

@@ -119,6 +119,14 @@ export function normalizeToastConfig(v: unknown): ToastOverlayConfig {
  * says what the last seconds held (the window's damage, who dealt most of it, which skill), and
  * every clause of it is omitted rather than invented when the log did not say.
  */
+/**
+ * 'update' (EQ Zera, owner direction 2026-09-08) is THE UPDATER speaking, and it is the first kind
+ * MAIN builds for itself: no detector asks for it, no renderer may request it, and the card it
+ * draws is the only place in the app where a click starts a download or an install. Everything
+ * about it is main-built by construction — `updateToast.ts` builds the payload, `main/updater.ts`
+ * pushes it straight at the overlay window, and `TOAST_KINDS` below deliberately does not list it,
+ * so `validateToastRequest` refuses the kind outright on the renderer→main channel.
+ */
 export type ToastKind =
   | 'bossKill'
   | 'skyQuestComplete'
@@ -128,6 +136,7 @@ export type ToastKind =
   | 'wishDrop'
   | 'wishZone'
   | 'death'
+  | 'update'
 
 /**
  * The kinds a PRODUCER may send over `toast:show` — deliberately NOT every member of the union.
@@ -136,6 +145,12 @@ export type ToastKind =
  * never crosses the wire, so admitting it here would only widen what a renderer can ask main to
  * draw. The union is what the CARD can render; this list is what the CHANNEL accepts, and they
  * are not the same question.
+ *
+ * 'update' is absent for a HARDER reason than the introduction's (EQ Zera, 2026-09-08). That card
+ * is the one card whose buttons download and install an executable, and its `action` field is what
+ * arms them. A renderer that could ask for the kind could ask for the action with it, which would
+ * put "restart into a new build" one compromised renderer string away. Main builds it; the wire
+ * never carries it; `optionalFields` never copies an `action` whatever the kind.
  */
 export const TOAST_KINDS: ToastKind[] = [
   'bossKill',
@@ -186,6 +201,40 @@ export interface ToastQuestCard {
   after: number
 }
 
+// ---- the card that DOES something (EQ Zera, owner direction 2026-09-08) ----------------
+//
+// "We also need a way to push updates to people's apps so they can see when there's an available
+// update, click on the notification when there is one, and it will just automatically download and
+// update from there." Every other toast card is a statement about something that already happened;
+// this one is a control. So it carries a second, much narrower thing on the wire: an ACTION NAME.
+//
+// THE UNION IS THE WHOLE SECURITY SURFACE. The overlay never decides what a click does — it hands
+// the name back to main, and main matches it against these two members and nothing else. Two
+// consequences, both deliberate: the overlay cannot invent a third action, and main's handler is a
+// closed switch rather than a dispatcher over strings. The names are verbs about the UPDATER, not
+// about a window, because that is the only subsystem an overlay card is allowed to drive.
+
+/** What a toast card's button asks main to do. Closed union; main matches it exactly. */
+export type ToastUpdateAction = 'updateDownload' | 'updateInstall'
+
+/** The two members, as data, for the handler's validation and for a test to enumerate. */
+export const TOAST_UPDATE_ACTIONS: ToastUpdateAction[] = ['updateDownload', 'updateInstall']
+
+/** Is this an action main will honour? The ONLY admission test the `toast:action` handler runs. */
+export function isToastUpdateAction(v: unknown): v is ToastUpdateAction {
+  return typeof v === 'string' && (TOAST_UPDATE_ACTIONS as string[]).includes(v)
+}
+
+/**
+ * The overlay→main channel a card's action button sends on.
+ *
+ * IT LIVES HERE RATHER THAN IN `shared/ipc.ts` on purpose: this is the one channel whose whole
+ * contract (the action union, the validator, the payload field that arms it) is in this file, and
+ * a name in one place with its meaning in another is how the two drift. Everything else about it
+ * is ordinary — fire-and-forget `send`, re-validated at the handler like every renderer input.
+ */
+export const TOAST_ACTION_CHANNEL = 'toast:action'
+
 /** One celebration, as the toast overlay receives it. */
 export interface ToastPayload {
   /** dedupe / eviction key — a repeat id refreshes the card already on screen */
@@ -201,6 +250,12 @@ export interface ToastPayload {
   quests?: ToastQuestCard[]
   /** where a click takes you (T6) — re-validated at the IPC handler like every deep link */
   focus?: AppFocus
+  /**
+   * What the card's button (and its whole body) asks main to DO, for the one kind that acts.
+   * Set only on a MAIN-BUILT payload; `ToastRequest` below omits it, so no renderer request can
+   * ever carry one.
+   */
+  action?: ToastUpdateAction
   /** how long the card holds before it starts leaving. Absent ⇒ the config's duration. */
   durationMs?: number
 }
@@ -208,8 +263,13 @@ export interface ToastPayload {
 /**
  * What a PRODUCER sends (renderer → main). Same shape minus the resolved card: the detector
  * knows the reward item's NAME, main knows how to look it up.
+ *
+ * `action` IS OMITTED, NOT MERELY UNVALIDATED. A request type that could spell the field would
+ * make "the validator drops it" a fact about one function; omitting it makes a request carrying an
+ * action a TYPE ERROR at every producer in the tree, and leaves the validator's drop as the second
+ * lock rather than the only one.
  */
-export interface ToastRequest extends Omit<ToastPayload, 'item' | 'quests'> {
+export interface ToastRequest extends Omit<ToastPayload, 'item' | 'quests' | 'action'> {
   /** the reward item to embed as a card, by name. Main resolves it; an unknown name simply
    *  yields no card rather than a fabricated one (world-model law 1). */
   itemName?: string
@@ -399,6 +459,12 @@ function optionalFields(o: Record<string, unknown>, kind: ToastKind): Partial<To
  * Re-validate a renderer-supplied toast request. Returns a NEW object carrying only the
  * fields this module names — unknown properties are stripped, not passed through — or null
  * when the request cannot be honoured (no id, no title, or an unknown kind).
+ *
+ * TWO REFUSALS ARE NAMED HERE BECAUSE THEY ARE THE UPDATE CARD'S (EQ Zera, 2026-09-08): the kind
+ * `update` is not in `TOAST_KINDS`, so a request naming it returns null outright; and `action` is
+ * not a field this function copies, so a request carrying one loses it even on a kind that is
+ * accepted. Between them a renderer cannot ask for a card that downloads or installs anything —
+ * which is the point, since the only process that may offer that is the one that owns the updater.
  */
 export function validateToastRequest(input: unknown): ToastRequest | null {
   if (typeof input !== 'object' || input === null) return null

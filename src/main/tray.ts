@@ -43,7 +43,9 @@ import { join } from 'path'
 // `readFile('build/icon.png')` would resolve in dev and find nothing in a packaged app. The
 // `?asset` import hands the file to electron-vite's asset pipeline, which emits it beside the main
 // bundle and rewrites this to the emitted path — so it ships with no electron-builder change.
-import trayIconAsset from '../../build/icon.png?asset'
+// The tray mark is drawn at its own size (build/icon-tray.png, scripts/gen-icon.mts): crushing the
+// 256px master to 16px in one step turned the letters into a blob. Windows scales this per DPI.
+import trayIconAsset from '../../build/icon-tray.png?asset'
 import { IPC } from '../shared/ipc'
 import {
   TRAY_NOTICE_MS,
@@ -368,7 +370,7 @@ export function installCloseToTray(): void {
   })
   if (E2E) return
   try {
-    const icon = nativeImage.createFromPath(trayIconAsset).resize({ width: 16, height: 16 })
+    const icon = nativeImage.createFromPath(trayIconAsset)
     tray = new Tray(icon)
     tray.setToolTip('EQ Zera')
     tray.on('click', restoreMainWindow)

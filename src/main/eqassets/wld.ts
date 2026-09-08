@@ -393,6 +393,8 @@ export interface CharacterModel {
   meshes: EqModelMesh[]
   /** the skeleton, for the animation reader */
   skeleton: Skeleton
+  /** the face the archive's own head binds, before any pick: the F digit of its piece-1 texture */
+  defaultFace?: number
 }
 
 /** How a character is dressed: the wear, and whether the archive has a given texture file. */
@@ -420,10 +422,44 @@ function texturePart(texture: string, code: string): { part: (typeof WEAR_PARTS)
   return m ? { part: m[1] as (typeof WEAR_PARTS)[number], index: m[3] } : null
 }
 
+/**
+ * The face pick's own head texture: `<code>he00<F><P>.bmp` with the CHOSEN F and the SAME piece,
+ * and only when the archive really has that file - HUF and DWF have no face 0, and the pieces
+ * above 2 (hair, beards, ears) exist at face 0 alone, so an unguarded substitution would blank
+ * them. Head textures sit on some BODY meshes too, which is why this runs over every material.
+ */
+function facedTexture(texture: string, code: string, outfit: Outfit): string | null {
+  const face = outfit.wear.face
+  if (face === undefined) return null
+  const piece = new RegExp(`^${code.toLowerCase()}he00\\d(\\d)\\.bmp$`).exec(texture)?.[1]
+  if (piece === undefined) return null
+  const swapped = `${code.toLowerCase()}he00${String(face)}${piece}.bmp`
+  return outfit.has(swapped) ? swapped : null
+}
+
+/**
+ * WHICH FACES AN ARCHIVE ACTUALLY HAS for an actor: the F digits with a piece-1 head texture.
+ * Measured, never assumed - HUM answers [0..7] and HUF [1..7], which is why the picker is handed
+ * this list rather than a range (world-model law 1).
+ */
+export function facesFor(code: string, has: (file: string) => boolean): number[] {
+  return [0, 1, 2, 3, 4, 5, 6, 7].filter((f) => has(`${code.toLowerCase()}he00${String(f)}1.bmp`))
+}
+
+/** The face the head was SHIPPED wearing: the F digit of the piece-1 head texture a drawn mesh binds. */
+function boundFace(meshes: readonly EqModelMesh[], code: string): number | undefined {
+  const re = new RegExp(`^${code.toLowerCase()}he00(\\d)1\\.bmp$`)
+  const hit = meshes.flatMap((m) => m.materials).map((mt) => (mt.texture ? re.exec(mt.texture) : null)).find((m) => m !== null)
+  return hit ? Number(hit[1]) : undefined
+}
+
 /** `bafch0001.bmp` → `bafch0301.bmp` when the wear says plate and the archive has it; plus the part's dye. */
 function dressedMaterial(mt: EqModelMaterial, code: string, outfit: Outfit): EqModelMaterial {
-  const at = mt.texture ? texturePart(mt.texture, code) : null
-  if (!at || !mt.texture) return mt
+  if (!mt.texture) return mt
+  const faced = facedTexture(mt.texture, code, outfit)
+  if (faced !== null) return { ...mt, texture: faced }
+  const at = texturePart(mt.texture, code)
+  if (!at) return mt
   const variant = outfit.wear[at.part] ?? 0
   const dressed = `${code.toLowerCase()}${at.part}0${String(variant)}${at.index}.bmp`
   const texture = variant > 0 && outfit.has(dressed) ? dressed : mt.texture
@@ -431,13 +467,18 @@ function dressedMaterial(mt: EqModelMaterial, code: string, outfit: Outfit): EqM
   return tint ? { ...mt, texture, tint } : { ...mt, texture }
 }
 
+/**
+ * A mesh with every material dressed. A HELM mesh additionally takes the head slot's dye - and it
+ * takes it ON TOP of the dressing rather than instead of it, which is the point: the old form
+ * returned early with the RAW material, so a dyed helm silently lost its armour and face swaps.
+ */
 function dress(mesh: EqModelMesh, code: string, outfit: Outfit): EqModelMesh {
-  const helmTint = outfit.wear.tint?.helm
-  const isHelm = /HE0[1-9]_DMSPRITEDEF$/.test(mesh.name)
-  return {
-    ...mesh,
-    materials: mesh.materials.map((mt) => (isHelm && helmTint ? { ...mt, tint: helmTint } : dressedMaterial(mt, code, outfit)))
+  const helmTint = /HE0[1-9]_DMSPRITEDEF$/.test(mesh.name) ? outfit.wear.tint?.helm : undefined
+  const one = (mt: EqModelMaterial): EqModelMaterial => {
+    const dressed = dressedMaterial(mt, code, outfit)
+    return helmTint ? { ...dressed, tint: helmTint } : dressed
   }
+  return { ...mesh, materials: mesh.materials.map(one) }
 }
 
 /** The skeleton an actor's name resolves to: `<CODE>_HS_DEF` is the 0x10 the 0x11 points at. */
@@ -484,7 +525,10 @@ export function readCharacter(wld: WldFile, code: string, outfit: Outfit = BARE)
   const helm = outfit.wear.helm ?? 0
   const candidates = meshCandidates(wld, skeleton, upper, helm)
   const drawn = drawnMeshes(candidates.map((m) => m.name), upper, helm)
-  const meshes: EqModelMesh[] = []
-  for (const mesh of candidates) if (drawn.has(mesh.name)) meshes.push(dress(readMesh(wld, mesh, world), upper, outfit))
-  return { actor: actor.name, bones: boneList(skeleton), meshes, skeleton }
+  const raw = candidates.filter((m) => drawn.has(m.name)).map((m) => readMesh(wld, m, world))
+  const face = boundFace(raw, upper)
+  const meshes = raw.map((m) => dress(m, upper, outfit))
+  const model: CharacterModel = { actor: actor.name, bones: boneList(skeleton), meshes, skeleton }
+  if (face !== undefined) model.defaultFace = face
+  return model
 }

@@ -217,6 +217,38 @@ export function useAchievementsDump(active: boolean): AchievementsDumpState {
   return useDumpPreview(active, () => window.eq.buildFeedbackAchievements())
 }
 
+/** The three previews, together. */
+export interface FeedbackAttachments {
+  log: LogSliceState
+  inventory: InventoryDumpState
+  achievements: AchievementsDumpState
+}
+
+/**
+ * ONE PLACE THE THREE ATTACHMENTS ARE PACKAGED, held by the DIALOG rather than by the three
+ * sections that draw them.
+ *
+ * They used to be built inside each section, which was right while the sections were the only
+ * readers. They are not any more: the dark-build ways-out row (FeedbackWaysOut.tsx) renders the
+ * same three counts into the plain-text report, and a second `useLogSlice` beside the first would
+ * be a second IPC round trip per keystroke-free render and, worse, a second answer to "what is
+ * attached" that could disagree with the preview the user is looking at.
+ *
+ * The gates are unchanged and stay here, in one expression each: a FEATURE REQUEST never reads
+ * any of the three, and a dump whose file main says is not there is never packaged. `ctx === null`
+ * (the context still in flight) reads as available, exactly as the sections' own controls do — a
+ * control is not disabled on a question nobody has answered yet.
+ */
+export function useAttachments(state: FeedbackState, ctx: FeedbackContext | null): FeedbackAttachments {
+  const bug = state.fields.type === 'bug'
+  const log = useLogSlice(bug && state.attachLog, state.windowMinutes)
+  const inventory = useInventoryDump(bug && state.attachInventory && ctx?.inventoryAvailable !== false)
+  const achievements = useAchievementsDump(
+    bug && state.attachAchievements && ctx?.achievementsAvailable !== false
+  )
+  return { log, inventory, achievements }
+}
+
 /** The sentence for each way of having no dump. Pure, so the wording is testable and so the
  *  `/outputfile inventory` command appears in exactly one place in the renderer. */
 export function inventoryProblem(reason: FeedbackInventoryPreview['unavailable']): string {

@@ -69,7 +69,7 @@ async function saveDef(page: Page): Promise<number> {
         enabled: true,
         // NO REGEX. A kind and two literal `where` values.
         trigger: { type: 'event', kind: 'cc', where: { spell: 'Mesmerization', refresh: 'true' } },
-        sound: { packId: 'alan-rickman', soundId: 'task-error-task-error-08' },
+        sound: { packId: 'eq-zera-console', soundId: 'task-error-task-error-08' },
         cooldownMs: 0,
         audio: 'speech',
         speech: { mode: 'custom', phrase }

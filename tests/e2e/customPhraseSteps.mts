@@ -128,7 +128,7 @@ async function seedSuggestedDef(page: Page): Promise<number> {
         enabled: true,
         // No regex: the plain condition editor's own output shape, exactly as the wizard builds it.
         trigger: { type: 'event', kind: 'buffFade', where: { spell: 'Clarity' } },
-        sound: { packId: 'alan-rickman', soundId: 'resource-limit-resource-limit-09' },
+        sound: { packId: 'eq-zera-console', soundId: 'resource-limit-resource-limit-09' },
         cooldownMs: 0,
         // The shape JOS-353 gave the fade template: sound + voice, saying the template's phrase.
         audio: 'both',

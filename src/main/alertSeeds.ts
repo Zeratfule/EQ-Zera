@@ -56,8 +56,8 @@ export const SEED_ALERTS: AlertDef[] = [
     name: 'Charm break',
     enabled: true,
     trigger: { type: 'event', kind: 'uncharm' },
-    // "I find myself... requiring your attention." — the calm-but-pointed read lands
-    // better than a joke sting for suddenly losing your charmed pet (Task #21).
+    // The attention alarm rather than a joke sting: suddenly losing your charmed pet is the
+    // one thing in a camp that needs you looking at the screen right now (Task #21).
     sound: { packId: DEFAULT_ALERT_PACK_ID, soundId: DEFAULT_ALERT_SOUNDS.charmBreak },
     note: 'Seeded default - fires when a charm spell wears off (you lose your pet).'
   },
@@ -66,7 +66,7 @@ export const SEED_ALERTS: AlertDef[] = [
     name: 'Raid target defeated',
     enabled: true,
     trigger: { type: 'app', signal: 'bossDefeat' },
-    // "The matter is settled."
+    // The completion fanfare: the raid target is down.
     sound: { packId: DEFAULT_ALERT_PACK_ID, soundId: DEFAULT_ALERT_SOUNDS.bossDefeat },
     note: 'Seeded default - fires the same moment boss confetti does.'
   },
@@ -79,7 +79,7 @@ export const SEED_ALERTS: AlertDef[] = [
     // app signal, fired exactly where the quest-complete confetti + snackbar do
     // (Task #46). Never fires on load/hydration or manual checkbox completion.
     trigger: { type: 'app', signal: 'questComplete' },
-    // "It is done."
+    // The victory arpeggio: the turn-in registered.
     sound: { packId: DEFAULT_ALERT_PACK_ID, soundId: DEFAULT_ALERT_SOUNDS.questComplete },
     note: 'Seeded default - fires the same moment a Sky quest turn-in celebration does.'
   },

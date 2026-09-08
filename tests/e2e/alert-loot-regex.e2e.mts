@@ -138,13 +138,16 @@ async function seedProbe(page: Page): Promise<boolean> {
     ).eq
     const packs = await eq.listSoundPacks()
     const pack = packs[0]
-    const soundId = pack ? (Object.keys(pack.sounds)[0] ?? 'e2e-sound') : 'e2e-sound'
+    // The shipped pack's charm-break alarm when nothing is installed (EQ_E2E skips provisioning):
+    // a real cue of `eq-zera-console`, so the stored ref names something the app actually has.
+    const fallback = 'input-required-alarm-01'
+    const soundId = pack ? (Object.keys(pack.sounds)[0] ?? fallback) : fallback
     await eq.saveAlert({
       id,
       name: 'Mote dropped (JOS-348 probe)',
       enabled: true,
       trigger: { type: 'event', kind: 'loot' },
-      sound: { packId: pack?.id ?? 'alan-rickman', soundId },
+      sound: { packId: pack?.id ?? 'eq-zera-console', soundId },
       cooldownMs: 4000
     })
   }, PROBE_ID)

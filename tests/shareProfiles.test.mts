@@ -45,7 +45,7 @@ function alert(over: Partial<AlertDef> = {}): AlertDef {
     name: 'Charm break',
     enabled: true,
     trigger: { type: 'event', kind: 'uncharm' },
-    sound: { packId: 'alan-rickman', soundId: 'attention' },
+    sound: { packId: 'eq-zera-console', soundId: 'attention' },
     ...over
   }
 }
@@ -253,7 +253,7 @@ test('untrusted voice fields are validated against the closed sets, clamped, or 
 test('merge is additive: existing alerts are never removed or modified', () => {
   const existing = [alert(), alert({ id: 'boss', name: 'Boss', trigger: { type: 'app', signal: 'bossDefeat' } })]
   const incoming = [alert({ id: 'new-one', name: 'New', trigger: { type: 'raw', regex: 'hello' } })]
-  const plan = planAlertMerge(existing, incoming, ['alan-rickman'])
+  const plan = planAlertMerge(existing, incoming, ['eq-zera-console'])
   const res = applyAlertMerge(existing, plan)
   assert.equal(res.added, 1)
   assert.equal(res.alerts.length, 3)
@@ -264,7 +264,7 @@ test('same behavior is SKIPPED — importing the same string twice is a no-op', 
   const existing = [alert()]
   // Same trigger + sound, different name/note: still the same alert.
   const incoming = [alert({ id: 'their-charm', name: 'CHARM BROKE!!', note: 'from a friend' })]
-  const plan = planAlertMerge(existing, incoming, ['alan-rickman'])
+  const plan = planAlertMerge(existing, incoming, ['eq-zera-console'])
   assert.equal(plan[0].action, 'skip')
   const res = applyAlertMerge(existing, plan)
   assert.equal(res.added, 0)
@@ -274,7 +274,7 @@ test('same behavior is SKIPPED — importing the same string twice is a no-op', 
 test('id collision with DIFFERENT behavior imports alongside, deterministically', () => {
   const existing = [alert()] // id 'charm-break'
   const theirs = alert({ name: 'Charm break', trigger: { type: 'raw', regex: 'charm has broken' } })
-  const plan = planAlertMerge(existing, [theirs], ['alan-rickman'])
+  const plan = planAlertMerge(existing, [theirs], ['eq-zera-console'])
   assert.equal(plan[0].action, 'rekey')
   assert.notEqual(plan[0].finalId, 'charm-break')
   assert.ok(plan[0].finalId.startsWith('charm-break~'))
@@ -287,7 +287,7 @@ test('id collision with DIFFERENT behavior imports alongside, deterministically'
 
   // Second import of the SAME payload: the rekeyed id is derived from the behavior, so the
   // twin is found and skipped — idempotent.
-  const plan2 = planAlertMerge(first.alerts, [theirs], ['alan-rickman'])
+  const plan2 = planAlertMerge(first.alerts, [theirs], ['eq-zera-console'])
   assert.equal(plan2[0].action, 'skip')
   const second = applyAlertMerge(first.alerts, plan2)
   assert.equal(second.added, 0)
@@ -299,7 +299,7 @@ test('two incoming alerts that collide with EACH OTHER both land', () => {
     alert({ id: 'dup', name: 'Dup', trigger: { type: 'raw', regex: 'a' } }),
     alert({ id: 'dup', name: 'Dup', trigger: { type: 'raw', regex: 'b' } })
   ]
-  const plan = planAlertMerge([], incoming, ['alan-rickman'])
+  const plan = planAlertMerge([], incoming, ['eq-zera-console'])
   const res = applyAlertMerge([], plan)
   assert.equal(res.added, 2)
   assert.equal(new Set(res.alerts.map((a) => a.id)).size, 2, 'ids are distinct after merge')
@@ -310,7 +310,7 @@ test('per-item opt-in: only selected alerts are applied', () => {
     alert({ id: 'a1', name: 'A1', trigger: { type: 'raw', regex: 'a' } }),
     alert({ id: 'a2', name: 'A2', trigger: { type: 'raw', regex: 'b' } })
   ]
-  const plan = planAlertMerge([], incoming, ['alan-rickman'])
+  const plan = planAlertMerge([], incoming, ['eq-zera-console'])
   const res = applyAlertMerge([], plan, new Set(['a1']))
   assert.equal(res.added, 1)
   assert.equal(res.alerts[0].id, 'a1')
@@ -318,7 +318,7 @@ test('per-item opt-in: only selected alerts are applied', () => {
 
 test('a missing sound pack flags the alert but still imports it (never silently muted)', () => {
   const incoming = [alert({ id: 'x', name: 'X', sound: { packId: 'peon', soundId: 'work-work' } })]
-  const plan = planAlertMerge([], incoming, ['alan-rickman'])
+  const plan = planAlertMerge([], incoming, ['eq-zera-console'])
   assert.equal(plan[0].missingPackId, 'peon')
   assert.equal(plan[0].action, 'add')
   const res = applyAlertMerge([], plan)

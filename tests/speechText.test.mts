@@ -32,7 +32,7 @@ function def(name: string, mode?: SpeechMode, phrase?: string): AlertDef {
     name,
     enabled: true,
     trigger: { type: 'event', kind: 'castBegin' },
-    sound: { packId: 'alan-rickman', soundId: 'x' }
+    sound: { packId: 'eq-zera-console', soundId: 'x' }
   }
   return mode === undefined ? base : { ...base, speech: phrase === undefined ? { mode } : { mode, phrase } }
 }
@@ -89,7 +89,7 @@ test('JOS-362: resolveAlertAudio — a phrase makes a stored "both" spoken, ever
     name: 'Charm break',
     enabled: true,
     trigger: { type: 'event', kind: 'uncharm' },
-    sound: { packId: 'alan-rickman', soundId: 'attention' }
+    sound: { packId: 'eq-zera-console', soundId: 'attention' }
   }
   assert.equal(resolveAlertAudio(base), 'sound', 'an absent channel is the pre-voice default')
   assert.equal(resolveAlertAudio({ ...base, audio: 'sound' }), 'sound')

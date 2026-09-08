@@ -145,7 +145,7 @@ function rankAlert(id: string, spell: string): AlertDef {
     name: `${spell} resisted`,
     enabled: true,
     trigger: { type: 'event', kind: 'resist', where: { caster: 'you', spell } },
-    sound: { packId: 'alan-rickman', soundId: 'task-error-task-error-01' },
+    sound: { packId: 'eq-zera-console', soundId: 'task-error-task-error-01' },
     volume: 0.4,
     cooldownMs: 7000
   }

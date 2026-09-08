@@ -38,7 +38,7 @@ const fixture = (name: string): StoreData => JSON.parse(readFileSync(join(FIXTUR
 const src = (rel: string): string => readFileSync(join(HERE, rel), 'utf8')
 
 /**
- * `store-v14-con-card.json` — a store at TODAY's schema: three overlay kinds configured (a meter,
+ * `store-v15-con-card.json` — a store at TODAY's schema: three overlay kinds configured (a meter,
  * the toast and the alert banner, each with its own blob) and no `conCard` key anywhere, because
  * no build has one to write.
  *
@@ -46,9 +46,10 @@ const src = (rel: string): string => readFileSync(join(HERE, rel), 'utf8')
  * is that a CURRENT store does not run the chain at all — which is what makes "a new overlay kind
  * is not a schema change" a fact about this build rather than about the day it was written. When
  * JOS-385 added the `resists` blob at v14, the v13 copy of this fixture stopped being current and
- * became what it should be: the input to THAT step's own test (storeMigrationsResists.test.mts).
+ * became what it should be: the input to THAT step's own test. The removed voice pack then took
+ * the schema to v15, and the v14 copy became the input to storeMigrationsVoicePack.test.mts.
  */
-const CURRENT = 'store-v14-con-card.json'
+const CURRENT = 'store-v15-con-card.json'
 
 const overlaysOf = (d: StoreData): Record<string, StoreData> => d['overlays'] as Record<string, StoreData>
 

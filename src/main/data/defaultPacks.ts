@@ -1,30 +1,34 @@
-// defaultPacks.ts — the pack the app ships with, defined once.
+// defaultPacks.ts - the pack the app ships with, defined once.
 //
 // EQ ZERA (2026-09-06): THE SHIPPED DEFAULT IS `eq-zera-console`, an ORIGINAL synthesized pack
 // (scripts/gen-sounds.mts) that is COMMITTED under resources/soundpacks/ and bundled by
-// electron-builder.yml like the wiki art — so it is on disk in a source checkout, in `npm run dev`
+// electron-builder.yml like the wiki art - so it is on disk in a source checkout, in `npm run dev`
 // and in every installer, and nothing is downloaded at first launch. `DEFAULT_PACKS` (the list the
-// runtime self-provisioner installs from the registry) is therefore EMPTY; the Alan Rickman pack
-// that used to be provisioned stays installable from the in-app Sound Packs browser, and its
-// registry entry below is kept because the legacy-migration tables were written against it.
+// runtime self-provisioner installs from the registry) is therefore EMPTY.
+//
+// EQ ZERA (2026-09-08, owner ruling): THE INHERITED SPOKEN-WORD PACK IS GONE. This fork carried a
+// third-party voice pack over from upstream and shipped it as the default for a while; it is no
+// longer described, downloaded, bundled, credited or named anywhere in this app. All that survives
+// of it is the one id constant below, because a pack id is PERSISTED DATA: an alert authored before
+// the removal still carries it, and store migration 14 -> 15 re-points those alerts onto the
+// shipped pack (src/main/storeMigrations.ts). A copy already installed under
+// `<userData>/soundpacks/` is the user's own file and is left where it is.
 //
 // The paragraphs that follow describe the upstream history that shaped the tables.
 //
 // WHY ONE PACK: the app used to self-provision the PeonPing og-packs `peon` +
 // `sc_marine` packs and seed alerts against a synthesized `default` chime pack. Those
-// read as robotic/joke defaults; the shipped default is now Alan Rickman — spoken-word
-// lines that fit EverQuest's tone. The synthesized `default` pack is GONE (its
-// generator + assets were deleted, Task #57); `peon`/`sc_marine` were never ours —
-// they're still in the openpeon registry and installable from the in-app Sound Packs
-// browser. Provisioning only ADDS what's missing and never removes a pack on disk.
+// read as robotic/joke defaults. The synthesized `default` pack is GONE (its generator +
+// assets were deleted, Task #57); `peon`/`sc_marine` were never ours - they're still in
+// the openpeon registry and installable from the in-app Sound Packs browser.
+// Provisioning only ADDS what's missing and never removes a pack on disk.
 //
-// STABLE SOUND IDS: the pack is pinned to a release TAG, so its openpeon.json is
-// immutable and the ids the shared CESP→manifest conversion derives (deriveSoundId:
-// "<category-slug>-<file-slug>") are deterministic and identical whether the pack
-// arrives via self-provisioning, `npm run fetch:packs`, or a user-initiated registry
-// install. DEFAULT_ALERT_SOUNDS below are those derived ids; provisionPacks verifies
-// they resolved after an install, so drift is caught in errors.log rather than silently
-// muting an alert.
+// STABLE SOUND IDS: a registry pack is pinned to a release TAG, so its openpeon.json is
+// immutable and the ids the shared CESP -> manifest conversion derives (deriveSoundId:
+// "<category-slug>-<file-slug>") are deterministic and identical whether the pack arrives via
+// self-provisioning or a user-initiated registry install. DEFAULT_ALERT_SOUNDS below are the
+// bundled pack's own ids; provisionPacks verifies they resolved after an install, so drift is
+// caught in errors.log rather than silently muting an alert.
 
 import type { AlertDef, AlertSoundRef, RegistryPack } from '../../shared/types'
 // The curated one-click alert GROUPS live in shared/ (the renderer authors them and cannot
@@ -34,37 +38,6 @@ import { GROUP_SOUND_IDS } from '../../shared/alertGroups'
 
 /** The default pack's id (== its directory under resources/soundpacks == its manifest id). */
 export const DEFAULT_ALERT_PACK_ID = 'eq-zera-console'
-
-/** The registry pack the app USED to provision as its default (kept for the migration tables). */
-export const ALAN_RICKMAN_PACK_ID = 'alan-rickman'
-
-/**
- * The registry entry we provision from, inlined so first run needs ZERO registry
- * requests (one tarball GET, at a pinned tag). Field-for-field the same shape the
- * openpeon index serves, so provisioning reuses the tested installPack path and
- * produces a byte-identical install to clicking "Install" in the Sound Packs dialog.
- */
-export const DEFAULT_PACK: RegistryPack = {
-  name: ALAN_RICKMAN_PACK_ID,
-  display_name: 'Alan Rickman',
-  source_repo: 'utensils/openpeon-alan-rickman-soundpack',
-  source_ref: 'v1.1.2',
-  source_path: '.',
-  categories: [
-    'input.required',
-    'resource.limit',
-    'session.start',
-    'task.acknowledge',
-    'task.complete',
-    'task.error'
-  ],
-  sound_count: 60,
-  total_size_bytes: 1964096,
-  description:
-    'Claudette notification sounds, voiced in the manner of the late Alan Rickman. Slow. Deliberate. Faintly amused.',
-  license: 'CC-BY-4.0',
-  version: '1.1.2'
-}
 
 /**
  * Sound ids the shipped alert defs reference (derived, see header). Split out so the
@@ -103,7 +76,7 @@ export const DEFAULT_PACKS: RegistryPack[] = []
 /** The pack ids the app ships with (and provisions on startup if missing). */
 export const DEFAULT_PACK_IDS: string[] = DEFAULT_PACKS.map((p) => p.name)
 
-// ---- Retired-pack → Alan Rickman alert migration (Task #57) --------------------
+// ---- Retired-pack → shipped-pack alert migration (Task #57) --------------------
 //
 // Alerts persist a `{packId, soundId}` pair, so alerts authored before the default
 // changed still point at packs the app no longer ships (`default`, which no longer
@@ -112,10 +85,10 @@ export const DEFAULT_PACK_IDS: string[] = DEFAULT_PACKS.map((p) => p.name)
 // install (version-stamped) so an upgrading user's existing alerts land on the shipped
 // pack instead of silently going mute when the old dir is gone.
 //
-// The rewrite is pack-wide and one-way: any ref into a legacy pack becomes an
-// alan-rickman ref. Those packs stay installable from the in-app registry browser — a
-// user who reinstalls one can re-point any alert at it, and this migration never runs
-// again to undo that.
+// The rewrite is pack-wide and one-way: any ref into a legacy pack becomes a shipped-pack
+// ref. Those packs stay installable from the in-app registry browser — a user who
+// reinstalls one can re-point any alert at it, and this migration never runs again to
+// undo that.
 
 /**
  * Packs whose alert refs the one-time migration rewrites onto the shipped default.
@@ -158,7 +131,7 @@ export function alertSoundMigrationPending(stamp: unknown): boolean {
 }
 
 /**
- * CESP category → the Alan Rickman line a legacy sound in that category becomes.
+ * CESP category → the shipped-pack line a legacy sound in that category becomes.
  * Registry-derived ids are `<category-slug>-<file-slug>` (bastion: `task-complete-3`),
  * so the category is recoverable from the id itself and the replacement keeps the
  * alert's INTENT (a "complete" sting stays a completion line).
@@ -224,20 +197,32 @@ function legacyCategory(soundId: string): string | null {
 }
 
 /**
- * Rewrite one alert sound ref onto the shipped pack when it points at a retired pack.
- * Refs already on `alan-rickman` (or on any other user-installed pack) are returned
- * unchanged — this only touches the ids in LEGACY_ALERT_PACK_IDS. An unrecognizable
- * legacy id falls back to the "needs your attention" line rather than staying mute.
+ * The shipped pack's stand-in for one sound id from a pack that is no longer here: the line of
+ * the same CESP category where the id carries one, the old synthesized pack's ROLE mapping where
+ * it carries that instead, and otherwise the "needs your attention" line rather than silence.
+ *
+ * Extracted (behaviour-preserving) so the retired-pack rewrite below and the removed voice pack's
+ * store migration answer "what does this become" with the same table rather than two.
  */
-export function migrateAlertSoundRef(sound: AlertSoundRef): AlertSoundRef {
-  if (!LEGACY_ALERT_PACK_IDS.includes(sound.packId)) return sound
-  const byRole = LEGACY_DEFAULT_PACK_SOUND[sound.soundId.toLowerCase()]
-  const category = legacyCategory(sound.soundId)
-  const soundId =
+function shippedEquivalentSound(soundId: string): string {
+  const byRole = LEGACY_DEFAULT_PACK_SOUND[soundId.toLowerCase()]
+  const category = legacyCategory(soundId)
+  return (
     byRole ??
     (category ? LEGACY_CATEGORY_SOUND[category] : undefined) ??
     DEFAULT_ALERT_SOUNDS.buffWearsOff
-  return { packId: DEFAULT_ALERT_PACK_ID, soundId }
+  )
+}
+
+/**
+ * Rewrite one alert sound ref onto the shipped pack when it points at a retired pack.
+ * Refs on a user-installed pack are returned unchanged — this only touches the ids in
+ * LEGACY_ALERT_PACK_IDS. An unrecognizable legacy id falls back to the "needs your
+ * attention" line rather than staying mute.
+ */
+export function migrateAlertSoundRef(sound: AlertSoundRef): AlertSoundRef {
+  if (!LEGACY_ALERT_PACK_IDS.includes(sound.packId)) return sound
+  return { packId: DEFAULT_ALERT_PACK_ID, soundId: shippedEquivalentSound(sound.soundId) }
 }
 
 /**
@@ -255,16 +240,34 @@ export function migrateAlertSounds(alerts: AlertDef[]): { alerts: AlertDef[]; ch
   return { alerts: changed > 0 ? next : alerts, changed }
 }
 
+// ---- The removed inherited voice pack (EQ Zera, owner ruling 2026-09-08) --------
+//
+// The fork inherited a third-party spoken-word pack from upstream and shipped it as the default.
+// The owner removed it: none of it is downloaded, bundled, credited or named by this app any more.
+//
+// WHAT CANNOT BE DELETED IS THE ID, because it is PERSISTED DATA. Every alert the user (or a past
+// seed) authored against that pack stores `{packId, soundId}` verbatim, and a rewrite has to be
+// able to recognize the thing it is rewriting. This constant is the only place the id survives; its
+// one reader is store migration 14 → 15.
+//
+// IT IS NOT A LEGACY_ALERT_PACK_IDS ENTRY, deliberately. That list is the FLEET-WIDE switch pinned
+// by tests/alertSoundMigrationPin.test.mts: adding an id there re-runs the whole retired-pack table
+// against every unstamped install and would also undo a user's re-point of `peon`/`sc_marine`. The
+// ordered store-schema chain does exactly one thing, once, in a known order, so that is where this
+// lives.
+
+/** Pack id of the removed inherited voice pack. Persisted-data identifier only - nothing installs,
+ *  downloads, ships or displays this pack. */
+export const REMOVED_VOICE_PACK_ID = 'alan-rickman'
+
 /**
- * raw.githubusercontent base for a pack's pinned release tree (no trailing slash).
- * Used by scripts/fetch-packs.mts to pull individual files; the in-app installer
- * fetches the release tarball instead (one request).
+ * Re-point one stored ref off the removed voice pack onto the shipped pack's line of the same
+ * CESP category (a completion sting stays a completion line). Any other ref is returned as-is.
+ *
+ * A user who still has the pack installed under `<userData>/soundpacks/` keeps those files - this
+ * moves the ALERT, it does not touch anything on disk.
  */
-export function packRawBase(pack: RegistryPack): string {
-  const sub =
-    pack.source_path && pack.source_path !== '.'
-      ? pack.source_path.replace(/\\/g, '/').replace(/^\/|\/$/g, '')
-      : ''
-  const root = `https://raw.githubusercontent.com/${pack.source_repo}/${pack.source_ref}`
-  return sub ? `${root}/${sub}` : root
+export function migrateRemovedVoicePackRef(sound: AlertSoundRef): AlertSoundRef {
+  if (sound.packId !== REMOVED_VOICE_PACK_ID) return sound
+  return { packId: DEFAULT_ALERT_PACK_ID, soundId: shippedEquivalentSound(sound.soundId) }
 }

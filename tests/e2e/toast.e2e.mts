@@ -243,6 +243,65 @@ async function stepRefusal(main: Page, toast: Page): Promise<void> {
   )
 }
 
+/**
+ * THE ONE CARD A RENDERER MAY NOT CONJURE (EQ Zera, 2026-09-08), over the real channel.
+ *
+ * The updater's card is the only card in this app whose click downloads an executable and restarts
+ * the process into it. It is built in main and pushed straight at the window; nothing legitimate
+ * ever sends one over `toast:show`. This step is the security half of that, and it is deliberately
+ * a NEGATIVE: the pure validator's two refusals are pinned in tests/toastPayload.test.mts, and what
+ * only the real app can add is that the whole pipeline — preload bridge, IPC, main's handler, the
+ * overlay window — agrees with them. (The POSITIVE half cannot be driven headless: it needs
+ * electron-updater to resolve a real GitHub release, and a test-only IPC that pushed an update card
+ * would be exactly the door this step exists to prove is shut. The cards themselves are pinned
+ * pure, in tests/updaterToasts.test.mts.)
+ */
+async function stepUpdateCardRefusal(main: Page, toast: Page): Promise<void> {
+  const before = (await cardTexts(toast)).length
+  // The kind itself: refused outright, because `update` is not in TOAST_KINDS.
+  await send(main, {
+    id: 'update:9.9.9',
+    kind: 'update',
+    title: 'EQ Zera 9.9.9 is ready',
+    subtitle: 'Click to restart and install',
+    action: 'updateInstall'
+  })
+  // …and the action riding an ACCEPTED kind. It REFRESHES the boss card already on screen (same
+  // id, the queue's dedupe key), which keeps the stack count out of it and gives the assertion a
+  // positive signal: the refreshed subtitle proves the send landed, so "no button" is a statement
+  // about the validator rather than about a message that never arrived.
+  await send(main, {
+    id: 'e2e-boss-1',
+    kind: 'bossKill',
+    title: 'Lord Nagafen defeated',
+    subtitle: 'refreshed with a smuggled action',
+    action: 'updateInstall',
+    durationMs: 25_000
+  })
+  const after = await settleStable(() => cardTexts(toast), { timeoutMs: 8_000, stable: 5, pollMs: 150 })
+  check(
+    'a renderer-sent { kind: "update", action: "updateInstall" } renders NO card at all',
+    !after.some((c) => c.includes('9.9.9')),
+    after.join(' | ')
+  )
+  const smuggled = await toast.evaluate(() => {
+    const el = [...document.querySelectorAll('[data-testid="toast-card"]')].find((e) =>
+      (e as HTMLElement).innerText.includes('smuggled action')
+    )
+    return { landed: !!el, actions: el?.querySelectorAll('[data-testid="toast-action"]').length ?? 0 }
+  })
+  check(
+    '…and an `action` smuggled onto an accepted kind is STRIPPED: the card draws, the button does not',
+    smuggled.landed && smuggled.actions === 0,
+    JSON.stringify(smuggled)
+  )
+  check(
+    '…with the stack no longer than it was: a refused card is not a card',
+    after.length === before,
+    `${after.length} card(s) from ${before}`
+  )
+}
+
 /** A Sky completion: the title, plus the reward item card MAIN resolved and embedded. */
 async function stepQuestToast(main: Page, toast: Page): Promise<void> {
   // Item resolution is local-first (the committed items DB) but still a round trip through main;
@@ -390,6 +449,7 @@ async function main(): Promise<void> {
       await stepPreferences(page)
       await stepBossToast(page, t)
       await stepRefusal(page, t)
+      await stepUpdateCardRefusal(page, t)
       await stepQuestToast(page, t)
       await stepLevelUpToast(page, t)
       // Three cards are standing in the lane at this point, which is the state worth measuring AND

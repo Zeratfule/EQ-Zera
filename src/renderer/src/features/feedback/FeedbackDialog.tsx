@@ -37,19 +37,22 @@ import {
 import BugReportIcon from '@mui/icons-material/BugReport'
 import LightbulbIcon from '@mui/icons-material/Lightbulb'
 import { LOG_WINDOW_CHOICES, MAX_DESCRIPTION, type FeedbackType } from '@shared/feedback'
+import FeedbackWaysOut from './FeedbackWaysOut'
 import InventoryPreview, { AchievementsPreview } from './InventoryPreview'
 import LogPreview from './LogPreview'
 import PerfPreview from './PerfPreview'
 import {
+  useAttachments,
   useFeedback,
   useFeedbackContext,
-  useAchievementsDump,
-  useInventoryDump,
-  useLogSlice,
+  type AchievementsDumpState,
+  type FeedbackAttachments,
   type FeedbackContext,
   type FeedbackOutcome,
   type FeedbackPrefill,
-  type FeedbackState
+  type FeedbackState,
+  type InventoryDumpState,
+  type LogSliceState
 } from './useFeedback'
 
 /**
@@ -176,10 +179,14 @@ function WindowChoice({
  * disclosure under that, and the preview EXPANDED below (never behind a disclosure triangle:
  * a log slice you have to go looking for is not one you have read).
  */
-function AttachLogSection({ state }: { state: FeedbackState }): JSX.Element | null {
+function AttachLogSection({
+  state,
+  log
+}: {
+  state: FeedbackState
+  log: LogSliceState
+}): JSX.Element | null {
   const { fields, attachLog, setAttachLog, windowMinutes, setWindowMinutes } = state
-  const active = fields.type === 'bug' && attachLog
-  const log = useLogSlice(active, windowMinutes)
   if (fields.type !== 'bug') return null
   return (
     <Stack spacing={1}>
@@ -234,15 +241,16 @@ function AttachLogSection({ state }: { state: FeedbackState }): JSX.Element | nu
  */
 function AttachInventorySection({
   state,
-  ctx
+  ctx,
+  inv
 }: {
   state: FeedbackState
   ctx: FeedbackContext | null
+  inv: InventoryDumpState
 }): JSX.Element | null {
   const { fields, attachInventory, setAttachInventory } = state
   const noDump = ctx !== null && !ctx.inventoryAvailable
   const active = fields.type === 'bug' && attachInventory && !noDump
-  const inv = useInventoryDump(active)
   if (fields.type !== 'bug') return null
   return (
     <Stack spacing={1}>
@@ -294,15 +302,16 @@ function AttachInventorySection({
  */
 function AttachAchievementsSection({
   state,
-  ctx
+  ctx,
+  ach
 }: {
   state: FeedbackState
   ctx: FeedbackContext | null
+  ach: AchievementsDumpState
 }): JSX.Element | null {
   const { fields, attachAchievements, setAttachAchievements } = state
   const noDump = ctx !== null && !ctx.achievementsAvailable
   const active = fields.type === 'bug' && attachAchievements && !noDump
-  const ach = useAchievementsDump(active)
   if (fields.type !== 'bug') return null
   return (
     <Stack spacing={1}>
@@ -341,6 +350,29 @@ function AttachAchievementsSection({
       )}
     </Stack>
   )
+}
+
+/**
+ * The three ways out, or nothing — DARK BUILDS ONLY, on purpose: a build with an endpoint has
+ * Send, which does everything the row does and carries the attachments as files as well
+ * (FeedbackWaysOut.tsx states the case in full).
+ *
+ * The dark test lives HERE rather than in the dialog's own JSX because that function is at the
+ * repo's complexity ceiling and one more `&&` in its body is one branch too many — the same
+ * reason PerfPreview reads the context itself instead of being handed a block.
+ */
+function WaysOutRow({
+  ctx,
+  state,
+  attachments
+}: {
+  ctx: FeedbackContext | null
+  state: FeedbackState
+  attachments: FeedbackAttachments
+}): JSX.Element | null {
+  // `null` while the context is still in flight: we don't claim "no endpoint" before we know.
+  if (ctx === null || ctx.endpointConfigured) return null
+  return <FeedbackWaysOut state={state} ctx={ctx} attachments={attachments} />
 }
 
 /** Version · channel · queued — the header context, stated, not explained. */
@@ -388,6 +420,9 @@ export interface FeedbackDialogProps {
 export default function FeedbackDialog({ open, onClose, prefill }: FeedbackDialogProps): JSX.Element {
   const ctx = useFeedbackContext(open)
   const state = useFeedback(open, prefill)
+  // The three previews are built HERE and handed down, because the dark-build ways-out row reads
+  // the same counts into its plain-text report (see useAttachments).
+  const attachments = useAttachments(state, ctx)
   const { phase, outcome, problem, send } = state
   // `null` while the context is still in flight — we don't claim "no endpoint" before we know.
   const dark = ctx !== null && !ctx.endpointConfigured
@@ -403,15 +438,16 @@ export default function FeedbackDialog({ open, onClose, prefill }: FeedbackDialo
           <Stack spacing={1.5}>
             {dark && (
               <Alert severity="info" variant="standard" data-testid="feedback-unavailable">
-                Sending isn’t available in this build - it has no feedback endpoint. You can still
-                save a copy of your log slice below and send it another way.
+                Sending isn’t available in this build - it has no feedback endpoint. Write your
+                report, then send it by email, open a GitHub issue, or copy it.
               </Alert>
             )}
             <TypeToggle value={state.fields.type} onChange={state.setType} />
             <DraftFieldsBlock state={state} />
-            <AttachLogSection state={state} />
-            <AttachInventorySection state={state} ctx={ctx} />
-            <AttachAchievementsSection state={state} ctx={ctx} />
+            <WaysOutRow ctx={ctx} state={state} attachments={attachments} />
+            <AttachLogSection state={state} log={attachments.log} />
+            <AttachInventorySection state={state} ctx={ctx} inv={attachments.inventory} />
+            <AttachAchievementsSection state={state} ctx={ctx} ach={attachments.achievements} />
             {/* The perf timeline rides `env`, so it is part of EVERY report — feature requests
                 included — and it renders itself away when the rings are empty (JOS-369). It reads
                 the context itself rather than being handed a block, exactly as the inventory

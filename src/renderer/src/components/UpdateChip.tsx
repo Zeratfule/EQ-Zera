@@ -1,6 +1,7 @@
 import { type JSX, useEffect, useRef, useState } from 'react'
 import { Box, LinearProgress, Typography } from '@mui/material'
 import RestartAltIcon from '@mui/icons-material/RestartAlt'
+import DownloadIcon from '@mui/icons-material/Download'
 import NewReleasesIcon from '@mui/icons-material/NewReleases'
 import type { UpdateStatus } from '@shared/types'
 import { updateChipLine, updateChipState } from '@shared/update'
@@ -11,10 +12,17 @@ import { PALETTE, withAlpha } from '../../../shared/palette'
  * UpdateChip (Task #60) — the AMBIENT update affordance, pinned in the left nav
  * directly under Preferences.
  *
- * The product rule this encodes: an update is a REWARD, not a nag. There is
- * exactly one loud state (downloaded + staged ⇒ "Restart to update", in the accent,
- * clickable, glowing softly ONCE on arrival) and one resting state (a muted
- * "checked 2h ago" line, click to check). Downloading is a hairline bar.
+ * The product rule this encodes: an update is a REWARD, not a nag. The loud state is
+ * downloaded + staged ("Restart to update", in the accent, clickable, glowing softly
+ * ONCE on arrival); the resting state is a muted "checked 2h ago" line, click to
+ * check. Downloading is a hairline bar.
+ *
+ * SINCE THE DOWNLOAD BECAME A CLICK (EQ Zera, 2026-09-08) there are TWO offers rather
+ * than one, and that is not a second nag: nothing is fetched until the user answers,
+ * so "an update exists" is a state that now persists, and the chip has to be able to
+ * say so and to act on it. `AvailableChip` carries it — the accent shape without the
+ * glow, because an offer you have not answered is not an arrival. Everything else
+ * about the rule stands: no badge, no red, no modal, no repeat.
  *
  * AND A FAILED CHECK SAYS SO, IN THE SAME BREATH AND AT THE SAME VOLUME (JOS-307).
  * It used to render character-for-character like a successful one, admitting the
@@ -127,6 +135,65 @@ function ReadyChip({
               v{version}
             </Typography>
           )}
+        </Box>
+      </Box>
+    </Box>
+  )
+}
+
+/**
+ * THE OTHER INVITING STATE (EQ Zera, 2026-09-08): a build exists and nothing has been fetched yet.
+ *
+ * WHY IT IS NOT THE MUTED LINE ANY MORE. This state used to render as `working` — a disabled,
+ * `text.disabled`, ellipsis-ended "Update found…" — which was honest while the download started
+ * automatically two seconds later. The owner's direction moved the download behind a CLICK, so the
+ * state now persists until somebody makes one, and a disabled line reading like a progress notice
+ * is then a lie about the app's own state AND a dead end: the chip is the surface a user goes to
+ * when they want the update, and it was the one surface that did not offer it.
+ *
+ * WHY IT IS QUIETER THAN 'ready' ANYWAY. It borrows ReadyChip's shape but not its glow: 'ready'
+ * is the arrival of a thing you already asked for, this is an offer you have not answered yet, and
+ * two celebrations for one update would make the second one noise. The product rule is untouched —
+ * still no badge, no red, no modal, and every other state stays muted.
+ *
+ * The click is `installUpdate()`, which main reads as "take the next step" (updater.ts's
+ * `advanceUpdate`): a download here, an install once one is staged. The same words the
+ * notification card and Preferences use, so the three surfaces read as one flow.
+ */
+function AvailableChip({ version, onDownload }: { version?: string; onDownload: () => void }): JSX.Element {
+  return (
+    <Box sx={{ px: 1, pt: 0.75, pb: 1 }}>
+      <Box
+        component="button"
+        type="button"
+        data-testid="update-chip-available"
+        onClick={onDownload}
+        // A native `title`, never a MUI Tooltip — the rule this whole file obeys (see the header).
+        title={version ? `Download and install v${version}` : 'Download and install the update'}
+        sx={{
+          width: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          gap: 1,
+          px: 1.25,
+          py: 0.9,
+          border: 1,
+          borderColor: withAlpha(PALETTE.accent, 0.45),
+          borderRadius: 1.5,
+          bgcolor: withAlpha(PALETTE.accent, 0.08),
+          color: ACCENT,
+          font: 'inherit',
+          textAlign: 'left',
+          cursor: 'pointer',
+          transition: 'background-color 140ms ease, border-color 140ms ease',
+          '&:hover': { bgcolor: withAlpha(PALETTE.accent, 0.18), borderColor: ACCENT }
+        }}
+      >
+        <DownloadIcon fontSize="small" />
+        <Box sx={{ minWidth: 0, flexGrow: 1 }}>
+          <Typography variant="body2" sx={{ fontWeight: 600, lineHeight: 1.2 }}>
+            Update ready: download{version ? ` v${version}` : ''}
+          </Typography>
         </Box>
       </Box>
     </Box>
@@ -349,6 +416,12 @@ export function UpdateChip({ onWhatsNew }: { onWhatsNew: () => void }): JSX.Elem
 
   if (ui.kind === 'ready') {
     return <ReadyChip version={ui.version} glow={glow} onInstall={() => void window.eq.installUpdate()} />
+  }
+
+  // The OTHER offer (EQ Zera, 2026-09-08), between the two: a build exists, nothing is downloaded,
+  // and the click is what fetches it. Same door as 'ready' — main decides which step that is.
+  if (ui.kind === 'available') {
+    return <AvailableChip version={ui.version} onDownload={() => void window.eq.installUpdate()} />
   }
 
   if (ui.kind === 'downloading') return <DownloadingChip percent={ui.percent} />

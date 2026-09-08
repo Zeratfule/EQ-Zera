@@ -24,6 +24,7 @@ import {
   isSafeSourceRef,
   isSafeSourceRepo
 } from '../src/main/security'
+import { formatReport, githubIssueUrl } from '../src/shared/feedbackReport'
 
 const WIN = process.platform === 'win32'
 
@@ -106,6 +107,31 @@ test('the github.com entry is scoped to THIS repo, not to the host (JOS-263)', (
   // The path scope is checked IN ADDITION to the host, never instead of it: our own repo path on
   // somebody else's host stays shut.
   assert.equal(allowedExternalUrl('https://evil.com/Zeratfule/EQ-Zera/releases'), null)
+})
+
+test('the prefilled ISSUE link the feedback dialog builds actually opens', () => {
+  // The dark-build ways-out row hands `githubIssueUrl`'s output to an `<a target="_blank">`, which
+  // main turns into `shell.openExternal` THROUGH this function. Two ways that silently fails: a
+  // path outside the repo subtree, and a URL over MAX_LINK_LEN — both refused with no error and no
+  // window, i.e. a dead button. `ISSUE_URL_BUDGET` is the headroom, and this is where it is proved
+  // to be enough for a maximum-length report.
+  const body = formatReport({
+    draft: { type: 'bug', description: 'x'.repeat(4_000) },
+    env: {
+      appVersion: '1.7.0',
+      channel: 'prod',
+      updateChannel: 'main',
+      platform: 'win32',
+      osRelease: '10.0.26200',
+      arch: 'x64',
+      electron: '31.0.0',
+      chrome: '126.0.0',
+      node: '20.14.0'
+    }
+  })
+  const url = githubIssueUrl('EQ Zera bug report - v1.7.0', body)
+  assert.ok(url !== null)
+  assert.equal(allowedExternalUrl(url), url)
 })
 
 test('widening the allowlist for github.com widened nothing else (JOS-254)', () => {
@@ -255,7 +281,7 @@ test('isInsideDir is segment-aware, traversal-aware, and platform-correct', () =
 
 test('isSafePackId accepts real pack ids and rejects anything path-shaped', () => {
   // The ids actually in play (shipped default + registry packs).
-  for (const ok of ['alan-rickman', 'sc_marine', 'peon', 'pack.v2', 'A1']) {
+  for (const ok of ['eq-zera-console', 'sc_marine', 'peon', 'pack.v2', 'A1']) {
     assert.equal(isSafePackId(ok), true, ok)
   }
   for (const bad of [
@@ -286,7 +312,7 @@ test('isSafePackId accepts real pack ids and rejects anything path-shaped', () =
 test('isSafeSourceRepo accepts owner/repo and rejects traversal, extra path, junk', () => {
   // The honest registry's own shape (the shipped default pack + typical rows).
   for (const ok of [
-    'utensils/openpeon-alan-rickman-soundpack',
+    'utensils/openpeon-soundpack',
     'PeonPing/og-packs',
     'a/b',
     'user123/pack.v2',

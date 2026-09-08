@@ -1533,16 +1533,17 @@ If a startup-cost ticket ever comes back: measure first, and read
 
 - Sound packs: og-packs registry (index: peonping.github.io/registry) —
   browse/install any of ~350 packs in-app. The single shipped default
-  (`alan-rickman`, pinned tag) is GITIGNORED audio, self-provisioned via the
+  (an inherited third-party voice pack, since REMOVED - owner, 2026-09-08) was
+  GITIGNORED audio, self-provisioned via the
   same installPack path (one tarball GET, retried with backoff, additive:
   never removes or re-downloads an installed pack). The synthesized `default`
   chime pack is DELETED (generator + assets, Task #57) — it is not listed,
   generated, or shipped anywhere; peon/sc_marine are no longer provisioned but
   remain registry-installable. Alerts pointing at any retired pack are rewritten
-  onto the analogous alan-rickman line by a ONE-TIME, version-stamped store
+  onto the analogous shipped-pack line by a ONE-TIME, version-stamped store
   migration (`migrateAlertSounds` in data/defaultPacks.ts, run from
   `getAlerts()`), so an upgrading user's alerts never go silently mute. Every
-  picker pre-selects alan-rickman (`fallbackPack`), never `packs[0]`.
+  picker pre-selects the shipped default (`fallbackPack`), never `packs[0]`.
 
 ## Bring your own sound (JOS-68)
 
@@ -2718,8 +2719,8 @@ a round number.
 <!-- Moved verbatim from AGENTS.md (lines 584-610 at the 2026-08-13 collapse). -->
 
   **PRESENCE IS NOT PRECEDENCE: THE DEFAULT PACK IS A PREFERENCE, AND A DELETION IS A
-  STATEMENT** (JOS-273, owner ruling 2026-08-13 — verbatim: *if someone deletes alan
-  rickman, they should be able to set a default and it should persist*). The shipped
+  STATEMENT** (JOS-273, owner ruling 2026-08-13 — verbatim: *if someone deletes [the
+  shipped pack], they should be able to set a default and it should persist*). The shipped
   pack used to be HARDCODED as the pack every picker pre-selected and every authored
   alert pointed at, and startup provisioning re-installed it whenever it was missing
   with no memory of a deletion — so deleting it held until the next launch, which
@@ -3639,13 +3640,14 @@ via `scripts/sandbox/sandbox-lifecycle.ps1`.
 
 - Sound packs: og-packs registry (peonping.github.io/registry) —
   browse/install ~350 packs in-app. The single shipped default
-  (`alan-rickman`, pinned tag) is GITIGNORED audio, self-provisioned via the
+  (an inherited third-party voice pack, since REMOVED - owner, 2026-09-08) was
+  GITIGNORED audio, self-provisioned via the
   same installPack path (additive, retried with backoff). The synthesized
   `default` chime pack is DELETED; alerts pointing at any retired pack are
-  rewritten onto the analogous alan-rickman line by a ONE-TIME,
+  rewritten onto the analogous shipped-pack line by a ONE-TIME,
   version-stamped store migration (`migrateAlertSounds`), so an upgrading
   user's alerts never go silently mute. Every picker pre-selects
-  alan-rickman (`fallbackPack`), never `packs[0]`.
+  the shipped default (`fallbackPack`), never `packs[0]`.
 
 ## The brief-sizing law's measured incident, at full length (JOS-343)
 
@@ -3733,3 +3735,125 @@ your commit (6db8790 swept one; its wave's later commit completed it).
   settling") · 1 sighting (2026-08-13, JOS-294 worker six-spec sweep; green
   standalone and in the next full sweep) · NOT the resolved row's signature —
   unknown mechanism, watch for a second sighting before diagnosing.
+
+
+---
+
+# MOVED FROM AGENTS.md 2026-09-08 (EQ Zera distillation): the upstream "Cloud" section, verbatim
+
+This is upstream's account of ITS AWS feedback backend and telemetry endpoint. EQ Zera compiles
+no endpoint (`src/main/feedback/net.ts`, `src/main/telemetry/net.ts` are empty strings) and has no
+`infra/` deployment; the section is kept here as history because the code it describes is still in
+the tree, disabled.
+
+## Cloud (feedback backend + future web) — state as of 2026-08-04
+
+- **AWS**: dedicated sub-account `eqcompanion` **001634075447** (org
+  management = `jmoyers` 383185690517), region **us-east-1**. CLI: profile
+  `eqc` assumes `OrganizationAccountAccessRole` via source profile
+  `windows-desktop-eqc` (owner-managed key). Terraform + AWS CLI installed
+  via winget. Full detail: docs/agents-archive.md.
+- **Terraform**: root `infra/`, state in s3 bucket
+  `eqcompanion-tf-state-dae027bf` (versioned, BPA) + lock table
+  `eqcompanion-tf-lock`. Deploys run from this machine with
+  `AWS_PROFILE=eqc`; CI only fmt/validate/bundle. **Standing authorization
+  (owner, 2026-08-05): NON-DESTRUCTIVE applies and migrations — additive
+  DDL, copy-first backfills with count verification, Lambda updates — may
+  be run by the agent directly. Anything that drops, overwrites, or loses
+  data (including "empty" shells until counts are VERIFIED) still gets
+  explicit owner approval first.** The 30-resource stack applied 2026-08-04.
+- **Store is Aurora DSQL** (owner: "I hate dynamodb"), not DynamoDB:
+  schema in `infra/schema.sql`, applied by `triage-feedback migrate`
+  (never yet run against a live cluster — it stops on and prints a bad
+  statement). Ingest connects as a DB role holding **INSERT ON report and
+  nothing else**; IAM tokens, zero passwords. DSQL laws: no FKs/triggers/
+  PLpgSQL, fixed Repeatable Read + OCC (retry only SQLSTATE 40001),
+  3,000-row txn cap (bounds every sweep), one DDL per txn,
+  `CREATE INDEX ASYNC`, jsonb young + unindexable (we use text).
+- **F2: DEPLOYED AND LIVE (2026-08-04)** — submit/idempotency/oversize
+  live-verified, kill switch OPEN, constants in net.ts. Two DSQL live
+  findings encoded: grants on the system-owned `public` schema are
+  unsupported, and `statement_timeout` cannot be SET (client-side
+  query_timeout only; db.ts). Verification detail + the SNS confirmation:
+  docs/agents-archive.md.
+- **ANALYTICS COHORT SPLIT — LIVE (2026-08-05, waves R+S, run under the
+  standing authorization).** The migration ran COPY-FIRST per owner ruling
+  (staging tables, row-count AND sum(n) verification, swap via DSQL's
+  documented `RENAME TO`; nothing dropped until its verified copy existed).
+  Runbook: infra/README.md "THE COHORT MIGRATION". **A ROTATED analyticsId
+  arrives unmarked — re-run `analytics owner-add`**; cohort mechanics live
+  in the USER/OWNER SPLIT bullet below.
+- **ANALYTICS OPERATIONS (how usage questions get answered):**
+  - Daily/adoption truth: `triage-feedback analytics digest --days N
+    --profile eqc` (user cohort by default; `--cohort all` prints both,
+    NEVER summed). Series history STARTS 2026-08-04 — there is no earlier
+    data and never will be.
+  - Live concurrency: CloudWatch `EQCompanion/Telemetry` `Heartbeats`,
+    `Channel=prod`, **Sum over 600s** ≈ concurrent sessions. **THE PERIOD
+    IS THE CLIENT'S HEARTBEAT CADENCE, NOT A CHOICE** (JOS-269 took it
+    5 min → 10 min). `liveSessions.ts BUCKET_MS` is the same number and the
+    two move together or the readout silently lies.
+  - Install truth is `analytics_install`; GitHub `download_count` is NOT
+    installs (the auto-updater dominates it). DAU can slightly exceed
+    installs across UTC day boundaries — artifact, not phantom users.
+  - The kill switch is cached in warm Lambdas for 60s — a 503 right after
+    `analytics open` is the cache, not a failure.
+  - **THE PULSE'S LIVE HALF IS A CLOUDWATCH READ, NOT A COUNTER** (JOS-39):
+    `liveSessions.ts` reads `Heartbeats` directly, merged at the two
+    presentation edges — never inside `buildAnalytics`, which stays pure.
+    The average age is labelled `est.`, can only under-claim, and is NULL —
+    never 0 — when nobody is alive.
+  - **`upgrades` IS DERIVED SERVER-SIDE**, once per version change;
+    downgrades count; disjoint from `newInstalls`. Pre-marking counter rows
+    carry no id and stay in the user cohort forever — read old days with
+    that in mind.
+- **Local dev story**: `scripts/dev-feedback-server.mts` — same contract,
+  same shared validator, failure knobs; the app reaches it via
+  `EQ_FEEDBACK_URL`, honored ONLY behind `!app.isPackaged` (packaged builds
+  must prove the env var does nothing).
+- **Usage analytics**: opt-OUT (owner decision over the integrator's opt-in
+  recommendation) but NOTHING transmits before the first-run notice renders;
+  allowlist schema; separate rotatable analyticsId; payload viewer +
+  TELEMETRY.md (plan: docs/plans/usage-analytics.md). A1/A2/A3 are ALL LIVE:
+  a second Lambda (`eqcompanion-telemetry-ingest`) behind `POST
+  /v1/telemetry`, aggregating on arrival into the three tables — NO
+  raw-event store — plus EMF metrics, a dashboard, `analytics
+  digest|wipe|open|close`, and the Triage → Analytics tab. **The endpoint is
+  LIT**: `TELEMETRY_API_URL` is a compiled-in constant;
+  tests/telemetryNet.test.mts pins the exact URL, the single fetch site, and
+  the consent gates (nothing before the notice; opt-out destroys buffer +
+  id). Full detail: docs/agents-archive.md.
+  **THE CADENCE IS A COST DIAL, THE CONTENT IS NOT (JOS-269, owner ruling
+  2026-08-12).** `FLUSH_INTERVAL_MS` 5 min and `HEARTBEAT_INTERVAL_MS`
+  10 min (flush.ts). Every event is a counter delta that sums server-side,
+  so batching harder loses NOTHING; every flush is one request through API
+  Gateway + Lambda + DSQL, which is the whole bill. The priced cost: a
+  KILLED session's duration coarsens to its last heartbeat. **THREE NUMBERS
+  ARE DERIVED FROM THESE AND MUST MOVE WITH THEM**: `liveSessions.ts
+  BUCKET_MS` (= the heartbeat, or Live halves), the "sessions in the last
+  10 min" tile note, and the sandbox smoke's `$telemetryDwellSec` (must
+  exceed ONE flush tick — nothing leaves the machine except on one;
+  `stopTelemetry` writes the ring, it does not POST). Changing WHAT is
+  collected is a different decision and remains owner law. Full note:
+  docs/agents-archive.md.
+  **THE ADDITIVE-FIELD RULE (JOS-39, and it is a deploy-skew law).** The app
+  auto-updates itself; the ingest Lambda is deployed by hand — so a shipped
+  client is regularly talking to an OLDER copy of the shared contract. A NEW
+  EVENT KIND is fatal under that skew: the shared validator fails the whole
+  batch, the endpoint answers 400, and `telemetryPermanentRefusal` (net.ts)
+  classes 400 as "these bytes will never be accepted" and DROPS the batch — so
+  the client throws away every counter it is carrying, on every flush, until
+  the deploy lands. A NEW OPTIONAL FIELD on an existing kind is free: the
+  validators CONSTRUCT their result field by field, so an older server simply
+  does not copy it across and accepts the batch. Add measurements as fields
+  (`linesParsed` rides on `sessionHeartbeat`/`sessionEnd`), and the client half
+  is then safe to ship BEFORE the additive apply.
+  **USER/OWNER SPLIT (2026-08-05, owner-directed, LIVE).** Every counter row
+  carries a `cohort` ('user'|'owner'), IN the PRIMARY KEY of
+  `usage_daily`/`usage_funnel_daily` and a nullable column on
+  `analytics_install`. Dev builds tag themselves SERVER-SIDE from
+  `env.channel` (no client change, no TELEMETRY.md change); the installed
+  copy is marked by hand with `analytics owner-add <analyticsId>`. Every
+  read defaults to the user cohort; `--cohort all` renders both SIDE BY SIDE
+  and nothing ever sums them. Rows aggregated before a marking keep their
+  cohort and the digest says so.

@@ -280,7 +280,7 @@ mod tests {
             "name": "Slow wore off a mob",
             "enabled": true,
             "cooldownMs": 5000,
-            "sound": { "packId": "alan-rickman", "soundId": "slow-expired" },
+            "sound": { "packId": "eq-zera-console", "soundId": "slow-expired" },
             "trigger": { "type": "event", "kind": "buffFade", "where": { "spell": SLOW_SPELLS_MOB } }
         });
         if let Some(sec) = early_warn_sec {
@@ -347,7 +347,7 @@ mod tests {
         let fires = m.take_fires();
         assert_eq!(fires.len(), 1, "an early warning fired");
         assert_eq!(fires[0].rule, "Slow wore off a mob");
-        assert_eq!(fires[0].sound, "alan-rickman/slow-expired");
+        assert_eq!(fires[0].sound, "eq-zera-console/slow-expired");
         // The matched text is the projection sentence, because no line has been printed.
         assert_eq!(
             fires[0].message,

@@ -163,25 +163,38 @@ release body says so, in those words.
 a release here can put any executable on that page. Tag and release access *is* the security
 control; `SECURITY.md` states this to users.
 
-### The two switches that turn self-update on
+### Self-update is ON — cutting a tag ships an update to every install
 
-Self-update is off, and it takes both of these — flipping either alone makes things worse, not
-better:
+**Every install polls this repo's releases and steps itself up to whatever you tag.** A user
+sees a card on the celebration overlay saying the new build is ready, clicks it to download,
+and clicks again to restart into it; a build they downloaded and never restarted for is applied
+the next time they close the app. There is no manual step on their side and no way to recall a
+release once installs have seen it. So a tag is a deliberate act, never a tidy-up: if the build
+is bad, the fix is another tag.
 
-1. **`src/main/updater.ts`** — `autoUpdateDisabled()` returns `true`. Make it return `false`.
-2. **Signing secrets in CI** — add the certificate to the repo (below) and give
-   `release.yml`'s "Build installer and publish" step the matching `env:` block.
+Three files carry the switch, and they already agree:
 
-The order is not optional. `electron-builder.yml` sets
-`win.signtoolOptions.publisherName: EQ Zera`, and electron-updater's
-`NsisUpdater.verifySignature` **rejects** any downloaded update whose Authenticode publisher
-does not match that name. Flipping the constant while releases are unsigned does not produce
-"updates with a warning" — it produces an updater that downloads a build and then refuses it,
-every time. (Clearing `publisherName` instead would make the updater skip signature checking
-altogether, which is worse: it turns a silent, per-user, no-UAC auto-install into something
-that trusts whatever the feed hands it.)
+1. **`src/main/updater.ts`** — `autoUpdateDisabled()` returns `false`.
+2. **`electron-builder.yml`** — the `publish:` block names `Zeratfule/EQ-Zera`, which is what
+   writes `app-update.yml` into the package.
+3. **`.github/workflows/release.yml`** — publishes the installer, its `.blockmap`, `latest.yml`
+   and the `main.yml` bridge copy on every `v*` tag, and verifies all four are present before
+   it flips the release live.
 
-`electron-builder.yml` already has its `publish:` block, so nothing else needs adding there.
+**It ships unsigned, and that is the owner's explicit call for a personal fork.** The feed and
+the installer come over HTTPS and electron-updater verifies the installer's sha512 against
+`latest.yml`, so a *tampered download* fails. Authenticode verification is off:
+`win.signtoolOptions.publisherName` is commented out, so no publisher name reaches
+`app-update.yml`, and `NsisUpdater.verifySignature` returns immediately and skips all checking
+rather than failing it. Nothing verifies *who* built a release, which makes the GitHub account
+the trust root — see the section above, and `SECURITY.md`, which says the same thing to users.
+
+**The day a certificate exists, one line goes back.** Uncomment `publisherName` under
+`win.signtoolOptions` (it must match the certificate's subject CN character for character) in
+the same change that adds the signing secrets, and every update is publisher-checked from that
+build onward. Nothing in `src/main/updater.ts` changes. Getting the order wrong is the one thing
+to avoid: `publisherName` set while releases are unsigned means every update downloads and is
+then rejected, forever.
 
 ### Getting a certificate
 
@@ -207,7 +220,11 @@ Two roads, and the hook in this tree already supports the first:
   accumulated downloads.
 
 Whichever road, the certificate's subject CN and `publisherName` must match character for
-character, or every update is rejected.
+character, or every update is rejected. Note one asymmetry: a `CSC_LINK` certificate is read by
+app-builder-lib itself, so its CN would land in `app-update.yml` **automatically** and turn
+publisher verification back on the moment it is added; the Azure hook never hands
+app-builder-lib a certificate to inspect, so that road needs the `publisherName` line
+uncommented by hand.
 
 ## Git note
 

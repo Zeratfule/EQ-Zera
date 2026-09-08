@@ -2,15 +2,15 @@
 // defaultPackPreference.test.mts — "set one and it sticks" (JOS-273).
 // ============================================================================
 //
-// THE REPORT: "I like Alan Rickman as much as the next person, but it re-enables itself with every
-// update and I have to delete it each time to use the pack I want — can I just set one and it
-// sticks." Nothing reset anything. The shipped pack was HARDCODED as the pack every picker
+// THE REPORT: "I like the pack that ships as much as the next person, but it re-enables itself
+// with every update and I have to delete it each time to use the pack I want — can I just set one
+// and it sticks." Nothing reset anything. The shipped pack was HARDCODED as the pack every picker
 // pre-selects and every authored alert points at, and startup provisioning re-installed it
 // whenever it was missing with no memory of a deletion — so a deletion held exactly until the
 // next launch, which for most people is the next update.
 //
-// THE OWNER'S RULING, verbatim: "if someone deletes alan rickman, they should be able to set a
-// default and it should persist." Three separable claims, and this file is one section per claim:
+// THE OWNER'S RULING, verbatim: "if someone deletes [the shipped pack], they should be able to
+// set a default and it should persist." Three separable claims, and this file is one section per claim:
 //
 //   1. THE PREFERENCE — stored, validated, and ABSENT for a fresh install (which is what makes
 //      "fresh installs unchanged" a property rather than a promise).
@@ -56,7 +56,7 @@ function pack(id: string, soundIds: string[], name = id): SoundPack {
 }
 
 /** The shipped pack, carrying the lines the seeds and the groups actually name. */
-const RICKMAN = pack(
+const SHIPPED = pack(
   DEFAULT_ALERT_PACK_ID,
   [
     DEFAULT_ALERT_SOUNDS.charmBreak,
@@ -64,7 +64,7 @@ const RICKMAN = pack(
     DEFAULT_ALERT_SOUNDS.questComplete,
     DEFAULT_ALERT_SOUNDS.buffWearsOff
   ],
-  'Alan Rickman'
+  'EQ Zera Console'
 )
 
 /** A third-party pack with its own derived ids in the same CESP categories. */
@@ -88,7 +88,7 @@ test('a fresh install has NO preference, and that is the whole of "unchanged"', 
   assert.deepEqual(normalizeSoundPackPrefs(null), {})
   assert.deepEqual(normalizeSoundPackPrefs({}), {})
   // …and an absent preference means the shipped pack everywhere it is read.
-  assert.equal(preferredPack([RICKMAN, TURRET], undefined, DEFAULT_ALERT_PACK_ID)?.id, RICKMAN.id)
+  assert.equal(preferredPack([SHIPPED, TURRET], undefined, DEFAULT_ALERT_PACK_ID)?.id, SHIPPED.id)
 })
 
 test('the stored blob is validated on the way out, never trusted', () => {
@@ -187,30 +187,30 @@ test('a derived soundId still says which category it came from', () => {
 })
 
 test('a working ref is never touched', () => {
-  const ref = { packId: RICKMAN.id, soundId: DEFAULT_ALERT_SOUNDS.bossDefeat }
-  assert.deepEqual(resolveSoundRef(ref, [RICKMAN, TURRET], FALLBACK), { ...ref, status: 'exact' })
+  const ref = { packId: SHIPPED.id, soundId: DEFAULT_ALERT_SOUNDS.bossDefeat }
+  assert.deepEqual(resolveSoundRef(ref, [SHIPPED, TURRET], FALLBACK), { ...ref, status: 'exact' })
 })
 
 test('a ref into a DELETED pack plays the default pack, keeping what the sound MEANT', () => {
-  // The reporter's own end state: Alan Rickman deleted, their pack made the default, and every
+  // The reporter's own end state: the shipped pack deleted, their pack made the default, and every
   // alert authored against the shipped pack still fires — with a completion line for a completion.
   const prefs = withDefaultPack({}, TURRET.id)
   const fallback: SoundFallback = { ...FALLBACK, defaultPackId: prefs.defaultPackId ?? '' }
   const r = resolveSoundRef(
-    { packId: RICKMAN.id, soundId: DEFAULT_ALERT_SOUNDS.bossDefeat }, // a task-complete line
+    { packId: SHIPPED.id, soundId: DEFAULT_ALERT_SOUNDS.bossDefeat }, // a task-complete line
     [TURRET],
     fallback
   )
   assert.equal(r.status, 'substituted')
   assert.equal(r.packId, TURRET.id)
   assert.equal(r.soundId, 'task-complete-turret-hello', 'a completion sting stays a completion')
-  assert.equal(r.askedPackId, RICKMAN.id, 'and it reports what was asked for, so a row can say so')
+  assert.equal(r.askedPackId, SHIPPED.id, 'and it reports what was asked for, so a row can say so')
 })
 
 test('the same pack, a missing sound: stay in the pack the user chose', () => {
   // A re-cut pack, or a custom sound the user removed. Jumping to another pack would be a bigger
   // change than the one that actually happened.
-  const r = resolveSoundRef({ packId: TURRET.id, soundId: 'task-error-gone' }, [TURRET, RICKMAN], FALLBACK)
+  const r = resolveSoundRef({ packId: TURRET.id, soundId: 'task-error-gone' }, [TURRET, SHIPPED], FALLBACK)
   assert.equal(r.status, 'substituted')
   assert.equal(r.packId, TURRET.id)
   assert.equal(r.soundId, 'task-error-turret-ow')
@@ -218,44 +218,44 @@ test('the same pack, a missing sound: stay in the pack the user chose', () => {
 
 test('no category to keep ⇒ the stated fallback line, never silence', () => {
   // The user's own imported audio has file-slug ids, so there is no intent to preserve. This is
-  // the case sounds.ts has always answered with "A moment of your time, if you'd be so kind."
-  const r = resolveSoundRef({ packId: 'my-sounds', soundId: 'fanfare' }, [RICKMAN], FALLBACK)
+  // the case sounds.ts has always answered with the shipped pack's stated fallback line.
+  const r = resolveSoundRef({ packId: 'my-sounds', soundId: 'fanfare' }, [SHIPPED], FALLBACK)
   assert.equal(r.status, 'substituted')
   assert.deepEqual(
     { packId: r.packId, soundId: r.soundId },
-    { packId: RICKMAN.id, soundId: DEFAULT_ALERT_SOUNDS.buffWearsOff }
+    { packId: SHIPPED.id, soundId: DEFAULT_ALERT_SOUNDS.buffWearsOff }
   )
 })
 
 test('nothing installed at all is REPORTED, not papered over', () => {
   // The one state the app cannot make audible — and the alert row says so rather than looking
   // like a working alert that happens never to fire.
-  const r = resolveSoundRef({ packId: RICKMAN.id, soundId: 'anything' }, [], FALLBACK)
+  const r = resolveSoundRef({ packId: SHIPPED.id, soundId: 'anything' }, [], FALLBACK)
   assert.equal(r.status, 'missing')
-  assert.deepEqual({ packId: r.packId, soundId: r.soundId }, { packId: RICKMAN.id, soundId: 'anything' })
+  assert.deepEqual({ packId: r.packId, soundId: r.soundId }, { packId: SHIPPED.id, soundId: 'anything' })
 })
 
 // ─── the two surfaces the ruling names ────────────────────────────────────────
 
 test('the picker pre-selects the preference, then the shipped pack, then anything', () => {
-  const packs = [RICKMAN, TURRET]
-  assert.equal(preferredPack(packs, TURRET.id, RICKMAN.id)?.id, TURRET.id, 'the preference wins')
+  const packs = [SHIPPED, TURRET]
+  assert.equal(preferredPack(packs, TURRET.id, SHIPPED.id)?.id, TURRET.id, 'the preference wins')
   // A preference naming a pack that is GONE does not strand the picker on nothing…
-  assert.equal(preferredPack(packs, 'uninstalled', RICKMAN.id)?.id, RICKMAN.id)
+  assert.equal(preferredPack(packs, 'uninstalled', SHIPPED.id)?.id, SHIPPED.id)
   // …and with the shipped pack deleted too, the picker still offers something real.
-  assert.equal(preferredPack([TURRET], 'uninstalled', RICKMAN.id)?.id, TURRET.id)
+  assert.equal(preferredPack([TURRET], 'uninstalled', SHIPPED.id)?.id, TURRET.id)
   // No packs at all is null, which every caller has an answer for.
-  assert.equal(preferredPack([], TURRET.id, RICKMAN.id), null)
+  assert.equal(preferredPack([], TURRET.id, SHIPPED.id), null)
 })
 
 test('seeded alerts are written with the default pack — and a fresh install is byte-identical', () => {
-  const shipped = { packId: RICKMAN.id, soundId: DEFAULT_ALERT_SOUNDS.charmBreak }
+  const shipped = { packId: SHIPPED.id, soundId: DEFAULT_ALERT_SOUNDS.charmBreak }
 
   // FRESH INSTALL, nothing provisioned yet: the identity function. This is the assertion that
   // makes "fresh installs unchanged" true rather than intended.
   assert.deepEqual(seedSoundRef(shipped, [], FALLBACK), shipped)
   // Shipped pack installed, no preference: still the identity function.
-  assert.deepEqual(seedSoundRef(shipped, [RICKMAN], FALLBACK), shipped)
+  assert.deepEqual(seedSoundRef(shipped, [SHIPPED], FALLBACK), shipped)
 
   // A user who set their own default and pressed "Reset to defaults" gets THEIR pack back — with
   // the charm-break line landing on the turret's input-required line, not on whatever sorts first.
@@ -266,5 +266,5 @@ test('seeded alerts are written with the default pack — and a fresh install is
   })
   // …and it does that even while the shipped pack is still installed, which is the bug: a seed
   // that resolved in the shipped pack used to be left there.
-  assert.deepEqual(seedSoundRef(shipped, [RICKMAN, TURRET], mine).packId, TURRET.id)
+  assert.deepEqual(seedSoundRef(shipped, [SHIPPED, TURRET], mine).packId, TURRET.id)
 })

@@ -47,7 +47,7 @@ import { redactMessage } from '../src/shared/errorReport'
 const TEST_ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 const read = (p: string): string => readFileSync(join(TEST_ROOT, p), 'utf8')
 
-const TARBALL = 'https://github.com/peonping/alan-rickman/archive/refs/tags/v1.0.1.tar.gz'
+const TARBALL = 'https://github.com/peonping/og-packs/archive/refs/tags/v1.0.1.tar.gz'
 
 /** EXACTLY what `httpGetBuffer` throws now — the sentence AND the property. */
 function statusError(status: number): Error {
@@ -187,12 +187,12 @@ test('the retry budget is bounded and backs off', () => {
 
 test('THE STORE ROW FINALLY SAYS WHY', () => {
   // The whole ticket, in one assertion pair: the old row said `install <str> failed` and stopped.
-  const line = packInstallFailureLine('alan-rickman', 3, 3, statusError(404))
-  assert.match(line, /^install 'alan-rickman' failed \(attempt 3\/3, http 404\): GET https:\/\//)
+  const line = packInstallFailureLine('portal-turret', 3, 3, statusError(404))
+  assert.match(line, /^install 'portal-turret' failed \(attempt 3\/3, http 404\): GET https:\/\//)
   assert.match(line, /→ 404$/)
   // Our own refusal names itself rather than a status it does not have.
   assert.match(
-    packInstallFailureLine('alan-rickman', 1, 3, new Error('pack has no openpeon.json')),
+    packInstallFailureLine('portal-turret', 1, 3, new Error('pack has no openpeon.json')),
     /\(attempt 1\/3, rejected\): pack has no openpeon\.json$/
   )
   // ONE bounded line, whatever the error carries — a stack must not become a paragraph in a row.
@@ -211,7 +211,7 @@ test('THE ROW READS THROUGH THE REAL REPORT PRODUCER', () => {
   resetPackInstallWarnings()
   const r = recorder()
   const err = statusError(404)
-  logPackInstallFailure({ pack: 'alan-rickman', attempt: 1, attempts: 3, final: true, err }, r)
+  logPackInstallFailure({ pack: 'portal-turret', attempt: 1, attempts: 3, final: true, err }, r)
   const fields = caughtFields(r.filed[0].payload)
   const message = redactMessage(fields.message)
   assert.match(message, /^install <str> failed \(attempt 1\/3, http 404\)/)
