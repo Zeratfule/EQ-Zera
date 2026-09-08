@@ -22,7 +22,10 @@ write('wordpress.css', wpcss)
 const pages = {}
 for (const f of fs.readdirSync(here).filter((f) => f.endsWith('-body.html'))) {
   const slug = f.replace(/-body\.html$/, '')
-  pages[slug] = '<!-- wp:html -->\n' + read(f) + '<!-- /wp:html -->\n'
+  const body = read(f)
+  // A body that already carries block comments (a form, a group) is block markup as-is;
+  // anything else is one Custom HTML block.
+  pages[slug] = body.includes('<!-- wp:') ? body : '<!-- wp:html -->\n' + body + '<!-- /wp:html -->\n'
   write(slug + '-blocks.html', pages[slug])
 }
 const previewCss = src.replace(/^@import[^\n]*\n/m, '')

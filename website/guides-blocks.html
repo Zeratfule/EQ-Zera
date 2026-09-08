@@ -1,0 +1,143 @@
+<!-- wp:html -->
+<div class="eqz-page">
+
+<header class="eqz-top">
+  <div class="eqz-wrap">
+    <a class="eqz-brand" href="https://eqzera.com/"><img src="https://raw.githubusercontent.com/Zeratfule/EQ-Zera/main/build/icon.png" alt="EQ Zera logo" width="28" height="28">EQ ZERA</a>
+    <nav class="eqz-nav">
+      <a href="https://eqzera.com/#features">What it does</a>
+      <a href="https://eqzera.com/guides/">Guides</a>
+      <a href="https://eqzera.com/contact/">Contact</a>
+      <a href="https://eqzera.com/#changelog">What's new</a>
+      <a href="https://github.com/Zeratfule/EQ-Zera">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<section class="eqz-section eqz-pagehead">
+  <div class="eqz-wrap eqz-narrow">
+    <p class="eqz-eyebrow">Guides</p>
+    <h1>Setting up and customising EQ Zera</h1>
+    <p class="eqz-lede">Short how-tos for the things people ask about most. Each one assumes EQ Zera is installed; if it is not, <a href="https://eqzera.com/#install">start here</a>.</p>
+    <nav class="eqz-toc" aria-label="Guides on this page">
+      <a href="#first-run">First run</a>
+      <a href="#overlays">Overlays over the game</a>
+      <a href="#alerts">Sound alerts and rules</a>
+      <a href="#quests">Quest tracker</a>
+      <a href="#loot">Loot, upgrades and farming</a>
+      <a href="#share">Sharing your setup</a>
+      <a href="#updates">Updates and versions</a>
+      <a href="#troubleshooting">Troubleshooting</a>
+    </nav>
+  </div>
+</section>
+
+<section class="eqz-section eqz-guide" id="first-run">
+  <div class="eqz-wrap eqz-narrow">
+    <h2>First run</h2>
+    <ol>
+      <li>In EverQuest Legends type <code>/log on</code>. The game starts writing a plain-text log for the character you are on. It keeps logging across sessions until you turn it off.</li>
+      <li>Start EQ Zera. It looks for the log folder in the default install location, usually <code>C:\Users\Public\Daybreak Game Company\Installed Games\EverQuest Legends\Logs</code>. If your game lives elsewhere, point it at the folder in Preferences.</li>
+      <li>Each log file is one character. Switch characters in the app and it re-reads that character's log; every view is per character.</li>
+      <li>Fight something. The Combat tab fills in with the fight, and the Overview shows your last session.</li>
+    </ol>
+    <p>A new install reads the whole existing log once, so a large log from months of play takes a moment the first time. After that it follows the file live.</p>
+  </div>
+</section>
+
+<section class="eqz-section eqz-guide" id="overlays">
+  <div class="eqz-wrap eqz-narrow">
+    <h2>Overlays over the game</h2>
+    <p>Overlays are small always-on-top windows: a damage or healing meter for the current fight or the whole zone, a farm meter with kills, XP, drops and coin per hour, buff timers, and the celebration overlay where quest, loot and update cards appear.</p>
+    <ol>
+      <li>Run the game in <b>windowed</b> or <b>borderless windowed</b> mode. Exclusive fullscreen cannot be overlaid by any program.</li>
+      <li>Open <b>Preferences → Overlays</b> and switch on the ones you want.</li>
+      <li>Drag an overlay where you want it. <b>Lock</b> it and it becomes click-through, so it never steals a click from the game.</li>
+      <li>Quest item pop-ups have their own switch in the same pane, with a filter for quests your classes can take and a choice of how long the same item waits before it pops again.</li>
+    </ol>
+  </div>
+</section>
+
+<section class="eqz-section eqz-guide" id="alerts">
+  <div class="eqz-wrap eqz-narrow">
+    <h2>Sound alerts and rules</h2>
+    <p>An alert plays a sound when something happens in the log: a charm break, a buff fading, a raid target dying, a wished item dropping, or any line you write a rule for.</p>
+    <ol>
+      <li>Open <b>Alerts</b>. The built-in alerts are listed with their sounds; switch them on or off and pick a sound for each.</li>
+      <li>To alert on your own text, add a rule with the phrase the log line contains. Test it by making the line happen in game.</li>
+      <li>Sounds come from packs. <b>Alerts → Sound packs…</b> lists the community packs you can install from inside the app. To add your own, drop a folder with your <code>.wav</code>, <code>.mp3</code> or <code>.ogg</code> files and a small <code>manifest.json</code> naming them into <code>%AppData%\everquest-companion\soundpacks\your-pack\</code>; it shows up in every sound picker.</li>
+      <li>Any alert, or all of them at once, copies to a short paste-safe string. Paste it in guild chat or Discord; whoever pastes it back in gets a preview before anything is added. Imports only ever add, never overwrite.</li>
+    </ol>
+  </div>
+</section>
+
+<section class="eqz-section eqz-guide" id="quests">
+  <div class="eqz-wrap eqz-narrow">
+    <h2>Quest tracker</h2>
+    <ol>
+      <li>Open the <b>Quests</b> tab and find the quest. Quest pages come from the EQ Legends wiki, with steps built from its walkthrough.</li>
+      <li>Press <b>Track</b>. The quest's steps become a checklist.</li>
+      <li>Play. Looting a required item lights its step, hailing the quest NPC ticks the hail step, and turning in the items ticks the hand-in steps. Turning in every required item completes the quest with a card on the celebration overlay and your quest-complete alert.</li>
+      <li>Loot an item any quest needs or hands out and a pop-up names the quest, its giver and start zone, with the step that needs the item lit. Click it to open the quest's page.</li>
+    </ol>
+    <p>Plane of Sky has its own tracker: every class's Test quests with have / need chips per item, item stats on hover, and sorting by closest to done.</p>
+  </div>
+</section>
+
+<section class="eqz-section eqz-guide" id="loot">
+  <div class="eqz-wrap eqz-narrow">
+    <h2>Loot, upgrades and farming</h2>
+    <ol>
+      <li>Fill in your gear under the <b>Build</b> tab, or let the Gear tab read it. That profile is what upgrades are measured against.</li>
+      <li>Open <b>Zone Loot</b>, pick a zone, and see every mob the wiki lists there and what each drops, beside how many you have looted yourself and your drops per hour. Drops that beat what you wear carry an <b>upgrade</b> chip; there is a switch to show upgrades only.</li>
+      <li>The Build tab lists where to farm your upgrades, zone by zone, with the mobs that drop them.</li>
+      <li>Wish-list an item from its page and you get an alert and a card when it drops for you, and when you enter a zone where it drops. Your own loot only: the log has no line for what other players loot.</li>
+      <li>The <b>Crafting</b> tab shows what you can make from what you hold, what you are one ingredient away from, and every recipe with what you are missing.</li>
+    </ol>
+  </div>
+</section>
+
+<section class="eqz-section eqz-guide" id="share">
+  <div class="eqz-wrap eqz-narrow">
+    <h2>Sharing your setup</h2>
+    <p>Your whole settings bundle exports as one string or a file: alerts, volume, overlay look, view preferences, favourites. It carries no file paths, no window positions and no character progress, so it is safe to hand to a guildmate. Importing it on another PC adds to what is there rather than replacing it.</p>
+    <p>Coming from EQ Legends Companion? Nothing to do. EQ Zera reads the same settings folder, so alerts, sound packs, overlay positions and character history are there on first launch.</p>
+  </div>
+</section>
+
+<section class="eqz-section eqz-guide" id="updates">
+  <div class="eqz-wrap eqz-narrow">
+    <h2>Updates and versions</h2>
+    <p>EQ Zera checks GitHub shortly after launch and every few hours after that. When a new build is out you get a card on the celebration overlay, a chip in the nav, and a line in <b>Preferences → Updates</b>. Click once to download, again to restart into it. Nothing downloads until you click; a downloaded build is applied the next time you close the app. Every download is verified against the SHA-512 in the release feed.</p>
+    <p>The <b>What's new</b> panel lists what changed in each release, including the ones you skipped. Preferences shows the version you are running; quote it in a bug report.</p>
+  </div>
+</section>
+
+<section class="eqz-section eqz-guide" id="troubleshooting">
+  <div class="eqz-wrap eqz-narrow">
+    <h2>Troubleshooting</h2>
+    <div class="eqz-faq">
+      <div><h3>Nothing shows up</h3><p>Check that logging is on (<code>/log on</code> in game, once per character) and that the log folder in Preferences is the one the game writes to. A character that has never logged has no file to read.</p></div>
+      <div><h3>Overlays are not visible over the game</h3><p>The game is in exclusive fullscreen. Switch to borderless windowed in the game's display options.</p></div>
+      <div><h3>Fights end after one second, or timers are wrong</h3><p>Fixed in 1.17.0: the engine could not learn your time zone on some machines and read every line as hours old. Update, and the performance panel shows which clock the engine is on.</p></div>
+      <div><h3>SmartScreen blocks the installer</h3><p>The build is not code-signed yet. Click More info, then Run anyway. The download is verified against its hash before installing.</p></div>
+      <div><h3>The update card never appears</h3><p>The check runs about 45 seconds after launch and then every four hours. Preferences → Updates has a manual check and shows the current state.</p></div>
+      <div><h3>Something else</h3><p>Send feedback from inside the app with a log slice, or <a href="https://eqzera.com/contact/">write in</a>.</p></div>
+    </div>
+  </div>
+</section>
+
+<footer class="eqz-foot">
+  <div class="eqz-wrap">
+    <p>EQ Zera is a community project and is not affiliated with Daybreak Game Company. EverQuest is a trademark of Daybreak Game Company LLC. Based on EverQuest Companion, copyright 2026 Josh Moyers, under the Functional Source License 1.1 (MIT future license).</p>
+    <nav>
+      <a href="https://github.com/Zeratfule/EQ-Zera">Source</a>
+      <a href="https://github.com/Zeratfule/EQ-Zera/issues">Report a bug</a>
+      <a href="https://github.com/Zeratfule/EQ-Zera/blob/main/SECURITY.md">Security</a>
+      <a href="https://github.com/Zeratfule/EQ-Zera/blob/main/LICENSE">License</a>
+    </nav>
+  </div>
+</footer>
+
+</div>
+<!-- /wp:html -->

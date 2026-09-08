@@ -168,6 +168,35 @@ html,body{background:#0c0a1f;margin:0}
 
 /* the full-bleed wrapper is exactly one viewport wide; keep the page from scrolling sideways by a scrollbar width */
 html:has(.eqz-page),body:has(.eqz-page){overflow-x:hidden}
+
+/* ---------------- inner pages (guides, contact) ---------------- */
+.eqz-narrow{max-width:820px}
+.eqz-pagehead{padding-bottom:40px}
+.eqz-pagehead h1{font-size:clamp(32px,5vw,52px);font-weight:700;margin-bottom:14px}
+.eqz-toc{display:flex;flex-wrap:wrap;gap:10px 14px;font-family:var(--eqz-mono);font-size:13px}
+.eqz-toc a{padding:6px 12px;border:1px solid var(--eqz-line);border-radius:999px;color:var(--eqz-ink-2)}
+.eqz-toc a:hover{border-color:var(--eqz-violet);text-decoration:none;color:var(--eqz-ink)}
+.eqz-guide{padding:48px 0}
+.eqz-guide h2{font-size:clamp(24px,3vw,32px);margin-bottom:16px}
+.eqz-guide p{color:var(--eqz-ink-2);font-size:17px;max-width:70ch}
+.eqz-guide p + p{margin-top:12px}
+.eqz-guide ol{margin:0 0 16px;padding-left:22px;color:var(--eqz-ink-2);font-size:17px;max-width:70ch}
+.eqz-guide li{margin:8px 0;padding-left:4px}
+.eqz-guide li::marker{color:var(--eqz-cyan);font-family:var(--eqz-mono);font-weight:600}
+.eqz-guide b{color:var(--eqz-ink);font-weight:600}
+.eqz-contact-ways{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;margin-top:8px}
+@media (max-width:720px){.eqz-contact-ways{grid-template-columns:1fr}}
+.eqz-contact-ways h3{font-size:16px;letter-spacing:.04em;text-transform:uppercase;color:var(--eqz-cyan);margin-bottom:6px}
+.eqz-contact-ways p{color:var(--eqz-ink-2);font-size:16px}
+/* the Jetpack form sits in its own group block between two HTML blocks */
+.eqz-formpage{padding:0 0 72px}
+.eqz-formpage .wp-block-jetpack-contact-form{max-width:820px;margin:0 auto;padding:0 24px;display:grid;gap:16px}
+.eqz-formpage .wp-block-jetpack-contact-form label,.eqz-formpage .jetpack-field-label__input{color:var(--eqz-ink-2)!important;font-family:var(--eqz-body);font-size:15px;font-weight:600;letter-spacing:.02em}
+.eqz-formpage .wp-block-jetpack-contact-form input:not([type=submit]),.eqz-formpage .wp-block-jetpack-contact-form textarea,.eqz-formpage .wp-block-jetpack-contact-form select{width:100%;background:var(--eqz-panel)!important;color:var(--eqz-ink)!important;border:1px solid var(--eqz-line)!important;border-radius:6px!important;padding:12px 14px!important;font-family:var(--eqz-body)!important;font-size:16px!important}
+.eqz-formpage .wp-block-jetpack-contact-form textarea{min-height:180px}
+.eqz-formpage .wp-block-jetpack-contact-form input:focus,.eqz-formpage .wp-block-jetpack-contact-form textarea:focus,.eqz-formpage .wp-block-jetpack-contact-form select:focus{outline:2px solid var(--eqz-cyan);outline-offset:2px}
+.eqz-formpage .wp-block-jetpack-contact-form .wp-block-button__link,.eqz-formpage .wp-block-jetpack-contact-form button[type=submit]{background:linear-gradient(135deg,var(--eqz-cyan),#8ab4ff 55%,var(--eqz-pink))!important;color:#0c0a1f!important;font-family:var(--eqz-display)!important;font-weight:700!important;font-size:17px!important;letter-spacing:.03em;padding:15px 26px!important;border-radius:6px!important;border:0!important;justify-self:start}
+.eqz-formpage .contact-form-submission,.eqz-formpage .form-errors{color:var(--eqz-ink);max-width:820px;margin:0 auto;padding:0 24px}
 </style>
 <div class="eqz-page">
 
@@ -177,9 +206,9 @@ html:has(.eqz-page),body:has(.eqz-page){overflow-x:hidden}
     <nav class="eqz-nav">
       <a href="#features">What it does</a>
       <a href="#install">Install</a>
-      <a href="#companion">From EQ Legends Companion</a>
+      <a href="https://eqzera.com/guides/">Guides</a>
       <a href="#faq">FAQ</a>
-      <a href="#changelog">What's new</a>
+      <a href="https://eqzera.com/contact/">Contact</a>
       <a href="https://github.com/Zeratfule/EQ-Zera">GitHub</a>
     </nav>
   </div>
