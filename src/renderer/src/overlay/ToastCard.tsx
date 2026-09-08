@@ -55,7 +55,7 @@ const MONO = '"Consolas","Courier New",monospace'
 
 /** What the chrome row prints. Short enough for the lane at any text scale, specific enough that
  *  a player who has never opened Preferences knows which program put it there. */
-const OVERLAY_LABEL = 'EQ Companion · celebration overlay'
+const OVERLAY_LABEL = 'EQ Zera · celebration overlay'
 
 /**
  * WHICH QUEST BLOCK SHOWS ITS STEPS — exactly one, and the rule is one line long (2026-09-08).

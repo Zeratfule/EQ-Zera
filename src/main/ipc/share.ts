@@ -31,7 +31,7 @@ export function registerShareIpc(): void {
     const opts = {
       title: 'Save share file',
       defaultPath: join(app.getPath('documents'), suggestedName || shareFileName('settings')),
-      filters: [{ name: 'EQ Companion share', extensions: ['eqshare', 'txt'] }]
+      filters: [{ name: 'EQ Zera share', extensions: ['eqshare', 'txt'] }]
     }
     const mainWindow = getMainWindow()
     const res = mainWindow
@@ -53,7 +53,7 @@ export function registerShareIpc(): void {
       title: 'Open a share file',
       properties: ['openFile' as const],
       filters: [
-        { name: 'EQ Companion share', extensions: ['eqshare', 'txt'] },
+        { name: 'EQ Zera share', extensions: ['eqshare', 'txt'] },
         { name: 'All files', extensions: ['*'] }
       ]
     }

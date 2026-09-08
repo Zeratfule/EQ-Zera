@@ -142,6 +142,16 @@ export const RELEASE_NOTES: readonly ReleaseNote[] = [
   // and before v1.19.0 was cut. The 1.17.0 and 1.18.0 entries below never shipped as tags of their
   // own; they are kept as the honest record of what arrived when, and the panel shows all three.
   {
+    version: '1.19.4',
+    date: '2026-09-08',
+    entries: [
+      {
+        kind: 'changed',
+        text: 'The app calls itself EQ Zera everywhere it speaks. The celebration overlay label, the share file picker and the engine start-up messages no longer say EQ Companion.'
+      }
+    ]
+  },
+  {
     version: '1.19.3',
     date: '2026-09-08',
     entries: [

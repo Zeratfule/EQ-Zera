@@ -330,7 +330,7 @@ export interface FailureWords {
  * describing a product that does not exist. This is the sentence that says so.
  */
 export const NO_ENGINE_CONSEQUENCE =
-  'Until it starts, EQ Companion cannot read your log at all - every panel will stay empty. ' +
+  'Until it starts, EQ Zera cannot read your log at all - every panel will stay empty. ' +
   'Your log file and your settings are untouched.'
 
 /**
@@ -344,7 +344,7 @@ export const NO_ENGINE_CONSEQUENCE =
  */
 const QUARANTINE_REMEDY =
   'Antivirus quarantine is the most common cause. Check your antivirus quarantine list and restore ' +
-  'EQ Companion, add it to your exclusions, then reinstall if it is still missing.'
+  'EQ Zera, add it to your exclusions, then reinstall if it is still missing.'
 
 /**
  * The card's prose for one fault. Exhaustive over `EngineFaultKind` by the TYPE, so a new class
@@ -355,14 +355,14 @@ export function failureWords(fault: EngineFaultSay): FailureWords {
   const tries = fault.attempts > 1 ? ` It has tried ${String(fault.attempts)} times.` : ''
   const words: Readonly<Record<EngineFaultKind, FailureWords>> = {
     'no-binary': {
-      headline: 'EQ Companion cannot find its data engine',
+      headline: 'EQ Zera cannot find its data engine',
       body:
         'The program that reads your log file is missing from this installation. It was not at any ' +
-        'of the places EQ Companion knows to look.',
+        'of the places EQ Zera knows to look.',
       remedy: QUARANTINE_REMEDY
     },
     'spawn-failed': {
-      headline: 'EQ Companion could not start its data engine',
+      headline: 'EQ Zera could not start its data engine',
       body: `Windows refused to launch the program that reads your log file.${tries}`,
       remedy: QUARANTINE_REMEDY
     },
@@ -376,9 +376,9 @@ export function failureWords(fault: EngineFaultSay): FailureWords {
     'bad-announce': {
       headline: 'The data engine is not the one this version expects',
       body:
-        'The program that reads your log file answered with something EQ Companion does not ' +
+        'The program that reads your log file answered with something EQ Zera does not ' +
         'recognise, which usually means a partial or damaged installation.',
-      remedy: 'Reinstalling EQ Companion replaces it.'
+      remedy: 'Reinstalling EQ Zera replaces it.'
     },
     unhealthy: {
       headline: 'The data engine stopped responding',
