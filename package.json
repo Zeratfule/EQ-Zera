@@ -48,12 +48,13 @@
     "gen:engine-spell-overlay": "tsx scripts/gen-engine-spell-overlay.mts",
     "typecheck:node": "tsc --noEmit -p tsconfig.node.json",
     "typecheck:web": "tsc --noEmit -p tsconfig.web.json",
-    "typecheck": "npm run typecheck:node && npm run typecheck:web",
+    "typecheck": "npm run typecheck:node && npm run typecheck:web && npm run typecheck:share",
     "build:engine": "tsx scripts/build-engine.mts",
     "dist": "npm run build && npm run build:engine && electron-builder --win",
     "dist:dir": "npm run build && npm run build:engine && electron-builder --win --dir",
     "share:dev": "wrangler dev --config share-server/wrangler.toml",
-    "share:deploy": "wrangler deploy --config share-server/wrangler.toml"
+    "share:deploy": "wrangler deploy --config share-server/wrangler.toml",
+    "typecheck:share": "tsc --noEmit -p share-server/tsconfig.json"
   },
   "dependencies": {
     "@emotion/react": "^11.13.3",
