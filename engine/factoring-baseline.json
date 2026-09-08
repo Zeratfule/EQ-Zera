@@ -1,5 +1,5 @@
 {
-  "$comment": "GENERATED debt register — engine factoring ratchet (JOS-523). IT ONLY SHRINKS.,Every entry is a file or function that breaks a bar TODAY. Fix one and the gate says so;,rerun `npm run check:rust-factoring -- --write` in the SAME commit to record the shrink.,Adding or widening an entry is the integrator call, made by hand. Never by re-running a tool. | Widened by hand 2026-09-08 (EQ Zera engine wave: hail/factionHit kinds, sold coins, five modules): a new event kind costs match arms in Kind/Key as_str/parse and one classifier step, which no split can absorb; every other file shrank or held.",
+  "$comment": "GENERATED debt register — engine factoring ratchet (JOS-523). IT ONLY SHRINKS.,Every entry is a file or function that breaks a bar TODAY. Fix one and the gate says so;,rerun `npm run check:rust-factoring -- --write` in the SAME commit to record the shrink.,Adding or widening an entry is the integrator call, made by hand. Never by re-running a tool. | Widened by hand 2026-09-08 (EQ Zera engine wave: hail/factionHit kinds, sold coins, five modules): a new event kind costs match arms in Kind/Key as_str/parse and one classifier step, which no split can absorb. Widened again the same day after the first rustfmt pass (CI runs cargo fmt --check): four file/function line counts grew by reflow alone, no code moved.",
   "bars": {
     "file-lines": 400,
     "function-lines": 100,
@@ -178,7 +178,7 @@
       "file": "crates/fold/src/lib.rs",
       "metric": "file-lines",
       "name": "",
-      "value": 1436
+      "value": 1443
     },
     {
       "file": "crates/fold/src/message_overlay.rs",
@@ -310,7 +310,7 @@
       "file": "crates/parity/src/main.rs",
       "metric": "file-lines",
       "name": "",
-      "value": 489
+      "value": 495
     },
     {
       "file": "crates/parity/src/main.rs",
@@ -346,13 +346,13 @@
       "file": "crates/zengine/src/ingest.rs",
       "metric": "file-lines",
       "name": "",
-      "value": 720
+      "value": 727
     },
     {
       "file": "crates/zengine/src/ingest.rs",
       "metric": "function-lines",
       "name": "run",
-      "value": 168
+      "value": 175
     },
     {
       "file": "crates/zengine/src/ops.rs",
