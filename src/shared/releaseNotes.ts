@@ -139,8 +139,9 @@ export const RELEASE_NOTES: readonly ReleaseNote[] = [
   // inherited line rather than restarting at 0.2.0: this list must ascend, and the comparison the
   // What's-new panel makes is by version, so a lower number here would read as ancient history.
   // The first tagged EQ Zera release (2026-09-08, evening): what changed after roadmap 2 landed
-  // and before v1.19.0 was cut. The 1.17.0 and 1.18.0 entries below never shipped as tags of their
-  // own; they are kept as the honest record of what arrived when, and the panel shows all three.
+  // and before v1.19.0 was cut. The 1.17.0, 1.18.0 and 1.19.4 entries below never shipped as tags of
+  // their own (1.19.4's build failed on a signing hook with no certificate behind it and
+  // 1.20.0 carries it); they are kept as the honest record of what arrived when.
   {
     version: '1.20.0',
     date: '2026-09-08',

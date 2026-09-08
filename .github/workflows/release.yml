@@ -171,16 +171,18 @@ jobs:
       # DRAFT (its default releaseType, kept on purpose — see the header). The
       # bridge step below verifies what actually landed and owns the flip live.
       #
-      # SIGNING IS PRE-WIRED (2026-09-08). The six AZURE_* secrets are passed through here;
-      # while they do not exist in the repo they resolve to empty strings, the sign hook
-      # self-skips on a blank AZURE_SIGNING_ENDPOINT, and the build is unsigned with no
-      # conditional anywhere. The day the Trusted Signing secrets are added (SETUP.md,
-      # "Getting a certificate") every release signs, with no workflow edit.
+      # SIGNING IS PRE-WIRED (2026-09-08) AND SWITCHED BY A REPOSITORY VARIABLE. The six
+      # AZURE_* secrets are passed through here, but the endpoint (the sign hook's only
+      # switch) is blanked unless the repo variable SIGNING_ENABLED is the string true.
+      # WHY THE EXTRA SWITCH: the secrets were stored before the certificate profile existed
+      # (identity validation takes days), and v1.19.4 failed on "signing failed for file"
+      # because the hook ran against a profile that was not there. Set SIGNING_ENABLED=true
+      # (gh variable set SIGNING_ENABLED --body true) the day the profile exists.
       - name: Build installer and publish (draft)
         shell: pwsh
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          AZURE_SIGNING_ENDPOINT: ${{ secrets.AZURE_SIGNING_ENDPOINT }}
+          AZURE_SIGNING_ENDPOINT: ${{ vars.SIGNING_ENABLED == 'true' && secrets.AZURE_SIGNING_ENDPOINT || '' }}
           AZURE_SIGNING_ACCOUNT: ${{ secrets.AZURE_SIGNING_ACCOUNT }}
           AZURE_SIGNING_PROFILE: ${{ secrets.AZURE_SIGNING_PROFILE }}
           AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
