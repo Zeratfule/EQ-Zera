@@ -19,7 +19,7 @@
 // shape matches the schema exactly, with no stray key a future sheet field could add — the same
 // argument `buildAlertSetBody` makes for re-sanitizing on export.
 
-import { SHARE_ERROR_TEXT, makeEnvelope } from '../shared/profiles'
+import { SHARE_ERROR_TEXT, makeEnvelope, type ShareValidation } from '../shared/profiles'
 import { sanitizeCharacterShare, type CharacterProfileShare } from '../shared/characterShare'
 import { decodeShareString, encodeShareString } from './shareCodec'
 
@@ -36,15 +36,17 @@ export function encodeCharacterShare(profile: unknown, appVersion: string): stri
 }
 
 /**
- * Decode a pasted string into a profile. NEVER throws and never surfaces a stack: every failure
- * comes back as the validator's own user-facing prose, which is what the paste box prints.
+ * A validated envelope → a profile this app may draw, or prose saying why not. The half of the
+ * decode that is about the ENVELOPE rather than about the string, split out (share links, 2026-09-08)
+ * so a profile fetched from the share service travels EXACTLY the same three checks a pasted one
+ * does — kind, sanitize, and the sentences either failure prints. Two copies of this would be two
+ * answers to "may this be drawn", and only one of them would get fixed.
  *
- * A string that decodes to some OTHER kind is refused in its own words rather than through the
- * generic 'unknown-kind' line, because the reader is holding a real share string and the useful
- * thing to say is where it belongs.
+ * A share that carries some OTHER kind is refused in its own words rather than through the generic
+ * 'unknown-kind' line, because the reader is holding a real share and the useful thing to say is
+ * where it belongs.
  */
-export function decodeCharacterShare(text: string): CharacterShareRead {
-  const decoded = decodeShareString(text)
+export function readCharacterEnvelope(decoded: ShareValidation): CharacterShareRead {
   if (!decoded.ok) return { ok: false, error: SHARE_ERROR_TEXT[decoded.error] }
   const env = decoded.envelope
   if (env.kind !== 'character') {
@@ -56,6 +58,14 @@ export function decodeCharacterShare(text: string): CharacterShareRead {
   const profile = sanitizeCharacterShare(env.body)
   if (!profile) return { ok: false, error: SHARE_ERROR_TEXT['empty-payload'] }
   return { ok: true, profile, appVersion: env.app, createdAt: env.at }
+}
+
+/**
+ * Decode a pasted string into a profile. NEVER throws and never surfaces a stack: every failure
+ * comes back as the validator's own user-facing prose, which is what the paste box prints.
+ */
+export function decodeCharacterShare(text: string): CharacterShareRead {
+  return readCharacterEnvelope(decodeShareString(text))
 }
 
 /** A suggested file name for the card image - dated, so a folder of shares self-sorts. */

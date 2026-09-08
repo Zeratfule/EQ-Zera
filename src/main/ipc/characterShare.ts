@@ -30,7 +30,16 @@ import { writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { IPC } from '../../shared/ipc'
 import { logError } from '../errorLog'
-import { decodeCharacterShare, encodeCharacterShare, shareImageName } from '../characterShare'
+import { decodeCharacterShare, encodeCharacterShare, shareImageName, type CharacterShareRead } from '../characterShare'
+import { fetchSharedProfile, parseShareLink, publishShare, revokeShare } from '../share/links'
+import {
+  deleteShareLink,
+  findShareLink,
+  findShareLinkById,
+  listShareLinkViews,
+  saveShareLink
+} from '../storeShareLinks'
+import type { ShareLinkOwner, ShareLinkRecord, ShareLinkView } from '../../shared/shareLinks'
 import { getMainWindow } from '../windows'
 
 /** The card's DOM rectangle, in CSS pixels, as the renderer measured it. */
@@ -110,18 +119,133 @@ async function saveImage(image: Electron.NativeImage, name: string): Promise<Sha
   }
 }
 
+/**
+ * Photograph the card the renderer measured, or null when there is nothing legal to capture.
+ * The ONE capture path: the link publisher below reuses it rather than growing a second opinion
+ * about how a renderer rectangle becomes device-independent pixels.
+ */
+async function captureCard(rect: unknown): Promise<Electron.NativeImage | null> {
+  const window = getMainWindow()
+  if (!window) return null
+  const [width, height] = window.getContentSize()
+  const box = captureRect(rect, window.webContents.getZoomFactor(), { width, height })
+  if (!box) return null
+  const image = await window.webContents.capturePage(box)
+  return image.isEmpty() ? null : image
+}
+
 /** Capture the card, then do the one thing that was asked of it. */
 async function shareImage(req: unknown): Promise<ShareImageResult> {
   const window = getMainWindow()
   if (!window) return { ok: false, error: 'There is no window to capture.' }
   const request = (req && typeof req === 'object' ? req : {}) as Partial<ShareImageRequest>
   const op = request.op === 'save' ? 'save' : 'copy'
-  const [width, height] = window.getContentSize()
-  const rect = captureRect(request.rect, window.webContents.getZoomFactor(), { width, height })
-  if (!rect) return { ok: false, error: 'The card is not on screen.' }
-  const image = await window.webContents.capturePage(rect)
+  const image = await captureCard(request.rect)
+  if (!image) return { ok: false, error: 'The card is not on screen.' }
   if (op === 'copy') return copyImage(image)
   return saveImage(image, typeof request.name === 'string' ? request.name : '')
+}
+
+// ---------------------------------------------------------------------------
+// SHARE LINKS (docs/plans/share-links.md)
+// ---------------------------------------------------------------------------
+// The delete token stops here. It is written into main's own store and read back out of it; the
+// three replies below carry a url, a boolean and a redacted list, and nothing else.
+//
+// THE CARD IS OPTIONAL, THE PROFILE IS NOT. A capture that produced nothing (the dialog scrolled
+// away, a window that is not there) publishes the profile without an image rather than refusing:
+// the link's page still renders the whole card from the body, and the picture is what Discord
+// unfurls. A profile that does not sanitize IS a refusal - there would be nothing to serve.
+
+/** What the renderer asks for when it presses Copy link. */
+interface ShareLinkRequest {
+  rect: unknown
+  profile: unknown
+}
+
+/** What `character:shareLink` answers. `updated` is "the same URL now shows the new card". */
+export type ShareLinkResult =
+  | { ok: true; url: string; updated: boolean }
+  | { ok: false; error: string }
+
+/** Who a profile is about, as the two fields the record is keyed by. Untrusted, so bounded. */
+function ownerOf(profile: unknown): ShareLinkOwner {
+  const p = (profile && typeof profile === 'object' ? profile : {}) as Record<string, unknown>
+  const name = typeof p.name === 'string' ? p.name : undefined
+  const classes = Array.isArray(p.classes) ? p.classes.filter((c): c is string => typeof c === 'string') : []
+  return { ...(name === undefined ? {} : { name }), classes }
+}
+
+/** The level the card printed, when the profile carried one. */
+function levelOf(profile: unknown): number | undefined {
+  const p = (profile && typeof profile === 'object' ? profile : {}) as Record<string, unknown>
+  return typeof p.level === 'number' && Number.isFinite(p.level) ? Math.floor(p.level) : undefined
+}
+
+/** Write down what a successful publish produced. Its own function so `shareLink` stays simple. */
+function recordLink(
+  published: { id: string; url: string; updated: boolean; deleteToken?: string },
+  profile: unknown,
+  existing: ShareLinkRecord | undefined
+): void {
+  const owner = ownerOf(profile)
+  const level = levelOf(profile)
+  const now = Date.now()
+  saveShareLink({
+    id: published.id,
+    url: published.url,
+    // A PUT keeps the token we already hold; only a create is ever handed a new one, so one of
+    // the two is always present on a success and the empty fallback is unreachable by
+    // construction (an unsanitizable record is simply not written).
+    deleteToken: published.deleteToken ?? existing?.deleteToken ?? '',
+    ...(owner.name === undefined ? {} : { name: owner.name }),
+    ...(level === undefined ? {} : { level }),
+    classes: [...owner.classes],
+    createdAt: published.updated ? (existing?.createdAt ?? now) : now,
+    updatedAt: now
+  })
+}
+
+/** Publish, then record what came back. Never throws; every failure is a sentence. */
+async function shareLink(req: unknown): Promise<ShareLinkResult> {
+  const request = (req && typeof req === 'object' ? req : {}) as Partial<ShareLinkRequest>
+  const existing = findShareLink(ownerOf(request.profile))
+  const image = await captureCard(request.rect)
+  const published = await publishShare(
+    {
+      profile: request.profile,
+      card: image ? image.toPNG() : null,
+      appVersion: app.getVersion(),
+      existing: existing ? { id: existing.id, deleteToken: existing.deleteToken } : undefined
+    },
+    { fetch: globalThis.fetch }
+  )
+  if (!published.ok) return published
+  recordLink(published, request.profile, existing)
+  return { ok: true, url: published.url, updated: published.updated }
+}
+
+/** Revoke, then forget. A revoke that failed leaves the record alone - the link still serves. */
+async function shareRevoke(req: unknown): Promise<{ ok: boolean; error?: string }> {
+  const id = (req && typeof req === 'object' ? (req as Record<string, unknown>).id : undefined)
+  const rec = typeof id === 'string' ? findShareLinkById(id) : undefined
+  // Nothing stored for that id means there is nothing serving it either, as far as this install
+  // knows - which is the state the user asked for.
+  if (!rec) return { ok: true }
+  const res = await revokeShare(rec.id, rec.deleteToken, { fetch: globalThis.fetch })
+  if (!res.ok) return res
+  deleteShareLink(rec.id)
+  return { ok: true }
+}
+
+/**
+ * Read a pasted string OR a share link. The link is tried FIRST because the two are unambiguous
+ * (a link parses as a URL on our own origin; an `EQC1-` string does not parse as one at all), and
+ * because a reader holding a link should not have to know which box it belongs in.
+ */
+async function readShare(text: string): Promise<CharacterShareRead> {
+  if (parseShareLink(text) !== null) return fetchSharedProfile(text, { fetch: globalThis.fetch })
+  return decodeCharacterShare(text)
 }
 
 export function registerCharacterShareIpc(): void {
@@ -129,7 +253,7 @@ export function registerCharacterShareIpc(): void {
     encodeCharacterShare(profile, app.getVersion())
   )
   ipcMain.handle(IPC.characterShareRead, (_e, text: unknown) =>
-    decodeCharacterShare(typeof text === 'string' ? text : '')
+    readShare(typeof text === 'string' ? text : '')
   )
   ipcMain.handle(IPC.characterShareImage, async (_e, req: unknown) => {
     try {
@@ -138,5 +262,25 @@ export function registerCharacterShareIpc(): void {
       logError('main:characterShareImage', err)
       return { ok: false, error: 'The card could not be captured.' } satisfies ShareImageResult
     }
+  })
+  ipcMain.handle(IPC.characterShareLink, async (_e, req: unknown) => {
+    try {
+      return await shareLink(req)
+    } catch (err) {
+      logError('main:characterShareLink', err)
+      return { ok: false, error: 'The link could not be created.' } satisfies ShareLinkResult
+    }
+  })
+  ipcMain.handle(IPC.characterShareRevoke, async (_e, req: unknown) => {
+    try {
+      return await shareRevoke(req)
+    } catch (err) {
+      logError('main:characterShareLink', err)
+      return { ok: false, error: 'That link could not be revoked.' }
+    }
+  })
+  ipcMain.handle(IPC.characterShareLinks, (_e, who: unknown): ShareLinkView[] => {
+    const owner = who && typeof who === 'object' ? ownerOf(who) : undefined
+    return listShareLinkViews(owner)
   })
 }

@@ -20,6 +20,7 @@ import type { BuffTrustPrefs } from '../shared/buffTrust'
 import type { BuffAllowPrefs } from '../shared/buffAllow'
 import type { RespawnPrefs } from '../shared/respawn'
 import type { SoundPackPrefs } from '../shared/soundPacks'
+import type { ShareLinkRecord } from '../shared/shareLinks'
 import type { WindowBounds } from './store'
 
 /**
@@ -294,4 +295,20 @@ export interface StoreShape {
    * importing a friend's answer to that is not a setting anyone wanted.
    */
   uiScale?: number
+  /**
+   * The share links this install has published (docs/plans/share-links.md), one record per
+   * character, each carrying the PRIVATE DELETE TOKEN the service returned once at creation.
+   * That token is the only thing that can stop a link serving (ruling 4), which is why it is
+   * persisted at all — and it is also why it never crosses the IPC boundary: the renderer is
+   * handed the list with the tokens stripped (src/main/storeShareLinks.ts).
+   *
+   * ADDITIVE + OPTIONAL ⇒ no schema bump, no migration — the `respawn` / `lastSeenNotesVersion`
+   * precedent above. Absent reads as "this install has published nothing", which is exactly the
+   * state every store written before this key existed was in, so an upgrade changes nothing for
+   * anybody; a store written here still opens in a build that predates the feature.
+   *
+   * NOT part of a shared settings profile (src/main/share.ts): these are one person's links and
+   * one person's revocation tokens, and there is nothing in them another install could want.
+   */
+  shareLinks?: ShareLinkRecord[]
 }
