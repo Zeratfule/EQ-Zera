@@ -302,6 +302,26 @@ jobs:
           if ($LASTEXITCODE -ne 0) { throw "publishing the release failed" }
           Write-Host "published $tag with main.yml bridged"
 
+      # STRAY DRAFTS (measured on v1.19.0). electron-builder's publisher can finish an upload
+      # AFTER the step above flipped its draft live; the late upload no longer finds a draft
+      # for the tag and creates a second one, so the release page showed "1.19.0 Draft" beside
+      # "1.19.0 Latest" with two orphaned assets. Drafts are never served to the updater, so
+      # this is clutter, not a feed problem - but it is clutter on every release. Wait out the
+      # late uploads, then delete every draft that names this tag. The live release is never a
+      # draft by now, so it can never match.
+      - name: Remove stray drafts for this tag
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          $tag = $env:GITHUB_REF_NAME
+          Start-Sleep -Seconds 90
+          $ids = gh api "repos/$env:GITHUB_REPOSITORY/releases" --jq ".[] | select(.draft == true and .tag_name == \"$tag\") | .id"
+          foreach ($id in ($ids -split "`n" | Where-Object { $_ -match '^d+$' })) {
+            gh api -X DELETE "repos/$env:GITHUB_REPOSITORY/releases/$id"
+            Write-Host "deleted stray draft $id for $tag"
+          }
+
       - name: Upload installer artifact (CI record)
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4 (v4.6.2)
         with:
