@@ -10,10 +10,10 @@ Site `jackthom88-nhsqp.wordpress.com`, WordPress.com site id 257242643, domain e
 | `home-body.html` | The home page markup. Source of truth for the copy. Every `*-body.html` is one page. |
 | `additional.css` | The stylesheet as authored (CSS custom properties). Used by the preview. |
 | `fonts.css` | The latin `@font-face` blocks from Google Fonts, pasted into the generated CSS. |
-| `build.mjs` | `node build.mjs` writes `wordpress.css`, `*-blocks.html`, `preview.html` and `dist/payload.json`. |
+| `build.mjs` | `node build.mjs` writes `wordpress.css`, `*-blocks.html`, `preview.html` and `payload.json`. |
 | `wordpress.css` | Generated. Literal colours and `@font-face` blocks, because WordPress.com's CSS sanitizer strips custom properties, `@import` and `backdrop-filter`. This is what lives in the site's Additional CSS. |
 | `*-blocks.html` | Generated. A page wrapped in a Custom HTML block, ready to paste into the page's Code editor. |
-| `dist/payload.json` | Generated. `{css, pages}` for the push snippet below. |
+| `payload.json` | Generated. `{css, pages}` for the push snippet below. |
 | `../site/assets/og.png` | The 1200x630 social card (featured image of the home page). |
 
 ## Where it lives in WordPress
@@ -34,7 +34,7 @@ with the REST API from a logged-in wp-admin tab, which is faster and safer than 
 2. In a wp-admin tab (any page under `/wp-admin/`), run in the console:
 
 ```js
-const {css, pages} = await (await fetch('https://raw.githubusercontent.com/Zeratfule/EQ-Zera/main/website/dist/payload.json?t=' + Date.now())).json();
+const {css, pages} = await (await fetch('https://raw.githubusercontent.com/Zeratfule/EQ-Zera/main/website/payload.json?t=' + Date.now())).json();
 const gs = await wp.apiFetch({path: '/wp/v2/global-styles/2?context=edit'});
 gs.styles.css = (gs.styles.css || '').replace(/\/\* EQ Zera[\s\S]*$/, '').trim() + '\n\n' + css;
 await wp.apiFetch({path: '/wp/v2/global-styles/2', method: 'POST', data: {styles: gs.styles}});

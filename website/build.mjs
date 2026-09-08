@@ -1,6 +1,6 @@
 // Build the WordPress.com deliverables from the source files in this folder.
 //   node build.mjs
-// Outputs: wordpress.css (sanitizer-safe), <page>-blocks.html, preview.html, dist/payload.json
+// Outputs: wordpress.css (sanitizer-safe), <page>-blocks.html, preview.html, payload.json
 // (what a wp-admin tab fetches and pushes through wp.apiFetch; see README.md).
 import fs from 'node:fs'
 import path from 'node:path'
@@ -27,5 +27,5 @@ for (const f of fs.readdirSync(here).filter((f) => f.endsWith('-body.html'))) {
 }
 const previewCss = src.replace(/^@import[^\n]*\n/m, '')
 write('preview.html', '<title>EQ Zera</title>\n<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&family=Source+Sans+3:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;600&display=swap">\n<style>\nhtml,body{background:#0c0a1f;margin:0}\n' + previewCss + '</style>\n' + read('home-body.html'))
-write('dist/payload.json', JSON.stringify({ css: wpcss, pages }))
+write('payload.json', JSON.stringify({ css: wpcss, pages }))
 console.log('built', Object.keys(pages).join(', '), '| css', wpcss.length, 'bytes')
