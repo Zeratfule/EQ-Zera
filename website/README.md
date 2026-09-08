@@ -34,11 +34,14 @@ with the REST API from a logged-in wp-admin tab, which is faster and safer than 
 2. In a wp-admin tab (any page under `/wp-admin/`), run in the console:
 
 ```js
-const {css, pages} = await (await fetch('https://raw.githubusercontent.com/Zeratfule/EQ-Zera/main/website/payload.json?t=' + Date.now())).json();
+// The GitHub contents API is never stale; raw.githubusercontent.com caches for minutes.
+const meta = await (await fetch("https://api.github.com/repos/Zeratfule/EQ-Zera/contents/website/payload.json?ref=main")).json();
+const {css, pages} = JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(meta.content.replace(/
+/g, "")), c => c.charCodeAt(0))));
 const gs = await wp.apiFetch({path: '/wp/v2/global-styles/2?context=edit'});
 gs.styles.css = (gs.styles.css || '').replace(/\/\* EQ Zera[\s\S]*$/, '').trim() + '\n\n' + css;
 await wp.apiFetch({path: '/wp/v2/global-styles/2', method: 'POST', data: {styles: gs.styles}});
-await wp.apiFetch({path: '/wp/v2/pages/5', method: 'POST', data: {content: pages.home}});
+await wp.apiFetch({path: "/wp/v2/pages/5", method: "POST", data: {content: pages.home}});   // guides = 18, contact = 19
 ```
 
 ## Per release
