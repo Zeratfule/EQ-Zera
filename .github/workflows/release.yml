@@ -317,7 +317,7 @@ jobs:
           $tag = $env:GITHUB_REF_NAME
           Start-Sleep -Seconds 90
           $ids = gh api "repos/$env:GITHUB_REPOSITORY/releases" --jq ".[] | select(.draft == true and .tag_name == \"$tag\") | .id"
-          foreach ($id in ($ids -split "`n" | Where-Object { $_ -match '^d+$' })) {
+          foreach ($id in ($ids -split "`n" | Where-Object { $_ -match '^\d+$' })) {
             gh api -X DELETE "repos/$env:GITHUB_REPOSITORY/releases/$id"
             Write-Host "deleted stray draft $id for $tag"
           }
