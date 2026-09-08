@@ -316,7 +316,11 @@ jobs:
         run: |
           $tag = $env:GITHUB_REF_NAME
           Start-Sleep -Seconds 90
-          $ids = gh api "repos/$env:GITHUB_REPOSITORY/releases" --jq ".[] | select(.draft == true and .tag_name == \"$tag\") | .id"
+          # Single-quoted pieces around the tag: a `\"` inside a PowerShell double-quoted string is
+          # not an escape, and the first attempt handed gh two arguments ("accepts 1 arg(s)").
+          $filter = '.[] | select(.draft == true and .tag_name == "' + $tag + '") | .id'
+          $ids = gh api "repos/$env:GITHUB_REPOSITORY/releases" --jq $filter
+          if ($LASTEXITCODE -ne 0) { throw "listing releases failed" }
           foreach ($id in ($ids -split "`n" | Where-Object { $_ -match '^\d+$' })) {
             gh api -X DELETE "repos/$env:GITHUB_REPOSITORY/releases/$id"
             Write-Host "deleted stray draft $id for $tag"
