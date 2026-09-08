@@ -234,11 +234,22 @@ jobs:
           gh release upload $tag $exe "$exe.blockmap" $feed --clobber
           if ($LASTEXITCODE -ne 0) { throw "upload of installer/blockmap/latest.yml failed" }
 
+          # THE STABLE-NAME COPY (2026-09-08, eqzera.com). The website Download
+          # button is a plain link and cannot know the version, so it points at
+          # releases/latest/download/eq-zera-Setup.exe - a name that only resolves
+          # if every release carries an asset called exactly that. Same bytes as
+          # the versioned installer; the updater never reads it (latest.yml names
+          # the versioned file), so it is a download convenience and nothing more.
+          Copy-Item $exe eq-zera-Setup.exe
+          gh release upload $tag eq-zera-Setup.exe --clobber
+          if ($LASTEXITCODE -ne 0) { throw "upload of eq-zera-Setup.exe failed" }
+
           $assets = (gh release view $tag --json assets --jq '.assets[].name') -split "`n" |
             ForEach-Object { $_.Trim() } | Where-Object { $_ }
           $required = @(
             "eq-zera-Setup-$ver.exe",
             "eq-zera-Setup-$ver.exe.blockmap",
+            "eq-zera-Setup.exe",
             "latest.yml",
             "main.yml"
           )
