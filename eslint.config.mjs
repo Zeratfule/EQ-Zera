@@ -291,6 +291,7 @@ export default tseslint.config(
       'src/main/**',
       'src/preload/**',
       'scripts/**',
+      'website/*.mjs',
       'tests/**',
       '*.{ts,mts,mjs,cjs,js}',
     ],
@@ -353,9 +354,9 @@ export default tseslint.config(
 
   // ---- carve-out: scripts ------------------------------------------------
   {
-    files: ['scripts/**'],
+    files: ['scripts/**', 'website/*.mjs'],
     rules: {
-      // Scrapers report progress to a human watching a 15-minute crawl.
+      // Scrapers (and the website build) report progress to a human watching a crawl.
       'no-console': 'off',
     },
   },
