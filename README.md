@@ -1,5 +1,7 @@
 # EQ Zera
 
+**Website and download:** [eqzera.com](https://eqzera.com)
+
 A Windows desktop companion for **EverQuest Legends**. It reads the log file the game already
 writes and turns it into live views: a DPS meter, floating overlays, Plane of Sky quest tracking,
 loot and item knowledge, XP/AA progress, raid-target history, buff timers, and sound alerts.
