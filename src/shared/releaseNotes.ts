@@ -142,6 +142,26 @@ export const RELEASE_NOTES: readonly ReleaseNote[] = [
   // and before v1.19.0 was cut. The 1.17.0 and 1.18.0 entries below never shipped as tags of their
   // own; they are kept as the honest record of what arrived when, and the panel shows all three.
   {
+    version: '1.19.1',
+    date: '2026-09-08',
+    entries: [
+      {
+        kind: 'fixed',
+        text: 'Character models are no longer stretched or contorted. Every race that borrows the human idle animation was being rebuilt at human limb lengths under its own skin; it now keeps its own proportions and takes only the motion. Ogres, trolls and the female models are correct.',
+        fromReport: true
+      },
+      {
+        kind: 'fixed',
+        text: 'Female Iksar stands and idles instead of holding the spread-eagle pose; her archive has no human idle to borrow, so she uses the Iksar male one. The ground ring now sits under the feet for every race.',
+        fromReport: true
+      },
+      {
+        kind: 'new',
+        text: 'A Rotate switch on the character model card holds the figure still; drag and zoom keep working.'
+      }
+    ]
+  },
+  {
     version: '1.19.0',
     date: '2026-09-08',
     entries: [

@@ -38,11 +38,17 @@ const SEX_FEMALE = '[data-testid="character-model-sex-F"]'
 const SEX = '[data-testid="character-model-sex"]'
 const FACE = '[data-testid="character-model-face-picker"]'
 const FACE_OPTION = '[data-testid="character-model-face-option"]'
+/** The turntable switch, beside the helm and ornament ones (owner, 1.19.1). */
+const ROTATE = '[data-testid="character-model-rotate"] input'
+const ROTATE_KEY = 'eq.character.rotate'
 
 /** The three keys the picks land in. The face is per actor code, so a human pick cannot dress a dwarf. */
 const RACE_KEY = 'eq.character.race'
 const SEX_KEY = 'eq.character.sex'
 const FACE_KEY_DWF = 'eq.character.face.DWF'
+
+/** The gear area's first tab, to leave the Character tab by - it UNMOUNTS on the way out. */
+const TAB_GEAR_SEL = '[data-testid="tab-gear"]'
 
 /** The staged dump, so the card has a real sheet under it (the same fixture the sheet spec uses). */
 const DUMP = 'Primitive_freeport-Inventory.txt'
@@ -139,6 +145,34 @@ async function stepFaces(page: Page): Promise<void> {
   check('choosing a face is remembered against that actor alone', face === '4', `stored ${String(face)}`)
 }
 
+// ── the turntable switch ───────────────────────────────────────────────────────────────────
+//
+// The figure turns on its own; the owner asked to be able to stop it. This is a PREFERENCE on a
+// tab that unmounts, so the assertion that matters is the one after a remount (JOS-90/97/116).
+
+async function stepRotate(page: Page): Promise<void> {
+  if (!check('the model card has a Rotate switch', (await countOf(page, ROTATE)) === 1)) return
+  const on = await page.isChecked(ROTATE)
+  check('…and it is ON for a reader who has never touched it, so an upgrade stops nobody’s figure', on)
+  check('…with nothing written until they do', (await stored(page, ROTATE_KEY)) === null)
+
+  await page.click(ROTATE, { timeout: 15_000 })
+  const off = await settle(() => stored(page, ROTATE_KEY), (v) => v === '0', { timeoutMs: 8_000 })
+  check('turning it off is remembered', off === '0', `stored ${String(off)}`)
+  check('…and the switch shows it', (await page.isChecked(ROTATE)) === false)
+
+  // AWAY AND BACK. A `useState` would pass every line above and lose the answer here.
+  await page.click(TAB_GEAR_SEL, { timeout: 15_000 })
+  await page.waitForSelector('[data-testid="gear-view"]', { timeout: 30_000 })
+  await page.click(TAB_CHARACTER, { timeout: 15_000 })
+  await page.waitForSelector(MODEL, { timeout: 30_000 })
+  check('…and it is still off after the tab has unmounted and come back', (await page.isChecked(ROTATE)) === false)
+
+  await page.click(ROTATE, { timeout: 15_000 })
+  const back = await settle(() => stored(page, ROTATE_KEY), (v) => v === '1', { timeoutMs: 8_000 })
+  check('turning it back on is remembered too', back === '1', `stored ${String(back)}`)
+}
+
 async function main(): Promise<void> {
   buildIfStale()
 
@@ -161,6 +195,7 @@ async function main(): Promise<void> {
       await stepControls(page)
       await stepPicks(page)
       await stepFaces(page)
+      await stepRotate(page)
     } else {
       note('the model card never mounted - every claim below it is unmeasured, not passing')
     }

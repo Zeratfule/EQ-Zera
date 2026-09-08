@@ -271,10 +271,88 @@ test('the Iksar read out of global4_chr.s3d, faces and all, and their detail pie
   assert.equal(headTextures(bare).length, 7, 'the Iksar female binds seven face-0 pieces')
   const faced = readCharacter(wld, 'IKF', { wear: { face: 3 }, has: pfs.has })!
   assert.deepEqual(headTextures(faced), ['ikfhe0003.bmp', 'ikfhe0004.bmp', 'ikfhe0005.bmp', 'ikfhe0006.bmp', 'ikfhe0007.bmp', 'ikfhe0031.bmp', 'ikfhe0032.bmp'], 'pieces 1 and 2 move to face 3; the five that exist at face 0 alone stay')
-  // The idle: the Iksar male carries his own P01, the female carries none and no human fallback
-  // lives in this archive - so she is a STILL figure rather than no figure at all.
+  // The idle: the Iksar male carries his own P01. The female carries none, and no human lives in
+  // this archive at all - the borrow order's second step (the same race's other sex) is what stops
+  // her standing in her bind pose, and it is pinned in its own test below.
   const male = readAnimation(wld, 'IKM', readCharacter(wld, 'IKM')!.skeleton, 'P01')
   assert.ok(male && male.frames > 1, 'IKM has an idle of its own')
   assert.equal(male.name, 'P01', 'and it is not borrowed')
-  assert.equal(readAnimation(wld, 'IKF', bare.skeleton, 'P01'), null, 'IKF has none, and the payload carries no clip rather than no model')
+  assert.equal(readAnimation(wld, 'IKF', bare.skeleton, 'Z99'), null, 'an animation nobody in this archive has is still null')
+})
+
+// ---- the idle, and the rigs it is borrowed onto (EQ Zera, 1.19.1) -----------------------------
+//
+// 1.19.0 shipped the borrow copying the source clip's per-bone TRANSLATIONS - that rig's own limb
+// lengths - onto whatever skeleton asked for it, and the owner got back "stretched and contorted
+// bodies" on every rig unlike a human male, plus an Iksar female "stuck in spread eagle" because
+// her archive holds no human to borrow from at all. Both halves are pinned here.
+
+const ALL_CODES = Object.keys(RACE_CODES).flatMap((r) => [`${r}M`, `${r}F`])
+
+test('every classic actor gets an idle, and a BORROWED one keeps the target rig’s own proportions', { skip: SKIP }, () => {
+  const { wld } = races()
+  for (const code of ALL_CODES) {
+    const model = readCharacter(wld, code)!
+    const clip = readAnimation(wld, code, model.skeleton, 'P01')
+    assert.ok(clip, `${code}: has an idle`)
+    assert.ok(Object.keys(clip.tracks).length > 10, `${code}: most bones are animated`)
+    for (const [index, track] of Object.entries(clip.tracks)) {
+      const bone = model.skeleton.bones[Number(index)]
+      // MATCHED BY NAME, NEVER BY INDEX: the track this bone got must be the one named after it.
+      const short = boneShortName(bone.name, code)
+      const source = clip.name === 'P01' ? code : null
+      if (source) assert.ok(wld.byName.has(`P01${source}${short}_TRACKDEF`), `${code}: ${bone.name} took its own track`)
+      assert.equal(track.q.length / 4, track.t.length / 3, `${code}: ${bone.name} frame counts agree`)
+      if (clip.name === 'P01') continue
+      // A BORROWED track carries the TARGET bone’s own bind offset, every frame - never the
+      // source rig’s. This is the whole of the 1.19.0 fix: a pose is rotations.
+      for (let f = 0; f < track.t.length / 3; f++) {
+        assert.deepEqual(track.t.slice(f * 3, f * 3 + 3), bone.local.t, `${code}: ${bone.name} keeps its own bind offset in a borrowed clip`)
+      }
+    }
+  }
+})
+
+test('the borrow order is own, then the same race’s other sex, then human - so the Iksar female moves', { skip: SKIP4 }, () => {
+  const { wld } = iksar()
+  const male = readCharacter(wld, 'IKM')!
+  const female = readCharacter(wld, 'IKF')!
+  assert.equal(readAnimation(wld, 'IKM', male.skeleton, 'P01')?.name, 'P01', 'IKM has its own idle')
+  const borrowed = readAnimation(wld, 'IKF', female.skeleton, 'P01')
+  assert.ok(borrowed, 'IKF borrows rather than standing in her bind pose - global4 carries no human at all')
+  assert.equal(borrowed.name, 'P01*', 'and the clip says it is borrowed')
+  assert.ok(Object.keys(borrowed.tracks).length > 30, `most of her bones move (${String(Object.keys(borrowed.tracks).length)} of ${String(female.bones.length)})`)
+  for (const [index, track] of Object.entries(borrowed.tracks)) {
+    const bone = female.skeleton.bones[Number(index)]
+    assert.ok(bone, `track ${index} names a real IKF bone`)
+    assert.ok(wld.byName.has(`P01IKM${boneShortName(bone.name, 'IKF')}_TRACKDEF`), `${bone.name} took IKM's track of the same name`)
+    assert.deepEqual(track.t.slice(0, 3), bone.local.t, `${bone.name}: her own bind offset, not his`)
+  }
+})
+
+/** Every bitmap a model's DRAWN groups name, mesh by mesh. */
+function drawnTextures(model: CharacterModel): string[] {
+  return model.meshes.flatMap((m) => m.groups.map((g) => m.materials[g.materialIndex]?.texture ?? ''))
+}
+
+test('no drawn material anywhere references a bitmap the archive does not have', { skip: SKIP }, () => {
+  const { pfs, wld } = races()
+  const WEARS = [{}, { ch: 3, ua: 3, fa: 3, hn: 3, lg: 3, ft: 3, helm: 1 } as const]
+  const cases = ALL_CODES.flatMap((code) => WEARS.map((wear) => ({ code, wear })))
+  for (const { code, wear } of cases) {
+    const model = readCharacter(wld, code, { wear, has: pfs.has })!
+    for (const tex of drawnTextures(model)) {
+      if (tex) assert.ok(pfs.has(tex), `${code}: a drawn material names ${tex}, which is not in the archive`)
+    }
+  }
+})
+
+test('an EMPTY wear changes not one texture - the guard against a dressing regression', { skip: SKIP }, () => {
+  const { pfs, wld } = races()
+  for (const code of ALL_CODES) {
+    const shipped = readCharacter(wld, code)!
+    const dressedInNothing = readCharacter(wld, code, { wear: {}, has: pfs.has })!
+    assert.deepEqual(headTextures(dressedInNothing), headTextures(shipped), `${code}: head`)
+    assert.deepEqual(drawnTextures(dressedInNothing), drawnTextures(shipped), `${code}: every drawn material, in order`)
+  }
 })

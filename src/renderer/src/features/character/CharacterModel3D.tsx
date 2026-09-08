@@ -264,8 +264,14 @@ interface CameraView {
   target: THREE.Vector3
 }
 
-export function CharacterModel3D({ model }: { model: EqModelPayload }): JSX.Element {
+export function CharacterModel3D({ model, spin }: { model: EqModelPayload; spin: boolean }): JSX.Element {
   const host = useRef<HTMLDivElement>(null)
+  // THE TURNTABLE IS A REF, NOT A DEPENDENCY (owner, "a toggle to stop the model rotating"). The
+  // effect below builds and disposes a whole WebGL scene; re-running it to answer a switch would
+  // throw the figure away and rebuild it, and the reader's orbit with it. The frame loop reads the
+  // ref instead, so OFF simply stops adding to the angle - the model holds exactly where it is and
+  // drag and zoom keep working, because those are OrbitControls' and never this line's.
+  const spinning = useRef(spin)
   // THE CAMERA SURVIVES A SCENE REBUILD (EQ Zera, item preview). Every wear or hands change is a
   // NEW payload, so this whole effect tears the scene down and builds another - and until now that
   // threw the reader's orbit away with it, which is what made previewing an item feel like the tab
@@ -274,6 +280,10 @@ export function CharacterModel3D({ model }: { model: EqModelPayload }): JSX.Elem
   // camera a pixel. It is a ref rather than a module value on purpose - leaving the tab entirely is
   // a fresh look at the character, and that is worth re-framing for.
   const lastView = useRef<CameraView | null>(null)
+
+  useEffect(() => {
+    spinning.current = spin
+  }, [spin])
 
   useEffect(() => {
     const el = host.current
@@ -297,9 +307,17 @@ export function CharacterModel3D({ model }: { model: EqModelPayload }): JSX.Elem
     const built = buildFigure(model)
     const figure = built.group
     scene.add(figure)
-    // Frame it on the bind pose: centre the bounds, camera back by the height.
+    // FRAME AND STAND IT ON THE POSE IT ACTUALLY PLAYS, not on the pose it is stored in. The bind
+    // pose is a T shape and every idle stands shorter and narrower than it, so measuring the bind
+    // bounds put the ring at a bottom the figure never reaches - which is why animated figures
+    // hovered above their own ring. TWO THINGS ARE NEEDED and neither is optional: `mixer.update(0)`
+    // applies frame 0 before anything is measured, and the box is taken PRECISELY, because a Box3
+    // over a SkinnedMesh reads the geometry's BIND vertices unless it is asked to walk each one
+    // through the skin (three's `getVertexPosition`). A figure with no clip has nothing to apply
+    // and measures its bind pose, which for it IS the pose it plays.
+    built.mixer?.update(0)
     figure.updateMatrixWorld(true)
-    const box = new THREE.Box3().setFromObject(figure)
+    const box = new THREE.Box3().setFromObject(figure, true)
     const size = box.getSize(new THREE.Vector3())
     const centre = box.getCenter(new THREE.Vector3())
     figure.position.sub(centre)
@@ -335,7 +353,7 @@ export function CharacterModel3D({ model }: { model: EqModelPayload }): JSX.Elem
       built.mixer?.update(dt)
       advanceFlipbooks(built.flipbooks, clock.elapsedTime * 1000)
       advanceTurning(built.turning, clock.elapsedTime, dt)
-      figure.rotation.z += 0.003
+      if (spinning.current) figure.rotation.z += 0.003
       controls.update()
       renderer.render(scene, camera)
       raf = requestAnimationFrame(tick)

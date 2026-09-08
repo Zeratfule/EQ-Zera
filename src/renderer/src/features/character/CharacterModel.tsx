@@ -27,6 +27,8 @@ import { actorCode } from './modelPrefs'
 
 const HELM_KEY = 'eq.character.showHelm'
 const ORNAMENT_KEY = 'eq.character.ornaments'
+/** The turntable. Absent reads as ON, so an upgrade stops nobody's figure turning. */
+const ROTATE_KEY = 'eq.character.rotate'
 
 function readFlag(key: string, fallback: boolean): boolean {
   try {
@@ -155,7 +157,7 @@ function Figure({ looks, previewSlot }: { looks: Map<ModelSlotId, SlotLook>; pre
  * it. Changing race or sex changes the actor and re-frames the figure, which is the right answer
  * for a different body.
  */
-function ModelOrDoll({ looks, previewSlot }: { looks: Map<ModelSlotId, SlotLook>; previewSlot?: ModelSlotId }): JSX.Element {
+function ModelOrDoll({ looks, previewSlot, spin }: { looks: Map<ModelSlotId, SlotLook>; previewSlot?: ModelSlotId; spin: boolean }): JSX.Element {
   const prefs = useModelPrefs()
   const worn = useMemo(() => wearFromLooks(looks), [looks])
   const wear = useMemo(() => (prefs.face === undefined ? worn : { ...worn, face: prefs.face }), [worn, prefs.face])
@@ -163,7 +165,7 @@ function ModelOrDoll({ looks, previewSlot }: { looks: Map<ModelSlotId, SlotLook>
   const { model, ready } = useEqModel(actorCode(prefs.race, prefs.sex), wear, hands)
   return (
     <>
-      {model ? <CharacterModel3D model={model} /> : ready ? <Figure looks={looks} previewSlot={previewSlot} /> : <Box sx={{ height: 340 }} />}
+      {model ? <CharacterModel3D model={model} spin={spin} /> : ready ? <Figure looks={looks} previewSlot={previewSlot} /> : <Box sx={{ height: 340 }} />}
       <ModelPickers prefs={prefs} faces={model?.faces} defaultFace={model?.defaultFace} />
       {ready && !model && (
         <Typography variant="caption" color="text.disabled" sx={{ display: 'block', mt: 0.5 }}>
@@ -189,6 +191,7 @@ export default function CharacterModel({
 }): JSX.Element {
   const [showHelm, setShowHelm] = useState(() => readFlag(HELM_KEY, true))
   const [showOrnaments, setShowOrnaments] = useState(() => readFlag(ORNAMENT_KEY, true))
+  const [rotate, setRotate] = useState(() => readFlag(ROTATE_KEY, true))
   const opts: ModelOptions = useMemo(() => ({ showHelm, showOrnaments }), [showHelm, showOrnaments])
   const shown = useMemo(() => applyPreview(cells, preview), [cells, preview])
   const looks = useMemo(() => modelLooks(shown, opts), [shown, opts])
@@ -205,7 +208,7 @@ export default function CharacterModel({
       <Typography variant="caption" className="eq-display-label eq-card-rule" sx={{ display: 'block', color: 'text.secondary', pb: 0.5, mb: 0.75 }}>
         Your character
       </Typography>
-      <ModelOrDoll looks={looks} previewSlot={preview?.slot} />
+      <ModelOrDoll looks={looks} previewSlot={preview?.slot} spin={rotate} />
       <Stack spacing={0} sx={{ mt: 0.5 }}>
         <FormControlLabel
           control={<Switch size="small" checked={showHelm} onChange={(e) => { setShowHelm(e.target.checked); writeFlag(HELM_KEY, e.target.checked) }} data-testid="character-model-helm" />}
@@ -214,6 +217,10 @@ export default function CharacterModel({
         <FormControlLabel
           control={<Switch size="small" checked={showOrnaments} onChange={(e) => { setShowOrnaments(e.target.checked); writeFlag(ORNAMENT_KEY, e.target.checked) }} data-testid="character-model-ornaments" />}
           label={<Typography variant="caption">Show ornamentations{ornamentCount > 0 ? ` · ${String(ornamentCount)} worn` : ''}</Typography>}
+        />
+        <FormControlLabel
+          control={<Switch size="small" checked={rotate} onChange={(e) => { setRotate(e.target.checked); writeFlag(ROTATE_KEY, e.target.checked) }} data-testid="character-model-rotate" />}
+          label={<Typography variant="caption">Rotate</Typography>}
         />
       </Stack>
       <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 0.5 }}>
