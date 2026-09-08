@@ -29,6 +29,8 @@ import {
   OVERLAY_MIN_SIZE,
   STRIP_KINDS,
   defaultOverlayBounds,
+  fitsHeightToContent,
+  fittedOverlayHeight,
   overlayDefaultSize,
   scaledStripBounds,
   stripLayoutBounds,
@@ -312,17 +314,51 @@ test('200% doubles a strip and keeps its MIDDLE where it was — the top edge ho
   assert.ok(Math.abs(midLayout - midWindow) <= 1, `grew off-centre (${midLayout} vs ${midWindow})`)
 })
 
-test('…and the con card is the one whose HEIGHT is not the scale’s to touch', () => {
+test('…and a FIT kind’s height is not the scale’s to touch — only the banner’s is', () => {
   const layout = centredLayout(530, 220)
   assert.equal(
     scaledStripBounds('conCard', layout, 2, STRIP_WA).height,
     220,
     'the card measures its own height (JOS-386); scaling the placeholder would be a second opinion'
   )
-  // The toast and the banner have no such measurement, so both of their axes scale.
+  // THE TOAST JOINED IT ON 2026-09-08 ("the bottom of the bubble appears cut off"): its window is
+  // now its card stack's, so the stored 360 is a first-open placeholder the scale must leave alone
+  // — the WIDTH still doubles, and the card measured inside that wider window is what moves the
+  // height (overlay/ToastOverlay.tsx).
   const toast = scaledStripBounds('toast', centredLayout(560, 360), 1.5, STRIP_WA)
-  assert.equal(toast.width, 840)
-  assert.equal(toast.height, 540)
+  assert.equal(toast.width, 840, 'the lane still scales with the text')
+  assert.equal(toast.height, 360, 'the height is the stack’s, measured in the renderer')
+  // The banner has no such measurement, so both of its axes scale.
+  const banner = scaledStripBounds('alertBanner', centredLayout(720, 260), 1.5, STRIP_WA)
+  assert.equal(banner.width, 1080)
+  assert.equal(banner.height, 390)
+})
+
+/**
+ * THE TWO FIT KINDS, AND THE CEILING THEY SHARE (JOS-386, and the toast since 2026-09-08).
+ *
+ * `fittedOverlayHeight` is the whole policy behind "the window is the card": the renderer measures
+ * what it drew and this decides what that request becomes. Three clamps, and each one is a
+ * different promise — the floor every kind shares, the room below THIS window's own top edge (the
+ * top never moves, so a card too tall for the space under it shrinks), and 70% of the work area, so
+ * that a notification stack can never become the screen.
+ */
+test('a fitted window is the card, the room below it, and never more than 70% of the display', () => {
+  assert.equal(fitsHeightToContent('conCard'), true)
+  assert.equal(fitsHeightToContent('toast'), true, 'the toast fits its stack since 2026-09-08')
+  assert.equal(fitsHeightToContent('alertBanner'), false)
+  assert.equal(fitsHeightToContent('fight'), false, 'a panel is the user’s to size')
+
+  const wa = STRIP_WA // 1920x1040 at the origin
+  // An ordinary quest-item card near the top: taken as asked.
+  assert.equal(fittedOverlayHeight(432, wa.y + 12, wa), 432)
+  // A stack that asks for the whole screen gets 70% of it, not the screen.
+  assert.equal(fittedOverlayHeight(5000, wa.y + 12, wa), Math.round(wa.height * 0.7))
+  // …and low down, the room below the top edge is the tighter of the two and wins.
+  assert.equal(fittedOverlayHeight(5000, wa.y + 900, wa), 140)
+  // Below the shared floor is not a request for a sliver.
+  assert.equal(fittedOverlayHeight(10, wa.y + 12, wa), OVERLAY_MIN_SIZE.height)
+  assert.equal(fittedOverlayHeight(Number.NaN, wa.y + 12, wa), OVERLAY_MIN_SIZE.height)
 })
 
 test('a strip scaled wider than the screen becomes the screen, on-screen', () => {

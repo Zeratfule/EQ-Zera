@@ -25,6 +25,13 @@
  * transform/opacity; what is checked here is that the card, its title and — for a Sky
  * completion — its reward block with the item's name are actually rendered.
  *
+ * AND SINCE 2026-09-08 IT MEASURES THE WINDOW AROUND THEM. The owner's 1.19.2 report was that a
+ * quest-item popup "doesn't look like a complete bubble. The bottom of the bubble appears cut off":
+ * the lane was a fixed 560x360 and that card is taller. The two steps that close that loop —
+ * the renderer measures its stack, main resizes the real window, and every card's bottom edge is
+ * asserted to be inside it at 100% and at 200% text — are tests/e2e/toastFitSteps.mts, run LAST
+ * because they own the lane.
+ *
  * WHERE THE DEEP LINKS WENT (JOS-330). The two steps that follow a card's CLICK — the level-up
  * link's landing on the "New at this level" panel, and the same level asked for twice — live in
  * tests/e2e/toastDeepLinkSteps.mts, with the geometry instruments they need. The split is the
@@ -51,8 +58,12 @@ import { launchOnFixture } from './logFixture.mjs'
 // THE STRIP SCALES WITH ITS TEXT (JOS-406). The toast, the alert banner and the con card are the
 // three overlays whose WINDOW IS THE CARD, so the one step is shared between their three specs
 // rather than written out three times — its header carries the whole argument.
-import { stepStripBgSlider, stepStripScalesWithText } from './stripScaleSteps.mjs'
+import { setOverlayTextScale, stepStripBgSlider, stepStripScalesWithText } from './stripScaleSteps.mjs'
 import { DING_LEVEL, stepDeepLinkRoundtrip, stepRepeatDeepLink } from './toastDeepLinkSteps.mjs'
+// …AND THE WINDOW IS THE CARDS (2026-09-08). The two steps that measure the celebration window's
+// HEIGHT against what it drew live next door, with the quest-item card they need — the same
+// 400-code-line split that put the deep links in their own file.
+import { stepFitAtDoubleText, stepWindowFitsItsCards } from './toastFitSteps.mjs'
 
 /** A Sky reward that exists in the committed item DB, so the card resolves with NO network. */
 const REWARD = 'Shining Metallic Robes'
@@ -454,6 +465,17 @@ async function main(): Promise<void> {
       await stepLevelUpToast(page, t)
       // Three cards are standing in the lane at this point, which is the state worth measuring AND
       // worth photographing: at 200% the strip has to be the same lane, twice the size.
+      //
+      // MEASURE FROM A WINDOW MAIN HAS PLACED, NOT ONE THE OS ROUNDED (conCardScaleSteps.mts's
+      // finding, 2026-09-08). That step doubles the width it reads and compares the product against
+      // what `scaledStripBounds` -> `setBounds` answers, so its baseline has to have been through
+      // that same door: on a fractionally scaled display (225% here) a window that has only ever
+      // been CONSTRUCTED — or, since the toast's height became its content's, nudged a DIP or two by
+      // a `setBounds` that only meant to change the height — reads a few pixels off the layout box,
+      // and doubling that asks for a rectangle nothing was ever told to make. Re-asserting the scale
+      // it is already at re-places it (`refitStripsForTextScale` runs on every write, not only on a
+      // change), which is the state the reading below is taken in.
+      await setOverlayTextScale(t, 1)
       await stepStripScalesWithText(app, t, 'toast', 'celebration toast')
       // …and the drag frame's OTHER new knob (JOS-407): this kind's transparency, which until now
       // was a 0.72 nobody could reach.
@@ -468,6 +490,10 @@ async function main(): Promise<void> {
       } else {
         note('no character logs on this machine — the deep-link roundtrips need a mounted feature view, so they are skipped')
       }
+      // LAST, because these two own the lane: they empty it, refill it with the cards whose height
+      // is the claim, and empty it again. Everything above wants the stack it built left alone.
+      await stepWindowFitsItsCards(app, page, t)
+      await stepFitAtDoubleText(app, t)
     }
 
     check('no renderer console errors', consoleErrors.length === 0, consoleErrors.slice(0, 3).join(' | '))

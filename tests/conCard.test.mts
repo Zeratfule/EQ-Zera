@@ -87,10 +87,13 @@ test('a display too short to seat the strip at its gap still opens it on screen'
 
 // ---- the window fits the card (JOS-386) --------------------------------------------------
 
-test('the con card is the kind whose HEIGHT is the content’s, and the meters are not', () => {
-  assert.deepEqual(FIT_HEIGHT_KINDS, ['conCard'])
+test('the con card and the toast are the kinds whose HEIGHT is the content’s, and the meters are not', () => {
+  // The toast joined 2026-09-08: a quest-item card was taller than the fixed lane and drew clipped
+  // (owner report), so the celebration window follows its card stack the way the con card does.
+  assert.deepEqual([...FIT_HEIGHT_KINDS].sort(), ['conCard', 'toast'])
   assert.equal(fitsHeightToContent('conCard'), true)
-  for (const kind of ['toast', 'alertBanner', 'fight', 'events'] as const) {
+  assert.equal(fitsHeightToContent('toast'), true)
+  for (const kind of ['alertBanner', 'fight', 'events'] as const) {
     assert.equal(fitsHeightToContent(kind), false, `${kind} owns its own height`)
   }
 })

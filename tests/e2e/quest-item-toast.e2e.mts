@@ -3,7 +3,9 @@
  *
  * THE CLAIM. A live loot line naming an item the committed quest catalog knows produces a
  * celebration card that says what the drop is FOR: the quest(s) that want it, a window of their
- * steps, and the step naming the item lit. Every pure half is pinned elsewhere — the item→quest
+ * steps, and the step naming the item lit. Since 2026-09-08 exactly ONE of those blocks prints its
+ * steps — the one naming the drop — and the rest are their header line plus a "+N steps" count;
+ * the card was three walkthroughs deep, which is what made the bubble taller than its own window. Every pure half is pinned elsewhere — the item→quest
  * index in tests/questCatalog.test.mts, the card's cut (window, caps, `before`/`after`, `litStep`)
  * in the toastQuest tests. What no unit test can claim is that THE PIECES ARE WIRED: a line
  * arriving in a tailed log crosses the engine's live fold, the renderer's detector, main's
@@ -79,6 +81,12 @@ function cardTexts(page: Page): Promise<string[]> {
   )
 }
 
+/**
+ * `TOAST_MAX_QUEST_STEPS` (src/shared/toast.ts), 6 until 2026-09-08. Spelled out rather than
+ * imported: an e2e file loads no `src` module (tests/e2e/overlayMinSizeSteps.mts states the rule).
+ */
+const MAX_STEPS = 4
+
 /** What the quest-item card says, plus the block a reader would click. */
 interface CardSnap {
   text: string
@@ -86,6 +94,12 @@ interface CardSnap {
   quests: number
   steps: number
   lit: string[]
+  /** the names of the blocks that print their steps — exactly one, since 2026-09-08 */
+  open: string[]
+  /** …and of the ones collapsed to their header line, which must still NAME their quest */
+  shut: string[]
+  /** the "+N steps" note each collapsed block carries in place of its steps */
+  notes: string[]
   clicked: { name: string; page: string } | null
 }
 
@@ -117,6 +131,15 @@ function readAndClick(page: Page): Promise<CardSnap | null> {
       steps: card.querySelectorAll('[data-testid="toast-quest-step"]').length,
       lit: [...card.querySelectorAll('[data-testid="toast-quest-step"][data-lit="true"]')].map((s) =>
         (s as HTMLElement).innerText.replace(/\s+/g, ' ').trim()
+      ),
+      open: blocks
+        .filter((b) => b.getAttribute('data-open') === 'true')
+        .map((b) => (b.querySelector('[data-testid="toast-quest-name"]') as HTMLElement | null)?.innerText.trim() ?? ''),
+      shut: blocks
+        .filter((b) => b.getAttribute('data-open') !== 'true')
+        .map((b) => (b.querySelector('[data-testid="toast-quest-name"]') as HTMLElement | null)?.innerText.trim() ?? ''),
+      notes: [...card.querySelectorAll('[data-testid="toast-quest-steps-note"]')].map((n) =>
+        (n as HTMLElement).innerText.trim()
       ),
       clicked: first
         ? { name: nameEl ? nameEl.innerText.replace(/\s+/g, ' ').trim() : '', page: first.getAttribute('data-page') ?? '' }
@@ -191,7 +214,52 @@ async function stepLiveDrop(toast: Page, log: FixtureLog): Promise<CardSnap | nu
     s.lit.some((t) => t.toLowerCase().includes(ITEM.toLowerCase())),
     s.lit.join(' | ') || 'no lit step'
   )
+  checkNotificationShape(s)
   return s
+}
+
+/**
+ * A CARD, NOT A WALKTHROUGH (2026-09-08).
+ *
+ * Bone Chips is a turn-in for twenty-one quests, so this card carries the full three
+ * (TOAST_MAX_QUESTS) — and until this change all three printed six steps apiece, which is eighteen
+ * rows of somebody else's quest in a notification and is how the owner met a bubble taller than its
+ * own window. Exactly one block prints its steps now: the one naming the drop (which the lit-step
+ * assertion above already proves is the open one, since a collapsed block prints no steps to light).
+ * The others are still NAMED and still linked, with a count standing in for what they are not
+ * printing.
+ */
+function checkNotificationShape(s: CardSnap): void {
+  check(
+    '…and exactly ONE of the card’s quest blocks prints its steps',
+    s.open.length === 1,
+    `open: ${s.open.join(' | ') || 'none'} of ${String(s.quests)} block(s)`
+  )
+  check(
+    `…at most ${String(MAX_STEPS)} of them, whatever the quest’s length (TOAST_MAX_QUEST_STEPS)`,
+    s.steps <= MAX_STEPS,
+    `${String(s.steps)} step row(s)`
+  )
+  // The collapse only has something to say when there IS a second block. A machine whose loadout
+  // narrowed the card to one quest is a correct card, not a regression.
+  if (s.quests < 2) {
+    note('one quest block on this card — the collapse rule needs a second one to say anything')
+    return
+  }
+  check(
+    '…while every OTHER quest that wants the item is still NAMED on its header line',
+    s.shut.length === s.quests - 1 && s.shut.every((n) => n.length > 0),
+    `${String(s.shut.length)} collapsed: ${s.shut.join(' | ') || 'none'}`
+  )
+  // …and saying how many steps it is not printing. NOT one note per collapsed block: the catalog
+  // holds a handful of hub pages with no steps at all (`Bone Chips Quests` is one), and a block
+  // with nothing to count prints nothing rather than "+0 steps" (law 1). What is pinned is that a
+  // note appears, and that every note that appears is a count.
+  check(
+    '…and a collapsed block says how many steps it is not printing, rather than pretending it has none',
+    s.notes.length >= 1 && s.notes.length <= s.quests - 1 && s.notes.every((t) => /^\+\d+ steps?$/.test(t)),
+    `${String(s.notes.length)} note(s) for ${String(s.quests - 1)} collapsed: ${s.notes.join(' | ') || 'none'}`
+  )
 }
 
 /**

@@ -94,6 +94,19 @@ export const OVERLAY_MIN_SIZE: Size = { width: 140, height: 90 }
  * bigger/more prominent" (owner). The card's type scaled with it (overlay/ToastCard.tsx), so the
  * lane and its contents still fit exactly. PERSISTED BOUNDS STILL WIN — a user who has already
  * dragged or resized the strip keeps their geometry, and only sees the larger type.
+ *
+ * AND SINCE 2026-09-08 THE HEIGHT IS ONLY THE FIRST-OPEN SIZE. The toast joined the con card in
+ * `FIT_HEIGHT_KINDS` below on an owner report against 1.19.2: "the overlay pop ups when quest
+ * items drop and what not doesn't look like a complete bubble. The bottom of the bubble appears
+ * cut off." A boss or level card fits inside 360; a quest-item card (chrome row, title, subtitle,
+ * the item card and up to three quest blocks) does not, and a fixed lane can only CLIP what it
+ * cannot hold. So 360 is now what the window wears between construction and its renderer's first
+ * measurement, exactly as 220 is for the con card — after that the height is the stack's
+ * (`fittedOverlayHeight`), and this number is also what `storedOverlayBounds` writes down in place
+ * of whatever height a tall card left the window wearing.
+ *
+ * THE WIDTH IS UNCHANGED AND STILL A CHOICE: 560 is the card lane, and nothing about the fit
+ * touches it. Only the height moves.
  */
 const TOAST_SIZE: Size = { width: 560, height: 360 }
 /** Gap from the top of the work area to the first card. */
@@ -146,7 +159,11 @@ const BANNER_SIZE: Size = { width: 720, height: 260 }
  *
  * IT SITS AT THE TOP, IN THE CELEBRATION STRIP'S BAND (owner ruling, 2026-08-16). It used to start
  * BELOW that band (`TOAST_TOP + TOAST_SIZE.height + 12`, ~384 px down) so that two kinds which both
- * ship ON could never open in the same pixels. That was a real concern and the owner has overruled
+ * ship ON could never open in the same pixels. THAT BAND IS COMPUTED FROM THE TOAST'S FIRST-OPEN
+ * SIZE ON PURPOSE, and stayed so when the toast's height became its content's (2026-09-08): a band
+ * derived from a height that changes with every card would move under a window the user has already
+ * placed, and this arithmetic is dead code anyway — the ruling below is what actually places the
+ * card, and the note survives only to say what was traded away. That was a real concern and the owner has overruled
  * it for a better one: 384 px down is over the character, which is the one place a card you read
  * before a pull must not be. Both strips are TRANSIENT and both are closable, so a celebration
  * arriving in the same band as a con card is an overlap the owner accepts; nothing about this
@@ -193,8 +210,10 @@ export function overlayDefaultSize(kind: OverlayKind, workArea?: Bounds): Size {
  * The con card is the third answer to "may this window be resized", and the three are worth reading
  * together (the block beside `resizable:` in windows.ts holds the other two):
  *
- *   toast       — neither. A fixed-width card lane; everything around the card is transparent, so
- *                 resizing would only change how much invisible nothing surrounds it.
+ *   toast       — neither, as a window the USER may drag: a fixed-width card lane whose surround is
+ *                 transparent, so dragging an edge would only change how much invisible nothing
+ *                 sits around the card. Its HEIGHT is nonetheless the stack's, since 2026-09-08 —
+ *                 see the list below.
  *   alertBanner — both. Its lines are sentences that WRAP, so width decides whether a raid call
  *                 reads in one glance, and height decides how many lines survive.
  *   conCard     — MOVE and WIDTH. The card is a fixed set of rows (identity, the resist chips it
@@ -206,13 +225,33 @@ export function overlayDefaultSize(kind: OverlayKind, workArea?: Bounds): Size {
  * A list rather than a `kind === 'conCard'`, because the alert banner is the obvious next candidate
  * if the owner ever decides its wrapped height should follow its lines too — and because a caller
  * that must not fit a meter should be able to ASK rather than remember.
+ *
+ * AND THE TOAST IS THE SECOND ENTRY (2026-09-08), which is exactly what the list was written for.
+ * The owner's report against 1.19.2: "the overlay pop ups when quest items drop and what not
+ * doesn't look like a complete bubble. The bottom of the bubble appears cut off." A quest-item card
+ * is a chrome row, a title, a subtitle, the item card and up to three quest blocks; that is taller
+ * than 560x360 and a fixed lane can only CLIP what will not fit. A boss or a level card fits, which
+ * is why nobody saw it before. The mechanism is the con card's, unchanged and shared: the renderer
+ * measures the card stack (overlay/ToastOverlay.tsx), `fitOverlayHeight` clamps it here, and only
+ * the HEIGHT moves — the width and the position are still the user's, and still persisted.
  */
-export const FIT_HEIGHT_KINDS: OverlayKind[] = ['conCard']
+export const FIT_HEIGHT_KINDS: OverlayKind[] = ['conCard', 'toast']
 
 /** Is this a kind whose window height follows what it renders? */
 export function fitsHeightToContent(kind: OverlayKind): boolean {
   return FIT_HEIGHT_KINDS.includes(kind)
 }
+
+/**
+ * THE MOST OF THE WORK AREA A FITTED WINDOW MAY EVER BE, as a fraction of its height.
+ *
+ * Seventy per cent, and the number is a promise rather than a measurement: a card whose window has
+ * eaten the display is not a notification any more, whatever it has to say. The two other clamps
+ * are geometric (the shared floor, and the room below this window's own top edge); this one is the
+ * only opinion in the function, and it is the one that keeps a three-quest drop from filling the
+ * screen on a short laptop panel.
+ */
+const FIT_MAX_WORK_AREA_FRACTION = 0.7
 
 /**
  * HOW TALL THE WINDOW ACTUALLY GETS when its renderer asks for `requested` px of content (JOS-386).
@@ -232,12 +271,20 @@ export function fitsHeightToContent(kind: OverlayKind): boolean {
  * here rather than defending against the renderer: Electron clamps `setBounds` against the window's
  * own `minHeight` anyway, so a request below the floor that was NOT clamped here would leave main
  * believing the window is one height while it is another.
+ *
+ * AND THE SECOND CEILING IS `FIT_MAX_WORK_AREA_FRACTION` (2026-09-08, with the toast). The
+ * room-below-the-top clamp alone is not a limit anybody chose: a strip parked at the very top of
+ * the work area may ask for the WHOLE screen and get it, which for a notification stack is a wall
+ * of cards over the game rather than a bubble. Seventy per cent is the promise that whatever a card
+ * says, some of the game is still visible behind it — and the request being refused is the honest
+ * failure, since the alternative is a window that quietly grew to fill the display.
  */
 export function fittedOverlayHeight(requested: number, top: number, workArea: Bounds): number {
   const floor = OVERLAY_MIN_SIZE.height
   if (!Number.isFinite(requested)) return floor
   const room = workArea.y + workArea.height - top
-  const ceiling = Math.max(floor, Math.min(room, workArea.height))
+  const share = Math.round(workArea.height * FIT_MAX_WORK_AREA_FRACTION)
+  const ceiling = Math.max(floor, Math.min(room, share))
   return Math.max(floor, Math.min(Math.round(requested), ceiling))
 }
 
@@ -369,10 +416,13 @@ function clamp(v: number, lo: number, hi: number): number {
  * HEIGHT IS NOT ONE ANSWER FOR ALL THREE. A fit-height kind's height is its CONTENT's — the
  * renderer measures a card that already carries the zoom (overlay/overlayFit.ts) and
  * `fittedOverlayHeight` applies it — so scaling the stored placeholder here would be a second
- * opinion about a number this module already decides elsewhere. The toast and the banner have no
- * such measurement, so their heights scale exactly like their widths; both are then held to the
- * room below their own top edge by `fittedOverlayHeight`, which is the same clamp for the same
- * reason.
+ * opinion about a number this module already decides elsewhere. That is the con card AND, since
+ * 2026-09-08, the toast: both leave this function's height arithmetic alone and both still take
+ * their WIDTH from it, which is how a fitted strip is still itself at twice the size (the card
+ * measures twice as tall inside a window that is twice as wide, and the fit follows it there).
+ * The alert banner has no such measurement, so its height scales exactly like its width and is
+ * then held to the room below its own top edge by `fittedOverlayHeight`, which is the same clamp
+ * for the same reason.
  */
 export function scaledStripBounds(
   kind: OverlayKind,

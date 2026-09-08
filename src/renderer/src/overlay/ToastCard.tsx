@@ -36,7 +36,13 @@
 // button that closes the overlay for good.
 
 import { type CSSProperties, type JSX, type MouseEvent, useEffect, useState } from 'react'
-import { TOAST_INTRO_BODY, toastActionLabel, type ToastItemCard, type ToastPayload } from '@shared/toast'
+import {
+  TOAST_INTRO_BODY,
+  toastActionLabel,
+  type ToastItemCard,
+  type ToastPayload,
+  type ToastQuestCard
+} from '@shared/toast'
 import { updateActionLabel } from '@shared/updateToast'
 import { TOAST_ENTER_MS, TOAST_EXIT_MS } from './toastQueue'
 import { ToastQuestBlock } from './ToastQuestBlock'
@@ -50,6 +56,23 @@ const MONO = '"Consolas","Courier New",monospace'
 /** What the chrome row prints. Short enough for the lane at any text scale, specific enough that
  *  a player who has never opened Preferences knows which program put it there. */
 const OVERLAY_LABEL = 'EQ Companion · celebration overlay'
+
+/**
+ * WHICH QUEST BLOCK SHOWS ITS STEPS — exactly one, and the rule is one line long (2026-09-08).
+ *
+ * THE ONE THAT NAMES THE LOOTED ITEM, else the FIRST. A drop that feeds three quests used to draw
+ * three step windows stacked in a notification, which is a page rather than a card and is how the
+ * bubble came to be taller than its window. The lit block is the one the reader came for: it holds
+ * the step that says what to do with the thing they are holding. With nothing lit anywhere, the
+ * first block is the card's own order and therefore the honest default.
+ *
+ * The other blocks are still DRAWN, named and clickable — the card's promise is that it lists every
+ * quest that wants the drop, and that promise is kept by the header line (ToastQuestBlock.tsx).
+ */
+function openQuestIndex(quests: ToastQuestCard[]): number {
+  const lit = quests.findIndex((q) => q.litStep !== undefined)
+  return lit === -1 ? 0 : lit
+}
 
 /** The name colour the payload's hint asks for. Unknown/absent ⇒ the ordinary item green. */
 function nameColor(flag: string | undefined): string {
@@ -325,6 +348,8 @@ export function ToastCard({
   // in a pointer cursor. Where a reward block exists it stays the only affordance (T6), and an
   // updater card drives main instead of navigating.
   const { run: onCardClick, label: action } = cardClick(payload)
+  // …and, on a quest-item card, which of its blocks shows its steps (see `openQuestIndex`).
+  const openBlock = openQuestIndex(payload.quests ?? [])
 
   return (
     <div
@@ -365,8 +390,8 @@ export function ToastCard({
       {payload.item && <RewardBlock item={payload.item} onClick={onOpen} />}
       {/* …and a quest-item drop says what the drop is FOR: one block per quest, each its own link
           into the Quests tab (ROADMAP.md §1). */}
-      {payload.quests?.map((q) => (
-        <ToastQuestBlock key={q.page} card={q} />
+      {payload.quests?.map((q, i) => (
+        <ToastQuestBlock key={q.page} card={q} expanded={i === openBlock} />
       ))}
       {/* Last, the introduction, whose whole job is to offer a way out (JOS-83). */}
       {payload.kind === 'intro' && <IntroBlock />}

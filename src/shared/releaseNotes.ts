@@ -142,6 +142,21 @@ export const RELEASE_NOTES: readonly ReleaseNote[] = [
   // and before v1.19.0 was cut. The 1.17.0 and 1.18.0 entries below never shipped as tags of their
   // own; they are kept as the honest record of what arrived when, and the panel shows all three.
   {
+    version: '1.19.3',
+    date: '2026-09-08',
+    entries: [
+      {
+        kind: 'fixed',
+        text: 'Celebration cards are no longer cut off at the bottom. The overlay now sizes itself to the cards on screen, so a quest item card shows whole and a boss card takes only the room it needs.',
+        fromReport: true
+      },
+      {
+        kind: 'changed',
+        text: 'A quest item card reads as a notification again: only the quest whose step names the drop shows its steps, four at a time, and the other quests show their name with a step count.'
+      }
+    ]
+  },
+  {
     version: '1.19.2',
     date: '2026-09-08',
     entries: [

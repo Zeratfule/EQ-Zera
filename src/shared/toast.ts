@@ -289,10 +289,26 @@ export const TOAST_MAX_LINE = 64
 /** Longest a payload may hold the screen, whatever it asks for. */
 export const TOAST_MAX_DURATION_MS = 30_000
 export const TOAST_MIN_DURATION_MS = 1_000
-/** Most quests one quest-item card names; a looted item that feeds more is still three cards' worth. */
+/**
+ * Most quests one quest-item card names; a looted item that feeds more is still three cards' worth.
+ *
+ * THREE NAMED IS NOT THREE OPENED (2026-09-08). All three are drawn, but only ONE is drawn with its
+ * steps: the block that names the looted item, or the first when no block does. The other two are
+ * their header line and a "+N steps" note (overlay/ToastCard.tsx picks the open one,
+ * overlay/ToastQuestBlock.tsx draws both shapes). A drop that feeds three quests was three full
+ * walkthroughs stacked in a notification, which is a page, not a card — and the window now GROWS to
+ * whatever it draws, so the tightening is what keeps a celebration from being one.
+ */
 export const TOAST_MAX_QUESTS = 3
-/** Most steps a quest block prints (a window around the lit step; the rest is a "+N more" line). */
-export const TOAST_MAX_QUEST_STEPS = 6
+/**
+ * Most steps a quest block prints (a window around the lit step; the rest is a "+N more" line).
+ *
+ * 6 → 4 on 2026-09-08, with the owner's "the bottom of the bubble appears cut off" report. The
+ * window still CENTRES on the lit step, so the step that names the drop is on screen either way;
+ * what shrinks is the context around it, and `before`/`after` absorb the difference honestly. Four
+ * is one line of anchor and three of neighbourhood, which is what a notification has room to say.
+ */
+export const TOAST_MAX_QUEST_STEPS = 4
 /** Longest a printed step may be — the wiki's walkthrough paragraphs are cut, never wrapped forever. */
 export const TOAST_MAX_STEP_TEXT = 160
 

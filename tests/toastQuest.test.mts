@@ -3,11 +3,16 @@
 // The celebration overlay is MUI-free and fetches NOTHING, so every string in a quest block is
 // decided by `toastQuestCard` before the push leaves main. That makes the formatter the ONLY
 // place the card's promises can be checked, and this file is where they are checked: which of
-// the quest's steps gets lit, which six of sixty get printed, how many the reader is being told
+// the quest's steps gets lit, which four of sixty get printed, how many the reader is being told
 // they cannot see, and what happens when the catalog knows the item on neither side.
 //
-// THE WINDOW IS THE THING WORTH PINNING. A drop that lands at step 12 of 15 must not print steps
-// 1-6; that failure is invisible in a screenshot (six real steps, correctly formatted, about the
+// FOUR, NOT SIX, SINCE 2026-09-08 (TOAST_MAX_QUEST_STEPS). The cap moved with the owner's "the
+// bottom of the bubble appears cut off" report; every assertion below is written against the
+// CONSTANT rather than against a literal, so the numbers that move here are only the `before` /
+// `after` counts, which are exactly the thing this file exists to hold honest.
+//
+// THE WINDOW IS THE THING WORTH PINNING. A drop that lands at step 14 of 15 must not print steps
+// 1-4; that failure is invisible in a screenshot (four real steps, correctly formatted, about the
 // wrong part of the quest) and obvious in an assertion about `before`/`after`.
 //
 // Plus ONE case over the REAL committed catalog, because a formatter that only ever sees
@@ -101,8 +106,8 @@ test('a short quest prints all of itself: no window, nothing hidden either side'
   assert.equal(six.after, 0)
 })
 
-test('a drop at step 12 of 15 prints the steps AROUND it, and counts what it is not printing', () => {
-  const long = quest({ steps: steps(15, 11), requiredItems: ['Glowing Sceptre'] })
+test('a drop at step 14 of 15 prints the steps AROUND it, and counts what it is not printing', () => {
+  const long = quest({ steps: steps(15, 13), requiredItems: ['Glowing Sceptre'] })
   const card = toastQuestCard(long, 'Glowing Sceptre')
   assert.equal(card.steps.length, TOAST_MAX_QUEST_STEPS)
   assert.ok(card.litStep !== undefined, 'the step naming the item must be lit')
@@ -111,16 +116,18 @@ test('a drop at step 12 of 15 prints the steps AROUND it, and counts what it is 
   assert.ok(card.litStep >= 0 && card.litStep < card.steps.length)
   // …and the reader is told the whole truth about the list they are seeing a slice of.
   assert.equal(card.before + card.steps.length + card.after, 15)
-  assert.equal(card.before, 9)
+  // Clamped at the END rather than centred: there are not two steps left to print after the lit
+  // one, so the window takes the room from the other side and still prints a full four.
+  assert.equal(card.before, 15 - TOAST_MAX_QUEST_STEPS)
   assert.equal(card.after, 0)
 })
 
 test('a drop in the MIDDLE is centred, with steps left on both sides', () => {
   const card = toastQuestCard(quest({ steps: steps(20, 9) }), 'Glowing Sceptre')
   assert.equal(card.steps.length, TOAST_MAX_QUEST_STEPS)
-  assert.equal(card.before, 7)
-  assert.equal(card.after, 20 - 7 - TOAST_MAX_QUEST_STEPS)
-  assert.equal(card.litStep, 2)
+  assert.equal(card.before, 8)
+  assert.equal(card.after, 20 - 8 - TOAST_MAX_QUEST_STEPS)
+  assert.equal(card.litStep, 1)
   assert.ok(card.before > 0 && card.after > 0, 'a mid-quest window is open at both ends')
 })
 
@@ -130,7 +137,7 @@ test('no step names the item: the card shows the quest’s OPENING and lights no
   assert.equal(card.litStep, undefined)
   assert.equal('litStep' in card, false, 'nothing lit is an ABSENT field, never a 0 that lights step 1')
   assert.equal(card.before, 0)
-  assert.equal(card.after, 9)
+  assert.equal(card.after, 15 - TOAST_MAX_QUEST_STEPS)
 })
 
 test('a key under three characters lights NOTHING — a confident wrong highlight is the worse bug', () => {

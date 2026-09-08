@@ -20,6 +20,18 @@
 // WHY ITS OWN FILE. ToastCard.tsx sits near the repo's 400-code-line factoring ceiling, and this
 // is a coherent piece to lift rather than a fragment: everything about how a QUEST looks on a
 // toast is here, and the card keeps what a card is.
+//
+// EXACTLY ONE BLOCK ON A CARD IS OPEN (2026-09-08). A drop feeding three quests used to draw three
+// walkthroughs, one under the other; that is a page, and the owner met it as a bubble whose bottom
+// was cut off. So a block has two shapes and the CARD decides which each one wears (ToastCard.tsx:
+// the block that names the looted item, else the first):
+//
+//   OPEN     — the header, where it starts, and the step window with the lit step in it.
+//   COLLAPSED — the same header and `where`, plus one muted line counting the steps it is not
+//               printing. Not a disclosure control: there is nothing to expand it to, because the
+//               block is a LINK and the quest's own page is where the rest of it lives. What the
+//               collapsed shape promises is that the card named every quest that wants the drop,
+//               which is the fact a player needs; the steps are the fact only one of them can have.
 
 import { type JSX, useState } from 'react'
 import type { ToastQuestCard } from '@shared/toast'
@@ -37,6 +49,11 @@ function roleTag(role: ToastQuestCard['role']): string {
 /** "3 earlier steps" / "1 more step" — the steps this window left out, counted honestly. */
 function stepsWord(n: number, side: 'earlier' | 'more'): string {
   return `${String(n)} ${side} ${n === 1 ? 'step' : 'steps'}`
+}
+
+/** How many steps the quest has in total — what a collapsed block is not printing. */
+function totalSteps(card: ToastQuestCard): number {
+  return card.before + card.steps.length + card.after
 }
 
 /** The muted one-liner that stands in for the steps above or below the window. */
@@ -99,6 +116,43 @@ function QuestHead({ card }: { card: ToastQuestCard }): JSX.Element {
   )
 }
 
+/** The step window, with the counts on either side of it — the OPEN block's whole body. */
+function QuestSteps({ card }: { card: ToastQuestCard }): JSX.Element {
+  return (
+    <>
+      {card.before > 0 && (
+        <Elision text={stepsWord(card.before, 'earlier')} testid="toast-quest-earlier" />
+      )}
+      <ol style={{ listStyle: 'none', margin: '4px 0 0', padding: 0, display: 'grid', gap: 2 }}>
+        {card.steps.map((step, i) => (
+          <StepRow key={`${String(i)}:${step}`} text={step} number={card.before + i + 1} lit={i === card.litStep} />
+        ))}
+      </ol>
+      {card.after > 0 && <Elision text={stepsWord(card.after, 'more')} testid="toast-quest-more" />}
+    </>
+  )
+}
+
+/**
+ * The COLLAPSED block's one line: how many steps this quest has that the card is not printing.
+ *
+ * `+N steps` rather than "N steps hidden", because the block above it already reads as a heading
+ * and the reader is being told what is behind the link, not what was taken away. A quest the
+ * catalog has no steps for prints nothing at all rather than "+0 steps" (law 1).
+ */
+function StepCount({ card }: { card: ToastQuestCard }): JSX.Element | null {
+  const n = totalSteps(card)
+  if (n <= 0) return null
+  return (
+    <div
+      data-testid="toast-quest-steps-note"
+      style={{ color: MUTED, fontSize: 11, opacity: 0.85, marginTop: 4 }}
+    >
+      {`+${String(n)} ${n === 1 ? 'step' : 'steps'}`}
+    </div>
+  )
+}
+
 /**
  * The block itself, and the second click target on this card.
  *
@@ -106,12 +160,18 @@ function QuestHead({ card }: { card: ToastQuestCard }): JSX.Element {
  * `focusApp` door every toast deep link uses. `stopPropagation` is load-bearing for the same
  * reason it is on the × and the call to action: one click must be one landing, never a trip
  * through `focusApp` for the block and a second for whatever is behind it.
+ *
+ * `expanded` is the CARD's decision, never this component's (see the header): one block per card
+ * shows its steps, and it is the one that names the looted item.
  */
-export function ToastQuestBlock({ card }: { card: ToastQuestCard }): JSX.Element {
+export function ToastQuestBlock({ card, expanded }: { card: ToastQuestCard; expanded: boolean }): JSX.Element {
   const [hot, setHot] = useState(false)
   return (
     <div
       data-testid="toast-quest"
+      // The shape, on the DOM: a harness asserting that exactly one block on a card is open should
+      // not have to count step rows to find out which (the `data-lit` precedent above).
+      {...(expanded ? { 'data-open': 'true' } : {})}
       data-page={card.page}
       onClick={(e) => {
         e.stopPropagation()
@@ -134,15 +194,7 @@ export function ToastQuestBlock({ card }: { card: ToastQuestCard }): JSX.Element
           {card.where}
         </div>
       )}
-      {card.before > 0 && (
-        <Elision text={stepsWord(card.before, 'earlier')} testid="toast-quest-earlier" />
-      )}
-      <ol style={{ listStyle: 'none', margin: '4px 0 0', padding: 0, display: 'grid', gap: 2 }}>
-        {card.steps.map((step, i) => (
-          <StepRow key={`${String(i)}:${step}`} text={step} number={card.before + i + 1} lit={i === card.litStep} />
-        ))}
-      </ol>
-      {card.after > 0 && <Elision text={stepsWord(card.after, 'more')} testid="toast-quest-more" />}
+      {expanded ? <QuestSteps card={card} /> : <StepCount card={card} />}
     </div>
   )
 }

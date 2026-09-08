@@ -8,11 +8,18 @@
 // those facts has to arrive pre-formatted, exactly as the item card's stat lines do.
 //
 // THE WINDOW IS THE WHOLE IDEA. A wiki quest's `steps` can run sixty lines; a toast has room for
-// six. Printing the FIRST six would be the one useless answer for a mid-quest drop, so the card
-// prints a WINDOW around the step that names the item, and states honestly how many steps sit on
-// either side of it (`before`/`after`) rather than silently pretending the list ended. When no
-// step names the item at all the window is simply the opening of the quest, and `litStep` is
-// ABSENT — a card would rather show you the start than light the wrong line (law 1).
+// four (TOAST_MAX_QUEST_STEPS, six until 2026-09-08). Printing the FIRST four would be the one
+// useless answer for a mid-quest drop, so the card prints a WINDOW around the step that names the
+// item, and states honestly how many steps sit on either side of it (`before`/`after`) rather than
+// silently pretending the list ended. When no step names the item at all the window is simply the
+// opening of the quest, and `litStep` is ABSENT — a card would rather show you the start than light
+// the wrong line (law 1).
+//
+// AND ONLY ONE BLOCK ON A CARD IS EVER OPENED. Every quest a drop feeds is cut the same way here —
+// this module has no idea how many blocks the card will hold — and the overlay draws the steps of
+// exactly one of them (overlay/ToastCard.tsx). That is a rendering decision about a card, not a
+// formatting decision about a quest, so it is deliberately not made here: `before`/`after`/`steps`
+// are what the collapsed blocks count with.
 //
 // PURE, and deliberately so: what the card prints for a real catalog quest is a test's business,
 // not a screenshot's. Relative imports, because `npm test` runs this module under node with no
