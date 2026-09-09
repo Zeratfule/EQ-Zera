@@ -25,6 +25,9 @@ import {
   type ShareCell
 } from '../src/shared/characterShare'
 import { esc, renderPage, splitRank } from '../share-server/src/page'
+import { handleRequest } from '../share-server/src/handler'
+import { logoPng } from '../share-server/src/logo'
+import type { Env } from '../share-server/src/env'
 
 const CAPTURED = 1_757_000_000_000
 
@@ -140,7 +143,7 @@ test('a v2 share renders rank badges, an openable stat block per item, and the c
   assert.ok(html.includes('<span class="k">Intelligence</span><span class="v">+8</span>'), 'a stat line: label, verbatim value')
   assert.ok(html.includes('<span class="k">AC</span><span class="v">8</span>'), 'the core numbers render')
   assert.ok(html.includes('<span class="k">Focus</span>Improved Damage II'), 'an effect renders with its kind')
-  assert.ok(html.includes('Open an item to see its stats.'))
+  assert.ok(html.includes('Hover or tap an item to see its stats.'))
 
   // The character panel says what the gear adds, from characterBlock, with level and classes.
   const block = characterBlock(body)
@@ -180,10 +183,46 @@ test('a v1 share still renders: badges from the tier, nothing to open, the chara
   const v1 = v1Profile()
   const html = render(v1)
   assert.ok(html.includes('<span class="item">Drop of Crystallized Flame</span><span class="rank">+7</span>'), 'the rank still becomes a badge')
-  assert.ok(!html.includes('<details'), 'nothing to open: a v1 cell has no facts')
+  assert.ok(!html.includes('<details class="gear">'), 'nothing to open: a v1 cell has no facts')
   assert.ok(!html.includes('Not in the item database, so its stats'), 'and no cell is called unknown')
-  assert.ok(!html.includes('Open an item to see its stats.'))
+  assert.ok(!html.includes('Hover or tap an item to see its stats.'))
   assert.ok(html.includes('<h2>Character</h2>'), 'the character panel needs only the totals')
   assert.ok(html.includes(`AC <strong>${String(characterBlock(v1).ac)}</strong>`))
   assert.ok(html.includes('<h3>Saves</h3>'))
+})
+
+// ---- the top bar, the score explainer, the hover tooltips ----------------------------------
+
+test('the page opens with the EQ Zera mark linking home and a download link, and explains the scores', () => {
+  const html = render(v2Profile())
+  assert.ok(html.includes('<nav class="brand"><a class="home" href="https://eqzera.com/"><img src="/logo.png"'))
+  assert.ok(html.includes('href="https://eqzera.com/#install"'), 'the download link goes to the site')
+  assert.ok(html.indexOf('<nav class="brand">') < html.indexOf('<h1>'), 'the bar sits above the name')
+  assert.ok(html.includes('<summary>How these are scored</summary>'))
+  assert.ok(html.includes('best set the same rules could build'), 'the meter is explained as current over best reachable')
+  assert.ok(html.includes('Build tab'), 'and the page says where to act on it')
+  assert.ok(html.includes("matchMedia('(hover: hover) and (pointer: fine)')"), 'hover tooltips are gated to devices that can hover')
+  assert.ok(html.includes('Hover or tap an item to see its stats.'))
+  assert.equal((html.match(/<script/g) ?? []).length, 1, 'still the one nonce\'d script')
+})
+
+test('a profile with no scores still carries the explainer', () => {
+  const body = v2Profile()
+  delete body.scores
+  const html = render(body)
+  assert.ok(html.includes('Not computed yet.'))
+  assert.ok(html.includes('<summary>How these are scored</summary>'))
+})
+
+test('/logo.png serves the mark as a PNG, the one image img-src self admits', async () => {
+  const env = { SHARES: {} as never, PUBLIC_ORIGIN: 'https://share.eqzera.com' } as Env
+  const res = await handleRequest(new Request('https://share.eqzera.com/logo.png'), env, () => CAPTURED)
+  assert.equal(res.status, 200)
+  assert.match(res.headers.get('Content-Type') ?? '', /^image\/png/)
+  assert.match(res.headers.get('Cache-Control') ?? '', /max-age/)
+  const bytes = new Uint8Array(await res.arrayBuffer())
+  assert.deepEqual([...bytes.slice(0, 8)], [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a], 'PNG signature')
+  assert.equal(bytes.length, logoPng().length)
+  const post = await handleRequest(new Request('https://share.eqzera.com/logo.png', { method: 'POST' }), env, () => CAPTURED)
+  assert.equal(post.status, 404, 'only GET and HEAD')
 })

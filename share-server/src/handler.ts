@@ -37,11 +37,13 @@ import {
   errorResponse,
   htmlResponse,
   jsonResponse,
+  logoResponse,
   noContentResponse,
   pngResponse,
   rateLimited,
   redirectResponse
 } from './http'
+import { logoPng } from './logo'
 import { renderPage } from './page'
 import {
   acceptEnvelope,
@@ -349,6 +351,10 @@ export async function handleRequest(
   const ctx: Ctx = { request, env, now, origin: env.PUBLIC_ORIGIN ?? url.origin }
   const path = url.pathname
   if (path === '/') return redirectResponse(HOME)
+  // The site mark the page's top bar shows: static bytes, no id, no rate limit worth spending.
+  if (path === '/logo.png') {
+    return request.method === 'GET' || request.method === 'HEAD' ? logoResponse(logoPng()) : notFound()
+  }
   if (path === API_PREFIX || path.startsWith(`${API_PREFIX}/`)) return apiRoute(ctx, path)
   return viewRoute(ctx, path)
 }

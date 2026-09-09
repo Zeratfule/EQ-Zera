@@ -291,7 +291,7 @@ test('the card image is skipped, not faked, when the share carries none', async 
   const h = harness()
   const made = await create(h, { envelope: envelopeFor(profile()) })
   const html = await (await h.call('GET', `/s/${made.id}`)).text()
-  assert.ok(!html.includes('<img'), 'no <img> when there is no card to point it at')
+  assert.ok(!html.includes('<img class="card"'), 'no card <img> when there is no card to point it at')
   const png = await h.call('GET', `/c/${made.id}.png`)
   assert.equal(png.status, 404)
   assert.match(png.headers.get('Content-Type') ?? '', /^application\/json/)

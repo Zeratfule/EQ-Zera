@@ -73,6 +73,21 @@ export function pngResponse(png: ArrayBuffer): Response {
   })
 }
 
+/**
+ * The site mark (logo.ts), the one image a share page shows besides its card. A day of cache:
+ * the bytes only change with a deploy, and a day is how long a stale mark is tolerable after one.
+ */
+export function logoResponse(png: Uint8Array<ArrayBuffer>): Response {
+  return new Response(png, {
+    status: 200,
+    headers: {
+      ...BASE_HEADERS,
+      'Content-Type': 'image/png',
+      'Cache-Control': 'public, max-age=86400'
+    }
+  })
+}
+
 /** A successful DELETE. No body, by definition. */
 export function noContentResponse(): Response {
   return new Response(null, { status: 204, headers: { ...BASE_HEADERS } })

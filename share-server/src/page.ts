@@ -99,11 +99,26 @@ const SCORE_ROWS: readonly [keyof NonNullable<CharacterProfileShare['scores']>, 
   ['solo', 'Solo']
 ]
 
+/**
+ * What the four numbers mean, in the reader's words. The mechanism is src/shared/build/profiles.ts
+ * (weights in HP-equivalents, class-aware; a meter is current over the best reachable set) and the
+ * solo blend there; this paragraph must keep saying what that file does.
+ */
+const SCORES_EXPLAINED =
+  `<details class="how"><summary>How these are scored</summary>` +
+  `<p><b>Tank</b>, <b>DPS</b> and <b>Healer</b> read the worn gear through a weight table for the character’s classes: ` +
+  `every stat is worth some number of hit points to that role (AC and HP to a tank, damage-per-delay and strength to melee DPS, ` +
+  `wisdom or intelligence and mana to casters and priests), the items are added up, and the total is shown against the best set ` +
+  `the same rules could build from the item database for these classes. So 100% means the best gear reachable, not a game value.</p>` +
+  `<p><b>Solo</b> blends the class kit (healing, sustain, escape, control, pets) with the gear meters.</p>` +
+  `<p>The app’s Build tab reads the same scores slot by slot and lists the upgrades that would move each one, ` +
+  `so a build can be tuned for tanking, DPS or healing.</p></details>`
+
 /** The four readings, or the honest absence (world-model law 1: omitted, never zeroed). */
 function scoresBlock(profile: CharacterProfileShare): string {
   const scores = profile.scores
   if (!scores) {
-    return `<section class="panel"><h2>Scores</h2><p class="muted">Not computed yet.</p></section>`
+    return `<section class="panel"><h2>Scores</h2><p class="muted">Not computed yet.</p>${SCORES_EXPLAINED}</section>`
   }
   const rows = SCORE_ROWS.map(([key, label]) => {
     const pct = String(Math.max(0, Math.min(100, Math.round(scores[key]))))
@@ -113,7 +128,7 @@ function scoresBlock(profile: CharacterProfileShare): string {
       `<span class="v">${pct}%</span></li>`
     )
   }).join('')
-  return `<section class="panel"><h2>Scores</h2><ul class="bars">${rows}</ul></section>`
+  return `<section class="panel"><h2>Scores</h2><ul class="bars">${rows}</ul>${SCORES_EXPLAINED}</section>`
 }
 
 /** The bar widths, as nonce'd CSS rules — a `style=` attribute would be blocked by the CSP. */
@@ -250,7 +265,9 @@ function cellRow(cell: ShareCell): string {
 function slotsBlock(profile: CharacterProfileShare): string {
   if (!profile.cells.length) return ''
   const rows = profile.cells.map((cell) => cellRow(cell)).join('')
-  const hint = profile.cells.some(hasFacts) ? `<p class="muted">Open an item to see its stats.</p>` : ''
+  const hint = profile.cells.some(hasFacts)
+    ? `<p class="muted">Hover or tap an item to see its stats.</p>`
+    : ''
   return `<section class="panel"><h2>Worn gear</h2>${hint}<ul class="slots">${rows}</ul></section>`
 }
 
@@ -328,7 +345,28 @@ function copyScript(nonce: string): string {
     `b.addEventListener('click',function(){` +
     `if(navigator.clipboard&&navigator.clipboard.writeText){` +
     `navigator.clipboard.writeText(t.value).then(flash,fallback)}else{fallback()}});})();` +
+    hoverScript() +
     `</script>`
+  )
+}
+
+/**
+ * Hover tooltips for the gear rows, on devices that can hover.
+ *
+ * The tap and keyboard path is the native <details> and needs no script. On a mouse, hovering a
+ * row opens it as a floating panel (`.float`); leaving closes it again; clicking a floating row
+ * pins it open inline, and the next click is the native toggle that closes it. Touch devices are
+ * excluded by the media query, so a phone never sees a panel it cannot dismiss.
+ */
+function hoverScript(): string {
+  return (
+    `(function(){if(!window.matchMedia||!matchMedia('(hover: hover) and (pointer: fine)').matches)return;` +
+    `var rows=document.querySelectorAll('details.gear');` +
+    `for(var i=0;i<rows.length;i++)(function(d){var s=d.querySelector('summary');if(!s)return;` +
+    `s.addEventListener('mouseenter',function(){if(!d.open){d.open=true;d.classList.add('float')}});` +
+    `d.addEventListener('mouseleave',function(){if(d.classList.contains('float')){d.open=false;d.classList.remove('float')}});` +
+    `s.addEventListener('click',function(e){if(d.classList.contains('float')){e.preventDefault();d.classList.remove('float')}});` +
+    `})(rows[i]);})();`
   )
 }
 
@@ -350,7 +388,7 @@ h3{font-family:var(--display);font-size:13px;letter-spacing:.12em;text-transform
 .sub{color:var(--ink2);font-size:19px;margin:8px 0 0}
 .meta{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3);margin:14px 0 0}
 .panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:20px;margin:22px 0}
-.card{display:block;width:100%;height:auto;border:1px solid var(--line);border-radius:10px;margin:22px 0}
+.card{display:block;max-width:100%;height:auto;border:1px solid var(--line);border-radius:10px;margin:22px auto}
 .muted{color:var(--ink3);font-size:15px;margin:8px 0 0}
 .ac{margin:0;font-size:22px}.ac strong{font-family:var(--mono);color:var(--cyan)}
 ul{list-style:none;margin:0;padding:0}
@@ -365,12 +403,27 @@ ul{list-style:none;margin:0;padding:0}
 .chips.core .v{color:var(--cyan)}
 .slots>li{display:grid;grid-template-columns:120px 1fr;gap:4px 10px;padding:8px 0;border-top:1px solid var(--line)}
 .slots>li:first-child{border-top:0}
+.slots>li{margin:0 -10px;padding-left:10px;padding-right:10px;border-radius:6px;transition:background .12s}
+.slots>li:hover{background:rgba(94,230,255,.06)}
+.slots>li:hover .slot{color:var(--ink2)}
+.slots>li:hover .rank{filter:brightness(1.15)}
 .slot{color:var(--ink3);font-size:14px;font-family:var(--mono);padding-top:2px}
 .item{color:var(--ink)}
 .rank{display:inline-block;margin-left:8px;padding:0 7px;border-radius:999px;font-family:var(--mono);font-size:12px;line-height:20px;
 color:#0c0a1f;background:linear-gradient(135deg,var(--cyan),var(--sun));vertical-align:1px;white-space:nowrap}
 .ex,.orn{grid-column:2;color:var(--violet);font-size:14px}
-.gear{grid-column:2}
+.brand{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 26px;padding:0 0 16px;border-bottom:1px solid var(--line)}
+.brand .home{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:700;font-size:18px;letter-spacing:.04em;color:var(--ink)}
+.brand .home img{width:32px;height:32px;display:block}
+.brand .get{font-family:var(--display);font-weight:700;font-size:14px;letter-spacing:.03em;padding:8px 16px;border-radius:6px;
+color:#0c0a1f;background:linear-gradient(135deg,var(--cyan),#8ab4ff 55%,var(--pink));white-space:nowrap}
+.brand a:hover{text-decoration:none;filter:brightness(1.08)}
+.how{margin:14px 0 0}.how summary{cursor:pointer;color:var(--ink3);font-size:14px}
+.how p{color:var(--ink2);font-size:15px;margin:8px 0 0}.how b{color:var(--ink)}
+.gear{grid-column:2;position:relative}
+.gear.float .facts{position:absolute;left:0;top:calc(100% + 6px);width:min(560px,calc(100vw - 48px));z-index:5;margin:0;
+background:var(--panel);box-shadow:0 14px 36px rgba(0,0,0,.55)}
+.gear.float .facts .chips li{background:var(--ground2)}
 .gear summary{cursor:pointer;list-style:none;display:flex;align-items:center;flex-wrap:wrap;gap:0 4px}
 .gear summary::-webkit-details-marker{display:none}
 .gear summary::after{content:'\\25B8';color:var(--ink3);font-size:13px;margin-left:8px;transition:transform .15s}
@@ -415,6 +468,19 @@ function metaTags(input: PageInput, title: string, description: string): string 
   return tags.join('')
 }
 
+const SITE = 'https://eqzera.com/'
+
+/**
+ * The top bar: the EQ Zera mark linking home, and the download on the right. The mark is served
+ * by this origin (`/logo.png`, logo.ts) because the CSP's `img-src 'self'` admits nothing else.
+ */
+function brandBar(): string {
+  return (
+    `<nav class="brand"><a class="home" href="${SITE}"><img src="/logo.png" alt="" width="32" height="32">EQ Zera</a>` +
+    `<a class="get" href="${SITE}#install">Get the app</a></nav>`
+  )
+}
+
 /** The head line: who this is, and when it was shared. */
 function header(input: PageInput): string {
   const profile = input.profile
@@ -433,7 +499,9 @@ export function renderPage(input: PageInput): string {
   const title = pageTitle(input.profile)
   const description = pageDescription(input.profile)
   const card = input.hasCard
-    ? `<img class="card" src="/c/${esc(input.id)}.png" alt="${esc(title)}" width="1200" height="630">`
+    ? // `2x`: the card is a high-DPI capture, so it is drawn at half its pixel width and stays
+      // sharp on a Retina-class screen instead of being stretched to the column and going soft.
+      `<img class="card" src="/c/${esc(input.id)}.png" srcset="/c/${esc(input.id)}.png 2x" alt="${esc(title)}">`
     : ''
   return (
     `<!doctype html><html lang="en"><head><meta charset="utf-8">` +
@@ -442,6 +510,7 @@ export function renderPage(input: PageInput): string {
     metaTags(input, title, description) +
     `<style nonce="${esc(input.nonce)}">${STYLE}${scoreWidthCss(input.profile)}</style>` +
     `</head><body><div class="wrap">` +
+    brandBar() +
     header(input) +
     card +
     scoresBlock(input.profile) +
