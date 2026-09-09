@@ -208,4 +208,16 @@ body:has(.eqz-page){background:#0c0a1f}
 .eqz-screens .eqz-shot{display:block;color:inherit;text-decoration:none!important}
 .eqz-screens .eqz-shot:hover{border-color:#a98fe0}
 .eqz-screens figcaption{display:block}
+/* Screens lightbox: pure CSS via :target (WordPress.com strips scripts). A fixed :target does not
+   scroll the page; the close links go to #! so the hash clears without a jump. */
+.eqz-lb{position:fixed;top:0;right:0;bottom:0;left:0;z-index:9999;display:none;align-items:center;justify-content:center;padding:24px;box-sizing:border-box}
+@media (max-width:640px){.eqz-lb{padding:12px}.eqz-lb figure{width:calc(100vw - 24px)}.eqz-lb-x{top:10px;right:12px}}
+.eqz-lb:target{display:flex}
+.eqz-lb-bg{position:absolute;top:0;right:0;bottom:0;left:0;background:rgba(6,4,20,.9);cursor:pointer}
+.eqz-lb figure{position:relative;margin:0;width:92vw;max-width:1600px;box-sizing:border-box;display:block;border:1px solid #2d2757;border-radius:12px;overflow:hidden;background:#1a1638;box-shadow:0 0 0 1px rgba(94,230,255,.18),0 40px 120px rgba(0,0,0,.75)}
+.eqz-lb figure img{display:block;width:100%;height:auto;max-height:calc(90vh - 64px);object-fit:contain}
+.eqz-lb figcaption{padding:10px 14px;font-family:'JetBrains Mono','Cascadia Code',Consolas,monospace;font-size:12px;line-height:1.5;color:#7d75a6;border-top:1px solid #2d2757}
+.eqz-lb-x{position:absolute;top:16px;right:20px;z-index:2;width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:rgba(11,15,26,.88);border:1px solid #5ee6ff;color:#5ee6ff!important;font-size:28px;line-height:1;text-decoration:none!important}
+.eqz-lb-x:hover,.eqz-lb-x:focus-visible{background:#5ee6ff;color:#0b0f1a!important;outline:2px solid #fff;outline-offset:2px}
+.eqz-lb-bg:focus-visible{outline:none}
 .eqz-support-note b{color:#efeaff}

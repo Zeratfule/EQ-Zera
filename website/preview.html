@@ -224,6 +224,18 @@ body:has(.eqz-page){background:#0c0a1f}
 .eqz-screens .eqz-shot{display:block;color:inherit;text-decoration:none!important}
 .eqz-screens .eqz-shot:hover{border-color:var(--eqz-violet)}
 .eqz-screens figcaption{display:block}
+/* Screens lightbox: pure CSS via :target (WordPress.com strips scripts). A fixed :target does not
+   scroll the page; the close links go to #! so the hash clears without a jump. */
+.eqz-lb{position:fixed;top:0;right:0;bottom:0;left:0;z-index:9999;display:none;align-items:center;justify-content:center;padding:24px;box-sizing:border-box}
+@media (max-width:640px){.eqz-lb{padding:12px}.eqz-lb figure{width:calc(100vw - 24px)}.eqz-lb-x{top:10px;right:12px}}
+.eqz-lb:target{display:flex}
+.eqz-lb-bg{position:absolute;top:0;right:0;bottom:0;left:0;background:rgba(6,4,20,.9);cursor:pointer}
+.eqz-lb figure{position:relative;margin:0;width:92vw;max-width:1600px;box-sizing:border-box;display:block;border:1px solid var(--eqz-line);border-radius:12px;overflow:hidden;background:var(--eqz-panel);box-shadow:0 0 0 1px rgba(94,230,255,.18),0 40px 120px rgba(0,0,0,.75)}
+.eqz-lb figure img{display:block;width:100%;height:auto;max-height:calc(90vh - 64px);object-fit:contain}
+.eqz-lb figcaption{padding:10px 14px;font-family:var(--eqz-mono);font-size:12px;line-height:1.5;color:var(--eqz-ink-3);border-top:1px solid var(--eqz-line)}
+.eqz-lb-x{position:absolute;top:16px;right:20px;z-index:2;width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:rgba(11,15,26,.88);border:1px solid var(--eqz-cyan);color:var(--eqz-cyan)!important;font-size:28px;line-height:1;text-decoration:none!important}
+.eqz-lb-x:hover,.eqz-lb-x:focus-visible{background:var(--eqz-cyan);color:#0b0f1a!important;outline:2px solid #fff;outline-offset:2px}
+.eqz-lb-bg:focus-visible{outline:none}
 .eqz-support-note b{color:var(--eqz-ink)}
 </style>
 <div class="eqz-page">
@@ -316,11 +328,51 @@ body:has(.eqz-page){background:#0c0a1f}
     <h2>Every tab, from a real session</h2>
     <p class="eqz-lede">Captured on 2026-09-08 from a level 50 monk's log. Click any screen to open it full size.</p>
     <div class="eqz-screens">
-      <a class="eqz-shot" href="https://eqzera.com/wp-content/uploads/2026/09/app-combat.png"><img src="https://eqzera.com/wp-content/uploads/2026/09/app-combat.png" alt="EQ Zera Combat tab: a fight against Eye of Veeshan broken down by attack and spell, DPS over time graph, procs, damage by mob and the combat log" width="1920" height="1024" loading="lazy"><figcaption>Combat. One fight, every attack and spell ranked, DPS over time, procs per minute, and the raw combat log underneath.</figcaption></a>
-      <a class="eqz-shot" href="https://eqzera.com/wp-content/uploads/2026/09/app-character.png"><img src="https://eqzera.com/wp-content/uploads/2026/09/app-character.png" alt="EQ Zera Character tab: a 3D model of the character wearing their gear beside every equipped slot and the stats from gear" width="1920" height="1024" loading="lazy"><figcaption>Character. Your gear from one /outputfile inventory, the stats it adds up to, and the model wearing it, with race, sex and face controls.</figcaption></a>
-      <a class="eqz-shot" href="https://eqzera.com/wp-content/uploads/2026/09/app-quests.png"><img src="https://eqzera.com/wp-content/uploads/2026/09/app-quests.png" alt="EQ Zera Quests tab: quest items you hold linked to the quests that need them, and a searchable list of quests with class and start zone filters" width="1920" height="1024" loading="lazy"><figcaption>Quests. The quest items you are carrying, each linked to the quests that want it, and every quest on the wiki filtered by your classes.</figcaption></a>
-      <a class="eqz-shot" href="https://eqzera.com/wp-content/uploads/2026/09/app-loot.png"><img src="https://eqzera.com/wp-content/uploads/2026/09/app-loot.png" alt="EQ Zera Loot tab: thousands of loot events grouped by item with times looted, estimated inventory count, top source mob, zones and last looted" width="1920" height="1024" loading="lazy"><figcaption>Loot. Everything you ever looted, grouped by item, with drops per hour, the mob that drops it most, and notable pickups tied to quests.</figcaption></a>
-      <a class="eqz-shot" href="https://eqzera.com/wp-content/uploads/2026/09/app-maps.png"><img src="https://eqzera.com/wp-content/uploads/2026/09/app-maps.png" alt="EQ Zera Maps tab: the Plane of Sky map with island portals and key names labelled, and a named mob list with spawn points" width="1920" height="1024" loading="lazy"><figcaption>Maps. Zone maps with labels, portals and named mob spawn points, following the zone your log says you are in.</figcaption></a>
+      <a class="eqz-shot" href="#shot-1" aria-haspopup="dialog"><img src="https://eqzera.com/wp-content/uploads/2026/09/app-combat.png" alt="EQ Zera Combat tab: a fight against Eye of Veeshan broken down by attack and spell, DPS over time graph, procs, damage by mob and the combat log" width="1920" height="1024" loading="lazy"><figcaption>Combat. One fight, every attack and spell ranked, DPS over time, procs per minute, and the raw combat log underneath.</figcaption></a>
+      <a class="eqz-shot" href="#shot-2" aria-haspopup="dialog"><img src="https://eqzera.com/wp-content/uploads/2026/09/app-character.png" alt="EQ Zera Character tab: a 3D model of the character wearing their gear beside every equipped slot and the stats from gear" width="1920" height="1024" loading="lazy"><figcaption>Character. Your gear from one /outputfile inventory, the stats it adds up to, and the model wearing it, with race, sex and face controls.</figcaption></a>
+      <a class="eqz-shot" href="#shot-3" aria-haspopup="dialog"><img src="https://eqzera.com/wp-content/uploads/2026/09/app-quests.png" alt="EQ Zera Quests tab: quest items you hold linked to the quests that need them, and a searchable list of quests with class and start zone filters" width="1920" height="1024" loading="lazy"><figcaption>Quests. The quest items you are carrying, each linked to the quests that want it, and every quest on the wiki filtered by your classes.</figcaption></a>
+      <a class="eqz-shot" href="#shot-4" aria-haspopup="dialog"><img src="https://eqzera.com/wp-content/uploads/2026/09/app-loot.png" alt="EQ Zera Loot tab: thousands of loot events grouped by item with times looted, estimated inventory count, top source mob, zones and last looted" width="1920" height="1024" loading="lazy"><figcaption>Loot. Everything you ever looted, grouped by item, with drops per hour, the mob that drops it most, and notable pickups tied to quests.</figcaption></a>
+      <a class="eqz-shot" href="#shot-5" aria-haspopup="dialog"><img src="https://eqzera.com/wp-content/uploads/2026/09/app-maps.png" alt="EQ Zera Maps tab: the Plane of Sky map with island portals and key names labelled, and a named mob list with spawn points" width="1920" height="1024" loading="lazy"><figcaption>Maps. Zone maps with labels, portals and named mob spawn points, following the zone your log says you are in.</figcaption></a>
+    </div>
+    <div class="eqz-lb" id="shot-1" role="dialog" aria-label="Combat screenshot">
+      <a class="eqz-lb-bg" href="#!" aria-label="Close"></a>
+      <figure>
+        <img src="https://eqzera.com/wp-content/uploads/2026/09/app-combat.png" alt="EQ Zera Combat tab: a fight against Eye of Veeshan broken down by attack and spell, DPS over time graph, procs, damage by mob and the combat log" width="1920" height="1024" loading="lazy">
+        <figcaption>Combat. One fight, every attack and spell ranked, DPS over time, procs per minute, and the raw combat log underneath.</figcaption>
+      </figure>
+      <a class="eqz-lb-x" href="#!" aria-label="Close">&#215;</a>
+    </div>
+    <div class="eqz-lb" id="shot-2" role="dialog" aria-label="Character screenshot">
+      <a class="eqz-lb-bg" href="#!" aria-label="Close"></a>
+      <figure>
+        <img src="https://eqzera.com/wp-content/uploads/2026/09/app-character.png" alt="EQ Zera Character tab: a 3D model of the character wearing their gear beside every equipped slot and the stats from gear" width="1920" height="1024" loading="lazy">
+        <figcaption>Character. Your gear from one /outputfile inventory, the stats it adds up to, and the model wearing it, with race, sex and face controls.</figcaption>
+      </figure>
+      <a class="eqz-lb-x" href="#!" aria-label="Close">&#215;</a>
+    </div>
+    <div class="eqz-lb" id="shot-3" role="dialog" aria-label="Quests screenshot">
+      <a class="eqz-lb-bg" href="#!" aria-label="Close"></a>
+      <figure>
+        <img src="https://eqzera.com/wp-content/uploads/2026/09/app-quests.png" alt="EQ Zera Quests tab: quest items you hold linked to the quests that need them, and a searchable list of quests with class and start zone filters" width="1920" height="1024" loading="lazy">
+        <figcaption>Quests. The quest items you are carrying, each linked to the quests that want it, and every quest on the wiki filtered by your classes.</figcaption>
+      </figure>
+      <a class="eqz-lb-x" href="#!" aria-label="Close">&#215;</a>
+    </div>
+    <div class="eqz-lb" id="shot-4" role="dialog" aria-label="Loot screenshot">
+      <a class="eqz-lb-bg" href="#!" aria-label="Close"></a>
+      <figure>
+        <img src="https://eqzera.com/wp-content/uploads/2026/09/app-loot.png" alt="EQ Zera Loot tab: thousands of loot events grouped by item with times looted, estimated inventory count, top source mob, zones and last looted" width="1920" height="1024" loading="lazy">
+        <figcaption>Loot. Everything you ever looted, grouped by item, with drops per hour, the mob that drops it most, and notable pickups tied to quests.</figcaption>
+      </figure>
+      <a class="eqz-lb-x" href="#!" aria-label="Close">&#215;</a>
+    </div>
+    <div class="eqz-lb" id="shot-5" role="dialog" aria-label="Maps screenshot">
+      <a class="eqz-lb-bg" href="#!" aria-label="Close"></a>
+      <figure>
+        <img src="https://eqzera.com/wp-content/uploads/2026/09/app-maps.png" alt="EQ Zera Maps tab: the Plane of Sky map with island portals and key names labelled, and a named mob list with spawn points" width="1920" height="1024" loading="lazy">
+        <figcaption>Maps. Zone maps with labels, portals and named mob spawn points, following the zone your log says you are in.</figcaption>
+      </figure>
+      <a class="eqz-lb-x" href="#!" aria-label="Close">&#215;</a>
     </div>
   </div>
 </section>
@@ -352,7 +404,7 @@ body:has(.eqz-page){background:#0c0a1f}
       <div>
         <h3>Switching takes one install</h3>
         <p>EQ Zera reads the same settings folder, so your alerts, sound packs, overlay positions and character history carry over on first launch. Nothing is moved or deleted; the old install keeps working if you leave it.</p>
-        <p class="eqz-note"><b>Looking for the EQ Legends Companion download?</b> The original project no longer publishes builds. The <a href="https://github.com/Zeratfule/EQ-Zera/releases/latest/download/eq-zera-Setup.exe">EQ Zera installer</a> is the current one.</p>
+        <p class="eqz-note"><b>Looking for the original EQ Companion app?</b> <a href="https://github.com/jmoyers/everquest-companion/releases/latest" target="_blank" rel="noopener">Get it here.</a></p>
       </div>
     </div>
   </div>
