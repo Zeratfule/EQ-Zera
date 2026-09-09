@@ -138,6 +138,16 @@ export const RELEASE_NOTES: readonly ReleaseNote[] = [
   // Character sharing, phase 2 (docs/plans/share-links.md): the card as a link. The service
   // behind share.eqzera.com went live 2026-09-09 (share-server/, Cloudflare Worker + KV).
   {
+    version: '1.21.2',
+    date: '2026-09-09',
+    entries: [
+      {
+        kind: 'fixed',
+        text: 'Copy link no longer says the profile is too large to share on high-resolution displays. The card picture is shrunk to fit the link service, and a link without a picture is sent rather than no link at all.'
+      }
+    ]
+  },
+  {
     version: '1.21.1',
     date: '2026-09-09',
     entries: [

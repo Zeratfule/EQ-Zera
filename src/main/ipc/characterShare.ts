@@ -206,6 +206,31 @@ function recordLink(
   })
 }
 
+/**
+ * THE SERVICE TAKES A 400 KB CARD, AND A SCREEN CAPTURE IS NOT ONE (owner report, 2026-09-09:
+ * "That profile is too large to share"). `capturePage` answers at the display's own scale, so a
+ * 720 CSS px card on a 150% display with the zoom factor on top is a 1500 to 2200 px PNG with a
+ * 3D figure in it, well past share-server's MAX_CARD_BYTES. The link is the point of the publish
+ * and the picture is its garnish, so the picture gives way: shrink the capture through a short
+ * ladder of widths until its PNG fits, and when none fits send the envelope alone rather than
+ * refusing the whole share. The clipboard and Save image paths keep the full-size capture.
+ */
+const LINK_CARD_MAX_BYTES = 400 * 1024
+const LINK_CARD_WIDTHS = [1440, 1080, 900, 720, 600, 480]
+
+function cardBytesForLink(image: Electron.NativeImage | null): Buffer | null {
+  if (!image || image.isEmpty()) return null
+  const full = image.toPNG()
+  if (full.length <= LINK_CARD_MAX_BYTES) return full
+  const { width } = image.getSize()
+  for (const w of LINK_CARD_WIDTHS) {
+    if (w >= width) continue
+    const png = image.resize({ width: w, quality: 'best' }).toPNG()
+    if (png.length <= LINK_CARD_MAX_BYTES) return png
+  }
+  return null
+}
+
 /** Publish, then record what came back. Never throws; every failure is a sentence. */
 async function shareLink(req: unknown): Promise<ShareLinkResult> {
   const request = (req && typeof req === 'object' ? req : {}) as Partial<ShareLinkRequest>
@@ -214,7 +239,7 @@ async function shareLink(req: unknown): Promise<ShareLinkResult> {
   const published = await publishShare(
     {
       profile: request.profile,
-      card: image ? image.toPNG() : null,
+      card: cardBytesForLink(image),
       appVersion: app.getVersion(),
       existing: existing ? { id: existing.id, deleteToken: existing.deleteToken } : undefined
     },
