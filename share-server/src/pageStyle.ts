@@ -30,9 +30,15 @@ h3{font-family:var(--display);font-size:13px;letter-spacing:.12em;text-transform
 .hot{position:absolute;border-radius:6px;cursor:pointer;outline:0;transition:box-shadow .12s,background .12s}
 .hot:hover,.hot:focus,.hot.pin,.hot.lit{box-shadow:0 0 0 2px var(--cyan),0 0 18px rgba(94,230,255,.45);background:rgba(94,230,255,.1)}
 .hot.pin{box-shadow:0 0 0 2px var(--pink),0 0 18px rgba(255,95,184,.45)}
-.tip{display:none;position:absolute;left:0;top:calc(100% + 6px);z-index:6;width:min(420px,70vw);padding:10px 12px;
-background:var(--panel);border:1px solid var(--line);border-radius:8px;box-shadow:0 14px 36px rgba(0,0,0,.55);font-size:14px;cursor:auto}
-.hot:hover .tip,.hot:focus .tip,.hot.pin .tip{display:block}
+.tip{position:absolute;left:0;top:calc(100% + 6px);z-index:6;width:min(420px,70vw);padding:10px 12px;
+background:var(--panel);border:1px solid var(--line);border-radius:8px;box-shadow:0 14px 36px rgba(0,0,0,.55);font-size:14px;cursor:auto;
+opacity:0;visibility:hidden;transform:translateY(-4px);transition:opacity .16s ease-out,transform .16s ease-out,visibility 0s linear .16s}
+.hot:hover .tip,.hot:focus-visible .tip,.hot.pin .tip{opacity:1;visibility:visible;transform:none;transition-delay:0s}
+.hot.pin .tip{z-index:7}
+@keyframes eqz-fade{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+.gear[open] .facts{animation:eqz-fade .16s ease-out}
+.gear.pinned summary .item{color:var(--pink)}
+@media (prefers-reduced-motion:reduce){.tip,.hot,.slots>li{transition:none}.gear[open] .facts{animation:none}}
 .hot.flip .tip{left:auto;right:0}
 .tipname{margin:0 0 6px;font-size:15px;display:flex;align-items:center;flex-wrap:wrap}
 .tip .facts{margin:0;padding:0;border:0;background:transparent}

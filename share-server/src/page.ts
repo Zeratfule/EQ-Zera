@@ -415,9 +415,13 @@ function hoverScript(): string {
     `var rows=document.querySelectorAll('details.gear');` +
     `for(var i=0;i<rows.length;i++)(function(d){var s=d.querySelector('summary');if(!s)return;` +
     `s.addEventListener('mouseenter',function(){if(!d.open){d.open=true;d.classList.add('float')}});` +
-    `d.addEventListener('mouseleave',function(){if(d.classList.contains('float')){d.open=false;d.classList.remove('float')}});` +
-    `s.addEventListener('click',function(e){if(d.classList.contains('float')){e.preventDefault();d.classList.remove('float')}});` +
-    `})(rows[i]);})();`
+    `d.addEventListener('mouseleave',function(){if(d.classList.contains('float')&&!d.classList.contains('pinned')){d.open=false;d.classList.remove('float')}});` +
+    // A click on a floating row PINS it where it floats (no layout jump); a second click lets go.
+    `s.addEventListener('click',function(e){if(!d.classList.contains('float'))return;e.preventDefault();` +
+    `if(d.classList.contains('pinned')){d.classList.remove('pinned','float');d.open=false}else{d.classList.add('pinned')}});` +
+    `})(rows[i]);` +
+    `document.addEventListener('keydown',function(e){if(e.key!=='Escape')return;var p=document.querySelectorAll('details.gear.pinned');` +
+    `for(var j=0;j<p.length;j++){p[j].classList.remove('pinned','float');p[j].open=false}});})();`
   )
 }
 
@@ -438,7 +442,9 @@ function hotspotScript(): string {
     `if(r){r.addEventListener('mouseenter',function(){h.classList.add('lit')});` +
     `r.addEventListener('mouseleave',function(){h.classList.remove('lit')})}` +
     `})(hots[i]);` +
-    `document.addEventListener('keydown',function(e){if(e.key==='Escape')unpin()});})();`
+    `document.addEventListener('keydown',function(e){if(e.key==='Escape')unpin()});` +
+    // A tap or click anywhere else lets a pinned tip go - the touch path's way out.
+    `document.addEventListener('click',function(e){var t=e.target;if(!(t&&t.closest&&t.closest('.hot')))unpin()});})();`
   )
 }
 
