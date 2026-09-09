@@ -372,7 +372,7 @@ export function statInteger(value: string): number | null {
 /** Display order for the summed rows. Anything unlisted keeps source order, after these. */
 const STAT_ORDER = [
   'Strength', 'Stamina', 'Agility', 'Dexterity', 'Wisdom', 'Intelligence', 'Charisma',
-  'HP', 'Mana', 'Endurance', 'Attack', 'Regen', 'Mana Regen'
+  'HP', 'Mana', 'Endurance', 'Attack', 'Regen', 'HP Regen', 'Mana Regen', 'Endurance Regen'
 ]
 
 function orderKey(label: string): number {

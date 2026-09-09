@@ -138,6 +138,16 @@ export const RELEASE_NOTES: readonly ReleaseNote[] = [
   // Character sharing, phase 2 (docs/plans/share-links.md): the card as a link. The service
   // behind share.eqzera.com went live 2026-09-09 (share-server/, Cloudflare Worker + KV).
   {
+    version: '1.22.3',
+    date: '2026-09-09',
+    entries: [
+      {
+        kind: 'fixed',
+        text: 'HP Regen and Endurance Regen are read as their own stats. They used to collapse into a plain Regen line, so an item window showed Regen twice and the totals added the two together. The Gear tab\x27s HP Regen column fills in for those items too.'
+      }
+    ]
+  },
+  {
     version: '1.22.2',
     date: '2026-09-09',
     entries: [

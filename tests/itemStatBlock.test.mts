@@ -318,3 +318,16 @@ test('statLabel spells attributes out the way the item window does', () => {
   assert.equal(statLabel('SV FIRE'), 'SV Fire')
   assert.equal(statLabel('HP'), 'HP')
 })
+
+test('the three regens are three keys, not one (Talisman of Kejaar Kerrath, 2026-09-09)', () => {
+  // `Regen` alone used to match INSIDE `HP Regen` and `End Regen`, so a shared card read
+  // "Regen 7 · Mana Regen 7 · Regen 7" and the totals summed HP and endurance regen together.
+  const b = parseStatsBlock('Lore Equipped No Trade\nHP Regen: 7 Mana Regen: 7 End Regen: 7 STR: +5')
+  assert.deepEqual(
+    b.stats.map((s) => [s.key, s.value]),
+    [['HP REGEN', '7'], ['MANA REGEN', '7'], ['END REGEN', '7'], ['STR', '+5']]
+  )
+  assert.deepEqual(b.stats.map((s) => statLabel(s.key)), ['HP Regen', 'Mana Regen', 'Endurance Regen', 'Strength'])
+  // A bare `Regen:` still parses as itself.
+  assert.deepEqual(parseStatsBlock('Regen: 3').stats, [{ key: 'REGEN', value: '3' }])
+})

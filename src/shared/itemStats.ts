@@ -110,10 +110,20 @@ const STRUCT_KEYS = [
   'BACKSTAB', 'Backstab', 'WT', 'Weight', 'Size', 'Range', 'AC'
 ]
 
-/** Plain `KEY: value` stats that land in the attribute grid. */
+/**
+ * Plain `KEY: value` stats that land in the attribute grid.
+ *
+ * THE THREE REGENS ARE THREE KEYS (2026-09-09, seen on a shared Talisman of Kejaar Kerrath:
+ * "Regen 7 · Mana Regen 7 · Regen 7"). The wiki block writes `HP Regen: 7`, `Mana Regen: 7`
+ * and `End Regen: 7`; with only `Regen` in this list the matcher's leading-whitespace boundary
+ * let it fire INSIDE "HP Regen" and "End Regen", so both became the key REGEN, the totals added
+ * HP and endurance regen into one "Regen 14", and the Gear tab's HP_REGEN column never saw them.
+ * KEY_ALT is longest-first, so listing the long forms is the whole fix.
+ */
 const STAT_KEYS = [
   'STR', 'STA', 'AGI', 'DEX', 'WIS', 'INT', 'CHA', 'HP', 'MANA', 'END', 'ENDURANCE',
-  'Haste', 'Attack', 'Regen', 'Mana Regen', 'Charges', 'Rec Level', 'Recommended Level',
+  'Haste', 'Attack', 'HP Regen', 'Mana Regen', 'End Regen', 'Endurance Regen', 'Regen',
+  'Charges', 'Rec Level', 'Recommended Level',
   'Required Level', 'Req Level', 'Cast Time', 'Cooldown', 'Recast', 'Range Damage'
 ]
 
@@ -389,7 +399,9 @@ const STAT_LABEL: Record<string, string> = {
   STR: 'Strength', STA: 'Stamina', AGI: 'Agility', DEX: 'Dexterity',
   WIS: 'Wisdom', INT: 'Intelligence', CHA: 'Charisma',
   HP: 'HP', MANA: 'Mana', END: 'Endurance', ENDURANCE: 'Endurance',
-  AC: 'AC', HASTE: 'Haste', ATTACK: 'Attack', REGEN: 'Regen'
+  AC: 'AC', HASTE: 'Haste', ATTACK: 'Attack',
+  REGEN: 'Regen', 'HP REGEN': 'HP Regen', 'MANA REGEN': 'Mana Regen',
+  'END REGEN': 'Endurance Regen', 'ENDURANCE REGEN': 'Endurance Regen'
 }
 
 /** In-window label for a stat key ("STR" → "Strength", "SV FIRE" → "SV Fire"). */
