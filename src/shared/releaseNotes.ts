@@ -151,7 +151,7 @@ export const RELEASE_NOTES: readonly ReleaseNote[] = [
       },
       {
         kind: 'changed',
-        text: 'share.eqzera.com pages show rank badges, a tap-to-open item detail per slot, and a Character with gear section above the totals.'
+        text: 'share.eqzera.com pages show rank badges, a tap-to-open item detail per slot, and a Character with gear section that gathers level, classes, AC, HP, mana, attributes and saves in one place.'
       }
     ]
   },
