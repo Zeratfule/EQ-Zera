@@ -51,7 +51,7 @@ export interface ShareTarget {
 export interface PublishRequest {
   /** the renderer's profile, re-sanitized here before it is wrapped */
   profile: unknown
-  /** the card as PNG bytes, or null when the capture produced nothing worth sending */
+  /** the card's image bytes (JPEG since 1.22.1; the service accepts PNG, JPEG or WebP), or null when the capture produced nothing worth sending */
   card: Buffer | null
   /** `app.getVersion()`, passed in so this module stays Electron-free and node-testable */
   appVersion: string
@@ -106,7 +106,7 @@ interface PublishBody {
   card?: string
 }
 
-/** The wire body: the envelope, and the card as base64 PNG when there is one to send. */
+/** The wire body: the envelope, and the card as a base64 image when there is one to send. */
 function publishBody(profile: unknown, card: Buffer | null, appVersion: string): PublishBody | null {
   const body = sanitizeCharacterShare(profile)
   if (!body) return null

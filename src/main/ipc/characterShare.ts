@@ -207,26 +207,29 @@ function recordLink(
 }
 
 /**
- * THE SERVICE TAKES A 400 KB CARD, AND A SCREEN CAPTURE IS NOT ONE (owner report, 2026-09-09:
- * "That profile is too large to share"). `capturePage` answers at the display's own scale, so a
- * 720 CSS px card on a 150% display with the zoom factor on top is a 1500 to 2200 px PNG with a
- * 3D figure in it, well past share-server's MAX_CARD_BYTES. The link is the point of the publish
- * and the picture is its garnish, so the picture gives way: shrink the capture through a short
- * ladder of widths until its PNG fits, and when none fits send the envelope alone rather than
- * refusing the whole share. The clipboard and Save image paths keep the full-size capture.
+ * THE LINK CARD IS A JPEG AT FULL CAPTURE WIDTH (owner, 2026-09-09: "let's do them both", big
+ * AND sharp). `capturePage` answers at the display's own scale, so a 720 CSS px card on a
+ * high-DPI display is a 1500 to 2900 px image with a 3D figure in it. As a PNG that was well
+ * past the service's cap and the first fix shrank it to fit, which made the page's card small.
+ * share-server now takes PNG, JPEG or WebP up to 1 MB (its MAX_CARD_BYTES; Worker dd389965,
+ * docs/plans/share-links.md) and the page draws the card at 2x, so the full-width capture as a
+ * JPEG is what shows big and sharp. Order: JPEG at the full width, then the same ladder of widths
+ * as JPEG, then the envelope alone rather than refusing the whole share; the link is the point of
+ * the publish and the picture is its garnish. The clipboard and Save image paths keep the PNG.
  */
-const LINK_CARD_MAX_BYTES = 400 * 1024
-const LINK_CARD_WIDTHS = [1440, 1080, 900, 720, 600, 480]
+const LINK_CARD_MAX_BYTES = 1024 * 1024
+const LINK_CARD_WIDTHS = [2400, 1920, 1440, 1080, 900, 720]
+const LINK_CARD_JPEG_QUALITY = 90
 
 function cardBytesForLink(image: Electron.NativeImage | null): Buffer | null {
   if (!image || image.isEmpty()) return null
-  const full = image.toPNG()
+  const full = image.toJPEG(LINK_CARD_JPEG_QUALITY)
   if (full.length <= LINK_CARD_MAX_BYTES) return full
   const { width } = image.getSize()
   for (const w of LINK_CARD_WIDTHS) {
     if (w >= width) continue
-    const png = image.resize({ width: w, quality: 'best' }).toPNG()
-    if (png.length <= LINK_CARD_MAX_BYTES) return png
+    const jpeg = image.resize({ width: w, quality: 'best' }).toJPEG(LINK_CARD_JPEG_QUALITY)
+    if (jpeg.length <= LINK_CARD_MAX_BYTES) return jpeg
   }
   return null
 }
