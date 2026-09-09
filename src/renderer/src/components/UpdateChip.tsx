@@ -76,6 +76,45 @@ const GLOW_MS = 6_000
  *  answer is valid for at least this long, and it keeps a rapid clicker off GitHub. */
 const CHECK_COOLDOWN_MS = 10_000
 
+/**
+ * THE TWO OFFER CHIPS ARE STACKED, NOT SIDE BY SIDE (owner, 2026-09-09: "the words don't fit when
+ * there is an update nor do they fit when it asks to install"). The rail is DRAWER_WIDTH = 96px.
+ * An icon beside a one-line label left about 30px for the words, and two rounds of shrinking the
+ * font (body2 to caption) never addressed that: the layout was the problem, not the size. Now the
+ * icon sits on top, the label WRAPS to two centred lines at the rail's own 10px, and the version
+ * line under it ellipsizes if it ever has to. No noWrap on the label: clipping the offer is the
+ * one thing this chip must never do.
+ */
+const STACKED_CHIP = {
+  width: '100%',
+  display: 'flex',
+  flexDirection: 'column',
+  alignItems: 'center',
+  gap: 0.5,
+  px: 0.75,
+  py: 0.75,
+  border: 1
+} as const
+const CHIP_LABEL = {
+  display: 'block',
+  textAlign: 'center',
+  fontSize: 10,
+  fontWeight: 700,
+  lineHeight: 1.25,
+  overflowWrap: 'anywhere'
+} as const
+const CHIP_VERSION = {
+  display: 'block',
+  textAlign: 'center',
+  fontSize: 10,
+  lineHeight: 1.25,
+  opacity: 0.75,
+  fontFamily: 'monospace',
+  whiteSpace: 'nowrap',
+  overflow: 'hidden',
+  textOverflow: 'ellipsis'
+} as const
+
 /** The one inviting, clickable state: downloaded + staged, waiting on a restart. */
 function ReadyChip({
   version,
@@ -95,19 +134,13 @@ function ReadyChip({
         onClick={onInstall}
         title={version ? `Restart to update to v${version}` : 'Restart to update'}
         sx={{
-          width: '100%',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 1,
-          px: 1.25,
-          py: 0.9,
-          border: 1,
+          ...STACKED_CHIP,
           borderColor: withAlpha(PALETTE.accent, 0.55),
           borderRadius: 1.5,
           bgcolor: withAlpha(PALETTE.accent, 0.10),
           color: ACCENT,
           font: 'inherit',
-          textAlign: 'left',
+          textAlign: 'center',
           cursor: 'pointer',
           transition: 'background-color 140ms ease, border-color 140ms ease',
           '&:hover': { bgcolor: withAlpha(PALETTE.accent, 0.20), borderColor: ACCENT },
@@ -123,21 +156,9 @@ function ReadyChip({
         }}
       >
         <RestartAltIcon fontSize="small" />
-        <Box sx={{ minWidth: 0, flexGrow: 1 }}>
-          {/* Caption size like the available chip below it (owner, 2026-09-08: body2 did not fit
-              the rail). */}
-          <Typography variant="caption" sx={{ display: 'block', fontWeight: 700, lineHeight: 1.3 }} noWrap>
-            Restart to update
-          </Typography>
-          {version && (
-            <Typography
-              variant="caption"
-              noWrap
-              sx={{ display: 'block', opacity: 0.75, lineHeight: 1.3, fontFamily: 'monospace' }}
-            >
-              v{version}
-            </Typography>
-          )}
+        <Box sx={{ minWidth: 0, width: '100%' }}>
+          <Typography sx={CHIP_LABEL}>Restart to update</Typography>
+          {version && <Typography sx={CHIP_VERSION}>v{version}</Typography>}
         </Box>
       </Box>
     </Box>
@@ -174,35 +195,22 @@ function AvailableChip({ version, onDownload }: { version?: string; onDownload: 
         // A native `title`, never a MUI Tooltip — the rule this whole file obeys (see the header).
         title={version ? `Download and install v${version}` : 'Download and install the update'}
         sx={{
-          width: '100%',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 1,
-          px: 1.25,
-          py: 0.9,
-          border: 1,
+          ...STACKED_CHIP,
           borderColor: withAlpha(PALETTE.accent, 0.45),
           borderRadius: 1.5,
           bgcolor: withAlpha(PALETTE.accent, 0.08),
           color: ACCENT,
           font: 'inherit',
-          textAlign: 'left',
+          textAlign: 'center',
           cursor: 'pointer',
           transition: 'background-color 140ms ease, border-color 140ms ease',
           '&:hover': { bgcolor: withAlpha(PALETTE.accent, 0.18), borderColor: ACCENT }
         }}
       >
         <DownloadIcon fontSize="small" />
-        {/* TWO SHORT LINES AT THE RAIL'S OWN SIZE (owner, 2026-09-08: the one-line body2 sentence did
-            not fit the 220px rail). The offer and the version each get a caption line, and a
-            version that somehow overflows ellipsizes rather than pushing the box. */}
-        <Box sx={{ minWidth: 0, flexGrow: 1 }}>
-          <Typography variant="caption" sx={{ display: 'block', fontWeight: 700, lineHeight: 1.3 }} noWrap>
-            Update ready
-          </Typography>
-          <Typography variant="caption" sx={{ display: 'block', lineHeight: 1.3, opacity: 0.85 }} noWrap>
-            {version ? `Download v${version}` : 'Download it'}
-          </Typography>
+        <Box sx={{ minWidth: 0, width: '100%' }}>
+          <Typography sx={CHIP_LABEL}>Update ready</Typography>
+          <Typography sx={CHIP_VERSION}>{version ? `get v${version}` : 'download it'}</Typography>
         </Box>
       </Box>
     </Box>

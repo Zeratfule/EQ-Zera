@@ -138,6 +138,16 @@ export const RELEASE_NOTES: readonly ReleaseNote[] = [
   // Character sharing, phase 2 (docs/plans/share-links.md): the card as a link. The service
   // behind share.eqzera.com went live 2026-09-09 (share-server/, Cloudflare Worker + KV).
   {
+    version: '1.21.1',
+    date: '2026-09-09',
+    entries: [
+      {
+        kind: 'fixed',
+        text: 'The Update ready and Restart to update chips at the foot of the sidebar now fit the sidebar. The icon sits above the words and the words wrap instead of being cut off.'
+      }
+    ]
+  },
+  {
     version: '1.21.0',
     date: '2026-09-09',
     entries: [
