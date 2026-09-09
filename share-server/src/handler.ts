@@ -9,10 +9,10 @@
 //
 // THE ROUTES (docs/plans/share-links.md, "Service — share-server/"):
 //
-//   POST   /api/v1/shares       {envelope, card?}            -> 201 {id, url, deleteToken, expiresAt}
+//   POST   /api/v1/shares       {envelope, card?, cardMap?}  -> 201 {id, url, deleteToken, expiresAt}
 //   PUT    /api/v1/shares/:id   same body + Bearer token     -> 200 {id, url, expiresAt}
 //   DELETE /api/v1/shares/:id   Bearer token                 -> 204
-//   GET    /p/:id               -                            -> 200 {envelope, createdAt, updatedAt, expiresAt}
+//   GET    /p/:id               -                            -> 200 {envelope, cardMap?, createdAt, updatedAt, expiresAt}
 //   GET    /c/:id.png           -                            -> the card image, PNG/JPEG/WebP (404 when absent)
 //   GET    /s/:id               -                            -> the HTML page
 //   GET    /                    -                            -> 302 https://eqzera.com/
@@ -28,6 +28,7 @@ import {
   ID_LENGTH,
   KEY_CARD,
   MAX_CARD_BYTES,
+  type CardHotspot,
   type Env,
   type ShareRecord
 } from './env'
@@ -50,6 +51,7 @@ import {
   deleteShare,
   expiresAt,
   readRecord,
+  sanitizeCardMap,
   shareStringFor,
   touch,
   writeCard,
@@ -91,6 +93,8 @@ interface WriteBody {
   envelope: ShareEnvelope
   profile: CharacterProfileShare
   card: Uint8Array | null
+  /** the card's hotspots; empty when none were sent, when no card came with them, or none survived */
+  cardMap: CardHotspot[]
 }
 
 function refuse(status: number, error: string, message: string): Refusal {
@@ -193,7 +197,11 @@ async function readWriteBody(request: Request): Promise<WriteBody | Refusal> {
   if (!accepted.ok) return accepted
   const card = decodeCard(fields.card)
   if (!card.ok) return card
-  return { ok: true, envelope: accepted.envelope, profile: accepted.profile, card: card.card }
+  // The map only means anything next to the card it was measured on, so without a card it is
+  // dropped rather than stored against whatever image the record already has.
+  const slots = new Set(accepted.profile.cells.map((cell) => cell.slot))
+  const cardMap = card.card ? sanitizeCardMap(fields.cardMap, slots) : []
+  return { ok: true, envelope: accepted.envelope, profile: accepted.profile, card: card.card, cardMap }
 }
 
 // ------------------------------------------------------------------------------- the API routes
@@ -213,6 +221,7 @@ async function createShare(ctx: Ctx): Promise<Response> {
     tokenHash: await sha256Hex(deleteToken),
     hasCard: body.card !== null
   }
+  if (body.cardMap.length) record.cardMap = body.cardMap
   if (body.card) await writeCard(ctx.env, id, body.card)
   await writeRecord(ctx.env, id, record)
   const reply = { id, url: `${ctx.origin}/s/${id}`, deleteToken, expiresAt: expiresAt(record) }
@@ -263,6 +272,11 @@ async function updateShare(ctx: Ctx, id: string): Promise<Response> {
     lastSeenAt: at,
     hasCard: body.card !== null || record.hasCard
   }
+  if (body.card) {
+    // The old map described the old image.
+    if (body.cardMap.length) next.cardMap = body.cardMap
+    else delete next.cardMap
+  }
   await writeRecord(ctx.env, id, next)
   return jsonResponse(
     { id, url: `${ctx.origin}/s/${id}`, expiresAt: expiresAt(next) },
@@ -290,6 +304,7 @@ async function readProfile(ctx: Ctx, id: string): Promise<Response> {
   const fresh = await touch(ctx.env, id, record, ctx.now())
   const reply = {
     envelope: fresh.envelope,
+    ...(fresh.cardMap ? { cardMap: fresh.cardMap } : {}),
     createdAt: new Date(fresh.createdAt).toISOString(),
     updatedAt: new Date(fresh.updatedAt).toISOString(),
     expiresAt: expiresAt(fresh)
@@ -329,6 +344,7 @@ async function readPage(ctx: Ctx, id: string): Promise<Response> {
     origin: ctx.origin,
     shareString: await shareStringFor(accepted.envelope),
     hasCard: fresh.hasCard,
+    cardMap: fresh.hasCard ? (fresh.cardMap ?? []) : [],
     updatedAt: fresh.updatedAt,
     nonce
   })

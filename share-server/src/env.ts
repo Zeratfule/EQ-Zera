@@ -61,6 +61,19 @@ export interface Env {
  * here so the HTML page does not have to fetch the PNG to find out whether to draw an `<img>`.
  * `lastSeenAt` is the clock ruling 2's 30-day read-refresh window is measured against.
  */
+/**
+ * Where one gear cell sits on the card image, in FRACTIONS of the image (0..1): `x`/`y` the
+ * top-left corner, `w`/`h` the size. Measured by the app at capture time, so it is only ever
+ * meaningful alongside the card from the same capture; `slot` is the envelope cell's slot id.
+ */
+export interface CardHotspot {
+  slot: string
+  x: number
+  y: number
+  w: number
+  h: number
+}
+
 export interface ShareRecord {
   envelope: unknown
   createdAt: number
@@ -68,6 +81,8 @@ export interface ShareRecord {
   lastSeenAt: number
   tokenHash: string
   hasCard: boolean
+  /** the card's hotspots (2026-09-09); absent on records written before, and when none were sent */
+  cardMap?: CardHotspot[]
 }
 
 /** 180 days, in seconds — the KV TTL every write of both keys carries (owner ruling 2). */

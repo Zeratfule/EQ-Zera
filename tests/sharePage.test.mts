@@ -27,7 +27,7 @@ import {
 import { esc, renderPage, splitRank } from '../share-server/src/page'
 import { handleRequest } from '../share-server/src/handler'
 import { logoPng } from '../share-server/src/logo'
-import type { Env } from '../share-server/src/env'
+import type { CardHotspot, Env } from '../share-server/src/env'
 
 const CAPTURED = 1_757_000_000_000
 
@@ -87,7 +87,7 @@ function v1Profile(): CharacterProfileShare {
 }
 
 /** Through the sanitizer, exactly as the handler would read it back, then onto the page. */
-function render(profile: CharacterProfileShare): string {
+function render(profile: CharacterProfileShare, card: { hasCard: boolean; cardMap: CardHotspot[] } = { hasCard: false, cardMap: [] }): string {
   const stored = sanitizeCharacterShare(profile)
   assert.ok(stored, 'the fixture sanitizes')
   return renderPage({
@@ -95,7 +95,8 @@ function render(profile: CharacterProfileShare): string {
     profile: stored,
     origin: 'https://share.eqzera.com',
     shareString: 'EQC1-not-a-real-string',
-    hasCard: false,
+    hasCard: card.hasCard,
+    cardMap: card.cardMap,
     updatedAt: CAPTURED,
     nonce: 'nonce123'
   })
@@ -225,4 +226,40 @@ test('/logo.png serves the mark as a PNG, the one image img-src self admits', as
   assert.equal(bytes.length, logoPng().length)
   const post = await handleRequest(new Request('https://share.eqzera.com/logo.png', { method: 'POST' }), env, () => CAPTURED)
   assert.equal(post.status, 404, 'only GET and HEAD')
+})
+
+// ---- the card's hotspots ---------------------------------------------------------------------
+
+test('a card with a map gets one hotspot per entry, positioned by nonce\'d CSS, tipped with the item', () => {
+  const body = v2Profile()
+  const first = body.cells[0]!
+  const unknownCell = body.cells.find((c) => !c.known)!
+  const cardMap: CardHotspot[] = [
+    { slot: first.slot, x: 0.05, y: 0.1, w: 0.2, h: 0.05 },
+    { slot: unknownCell.slot, x: 0.7, y: 0.5, w: 0.25, h: 0.05 },
+    { slot: 'no-such-slot', x: 0.1, y: 0.1, w: 0.1, h: 0.1 }
+  ]
+  const html = render(body, { hasCard: true, cardMap })
+  assert.ok(html.includes('<div class="cardwrap"><img class="card" src="/c/AbCdEfGhIj.png"'), 'the image, at column width')
+  assert.ok(!html.includes('srcset='), 'no half-size drawing any more')
+  assert.equal((html.match(/<div class="hot hot-/g) ?? []).length, 2, 'the unknown slot draws no hotspot')
+  assert.ok(html.includes(`<div class="hot hot-0" tabindex="0" data-slot="${first.slot}" role="button" aria-label="Drop of Crystallized Flame">`))
+  assert.ok(html.includes('.hot-0{left:5%;top:10%;width:20%;height:5%}'), 'geometry as CSS rules, not style attributes')
+  assert.ok(html.includes('<div class="hot hot-1 flip"'), 'a right-half cell flips its tip leftward')
+  assert.ok(html.includes('<p class="tipname"><span class="item">Drop of Crystallized Flame</span><span class="rank">+7</span></p>'))
+  assert.ok(html.includes('<ul class="flags"><li>Lore Equipped</li>'), 'the tip carries the facts block')
+  assert.ok(html.includes('Not in the item database, so its stats are not counted'), 'and the unknown item says so in its tip')
+  assert.ok(html.includes(`<li id="slot-${first.slot}" data-slot="${first.slot}">`), 'gear rows are addressable by slot')
+  assert.ok(html.includes("document.querySelectorAll('.hot')"), 'the script couples hotspots and rows')
+  assert.equal((html.match(/<script/g) ?? []).length, 1)
+})
+
+test('a card without a map is a plain image, and no card draws nothing', () => {
+  const body = v2Profile()
+  const plain = render(body, { hasCard: true, cardMap: [] })
+  assert.ok(plain.includes('<div class="cardwrap"><img class="card"'))
+  assert.ok(!plain.includes('class="hots"'))
+  const none = render(body)
+  assert.ok(!none.includes('<img class="card"'))
+  assert.ok(!none.includes('.hot-0{'))
 })

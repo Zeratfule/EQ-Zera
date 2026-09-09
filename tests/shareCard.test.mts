@@ -159,6 +159,34 @@ test('a GIF is refused as bad-card, and the cap is 1 MB decoded', async () => {
   assert.equal(((await over.json()) as { error: string }).error, 'too-large')
 })
 
+test('cardMap rides with the card: sanitized on the way in, returned by /p/:id, drawn on the page', async () => {
+  const h = harness()
+  const slot = (envelope.body as { cells: { slot: string }[] }).cells[0]!.slot
+  const cardMap = [
+    { slot, x: 0.1, y: 0.2, w: 0.3, h: 0.04 },
+    { slot: 'nope', x: 0.1, y: 0.2, w: 0.3, h: 0.04 }, // not a cell of this envelope
+    { slot, x: 1.5, y: 0.2, w: 0.3, h: 0.04 }, // out of range
+    { slot, x: 0.1, y: 0.2, w: 0, h: 0.04 }, // no width
+    'garbage'
+  ]
+  const made = await h.call('POST', '/api/v1/shares', { envelope, card: b64(JPEG), cardMap })
+  assert.equal(made.status, 201)
+  const { id } = (await made.json()) as { id: string }
+  const read = (await (await h.call('GET', `/p/${id}`)).json()) as { cardMap?: unknown }
+  assert.deepEqual(read.cardMap, [{ slot, x: 0.1, y: 0.2, w: 0.3, h: 0.04 }], 'one entry survives')
+  const html = await (await h.call('GET', `/s/${id}`)).text()
+  assert.equal((html.match(/<div class="hot hot-/g) ?? []).length, 1)
+  assert.ok(html.includes('.hot-0{left:10%;top:20%;width:30%;height:4%}'))
+
+  // Without a card the map is meaningless and is dropped; with a card it replaces the old one.
+  const bare = await h.call('POST', '/api/v1/shares', { envelope, cardMap })
+  const bareId = ((await bare.json()) as { id: string }).id
+  const bareRead = (await (await h.call('GET', `/p/${bareId}`)).json()) as { cardMap?: unknown }
+  assert.equal(bareRead.cardMap, undefined)
+  const bareHtml = await (await h.call('GET', `/s/${bareId}`)).text()
+  assert.ok(!bareHtml.includes('class="hot '))
+})
+
 test('a stored card that predates the sniff (raw PNG bytes) still serves as image/png', async () => {
   const kv = new MemKv()
   const env: Env = { SHARES: kv, PUBLIC_ORIGIN: ORIGIN }

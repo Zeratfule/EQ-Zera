@@ -32,6 +32,8 @@ import type {
   ShareStatLine
 } from '../../src/shared/characterShare'
 import { characterBlock, characterShareText } from '../../src/shared/characterShare'
+import type { CardHotspot } from './env'
+import { STYLE } from './pageStyle'
 
 /** Everything the renderer is handed. One object because seven loose arguments is six too many. */
 export interface PageInput {
@@ -42,6 +44,8 @@ export interface PageInput {
   /** the `EQC1-…` string, built by the server from the stored envelope */
   shareString: string
   hasCard: boolean
+  /** where each gear cell sits on the card, for the hotspots; empty = a plain image */
+  cardMap: readonly CardHotspot[]
   /** epoch millis of the last write — what the "Shared from EQ Zera · <date>" line reads */
   updatedAt: number
   nonce: string
@@ -259,7 +263,10 @@ function cellRow(cell: ShareCell): string {
   const body = hasFacts(cell)
     ? `<details class="gear"><summary>${title}</summary>${factsBlock(cell)}</details>`
     : `<span class="name">${title}</span>`
-  return `<li><span class="slot">${esc(cell.label)}</span>${body}${bits.join('')}</li>`
+  return (
+    `<li id="slot-${esc(cell.slot)}" data-slot="${esc(cell.slot)}">` +
+    `<span class="slot">${esc(cell.label)}</span>${body}${bits.join('')}</li>`
+  )
 }
 
 function slotsBlock(profile: CharacterProfileShare): string {
@@ -317,6 +324,49 @@ function characterPanel(profile: CharacterProfileShare): string {
   )
 }
 
+/**
+ * The card image, and over it one hotspot per gear cell the app measured (`cardMap`).
+ *
+ * A hotspot is a focusable box at the cell's fractional position (the numbers become nonce'd
+ * CSS rules, see `hotspotCss`; a `style=` attribute would be blocked). Hover or focus shows a
+ * tip with the item's name, rank and the same facts block the gear list opens; the script adds
+ * the pin-on-click and lights the matching list row. Cells on the right half flip their tip
+ * leftward so it stays over the card. No map, no overlay: the image alone, full column width -
+ * it is a full-resolution JPEG since 1.22.1, so it can afford the width.
+ */
+function cardBlock(input: PageInput, title: string): string {
+  const img = `<img class="card" src="/c/${esc(input.id)}.png" alt="${esc(title)}">`
+  if (!input.cardMap.length) return `<div class="cardwrap">${img}</div>`
+  const bySlot = new Map(input.profile.cells.map((cell) => [cell.slot, cell]))
+  const hots = input.cardMap
+    .map((spot, i) => {
+      const cell = bySlot.get(spot.slot)
+      if (!cell) return ''
+      const { name, rank } = splitRank(cell)
+      const badge = rank !== undefined ? `<span class="rank">+${String(rank)}</span>` : ''
+      const flip = spot.x + spot.w / 2 > 0.5 ? ' flip' : ''
+      const tip =
+        `<div class="tip"><p class="tipname"><span class="item">${esc(name)}</span>${badge}</p>` +
+        (hasFacts(cell) ? factsBlock(cell) : '') +
+        `</div>`
+      return (
+        `<div class="hot hot-${String(i)}${flip}" tabindex="0" data-slot="${esc(cell.slot)}" ` +
+        `role="button" aria-label="${esc(name)}">${tip}</div>`
+      )
+    })
+    .join('')
+  return `<div class="cardwrap">${img}<div class="hots">${hots}</div></div>`
+}
+
+/** The hotspot geometry as nonce'd rules: percentages of the card, from sanitized 0..1 numbers. */
+function hotspotCss(input: PageInput): string {
+  if (!input.hasCard) return ''
+  const pct = (n: number): string => String(Math.round(n * 10_000) / 100)
+  return input.cardMap
+    .map((spot, i) => `.hot-${String(i)}{left:${pct(spot.x)}%;top:${pct(spot.y)}%;width:${pct(spot.w)}%;height:${pct(spot.h)}%}`)
+    .join('')
+}
+
 /** The copy block. The string is base64url by construction; it is escaped anyway, on principle. */
 function shareStringBlock(shareString: string): string {
   return (
@@ -346,6 +396,7 @@ function copyScript(nonce: string): string {
     `if(navigator.clipboard&&navigator.clipboard.writeText){` +
     `navigator.clipboard.writeText(t.value).then(flash,fallback)}else{fallback()}});})();` +
     hoverScript() +
+    hotspotScript() +
     `</script>`
   )
 }
@@ -370,83 +421,27 @@ function hoverScript(): string {
   )
 }
 
-const STYLE = `
-:root{--ground:#0c0a1f;--ground2:#13102c;--panel:#1a1638;--line:#2d2757;--ink:#efeaff;
---ink2:#b8b0d9;--ink3:#7d75a6;--cyan:#5ee6ff;--pink:#ff5fb8;--violet:#a98fe0;--sun:#c7a2ff;
---display:'Chakra Petch','Bahnschrift','Segoe UI',sans-serif;
---body:'Source Sans 3','Segoe UI',system-ui,sans-serif;
---mono:'JetBrains Mono','Cascadia Code',Consolas,monospace}
-*{box-sizing:border-box}
-body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.55}
-a{color:var(--cyan);text-decoration:none}a:hover{text-decoration:underline}
-.wrap{max-width:880px;margin:0 auto;padding:32px 20px 64px}
-h1{font-family:var(--display);font-size:clamp(30px,5vw,44px);font-weight:700;letter-spacing:.02em;margin:0;
-background:linear-gradient(180deg,#fff 0%,var(--sun) 60%,var(--pink) 100%);
--webkit-background-clip:text;background-clip:text;color:transparent}
-h2{font-family:var(--display);font-size:15px;letter-spacing:.16em;text-transform:uppercase;color:var(--pink);margin:0 0 12px}
-h3{font-family:var(--display);font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--ink3);margin:16px 0 8px}
-.sub{color:var(--ink2);font-size:19px;margin:8px 0 0}
-.meta{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3);margin:14px 0 0}
-.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:20px;margin:22px 0}
-.card{display:block;max-width:100%;height:auto;border:1px solid var(--line);border-radius:10px;margin:22px auto}
-.muted{color:var(--ink3);font-size:15px;margin:8px 0 0}
-.ac{margin:0;font-size:22px}.ac strong{font-family:var(--mono);color:var(--cyan)}
-ul{list-style:none;margin:0;padding:0}
-.bars li{display:grid;grid-template-columns:70px 1fr 52px;align-items:center;gap:12px;margin:0 0 10px}
-.track{height:9px;border-radius:5px;background:var(--ground2);border:1px solid var(--line);overflow:hidden}
-.fill{display:block;height:100%;background:linear-gradient(90deg,var(--cyan),var(--pink))}
-.bars .v{font-family:var(--mono);text-align:right;color:var(--cyan)}
-.chips{display:flex;flex-wrap:wrap;gap:8px}
-.chips li{display:flex;gap:8px;background:var(--ground2);border:1px solid var(--line);border-radius:6px;padding:5px 10px;font-size:14px}
-.chips .k{color:var(--ink3)}.chips .v{font-family:var(--mono);color:var(--ink)}
-.who{margin:0 0 4px;font-size:19px;color:var(--ink2)}
-.chips.core .v{color:var(--cyan)}
-.slots>li{display:grid;grid-template-columns:120px 1fr;gap:4px 10px;padding:8px 0;border-top:1px solid var(--line)}
-.slots>li:first-child{border-top:0}
-.slots>li{margin:0 -10px;padding-left:10px;padding-right:10px;border-radius:6px;transition:background .12s}
-.slots>li:hover{background:rgba(94,230,255,.06)}
-.slots>li:hover .slot{color:var(--ink2)}
-.slots>li:hover .rank{filter:brightness(1.15)}
-.slot{color:var(--ink3);font-size:14px;font-family:var(--mono);padding-top:2px}
-.item{color:var(--ink)}
-.rank{display:inline-block;margin-left:8px;padding:0 7px;border-radius:999px;font-family:var(--mono);font-size:12px;line-height:20px;
-color:#0c0a1f;background:linear-gradient(135deg,var(--cyan),var(--sun));vertical-align:1px;white-space:nowrap}
-.ex,.orn{grid-column:2;color:var(--violet);font-size:14px}
-.brand{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 26px;padding:0 0 16px;border-bottom:1px solid var(--line)}
-.brand .home{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:700;font-size:18px;letter-spacing:.04em;color:var(--ink)}
-.brand .home img{width:32px;height:32px;display:block}
-.brand .get{font-family:var(--display);font-weight:700;font-size:14px;letter-spacing:.03em;padding:8px 16px;border-radius:6px;
-color:#0c0a1f;background:linear-gradient(135deg,var(--cyan),#8ab4ff 55%,var(--pink));white-space:nowrap}
-.brand a:hover{text-decoration:none;filter:brightness(1.08)}
-.how{margin:14px 0 0}.how summary{cursor:pointer;color:var(--ink3);font-size:14px}
-.how p{color:var(--ink2);font-size:15px;margin:8px 0 0}.how b{color:var(--ink)}
-.gear{grid-column:2;position:relative}
-.gear.float .facts{position:absolute;left:0;top:calc(100% + 6px);width:min(560px,calc(100vw - 48px));z-index:5;margin:0;
-background:var(--panel);box-shadow:0 14px 36px rgba(0,0,0,.55)}
-.gear.float .facts .chips li{background:var(--ground2)}
-.gear summary{cursor:pointer;list-style:none;display:flex;align-items:center;flex-wrap:wrap;gap:0 4px}
-.gear summary::-webkit-details-marker{display:none}
-.gear summary::after{content:'\\25B8';color:var(--ink3);font-size:13px;margin-left:8px;transition:transform .15s}
-.gear[open] summary::after{transform:rotate(90deg)}
-.gear summary:hover .item{color:var(--cyan)}
-.facts{margin:8px 0 4px;padding:12px;border:1px solid var(--line);border-radius:8px;background:var(--ground2)}
-.facts .chips{margin:0 0 8px}.facts .chips:last-child{margin-bottom:0}
-.facts .chips li{background:var(--panel)}
-.flags{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px}
-.flags li{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--violet);
-border:1px solid var(--line);border-radius:4px;padding:2px 6px}
-.effects li{font-size:14px;padding:2px 0}
-.effects .k{display:inline-block;min-width:56px;color:var(--ink3);font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase}
-.muted-inline{color:var(--ink3)}
-.facts .muted{margin:0}
-.eqc{width:100%;font-family:var(--mono);font-size:12px;color:var(--sun);background:var(--ground2);
-border:1px solid var(--line);border-radius:6px;padding:10px;resize:vertical;word-break:break-all}
-.row{display:flex;align-items:center;gap:12px;margin:12px 0 0}
-.btn{font-family:var(--display);font-weight:700;font-size:16px;letter-spacing:.03em;padding:12px 22px;
-border:0;border-radius:6px;cursor:pointer;color:#0c0a1f;background:linear-gradient(135deg,var(--cyan),#8ab4ff 55%,var(--pink))}
-.copied{color:var(--cyan);font-size:14px}
-footer{color:var(--ink3);font-size:15px;margin:34px 0 0;border-top:1px solid var(--line);padding-top:20px}
-`
+/**
+ * Hotspot ↔ row coupling. Hovering a box on the card lights its row in the gear list and the
+ * other way round; a click pins the tip open (one at a time), Escape and a second click let go.
+ * Without the script the CSS hover and focus states still show the tip - this only adds the link.
+ */
+function hotspotScript(): string {
+  return (
+    `(function(){var hots=document.querySelectorAll('.hot');if(!hots.length)return;` +
+    `function unpin(){var all=document.querySelectorAll('.hot.pin');for(var j=0;j<all.length;j++)all[j].classList.remove('pin')}` +
+    `for(var i=0;i<hots.length;i++)(function(h){var r=document.getElementById('slot-'+h.getAttribute('data-slot'));` +
+    `h.addEventListener('mouseenter',function(){if(r)r.classList.add('lit')});` +
+    `h.addEventListener('mouseleave',function(){if(r)r.classList.remove('lit')});` +
+    `h.addEventListener('click',function(){var on=!h.classList.contains('pin');unpin();if(on)h.classList.add('pin')});` +
+    `h.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();h.click()}});` +
+    `if(r){r.addEventListener('mouseenter',function(){h.classList.add('lit')});` +
+    `r.addEventListener('mouseleave',function(){h.classList.remove('lit')})}` +
+    `})(hots[i]);` +
+    `document.addEventListener('keydown',function(e){if(e.key==='Escape')unpin()});})();`
+  )
+}
+
 
 /** The Open Graph / Twitter head — what Discord draws when the link is pasted (ruling 5). */
 function metaTags(input: PageInput, title: string, description: string): string {
@@ -498,17 +493,13 @@ function header(input: PageInput): string {
 export function renderPage(input: PageInput): string {
   const title = pageTitle(input.profile)
   const description = pageDescription(input.profile)
-  const card = input.hasCard
-    ? // `2x`: the card is a high-DPI capture, so it is drawn at half its pixel width and stays
-      // sharp on a Retina-class screen instead of being stretched to the column and going soft.
-      `<img class="card" src="/c/${esc(input.id)}.png" srcset="/c/${esc(input.id)}.png 2x" alt="${esc(title)}">`
-    : ''
+  const card = input.hasCard ? cardBlock(input, title) : ''
   return (
     `<!doctype html><html lang="en"><head><meta charset="utf-8">` +
     `<meta name="viewport" content="width=device-width,initial-scale=1">` +
     `<title>${esc(title)} · EQ Zera</title>` +
     metaTags(input, title, description) +
-    `<style nonce="${esc(input.nonce)}">${STYLE}${scoreWidthCss(input.profile)}</style>` +
+    `<style nonce="${esc(input.nonce)}">${STYLE}${scoreWidthCss(input.profile)}${hotspotCss(input)}</style>` +
     `</head><body><div class="wrap">` +
     brandBar() +
     header(input) +

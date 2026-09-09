@@ -40,10 +40,10 @@ on update, and on a view when `lastSeenAt` is older than 30 days. `id` = 10 char
 
 | Route | Body / auth | Reply |
 | --- | --- | --- |
-| `POST /api/v1/shares` | JSON `{ envelope, card? }`; `card` = base64 PNG, JPEG or WebP (by signature) ≤ 1 MB decoded (was PNG ≤ 400 KB until 2026-09-09; raised so a full-resolution card fits as JPEG); envelope JSON ≤ 64 KB; must pass `validateEnvelope` with `kind === 'character'` and `sanitizeCharacterShare(body) !== null` | `201 { id, url, deleteToken, expiresAt }` |
+| `POST /api/v1/shares` | JSON `{ envelope, card?, cardMap? }`; `cardMap` (2026-09-09) = `{ slot, x, y, w, h }[]`, one per gear cell drawn on the card, in fractions of the card image (0..1, top-left origin), `slot` an envelope cell's slot id, at most 40, honoured only alongside a `card` (entries with an unknown slot or a number outside 0..1 are dropped); the page overlays a hotspot per entry; `card` = base64 PNG, JPEG or WebP (by signature) ≤ 1 MB decoded (was PNG ≤ 400 KB until 2026-09-09; raised so a full-resolution card fits as JPEG); envelope JSON ≤ 64 KB; must pass `validateEnvelope` with `kind === 'character'` and `sanitizeCharacterShare(body) !== null` | `201 { id, url, deleteToken, expiresAt }` |
 | `PUT /api/v1/shares/:id` | same body; `Authorization: Bearer <deleteToken>` | `200 { id, url, expiresAt }` (id and URL unchanged) |
 | `DELETE /api/v1/shares/:id` | `Authorization: Bearer <deleteToken>` | `204` (both keys removed) |
-| `GET /p/:id` | — | `200 { envelope, createdAt, updatedAt, expiresAt }`, `Cache-Control: no-store`; refreshes TTL per ruling 2 |
+| `GET /p/:id` | — | `200 { envelope, cardMap?, createdAt, updatedAt, expiresAt }`, `Cache-Control: no-store`; refreshes TTL per ruling 2 |
 | `GET /c/:id.png` | — | the card bytes under the `Content-Type` their signature says (`image/png`, `image/jpeg` or `image/webp`; the `.png` path is kept for every link already out), `Cache-Control: public, max-age=3600`; `404` when absent |
 | `GET /s/:id` | — | the HTML page (below) |
 | `GET /` | — | 302 to `https://eqzera.com/` |

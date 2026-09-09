@@ -43,6 +43,7 @@ import {
   KEY_SHARE,
   SHARE_TTL_SECONDS,
   VIEW_REFRESH_MS,
+  type CardHotspot,
   type Env,
   type ShareRecord
 } from './env'
@@ -123,13 +124,51 @@ export async function shareStringFor(envelope: ShareEnvelope): Promise<string> {
   return SHARE_PREFIX + (await deflateRawBase64Url(canonicalJson(envelope)))
 }
 
+/** At most this many hotspots: the card draws at most this many cells (SHARE_LIMITS.maxCharacterCells). */
+export const MAX_HOTSPOTS = 40
+
+function fraction(v: unknown): number | null {
+  return typeof v === 'number' && Number.isFinite(v) && v >= 0 && v <= 1 ? v : null
+}
+
+/**
+ * Untrusted → hotspots: each rebuilt field by field, a slot that is not a string (or not in
+ * `slots`, when the caller knows them) or a number outside 0..1 drops the entry, `w`/`h` must be
+ * positive, and the list is capped. Rounded to four places: a fraction of a card needs no more,
+ * and the record is a JSON row somebody pays for.
+ */
+export function sanitizeCardMap(raw: unknown, slots?: ReadonlySet<string>): CardHotspot[] {
+  if (!Array.isArray(raw)) return []
+  const out: CardHotspot[] = []
+  for (const one of raw) {
+    if (out.length >= MAX_HOTSPOTS) break
+    const spot = hotspotOf(one, slots)
+    if (spot) out.push(spot)
+  }
+  return out
+}
+
+/** One untrusted entry, rebuilt, or null when any part of it is not a hotspot. */
+function hotspotOf(one: unknown, slots?: ReadonlySet<string>): CardHotspot | null {
+  if (!one || typeof one !== 'object') return null
+  const r = one as Record<string, unknown>
+  const slot = typeof r.slot === 'string' ? r.slot.trim().slice(0, 40) : ''
+  if (!slot || (slots && !slots.has(slot))) return null
+  const parts = [fraction(r.x), fraction(r.y), fraction(r.w), fraction(r.h)]
+  if (parts.some((n) => n === null)) return null
+  const [x, y, w, h] = parts as [number, number, number, number]
+  if (w === 0 || h === 0) return null
+  const round = (n: number): number => Math.round(n * 10_000) / 10_000
+  return { slot, x: round(x), y: round(y), w: round(w), h: round(h) }
+}
+
 /** A stored record, or null. Defensive about its own namespace: KV is a place, not a type. */
 export async function readRecord(env: Env, id: string): Promise<ShareRecord | null> {
   const raw = await env.SHARES.get(KEY_SHARE(id), 'json')
   if (!raw || typeof raw !== 'object') return null
   const r = raw as Partial<ShareRecord>
   if (typeof r.tokenHash !== 'string' || r.envelope == null) return null
-  return {
+  const record: ShareRecord = {
     envelope: r.envelope,
     createdAt: typeof r.createdAt === 'number' ? r.createdAt : 0,
     updatedAt: typeof r.updatedAt === 'number' ? r.updatedAt : 0,
@@ -137,6 +176,9 @@ export async function readRecord(env: Env, id: string): Promise<ShareRecord | nu
     tokenHash: r.tokenHash,
     hasCard: r.hasCard === true
   }
+  const cardMap = sanitizeCardMap(r.cardMap)
+  if (cardMap.length) record.cardMap = cardMap
+  return record
 }
 
 export async function writeRecord(env: Env, id: string, record: ShareRecord): Promise<void> {
