@@ -76,8 +76,12 @@ export const SHARE_TTL_SECONDS = 180 * 24 * 60 * 60
 /** A view older than this rewrites the record to push the expiry out; a fresher one does not. */
 export const VIEW_REFRESH_MS = 30 * 24 * 60 * 60 * 1000
 
-/** Decoded card PNG ceiling. The app's own card is ~120 KB; this is headroom, not a target. */
-export const MAX_CARD_BYTES = 400 * 1024
+/**
+ * Decoded card ceiling (PNG, JPEG or WebP). Raised from 400 KB on 2026-09-09 so a full-resolution
+ * high-DPI capture fits as JPEG; the app still steps its width down until the bytes fit, so this
+ * is the room it has, not a target. KV allows 25 MB a value; the free tier's 1 GB is the real limit.
+ */
+export const MAX_CARD_BYTES = 1024 * 1024
 
 /** Ids are 10 chars of `[A-Za-z0-9]` — 62^10 ≈ 2^59.5, unguessable and still double-clickable. */
 export const ID_LENGTH = 10

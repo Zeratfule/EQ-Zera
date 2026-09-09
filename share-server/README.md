@@ -91,7 +91,7 @@ custom domain has to exist before share links work from a shipped build.
 
 | binding | what it is | notes |
 | --- | --- | --- |
-| `SHARES` | KV namespace | holds `share:<id>` (JSON) and `card:<id>` (PNG bytes), both with a 180-day TTL |
+| `SHARES` | KV namespace | holds `share:<id>` (JSON) and `card:<id>` (PNG, JPEG or WebP bytes, ≤ 1 MB), both with a 180-day TTL |
 | `CREATE_LIMIT` | rate limiter, 20 / 60 s / IP | guards POST, PUT and DELETE |
 | `READ_LIMIT` | rate limiter, 300 / 60 s / IP | guards `/p/`, `/c/` and `/s/` |
 | `PUBLIC_ORIGIN` | plain var | the origin every URL handed out is built from |

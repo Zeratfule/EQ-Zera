@@ -33,18 +33,18 @@ Bindings (`share-server/wrangler.toml`): KV namespace `SHARES`; rate limiter `CR
 binding; `PUBLIC_ORIGIN = "https://share.eqzera.com"`; custom domain route `share.eqzera.com`.
 
 Keys: `share:<id>` → JSON `{ envelope, createdAt, updatedAt, lastSeenAt, tokenHash, hasCard }`;
-`card:<id>` → PNG bytes. Both written with `expirationTtl = 180 days` and rewritten (same TTL)
+`card:<id>` → image bytes (PNG, JPEG or WebP; the type is read off the signature when served). Both written with `expirationTtl = 180 days` and rewritten (same TTL)
 on update, and on a view when `lastSeenAt` is older than 30 days. `id` = 10 chars from
 `[A-Za-z0-9]` out of `crypto.getRandomValues`; `deleteToken` = 32 random bytes base64url;
 `tokenHash` = SHA-256 hex of the token (the token itself is never stored).
 
 | Route | Body / auth | Reply |
 | --- | --- | --- |
-| `POST /api/v1/shares` | JSON `{ envelope, card? }`; `card` = base64 PNG ≤ 400 KB decoded; envelope JSON ≤ 64 KB; must pass `validateEnvelope` with `kind === 'character'` and `sanitizeCharacterShare(body) !== null` | `201 { id, url, deleteToken, expiresAt }` |
+| `POST /api/v1/shares` | JSON `{ envelope, card? }`; `card` = base64 PNG, JPEG or WebP (by signature) ≤ 1 MB decoded (was PNG ≤ 400 KB until 2026-09-09; raised so a full-resolution card fits as JPEG); envelope JSON ≤ 64 KB; must pass `validateEnvelope` with `kind === 'character'` and `sanitizeCharacterShare(body) !== null` | `201 { id, url, deleteToken, expiresAt }` |
 | `PUT /api/v1/shares/:id` | same body; `Authorization: Bearer <deleteToken>` | `200 { id, url, expiresAt }` (id and URL unchanged) |
 | `DELETE /api/v1/shares/:id` | `Authorization: Bearer <deleteToken>` | `204` (both keys removed) |
 | `GET /p/:id` | — | `200 { envelope, createdAt, updatedAt, expiresAt }`, `Cache-Control: no-store`; refreshes TTL per ruling 2 |
-| `GET /c/:id.png` | — | the card PNG, `Cache-Control: public, max-age=3600`; `404` when absent |
+| `GET /c/:id.png` | — | the card bytes under the `Content-Type` their signature says (`image/png`, `image/jpeg` or `image/webp`; the `.png` path is kept for every link already out), `Cache-Control: public, max-age=3600`; `404` when absent |
 | `GET /s/:id` | — | the HTML page (below) |
 | `GET /` | — | 302 to `https://eqzera.com/` |
 

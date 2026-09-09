@@ -13,7 +13,7 @@
 //   PUT    /api/v1/shares/:id   same body + Bearer token     -> 200 {id, url, expiresAt}
 //   DELETE /api/v1/shares/:id   Bearer token                 -> 204
 //   GET    /p/:id               -                            -> 200 {envelope, createdAt, updatedAt, expiresAt}
-//   GET    /c/:id.png           -                            -> the card PNG (404 when absent)
+//   GET    /c/:id.png           -                            -> the card image, PNG/JPEG/WebP (404 when absent)
 //   GET    /s/:id               -                            -> the HTML page
 //   GET    /                    -                            -> 302 https://eqzera.com/
 //   anything else                                            -> 404 JSON
@@ -39,7 +39,7 @@ import {
   jsonResponse,
   logoResponse,
   noContentResponse,
-  pngResponse,
+  imageResponse,
   rateLimited,
   redirectResponse
 } from './http'
@@ -72,13 +72,10 @@ const CARD_ROUTE = new RegExp(`^/c/(${ID_PATTERN})\\.png$`)
 const PAGE_ROUTE = new RegExp(`^/s/(${ID_PATTERN})$`)
 const ID_ONLY = new RegExp(`^${ID_PATTERN}$`)
 
-/** base64 of 400 KB, plus room for padding and a stray newline. */
+/** base64 of MAX_CARD_BYTES, plus room for padding and a stray newline. */
 const MAX_CARD_B64 = Math.ceil(MAX_CARD_BYTES / 3) * 4 + 8
 /** The whole POST/PUT body: the 64 KB envelope, the encoded card, and slack for the JSON around them. */
 const MAX_BODY_BYTES = SHARE_LIMITS.maxStringChars + MAX_CARD_B64 + 2048
-
-/** The eight bytes every PNG starts with, spelled as numbers (no raw control bytes in source). */
-const PNG_MAGIC = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]
 
 /** One request's world. An object rather than four positional arguments, per the repo's ceiling. */
 interface Ctx {
@@ -99,46 +96,70 @@ interface WriteBody {
 function refuse(status: number, error: string, message: string): Refusal {
   return { ok: false, status, error, message }
 }
-
 function refusalResponse(refusal: Refusal): Response {
   return errorResponse(refusal.status, refusal.error, refusal.message)
 }
-
 function notFound(): Response {
   return errorResponse(404, 'not-found', 'No share lives at that address.')
 }
-
 function tooMany(): Response {
   return errorResponse(429, 'rate-limited', 'Too many requests. Try again in a minute.')
 }
 
 // ------------------------------------------------------------------------------- the write body
 
-function isPng(bytes: Uint8Array): boolean {
-  return bytes.length > PNG_MAGIC.length && PNG_MAGIC.every((b, i) => bytes[i] === b)
+/** The card's image type, read off its first bytes, or null when it is none of the three. */
+export type CardKind = 'png' | 'jpeg' | 'webp'
+
+const PNG_MAGIC = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]
+const JPEG_MAGIC = [0xff, 0xd8, 0xff]
+const RIFF = [0x52, 0x49, 0x46, 0x46] // 'RIFF'
+const WEBP = [0x57, 0x45, 0x42, 0x50] // 'WEBP', at offset 8
+
+function startsWith(bytes: Uint8Array, magic: readonly number[], at = 0): boolean {
+  return bytes.length > at + magic.length && magic.every((b, i) => bytes[at + i] === b)
 }
 
 /**
- * The optional `card` field: a base64 PNG, absent, or a refusal.
+ * PNG, JPEG or WebP, by signature - the three encoders a card can arrive from (the app's
+ * NativeImage writes PNG and JPEG; WebP is admitted so a future encoder needs no server change).
+ * Anything else is refused: the bytes come back out under an image Content-Type with `nosniff`,
+ * so an unrecognised file could only ever be a failed render or a parked upload.
+ */
+export function cardKind(bytes: Uint8Array): CardKind | null {
+  if (startsWith(bytes, PNG_MAGIC)) return 'png'
+  if (startsWith(bytes, JPEG_MAGIC)) return 'jpeg'
+  if (startsWith(bytes, RIFF) && startsWith(bytes, WEBP, 8)) return 'webp'
+  return null
+}
+
+const CARD_CONTENT_TYPE: Record<CardKind, string> = {
+  png: 'image/png',
+  jpeg: 'image/jpeg',
+  webp: 'image/webp'
+}
+
+/**
+ * The optional `card` field: a base64 PNG, JPEG or WebP, absent, or a refusal.
  *
- * The PNG SIGNATURE is checked, not just the size. The bytes come back out of this service under
- * `Content-Type: image/png` with `nosniff`, so anything that is not a PNG could only ever be a
- * failed render or an attempt to park an arbitrary file on the origin; neither is worth storing.
+ * The SIGNATURE is checked, not just the size (`cardKind`). JPEG and WebP were admitted on
+ * 2026-09-09 so the app can send a full-resolution card that stays under the cap: a high-DPI
+ * capture as PNG is several MB, as JPEG a few hundred KB, and the page draws it at 2x either way.
  */
 function decodeCard(value: unknown): { ok: true; card: Uint8Array | null } | Refusal {
   if (value == null) return { ok: true, card: null }
   if (typeof value !== 'string') {
-    return refuse(400, 'bad-card', 'The card must be a base64-encoded PNG string.')
+    return refuse(400, 'bad-card', 'The card must be a base64-encoded PNG, JPEG or WebP string.')
   }
   if (value.length > MAX_CARD_B64) {
-    return refuse(413, 'too-large', 'The card image is larger than 400 KB.')
+    return refuse(413, 'too-large', 'The card image is larger than 1 MB.')
   }
   const bytes = fromBase64(value)
   if (!bytes) return refuse(400, 'bad-card', 'The card is not valid base64.')
   if (bytes.length > MAX_CARD_BYTES) {
-    return refuse(413, 'too-large', 'The card image is larger than 400 KB.')
+    return refuse(413, 'too-large', 'The card image is larger than 1 MB.')
   }
-  if (!isPng(bytes)) return refuse(400, 'bad-card', 'The card is not a PNG.')
+  if (cardKind(bytes) === null) return refuse(400, 'bad-card', 'The card is not a PNG, JPEG or WebP.')
   return { ok: true, card: bytes }
 }
 
@@ -276,10 +297,16 @@ async function readProfile(ctx: Ctx, id: string): Promise<Response> {
   return jsonResponse(reply, 200, { 'Cache-Control': 'no-store' })
 }
 
+/**
+ * The card bytes under the Content-Type their signature says. The path stays `/c/:id.png` for
+ * a JPEG or WebP card too: every link and unfurl already out there points at it, and browsers and
+ * Discord go by the header, never the extension.
+ */
 async function readCard(ctx: Ctx, id: string): Promise<Response> {
-  const png = await ctx.env.SHARES.get(KEY_CARD(id), 'arrayBuffer')
-  if (!png) return errorResponse(404, 'not-found', 'That share has no card image.')
-  return pngResponse(png)
+  const bytes = await ctx.env.SHARES.get(KEY_CARD(id), 'arrayBuffer')
+  if (!bytes) return errorResponse(404, 'not-found', 'That share has no card image.')
+  const kind = cardKind(new Uint8Array(bytes)) ?? 'png'
+  return imageResponse(bytes, CARD_CONTENT_TYPE[kind])
 }
 
 /**

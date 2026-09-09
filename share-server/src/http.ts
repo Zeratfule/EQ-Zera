@@ -61,13 +61,16 @@ export function htmlResponse(html: string, nonce: string): Response {
   })
 }
 
-/** The card, straight out of KV. Public and cacheable: the bytes never change under an id. */
-export function pngResponse(png: ArrayBuffer): Response {
-  return new Response(png, {
+/**
+ * The card, straight out of KV, under the type its bytes were sniffed as (handler.ts cardKind).
+ * Public and cacheable: the bytes never change under an id.
+ */
+export function imageResponse(bytes: ArrayBuffer, contentType: string): Response {
+  return new Response(bytes, {
     status: 200,
     headers: {
       ...BASE_HEADERS,
-      'Content-Type': 'image/png',
+      'Content-Type': contentType,
       'Cache-Control': 'public, max-age=3600'
     }
   })

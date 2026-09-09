@@ -367,11 +367,11 @@ test('an oversize envelope is 413, not a 64 KB row in KV', async () => {
   assert.equal(((await res.json()) as { error: string }).error, 'too-large')
 })
 
-test('an oversize card is 413, and a non-PNG card is 400', async () => {
+test('an oversize card is 413, and a non-image card is 400', async () => {
   const h = harness()
   const big = await h.postJson('/api/v1/shares', {
     envelope: envelopeFor(profile()),
-    card: 'A'.repeat(600_000)
+    card: 'A'.repeat(1_500_000) // ~1.1 MB decoded, over the 1 MB cap
   })
   assert.equal(big.status, 413)
   const notPng = await h.postJson('/api/v1/shares', {
