@@ -1,7 +1,8 @@
 > **EQ Zera fork note.** This fork compiles in no telemetry or feedback endpoint, so the sections
 > below describing data sent to the original author's AWS account do not apply to EQ Zera builds.
-> They are kept for reference. Self-update **is** on, from this fork's own GitHub Releases and
-> **unsigned** — read "How updates are verified today" and "Code signing and the update trust
+> They are kept for reference. Self-update **is** on, from this fork's own GitHub Releases, and
+> from **v1.20.1 onward every release is code signed** - Azure Trusted Signing, publisher
+> "Jack Thomas". Read "How updates are verified today" and "Code signing and the update trust
 > chain" below, which describe EQ Zera as it actually ships.
 
 # Security
@@ -256,12 +257,20 @@ from there.
    with `ERR_CHECKSUM_MISMATCH` on any mismatch. The same check is applied to
    differential (block-map) downloads and re-applied to an already-staged
    installer before it is ever run. **A download that was tampered with in transit
-   therefore fails**, and that is what this layer protects: the bytes, not the author.
-3. Downgrades are refused (`allowDowngrade = false`), so a re-published or
+   therefore fails**, and that is what this layer protects: the bytes. *Who* built
+   them is the next check's job.
+3. **The installer's Authenticode signature is checked before it is allowed to
+   run** (v1.20.1 and later). Releases are signed with a certificate whose subject
+   is `CN=Jack Thomas`, and that publisher name is compiled into the packaged
+   `app-update.yml`, so `electron-updater`'s `NsisUpdater.verifySignature` refuses
+   any update signed by anyone else - or not signed at all - with
+   `ERR_UPDATER_INVALID_SIGNATURE`, before the installer is executed. An impostor
+   release therefore fails both checks, this one and the sha512 above.
+4. Downgrades are refused (`allowDowngrade = false`), so a re-published or
    rolled-back release cannot walk an installation backwards.
-4. The installer is applied per-user under `%LOCALAPPDATA%\Programs` with no
+5. The installer is applied per-user under `%LOCALAPPDATA%\Programs` with no
    administrator prompt, because that is how it was installed in the first place.
-5. To check a manual download yourself, compare it against the `sha512` in
+6. To check a manual download yourself, compare it against the `sha512` in
    `latest.yml` on the same release page:
 
    ```powershell
@@ -274,37 +283,50 @@ from there.
 
 ## Code signing and the update trust chain
 
-**EQ Zera releases are not code-signed, and self-update is on anyway.** That is a
-deliberate decision by this fork's owner, not an oversight, and it is a weaker
-guarantee than the upstream project's signed updates. What it means, plainly:
+**EQ Zera releases are code signed, and self-update is on.** Signing turned on with
+**v1.20.1** (2026-09-09). What that means, plainly:
 
-1. SmartScreen will show "Windows protected your PC" the first time you run an
-   unsigned installer. *More info → Run anyway* installs it. There are no signature
-   details to inspect on the exe, because there is no signature.
+1. The installer, the app executable and the bundled `zengine.exe` carry an
+   **Authenticode signature** issued through **Azure Trusted Signing** (Microsoft now
+   calls it Artifact Signing), from the certificate profile `eqzera-public` on a
+   verified individual public identity. The certificate subject is
+   `CN=Jack Thomas, O=Jack Thomas, L=Traverse City, S=mi, C=US`. Trusted Signing
+   certificates are deliberately short-lived and are re-issued every few days; the
+   subject CN is what stays stable, and the CN is what everything below compares.
 
-2. The update path verifies **integrity but not authorship**. Every download is
-   checked byte-for-byte against the sha512 in the release feed, so nobody can
-   corrupt or substitute a file in transit. But `publisherName` is commented out in
-   `electron-builder.yml`, which means no publisher name reaches the packaged
-   `app-update.yml`, which means `electron-updater`'s Authenticode check
-   (`NsisUpdater.verifySignature`) returns immediately and **skips verification
-   rather than failing it**. Nothing checks *who* built the release.
+2. **Windows names a publisher instead of warning about an unknown one.** The
+   installer's UAC and SmartScreen dialogs show the publisher as **Jack Thomas**, and
+   a Trusted Signing certificate carries Microsoft-attached reputation, so the
+   "Windows protected your PC" screen is expected to stop appearing. That is not a
+   promise that Windows never prompts about anything; it is that there is now a
+   signature Windows trusts and that reputation attaches to. You can check it
+   yourself: right-click the `.exe` → Properties → **Digital Signatures**.
 
-3. **So the GitHub account is the trust root.** Anyone who could publish a release
-   to `Zeratfule/EQ-Zera` could ship a silent, per-user, no-UAC update to every
-   install. Tag and release access *is* the security control here. The release job
-   is the only one holding a repository-write token, it runs only on a pushed `v*`
-   tag, its third-party actions are pinned to commit SHAs, and dependency install
-   scripts are disabled — but none of that helps against someone holding the
-   account itself.
+3. **The update path verifies integrity *and* authorship.** Every download is still
+   checked byte-for-byte against the sha512 in the release feed, and
+   `win.signtoolOptions.publisherName: Jack Thomas` in `electron-builder.yml` now
+   writes that publisher name into the packaged `app-update.yml`, which is what
+   `electron-updater`'s `NsisUpdater.verifySignature` reads. An update whose
+   Authenticode signer CN is not "Jack Thomas" - including an unsigned one - is
+   rejected with `ERR_UPDATER_INVALID_SIGNATURE` before anything is run.
 
-4. **The check comes back with a certificate.** The day this project has one, the
-   `publisherName` line goes back into `electron-builder.yml` (matching the
-   certificate's subject CN exactly) and signing turns on in CI. From that build
-   onward, every downloaded update must carry a valid Authenticode signature from
-   that publisher or it is rejected with `ERR_UPDATER_INVALID_SIGNATURE` before
-   anything runs. No other change is needed, and nothing about the flow above
-   changes for the user. `SETUP.md`, "Releasing", carries the steps.
+4. **So the GitHub account is no longer the sole trust root; the signing identity
+   is.** Someone who took the repository could still put a file on a release page,
+   but they could not produce an update an installed copy would accept, because they
+   could not sign it as "Jack Thomas" - it would fail the signature check as well as
+   the sha512 one. Release access is still guarded: the release job is the only one
+   holding a repository-write token, it runs only on a pushed `v*` tag, its
+   third-party actions are pinned to commit SHAs, and dependency install scripts are
+   disabled. It is now one of two controls rather than the only one.
+
+**The unsigned window, 2026-09-08 to 2026-09-09** (kept here rather than erased,
+because it explains the builds some people are still running). v1.19.0 through
+v1.20.0 shipped with no signature, which was the owner's explicit call at go-live for
+a personal fork. During that window the update path verified the bytes but not the
+author, and the GitHub account was the trust root. An install still on one of those
+builds accepts the first signed update, because its `app-update.yml` carries no
+publisher name and the signature check skips rather than fails. From v1.20.1 onward,
+on every install that has taken one, an update must be signed or it is refused.
 
 If you would rather not have the app update itself under these terms, simply never
 press the download button: nothing is fetched until you do, and you can install
@@ -373,6 +395,7 @@ a version behind.
 ## Scope
 
 In scope: anything that lets someone else read your data, run code on your machine
-through this app, or tamper with an update. Out of scope: SmartScreen warnings on
-unsigned builds (known, documented above), and anything requiring an attacker who
-already has code execution on your machine.
+through this app, or tamper with an update. Out of scope: anything requiring an
+attacker who already has code execution on your machine, and any SmartScreen or
+reputation prompt a signed build can still draw while a rotated certificate is new
+(known, documented above).

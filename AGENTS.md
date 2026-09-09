@@ -1533,14 +1533,17 @@ the full per-lane evidence lives in docs/agents-archive.md.
   merge them back into one job. All `uses:` are pinned to commit SHAs (a
   `@v4` tag is mutable) — re-resolve with
   `gh api repos/<o>/<a>/git/ref/tags/<t> --jq .object.sha` when bumping.
-- **Unsigned build ⇒ the GitHub account IS the trust root — and self-update is
-  ON (2026-09-08), so that is in force.** electron-updater verifies the feed's
-  sha512 (a tampered *download* fails), but `publisherName` is commented out, so
-  none reaches `app-update.yml` and the Authenticode check SKIPS: nothing
-  verifies *who* built a release. Anyone who can publish here ships a silent,
-  per-user, no-UAC update to every install. Restoring that line with the six
-  `AZURE_*` secrets (release.yml passes them) closes it; until then release
-  access is the control. `SECURITY.md` says so to users.
+- **SIGNED since v1.20.1 (2026-09-09) - the signing identity is now a trust root
+  alongside the GitHub account.** electron-updater verifies the feed's sha512 (a
+  tampered *download* fails) AND, because `publisherName: Jack Thomas` is ACTIVE
+  under `win.signtoolOptions`, the Authenticode signer CN of every downloaded
+  update: a wrong CN or no signature at all is ERR_UPDATER_INVALID_SIGNATURE
+  before anything runs. CI signs through `scripts/azure-sign.cjs` + the six
+  `AZURE_*` secrets, armed by the repo VARIABLE `SIGNING_ENABLED=true` (it
+  blanks `AZURE_SIGNING_ENDPOINT` otherwise, and a blank endpoint makes the hook
+  self-skip, so local `dist` stays unsigned). v1.19.0-v1.20.0 shipped unsigned
+  (owner's call); those installs carry no publisher name, so their check skips
+  and they take the first signed update. `SECURITY.md`/`SETUP.md` say so to users.
 ### Installer architecture
 
 - Build chain: `npm run dist` = `electron-vite build` → electron-builder
@@ -1597,9 +1600,10 @@ the full per-lane evidence lives in docs/agents-archive.md.
 - Exe branding: `signAndEditExecutable:true` needs the winCodeSign cache —
   run `scripts/seed-wincodesign.ps1` once per machine. Icon via `gen:icon`.
 - Publish: `publish: github Zeratfule/EQ-Zera`; installer + `.blockmap` +
-  `latest*.yml` under `release/<version>/`. Unsigned (SmartScreen "More info →
-  Run anyway"); signing arms itself once the six `AZURE_*` secrets exist.
-- Auto-update: ON, unsigned. electron-updater in `src/main/updater.ts`; check
+  `latest*.yml` under `release/<version>/`. CI-SIGNED since v1.20.1 (Azure
+  Trusted Signing profile `eqzera-public`, CN "Jack Thomas"); local `dist` is
+  unsigned because the sign hook self-skips on a blank endpoint.
+- Auto-update: ON and publisher-verified. electron-updater in `src/main/updater.ts`; check
   ~45s after launch then every 4h; `autoDownload` OFF — the overlay CARD, nav
   chip and Preferences all press `update:install`: download when available,
   install when staged; dev-guarded on `app.isPackaged`.

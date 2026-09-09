@@ -159,7 +159,7 @@ asarUnpack:
 # `electron-builder install-app-deps`), or it would ship built against the wrong ABI.
 npmRebuild: false
 
-# RELEASE HOSTING: ON. SELF-UPDATE: ON, UNSIGNED (owner's call, 2026-09-08).
+# RELEASE HOSTING: ON. SELF-UPDATE: ON (2026-09-08). SIGNED since v1.20.1 (2026-09-09).
 #
 # What this block does: it tells electron-builder where a `--publish` run
 # uploads to, so `.github/workflows/release.yml` can hand a `v*` tag to
@@ -195,9 +195,9 @@ win:
   # needs winCodeSign extracted into the electron-builder cache; on Windows that
   # requires either Developer Mode (symlink privilege) OR the manual cache-seed
   # workaround (see scripts/seed-wincodesign.ps1). CI builds are SIGNED via Azure
-  # Artifact Signing (account jmoyers-eqtools, profile eq-companion-public — the
-  # azureSignOptions args are injected by build.yml when the AZURE_* secrets
-  # exist); local `npm run dist` builds stay unsigned.
+  # Trusted Signing (account eqzera, profile eqzera-public; release.yml feeds the
+  # sign hook its endpoint only while the SIGNING_ENABLED repo variable is true);
+  # local `npm run dist` builds stay unsigned.
   signAndEditExecutable: true
   # `sign` and `publisherName` MOVED UNDER signtoolOptions in electron-builder 26 —
   # they are no longer valid keys directly on `win` and the build refuses to start
@@ -233,24 +233,18 @@ win:
     # ERR_UPDATER_INVALID_SIGNATURE; NULL MEANS IT RETURNS IMMEDIATELY AND SKIPS
     # ALL CHECKING (NsisUpdater.js:84-99).
     #
-    # WHY IT IS OFF. There is no code-signing certificate for this fork, so
-    # scripts/azure-sign.cjs self-skips and every release is unsigned. With the
-    # name still set, a live updater would download a build and then refuse it,
-    # every time, forever — an updater that can only fail. The owner's decision
-    # is that self-update ships NOW anyway: the feed and the installer come over
-    # HTTPS from github.com/Zeratfule/EQ-Zera and the sha512 in latest.yml is
-    # verified, so a TAMPERED DOWNLOAD still fails; what is unverified is WHO
-    # built the release, which makes the GitHub account the trust root. That is a
-    # weaker guarantee than the upstream app's signed updates and it is stated to
-    # users in SECURITY.md rather than left to be discovered.
+    # WHY IT WAS OFF, 2026-09-08 TO 2026-09-09. There was no certificate yet, so
+    # the hook self-skipped and every release was unsigned; with the name set, a
+    # live updater would have downloaded each build and refused it forever. The
+    # owner shipped self-update anyway on the sha512 check alone, with the GitHub
+    # account as the trust root, stated in SECURITY.md. Installs from that window
+    # carry no publisher name in app-update.yml, so they accept the first signed
+    # update; from v1.20.1 on every update must carry this publisher's signature.
     #
-    # WITH THE LINE COMMENTED OUT, NO PUBLISHER NAME REACHES app-update.yml:
-    # computedPublisherName falls through to the certificate's own subject CN,
-    # and with no CSC_LINK/certificateFile there is no certificate to read, so it
-    # resolves null. (Consequence worth knowing: a future CSC_LINK certificate
-    # would put its CN there AUTOMATICALLY and re-enable verification; the Azure
-    # hook would not, because it never gives app-builder-lib a cert to inspect —
-    # that road needs this line back by hand.)
+    # WHY THE NAME IS WRITTEN BY HAND. computedPublisherName falls through to a
+    # CSC_LINK certificate's subject CN when there is one; the Azure hook never
+    # gives app-builder-lib a certificate to inspect, so without this line no
+    # name would reach app-update.yml and verification would silently skip.
 
 # One-click installer (Discord model): double-click installs per-user under
 # %LOCALAPPDATA%\Programs (no UAC prompt), then launches. Friendly for friends

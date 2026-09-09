@@ -646,8 +646,9 @@ function registerUpdaterEvents(
 }
 
 /**
- * FORK SWITCH (EQ Zera). ON since 2026-09-08, and UNSIGNED — which is the owner's explicit call
- * for a personal fork, not an oversight, so it is written down here in the file that acts on it.
+ * FORK SWITCH (EQ Zera). ON since 2026-09-08, and SIGNED since 2026-09-09 (v1.20.1) - both of
+ * which are the owner's explicit calls, so they are written down here in the file that acts on
+ * them.
  *
  * WHAT SELF-UPDATE MEANS IN THIS FORK, exactly:
  *   * THE FEED AND THE INSTALLER COME OVER HTTPS from `github.com/Zeratfule/EQ-Zera`. The address
@@ -659,19 +660,22 @@ function registerUpdaterEvents(
  *     electron-updater streams the download through a digest transform, aborting with
  *     `ERR_CHECKSUM_MISMATCH` on any mismatch — including for differential (block-map) downloads
  *     and for an already-staged file re-validated before it runs. A TAMPERED DOWNLOAD FAILS.
- *   * AUTHENTICODE VERIFICATION IS OFF, because there is no certificate yet.
- *     `win.signtoolOptions.publisherName` is commented out in `electron-builder.yml`, so no
- *     publisher name reaches `app-update.yml`, and `NsisUpdater.verifySignature` returns null
- *     immediately (`NsisUpdater.js:84-99`) — it SKIPS all checking rather than failing it. WHO
- *     built the release is therefore unverified: the GitHub account is the trust root, and anyone
- *     who could publish a release there could ship a silent, per-user, no-UAC update to every
- *     install. That is a weaker guarantee than the upstream app's signed updates, and it is
- *     stated to users in SECURITY.md rather than left to be discovered.
+ *   * AUTHENTICODE VERIFICATION IS ON. `win.signtoolOptions.publisherName` is set to
+ *     `Jack Thomas` in `electron-builder.yml` - the subject CN of the Azure Trusted Signing
+ *     profile `eqzera-public` that CI signs with, stable across the certificate's few-day
+ *     rotations - so that name reaches `app-update.yml` and `NsisUpdater.verifySignature`
+ *     COMPARES instead of returning null immediately (`NsisUpdater.js:84-99`, the null-name
+ *     path). An update whose signer CN is anything else, or which carries no signature at all,
+ *     is rejected with `ERR_UPDATER_INVALID_SIGNATURE` before it runs. WHO built the release is
+ *     therefore verified: the signing identity is a trust root alongside the GitHub account, and
+ *     taking the repository is no longer enough to ship an update installs would accept.
  *
- * THE DAY A CERTIFICATE EXISTS, ONE LINE COMES BACK. Restore `publisherName` under
- * `signtoolOptions` (matching the certificate's subject CN character for character) and turn
- * signing on; nothing in this file changes. SETUP.md, "Releasing", carries both halves.
- *
+ * THE UNSIGNED WINDOW, 2026-09-08 TO 2026-09-09 (v1.19.0 to v1.20.0), kept here because installs
+ * are still on it: those builds packaged no publisher name, so their check skips rather than
+ * fails and they take the first signed update normally. Nothing in this file changed when
+ * signing turned on and nothing here has to change again - the switch is `publisherName` in
+ * `electron-builder.yml` plus the `SIGNING_ENABLED` repository variable that arms the sign hook
+ * in CI. SETUP.md, "Releasing", carries both halves.
  * The constant stays, rather than the branch being deleted, because the DEV guard below shares it:
  * `npm run dev` is never packaged, so the machinery is skipped there either way.
  */

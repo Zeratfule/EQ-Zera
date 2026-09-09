@@ -32,22 +32,27 @@
 # into it. So A TAG REACHES EVERYBODY. There is no recall; the fix for a bad build
 # is another tag.
 #
-# UNSIGNED, AND THAT IS A STATED POSITION RATHER THAN AN OVERSIGHT. There is no
-# code-signing certificate for this fork yet, so:
-#   * the `win.signtoolOptions.sign` hook (scripts/azure-sign.cjs) self-skips
-#     while the AZURE_* secrets below are absent — the installer is unsigned and
-#     SmartScreen will warn on first run;
-#   * `win.signtoolOptions.publisherName` is COMMENTED OUT in electron-builder.yml,
-#     so no publisher name reaches the packaged `app-update.yml` and
-#     electron-updater's Authenticode check skips rather than fails (with the name
-#     set against unsigned builds, every update would download and then be rejected
-#     forever). Integrity is still verified: the installer's sha512 in `latest.yml`
-#     is checked as it streams, so a TAMPERED DOWNLOAD FAILS. What is unverified is
-#     WHO built the release — which makes this repository's release access the trust
-#     root, and is why that access is the security control described below.
-# Adding the six AZURE_* secrets (they are already passed to the build step) and
-# uncommenting `publisherName` in the same change re-arms publisher verification,
-# with no edit to this file. SETUP.md, "Releasing", carries both halves.
+# SIGNED SINCE v1.20.1 (2026-09-09). Releases carry an Authenticode signature from
+# Azure Trusted Signing (account `eqzera`, certificate profile `eqzera-public`,
+# subject CN "Jack Thomas"), and both halves of the update trust chain are armed:
+#   * the `win.signtoolOptions.sign` hook (scripts/azure-sign.cjs) signs the app exe,
+#     the bundled zengine.exe and the installer using the six AZURE_* secrets passed
+#     to the build step below. It self-skips when AZURE_SIGNING_ENDPOINT is blank, so
+#     local `npm run dist` builds stay unsigned with no configuration;
+#   * `win.signtoolOptions.publisherName: Jack Thomas` is ACTIVE in electron-builder.yml,
+#     so that name reaches the packaged `app-update.yml` and electron-updater's
+#     Authenticode check FAILS rather than skips: an update whose signer CN is not
+#     "Jack Thomas" is refused with ERR_UPDATER_INVALID_SIGNATURE before it runs.
+#     Integrity is still checked as well - the installer's sha512 in `latest.yml` is
+#     verified as it streams - so a TAMPERED OR IMPOSTOR RELEASE FAILS BOTH CHECKS.
+#     The signing identity is now a trust root alongside this repository's release
+#     access, which is why that access is still the security control described below.
+# HISTORY, KEPT BECAUSE IT EXPLAINS THE SHAPE ABOVE: v1.19.0 to v1.20.0 (2026-09-08 to
+# 2026-09-09) shipped unsigned, which was the owner's explicit call at go-live; those
+# installs carry no publisher name in their app-update.yml, so they accept the first
+# signed update. v1.19.4 failed to BUILD because the sign hook ran against a certificate
+# profile that did not exist yet, which is why the SIGNING_ENABLED repository variable
+# gates the endpoint (see the build step). SETUP.md, "Releasing", carries both halves.
 #
 # WHY THE RELEASE IS ASSEMBLED AS A DRAFT AND FLIPPED LIVE AT THE END.
 # electron-builder's GitHub publisher defaults to `releaseType: draft`, and we
@@ -171,13 +176,16 @@ jobs:
       # DRAFT (its default releaseType, kept on purpose — see the header). The
       # bridge step below verifies what actually landed and owns the flip live.
       #
-      # SIGNING IS PRE-WIRED (2026-09-08) AND SWITCHED BY A REPOSITORY VARIABLE. The six
+      # SIGNING IS ON (since 2026-09-09) AND SWITCHED BY A REPOSITORY VARIABLE. The six
       # AZURE_* secrets are passed through here, but the endpoint (the sign hook's only
-      # switch) is blanked unless the repo variable SIGNING_ENABLED is the string true.
+      # switch) is blanked unless the repo variable SIGNING_ENABLED is the string true - and
+      # it IS true, so this step signs the app exe, zengine.exe and the installer with the
+      # Azure Trusted Signing profile `eqzera-public` (subject CN "Jack Thomas", the value of
+      # publisherName in electron-builder.yml).
       # WHY THE EXTRA SWITCH: the secrets were stored before the certificate profile existed
       # (identity validation takes days), and v1.19.4 failed on "signing failed for file"
-      # because the hook ran against a profile that was not there. Set SIGNING_ENABLED=true
-      # (gh variable set SIGNING_ENABLED --body true) the day the profile exists.
+      # because the hook ran against a profile that was not there. The variable is also the
+      # off switch: gh variable set SIGNING_ENABLED --body false, with no edit to this file.
       - name: Build installer and publish (draft)
         shell: pwsh
         env:
@@ -189,6 +197,15 @@ jobs:
           AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
           AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
         run: |
+          # The sign hook calls Invoke-TrustedSigning, which lives in the TrustedSigning
+          # PowerShell module and is NOT on the runner image. Install it only when signing
+          # is actually on (v1.20.1's first build failed here with "not recognized").
+          if ($env:AZURE_SIGNING_ENDPOINT) {
+            Install-Module -Name TrustedSigning -Force -Scope CurrentUser -Repository PSGallery
+            Write-Host "Code signing: Azure Trusted Signing enabled."
+          } else {
+            Write-Host "Code signing: skipped (SIGNING_ENABLED is not true)."
+          }
           npm run build
           npx electron-builder --win --publish always
 
@@ -260,16 +277,16 @@ jobs:
 
           # THE RELEASE BODY. Upstream generated none (`--notes ""`) because its
           # landing page carried the story; this fork has no site, so the release
-          # page is the only place a downloader reads anything. The SmartScreen
-          # sentence is the one from SETUP.md, verbatim in substance: an unsigned
-          # installer WILL be blocked on first run and a user who does not know
-          # the click-through will conclude the download is malware.
+          # page is the only place a downloader reads anything. The signing
+          # sentence is the one from SETUP.md, verbatim in substance: since v1.20.1
+          # the installer is signed by Azure Trusted Signing under the publisher
+          # "Jack Thomas", which is what Windows shows in the install prompt.
           #
           # AND IT STATES THE UPDATE TERMS, because this page is where somebody
-          # decides whether to trust the thing. Self-update is ON and unsigned:
-          # the sha512 in latest.yml makes a tampered download fail, and nothing
-          # verifies WHO built a release. That is the same paragraph SECURITY.md
-          # carries; if one of the two changes, so does the other.
+          # decides whether to trust the thing. Self-update is ON and signed: the
+          # sha512 in latest.yml makes a tampered download fail, and the publisher
+          # check makes a build by anyone else fail. That is the same paragraph
+          # SECURITY.md carries; if one of the two changes, so does the other.
           #
           # NO BACKTICKS IN THESE STRINGS. A backtick is PowerShell's escape
           # character inside a double-quoted string, so a markdown code span
@@ -279,9 +296,9 @@ jobs:
             "**Download:** the eq-zera-Setup-$ver.exe asset below. Windows 10 or later; it installs",
             'per-user under %LOCALAPPDATA%\Programs, with no admin prompt.',
             '',
-            '**This installer is unsigned** — there is no code-signing certificate for this project',
-            'yet. Windows SmartScreen will show "Windows protected your PC" on first run; click',
-            '*More info -> Run anyway* to install it.',
+            '**This installer is code signed** through Azure Trusted Signing; the publisher Windows',
+            'shows is Jack Thomas. If SmartScreen still shows "Windows protected your PC" while the',
+            'signature builds reputation, *More info -> Run anyway* installs it.',
             '',
             '**The app updates itself from this page.** An installed copy checks shortly after',
             'launch and every few hours after that; when a newer build is out you get a card on the',
@@ -289,12 +306,11 @@ jobs:
             'downloads it, and clicking again restarts into it. Nothing is downloaded until you',
             'click, and a build you downloaded is applied the next time you close the app.',
             '',
-            '**Updates are checked for integrity, not authorship.** The feed and the installer come',
-            'over HTTPS from this repository and the download is verified against the SHA-512 in',
-            'latest.yml, so a corrupted or substituted file fails. But because the build is unsigned',
-            'there is no publisher signature to check, so nobody can verify *who* produced a',
-            'release: access to publish here is the control. That check comes back automatically the',
-            'day this project has a code-signing certificate. SECURITY.md says all of this in full.',
+            '**Updates are checked for integrity and authorship.** The feed and the installer come',
+            'over HTTPS from this repository, the download is verified against the SHA-512 in',
+            'latest.yml, and the app refuses any update whose signature is not from that same',
+            'publisher. A corrupted, substituted or impostor build fails. SECURITY.md says all of',
+            'this in full.',
             '',
             "What changed in this build is in the app's What's new panel (and in",
             'src/shared/releaseNotes.ts, which is where that panel reads it from).'

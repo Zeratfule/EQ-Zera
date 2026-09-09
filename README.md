@@ -22,14 +22,16 @@ guide is [`AGENTS.md`](AGENTS.md) and is still the best map of the code.
 - **The Z Engine.** The Rust log engine (`engine/`) is the fork's own line of development now: the
   process is `zengine.exe`, its cost on a real log is measured by `npm run engine:baseline` and
   recorded under `docs/zengine/`, and the program of work is in `docs/zengine/README.md`.
-- **Auto-update is off.** There is no release feed. See `AUTO_UPDATE_DISABLED` in
-  `src/main/updater.ts` and the (removed) `publish:` block in `electron-builder.yml`.
+- **Auto-update is on, and releases are signed.** The feed is this repository's GitHub
+  Releases (`publish:` in `electron-builder.yml`); every release from v1.20.1 is signed through
+  Azure Trusted Signing under the publisher "Jack Thomas", and the app refuses an update that is
+  not. SECURITY.md has the details.
 - **Telemetry and feedback are dark.** No endpoint is compiled in
   (`src/main/telemetry/net.ts`, `src/main/feedback/net.ts`). Nothing leaves your machine
   except the same third-party lookups upstream made: eqlwiki.com (items/mobs/images),
   the community sound-pack registry, and the on-demand Kokoro voice model download.
-- Upstream CI workflows (AWS/Azure signing, GitHub Pages site) are parked in
-  `.github/workflows-upstream-disabled/`.
+- Upstream CI workflows are parked in `.github/workflows-upstream-disabled/`; the fork's own
+  are `.github/workflows/ci.yml` and `release.yml` (tag-driven, signed builds).
 - Settings still live in `%AppData%\everquest-companion\` so an existing install's data is
   picked up unchanged.
 
