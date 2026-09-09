@@ -25,6 +25,11 @@
 //   * the worn cells, as the dump spelled them (name with its ` +N`, the socketed exaltations,
 //     the ornament) plus the icon the committed DB joined in. Empty cells do not travel; the
 //     grid that draws this profile knows the twenty-four places and leaves the rest quiet.
+//   * and since v2 (the owner's 2026-09-09 report) WHAT EACH OF THOSE ITEMS READS at the rank it
+//     is worn at - the base name beside the rank, AC/HP/Mana/Endurance, the stat lines, the
+//     effects, the flags, the weapon numbers. `shared/characterShareItem.ts` owns that half; the
+//     point of carrying it is that a reader of a share LINK has no item database of their own, so
+//     a hover card on somebody else's profile can only say what the body says.
 //   * what the gear adds up to — the same `GearTotals` the sheet prints, reduced to plain
 //     numbers and stated strings (percent-valued stats are STATED, never added: law 6).
 //   * the four Build-tab readings, as percents.
@@ -52,10 +57,22 @@
 // wrote this JSON" is the only assumption it is safe to make.
 
 import type { GearTotals, SheetCellView } from './characterSheet'
+import { clampInt, itemFacts, sanitizeItemFacts, type ShareItemFacts } from './characterShareItem'
 import { clampStr, SHARE_LIMITS } from './shareSchema'
 
-/** Body generation. Bump only for a change this file's reader cannot make sense of. */
-export const CHARACTER_SHARE_VERSION = 1
+export type { ShareEffect, ShareItemFacts, ShareStatLine, ShareWeapon } from './characterShareItem'
+
+/**
+ * Body generation. Bump only for a change this file's reader cannot make sense of.
+ *
+ * V2 (2026-09-09, the owner's report) added WHAT EACH WORN ITEM SAYS - the rank as its own field
+ * beside the base name, the item's AC/HP/Mana/Endurance, its stat lines, effects and flags
+ * (`characterShareItem.ts`). It is ADDITIVE: a v1 body is missing all of it and is read exactly as
+ * it always was, which is why the sanitizer accepts both generations and only refuses a body from
+ * a generation it has never heard of. The ENVELOPE is untouched - the same `EQC1-` string, the
+ * same `kind:'character'`, the same checksum over the body.
+ */
+export const CHARACTER_SHARE_VERSION = 2
 
 /** Which figure the sharer's card drew - three picks, never a log fact (modelPrefs.ts). */
 export interface ShareLook {
@@ -64,8 +81,11 @@ export interface ShareLook {
   face?: number
 }
 
-/** One worn slot, as the dump spelled it plus the icon the committed DB joined in. */
-export interface ShareCell {
+/**
+ * One worn slot: as the dump spelled it, plus the icon the committed DB joined in, plus (v2) what
+ * that item READS at the rank it is worn at - `ShareItemFacts`, in characterShareItem.ts.
+ */
+export interface ShareCell extends ShareItemFacts {
   /** the sheet's own cell id (`chest`, `ear1`) - the grid's key, never a side */
   slot: string
   /** what the cell is called on screen; identical for both cells of a pair */
@@ -150,6 +170,10 @@ function shareCell(cell: SheetCellView): ShareCell | null {
   const item = cell.item
   if (!item) return null
   const out: ShareCell = {
+    // The one spread in this file, and it is not a sheet object: `itemFacts` is itself a
+    // field-by-field projection (characterShareItem.ts), so nothing added to `SheetItemView`
+    // can reach the wire through it.
+    ...itemFacts(item),
     slot: cell.id,
     label: cell.label,
     item: item.name,
@@ -218,12 +242,6 @@ export function buildCharacterShare(input: CharacterShareInput): CharacterProfil
 
 // ------------------------------------------------------------------------------------- sanitize
 
-/** Untrusted -> a finite integer in `[min, max]`, or undefined. */
-function clampInt(v: unknown, min: number, max: number): number | undefined {
-  if (typeof v !== 'number' || !Number.isFinite(v)) return undefined
-  return Math.max(min, Math.min(max, Math.round(v)))
-}
-
 /** Untrusted -> a bounded list of bounded strings, empties dropped. */
 function clampStrings(v: unknown, max: number): string[] {
   if (!Array.isArray(v)) return []
@@ -256,6 +274,9 @@ function sanitizeCell(v: unknown): ShareCell | null {
   const item = clampStr(r.item, SHARE_LIMITS.maxNameChars).trim()
   if (!slot || !item) return null
   const cell: ShareCell = {
+    // Rebuilt field by field, exactly like everything else here - `sanitizeItemFacts` never
+    // copies a key it was not asked for, so an unknown one still cannot survive.
+    ...sanitizeItemFacts(r),
     slot,
     label: clampStr(r.label, 40).trim() || slot,
     item,
@@ -348,6 +369,10 @@ function sanitizeCells(v: unknown): ShareCell[] {
 export function sanitizeCharacterShare(v: unknown): CharacterProfileShare | null {
   if (!v || typeof v !== 'object') return null
   const r = v as Record<string, unknown>
+  // EVERY GENERATION THIS BUILD HAS HEARD OF, which is 1 and 2: a v1 body simply states none of
+  // the per-item facts, and reading it costs nothing but the defaults `sanitizeItemFacts`
+  // documents. A body from a LATER generation is refused, because this reader cannot know what it
+  // would be failing to draw.
   if (typeof r.v === 'number' && r.v > CHARACTER_SHARE_VERSION) return null
   const cells = sanitizeCells(r.cells)
   if (!cells.length) return null
@@ -368,6 +393,56 @@ export function sanitizeCharacterShare(v: unknown): CharacterProfileShare | null
   return profile
 }
 
+// ------------------------------------------------------------------- the character, with gear on
+
+/**
+ * "The character, wearing this gear" - the numbers a reader wants at the top of a profile page.
+ *
+ * IT IS A DERIVED VIEW, NOT A FIELD, and that is the whole design decision. Every number in it is
+ * already in `totals`, so putting a `character` object on the wire would be the same facts twice:
+ * two places to disagree, and a bigger string for nothing. The helper picks HP / Mana / Endurance
+ * out of the summed rows (they are rows there, not fields) and leaves the rest of the list alone.
+ *
+ * AND IT IS GEAR-DERIVED, EVERY DIGIT OF IT (world-model law 1). No `/outputfile` variant exports
+ * character stats and no AA export exists (characterSheet.ts's measurement), so the app does not
+ * know this character's base STR or their real HP pool, and nothing here invents one: this says
+ * what the WORN ITEMS add up to, which is exactly what the Character tab prints under "from gear".
+ * A row no worn item stated reads 0 because the fold found nothing to add, not because a stat was
+ * assumed to be zero - and `totals.unknown` says how many items were not in the database at all.
+ */
+export interface ShareCharacterBlock {
+  level?: number
+  classes: string[]
+  ac: number
+  hp: number
+  mana: number
+  endurance: number
+  /** the summed rows EXCEPT HP / Mana / Endurance, which are the three fields above */
+  stats: ShareStat[]
+  saves: ShareStat[]
+}
+
+export function characterBlock(profile: CharacterProfileShare): ShareCharacterBlock {
+  const block: ShareCharacterBlock = {
+    classes: [...profile.classes],
+    ac: profile.totals.ac,
+    hp: 0,
+    mana: 0,
+    endurance: 0,
+    stats: [],
+    saves: []
+  }
+  if (profile.level !== undefined) block.level = profile.level
+  for (const row of profile.totals.stats) {
+    if (row.label === 'HP') block.hp = row.total
+    else if (row.label === 'Mana') block.mana = row.total
+    else if (row.label === 'Endurance') block.endurance = row.total
+    else block.stats.push({ label: row.label, total: row.total })
+  }
+  for (const row of profile.totals.saves) block.saves.push({ label: row.label, total: row.total })
+  return block
+}
+
 // ------------------------------------------------------------------------------------ plain text
 
 /** The four labels the Build tab uses, so a pasted summary and the tab read the same words. */
@@ -377,6 +452,34 @@ const SCORE_LABEL: readonly [keyof ShareScores, string][] = [
   ['heal', 'Healer'],
   ['solo', 'Solo']
 ]
+
+/**
+ * The rows the "with gear" line reads, in the order it says them. HP and Mana lead because they
+ * are what a reader looks for first; the attributes follow in the item window's own order.
+ */
+const WITH_GEAR_ORDER: readonly string[] = [
+  'HP', 'Mana', 'Strength', 'Stamina', 'Agility', 'Dexterity', 'Wisdom', 'Intelligence', 'Charisma'
+]
+
+const signed = (n: number): string => (n > 0 ? `+${String(n)}` : String(n))
+
+/**
+ * What the character reads WITH THIS GEAR ON - the owner's second ask, in one line.
+ *
+ * A row the totals do not carry is not said at all (law 1): no worn item stated it, and a `+0` on
+ * a card reads as a measurement rather than as an absence.
+ */
+function withGearLine(profile: CharacterProfileShare): string {
+  const block = characterBlock(profile)
+  const parts: string[] = [`AC ${String(block.ac)}`]
+  const byLabel = new Map<string, number>()
+  for (const row of profile.totals.stats) byLabel.set(row.label, row.total)
+  for (const label of WITH_GEAR_ORDER) {
+    const total = byLabel.get(label)
+    if (total !== undefined) parts.push(`${label} ${signed(total)}`)
+  }
+  return `With gear: ${parts.join(' · ')}`
+}
 
 /** The head line: who this is. Every part is allowed to be absent, and then it is simply not said. */
 function headLine(profile: CharacterProfileShare): string {
@@ -410,6 +513,7 @@ export function characterShareText(profile: CharacterProfileShare): string {
     const scores = profile.scores
     lines.push(SCORE_LABEL.map(([key, label]) => `${label} ${String(scores[key])}%`).join(' · '))
   }
+  lines.push(withGearLine(profile))
   lines.push(`AC ${String(profile.totals.ac)} from ${String(profile.totals.counted)} of ${String(profile.cells.length)} worn items`)
   lines.push('')
   for (const cell of profile.cells) lines.push(cellLine(cell))

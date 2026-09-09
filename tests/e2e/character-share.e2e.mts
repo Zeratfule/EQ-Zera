@@ -55,6 +55,8 @@ const DIALOG = '[data-testid="character-share-dialog"]'
 const CARD = '[data-testid="character-share-card"]'
 const SLOT = '[data-testid="character-share-slot"]'
 const FILLED = '[data-testid="character-share-slot"][data-filled="true"]'
+const RANK = '[data-testid="character-share-rank"]'
+const TIP = '[data-testid="share-cell-tooltip"]'
 const SCORE = '[data-testid="character-share-score"]'
 const NO_SCORES = '[data-testid="character-share-no-scores"]'
 const COPY_STRING = '[data-testid="character-share-copy-string"]'
@@ -81,6 +83,15 @@ const WORN = 22
 const METERS = 4
 /** The character the fixture dump belongs to - the name the card prints and the viewer reads back. */
 const NAME = 'Primitive'
+/**
+ * THE OWNER'S REPORT (2026-09-09), as two numbers off the staged dump. The hands cell wears
+ * `Gauntlets of Fiery Might +5`: the rank used to ride the end of a name the cell ellipsized, and
+ * now it is a badge on the icon, so the `+5` is on screen whatever the name's length. The item
+ * window behind that cell is drawn from the BODY - the stat is what the gauntlets read at +5.
+ */
+const RANK_SLOT = 'hands'
+const RANK_TEXT = '5'
+const RANK_STAT = 'Strength'
 
 function textOf(page: Page, sel: string): Promise<string> {
   return page.evaluate((s) => (document.querySelector(s) as HTMLElement | null)?.innerText ?? '', sel)
@@ -97,6 +108,39 @@ function scores(page: Page): Promise<number[]> {
     (s) => [...document.querySelectorAll(s)].map((el) => Number(el.getAttribute('data-score'))),
     SCORE
   )
+}
+
+/** Every rank badge on the card, as the number it states. */
+function ranks(page: Page): Promise<string[]> {
+  return page.evaluate(
+    (s) => [...document.querySelectorAll(s)].map((el) => el.getAttribute('data-rank') ?? ''),
+    RANK
+  )
+}
+
+/**
+ * Hover one cell of the card and read the item window it opens, then move off and wait for it to
+ * go. The move-off matters: a card left hovered would be photographed by the next Copy image.
+ */
+async function hoverCell(page: Page, slot: string): Promise<string> {
+  await page.hover(`[data-testid="share-cell-${slot}"]`, { timeout: 15_000 })
+  const up = (await settleCount(page, TIP, 1, { timeoutMs: 15_000 })) === 1
+  const text = up ? await textOf(page, TIP) : ''
+  await page.mouse.move(2, 2)
+  await settleGone(page, TIP, { timeoutMs: 15_000 })
+  return text
+}
+
+/** The rank badges, and the item window a filled cell opens. Both sides of the owner's report. */
+async function checkGearDetail(page: Page, where: string): Promise<void> {
+  const badges = await ranks(page)
+  check(`${where}: an upgraded item shows its rank as a badge, not as the end of a long name`, badges.length > 0, `${String(badges.length)} badges`)
+  check(`${where}: …and every badge states a number`, badges.length > 0 && badges.every((r) => /^\d+$/.test(r)), badges.join(' '))
+  check(`${where}: …including the +${RANK_TEXT} the staged dump wears on its hands`, badges.includes(RANK_TEXT), badges.join(' '))
+
+  const tip = await hoverCell(page, RANK_SLOT)
+  check(`${where}: hovering a worn cell opens the item's own window`, tip !== '', tip.split('\n')[0] ?? '')
+  check(`${where}: …carrying at least one stat line from the shared body`, tip.includes(RANK_STAT), tip.replace(/\n/g, ' · ').slice(0, 120))
 }
 
 /** A button's transient outcome ("Copied" / "Saved" / "Could not"), or '' while it names its action. */
@@ -153,6 +197,7 @@ async function stepCard(page: Page): Promise<boolean> {
 
   const head = await textOf(page, CARD)
   check('the card names the character the dump belongs to', head.includes(NAME), head.split('\n')[0] ?? '')
+  await checkGearDetail(page, 'the card')
   return true
 }
 
@@ -222,6 +267,10 @@ async function stepViewer(page: Page, text: string): Promise<void> {
   check('…and the same character', card.includes(NAME), card.split('\n')[0] ?? '')
   const stamp = await textOf(page, STAMP)
   check('…under a provenance line naming who shared it and when', /^Shared by /.test(stamp), stamp)
+  // THE READER'S HALF OF THE OWNER'S REPORT. This viewer holds a decoded STRING and nothing else -
+  // no sheet, no item database lookup - so a rank badge and an item window here are proof that the
+  // body carried them across the wire.
+  await checkGearDetail(page, 'the pasted profile')
 
   await page.click(VIEW_CLOSE, { timeout: 15_000 })
   check('the viewer closes', await settleGone(page, CARD, { timeoutMs: 15_000 }))

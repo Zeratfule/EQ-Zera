@@ -65,6 +65,11 @@ function joinCell(cell: SheetCell): SheetCellView {
   const record = itemIndex().get(itemKey(cell.item.baseName))
   const item: SheetItemView = { ...cell.item, known: record !== undefined }
   if (record?.iconId !== undefined) item.iconId = record.iconId
+  // THE BLOCK TRAVELS, BASE (EQ Zera, 2026-09-09). Main is the only side that holds the item
+  // corpus, so main is the side that says what an item states - the totals below read this field
+  // rather than looking the item up a second time, and the share card's per-item hover reads it
+  // through the same `wornBlock` scaler the totals go through.
+  if (record?.stats !== undefined) item.block = record.stats
   if (record?.stats?.skill !== undefined) item.skill = record.stats.skill
   // The game's own look for the item AND for its ornament donor (EQ Zera): model, material and
   // dye, each by the item id the dump wrote, so the model can wear whichever the toggle says.
@@ -99,7 +104,10 @@ function withOrnamentLook(item: SheetItemView, source: SheetItem): void {
  */
 function wornOf(cell: SheetCellView): WornItemBlock {
   if (!cell.item) return {}
-  return { tier: cell.item.tier, block: itemIndex().get(itemKey(cell.item.baseName))?.stats }
+  // ONE LOOKUP PER ITEM: `joinCell` already asked the corpus and wrote the answer onto the view,
+  // so the sum reads the same object the card's hover will - a second `itemIndex()` call here
+  // would be a second chance for the two to disagree.
+  return { tier: cell.item.tier, block: cell.item.block }
 }
 
 export function registerCharacterSheetIpc(): void {

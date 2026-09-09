@@ -19,6 +19,7 @@ import type { CharacterProfileShare, ShareCell, ShareScores, ShareTotals } from 
 import { FONTS, PALETTE, withAlpha } from '../../../../../shared/palette'
 import { RACE_OPTIONS } from '../modelPrefs'
 import { itemIconUrl } from '../../../lib/ItemWindow'
+import { ShareItemTooltip } from './ShareItemTooltip'
 
 /** The Build tab's own four labels and colours, so the card and the tab never drift. */
 const SCORES: readonly { key: keyof ShareScores; label: string; color: string }[] = [
@@ -77,6 +78,41 @@ export function ShareFigure({ look, image }: { look: CharacterProfileShare['look
 
 // ------------------------------------------------------------------------------------ the gear
 
+/**
+ * THE RANK, AS A BADGE ON THE ICON (owner report, 2026-09-09: *"a lot of the item names don't show
+ * what the +X ranks are because item names are too long"*).
+ *
+ * The cell is one third of a 720px card and an item name is world-supplied text, so the name is
+ * ellipsized - which put the ` +5` on the wrong side of the cut for every long name on the card.
+ * The rank is the reader's headline number, so it stops riding the string at all: it is drawn from
+ * `cell.tier` in the corner of the icon, where nothing can push it out, and the name printed beside
+ * it is the BASE name (`cell.base`), which is now shorter by exactly the part that moved.
+ */
+function RankBadge({ tier }: { tier: number }): JSX.Element {
+  return (
+    <Box
+      data-testid="character-share-rank"
+      data-rank={String(tier)}
+      sx={{
+        position: 'absolute',
+        right: -4,
+        bottom: -5,
+        px: 0.25,
+        borderRadius: 0.5,
+        border: '1px solid',
+        borderColor: withAlpha(PALETTE.accent, 0.7),
+        bgcolor: PALETTE.bg,
+        color: PALETTE.accent,
+        fontSize: 8.5,
+        fontWeight: 700,
+        lineHeight: 1.3
+      }}
+    >
+      +{tier}
+    </Box>
+  )
+}
+
 function GearCell({ label, cell }: { label: string; cell: ShareCell | undefined }): JSX.Element {
   return (
     <Box
@@ -84,6 +120,7 @@ function GearCell({ label, cell }: { label: string; cell: ShareCell | undefined 
       {...(cell ? { 'data-filled': 'true' } : {})}
       sx={{
         display: 'flex',
+        flexGrow: 1,
         gap: 0.6,
         alignItems: 'center',
         minWidth: 0,
@@ -94,31 +131,7 @@ function GearCell({ label, cell }: { label: string; cell: ShareCell | undefined 
         py: 0.35
       }}
     >
-      <Box
-        sx={{
-          width: 22,
-          height: 22,
-          flexShrink: 0,
-          border: '1px solid',
-          borderColor: 'divider',
-          borderRadius: 0.5,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}
-      >
-        {cell?.iconId !== undefined && (
-          <Box
-            component="img"
-            src={itemIconUrl(cell.iconId)}
-            alt=""
-            onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
-              e.currentTarget.style.display = 'none'
-            }}
-            sx={{ width: 18, height: 18, imageRendering: 'pixelated' }}
-          />
-        )}
-      </Box>
+      <GearIcon cell={cell} />
       <Box sx={{ minWidth: 0, flexGrow: 1 }}>
         <Typography sx={{ fontSize: 8.5, lineHeight: 1.2, color: 'text.disabled' }}>{label}</Typography>
         <Typography
@@ -131,17 +144,78 @@ function GearCell({ label, cell }: { label: string; cell: ShareCell | undefined 
             whiteSpace: 'nowrap'
           }}
         >
-          {cell ? cell.item : 'empty'}
+          {/* The base name, with the rank now drawn on the icon - see `RankBadge`. A body that
+              carried no base name (a v1 profile, or an item whose name states no rank) prints the
+              name it sent, unchanged. */}
+          {cell ? (cell.base ?? cell.item) : 'empty'}
         </Typography>
-        {cell && cell.exaltations.length > 0 && (
-          <Typography sx={{ fontSize: 8.5, lineHeight: 1.3, color: PALETTE.magenta }}>
-            {cell.exaltations.length} exaltation{cell.exaltations.length === 1 ? '' : 's'}
-            {cell.ornament !== undefined ? ' · ornamented' : ''}
-          </Typography>
-        )}
+        {cell && <SocketLine cell={cell} />}
       </Box>
     </Box>
   )
+}
+
+/** The icon frame, the rank badge in its corner, and a dead icon URL hiding itself. */
+function GearIcon({ cell }: { cell: ShareCell | undefined }): JSX.Element {
+  return (
+    <Box
+      sx={{
+        position: 'relative',
+        width: 22,
+        height: 22,
+        flexShrink: 0,
+        border: '1px solid',
+        borderColor: 'divider',
+        borderRadius: 0.5,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}
+    >
+      {cell?.tier !== undefined && <RankBadge tier={cell.tier} />}
+      {cell?.iconId !== undefined && (
+        <Box
+          component="img"
+          src={itemIconUrl(cell.iconId)}
+          alt=""
+          onError={(e: React.SyntheticEvent<HTMLImageElement>) => {
+            e.currentTarget.style.display = 'none'
+          }}
+          sx={{ width: 18, height: 18, imageRendering: 'pixelated' }}
+        />
+      )}
+    </Box>
+  )
+}
+
+/** How many exaltations are socketed into this item, and whether one of them is its look. */
+function SocketLine({ cell }: { cell: ShareCell }): JSX.Element | null {
+  if (cell.exaltations.length === 0) return null
+  return (
+    <Typography sx={{ fontSize: 8.5, lineHeight: 1.3, color: PALETTE.magenta }}>
+      {cell.exaltations.length} exaltation{cell.exaltations.length === 1 ? '' : 's'}
+      {cell.ornament !== undefined ? ' · ornamented' : ''}
+    </Typography>
+  )
+}
+
+/**
+ * One place on the card: the cell, and - when something is worn in it - the item window behind it.
+ *
+ * THE CARD IS STILL A PICTURE. Its header says nothing inside it is a hover surface, and the
+ * reason was that an affordance would be a dead pixel in the photograph. A tooltip is the one
+ * shape that does not break that: it draws nothing until the pointer stops, the capture is taken
+ * from a button OUTSIDE the card, and the photographed pixels are byte-identical to what they were.
+ * What it buys is the owner's ask - the reader of a share link can finally ask what a piece of gear
+ * does - and it is the same wrapper on both callers, so the dialog and the viewer stay identical.
+ */
+function GearSlot({ slot, label, cell }: { slot: string; label: string; cell: ShareCell | undefined }): JSX.Element {
+  const box = (
+    <Box data-testid={`share-cell-${slot}`} sx={{ display: 'flex', minWidth: 0 }}>
+      <GearCell label={label} cell={cell} />
+    </Box>
+  )
+  return cell ? <ShareItemTooltip cell={cell}>{box}</ShareItemTooltip> : box
 }
 
 /**
@@ -157,7 +231,7 @@ export function ShareGearGrid({ cells }: { cells: readonly ShareCell[] }): JSX.E
       sx={{ flexGrow: 1, minWidth: 0, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 0.5 }}
     >
       {SHEET_SLOTS.map((slot) => (
-        <GearCell key={slot.id} label={slot.label} cell={bySlot.get(slot.id)} />
+        <GearSlot key={slot.id} slot={slot.id} label={slot.label} cell={bySlot.get(slot.id)} />
       ))}
     </Box>
   )

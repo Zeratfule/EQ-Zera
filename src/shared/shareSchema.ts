@@ -172,7 +172,13 @@ export const SHARE_LIMITS = {
   /** Summed stat rows in one gear-totals list (stats, saves and unsummed are capped alike). */
   maxCharacterStats: 60,
   /** Stated values under ONE unsummed (percent-valued) stat - the two haste values, and room. */
-  maxStatValues: 8
+  maxStatValues: 8,
+  /** Stat lines carried for ONE shared item (character body v2). AC/HP/Mana/Endurance have
+   *  fields of their own, so this bounds the rest of the item window's rows. */
+  maxCellStats: 40,
+  /** Effect lines carried for ONE shared item (v2): five exaltation sockets plus the item's
+   *  own combat/worn/focus lines, with room over. */
+  maxCellEffects: 8
 } as const
 
 // ------------------------------------------------------------------ canonical JSON + checksum

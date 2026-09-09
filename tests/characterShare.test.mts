@@ -31,70 +31,17 @@
 
 import { test } from 'node:test'
 import assert from 'node:assert/strict'
-import { readFileSync } from 'node:fs'
-import { join } from 'node:path'
-import { parseInventoryDump } from '../src/main/outputs/inventoryParse'
-import { sheetCells, sumGear, type SheetCellView, type WornItemBlock } from '../src/shared/characterSheet'
-import { buildItemDbIndex, itemKey, type ItemDbFile } from '../src/main/itemsDb'
 import {
   buildCharacterShare,
   characterShareText,
-  sanitizeCharacterShare,
-  type CharacterProfileShare,
-  type ShareScores
+  sanitizeCharacterShare
 } from '../src/shared/characterShare'
 import { SHARE_LIMITS, SHARE_PREFIX, canonicalJson, checksum, makeEnvelope } from '../src/shared/profiles'
 import { decodeCharacterShare, encodeCharacterShare, shareImageName } from '../src/main/characterShare'
 import { encodeShareString } from '../src/main/shareCodec'
-
-const APP = '1.5.0'
-const CAPTURED = 1_757_000_000_000
-
-// ---- the real character, joined the way the handler joins it ---------------------------
-
-const dump = parseInventoryDump(
-  readFileSync(join(import.meta.dirname, 'fixtures', 'Primitive_freeport-Inventory.txt'), 'utf8')
-)
-const dbIndex = buildItemDbIndex(
-  JSON.parse(
-    readFileSync(join(import.meta.dirname, '..', 'src', 'main', 'data', 'items.json'), 'utf8')
-  ) as ItemDbFile
-)
-
-/** `joinCell`'s two contributions, re-done here so this stays an Electron-free node test. */
-const cells: SheetCellView[] = sheetCells(dump).cells.map((cell) => {
-  if (!cell.item) return { ...cell, item: null }
-  const record = dbIndex.get(itemKey(cell.item.baseName))
-  return {
-    ...cell,
-    item: {
-      ...cell.item,
-      known: record !== undefined,
-      ...(record?.iconId === undefined ? {} : { iconId: record.iconId })
-    }
-  }
-})
-const worn: WornItemBlock[] = []
-for (const cell of cells) {
-  if (cell.item) worn.push({ tier: cell.item.tier, block: dbIndex.get(itemKey(cell.item.baseName))?.stats })
-}
-const totals = sumGear(worn)
-
-const SCORES: ShareScores = { tank: 74, dps: 61, heal: 38, solo: 55 }
-
-/** `null` means "the Build tab had no reading", which is not the same as `undefined` defaulting. */
-function profileOf(scores: ShareScores | null = SCORES): CharacterProfileShare {
-  return buildCharacterShare({
-    cells,
-    totals,
-    look: { race: 'DW', sex: 'F', face: 2 },
-    classes: ['WAR', 'CLR', 'SHM'],
-    name: 'Primitive',
-    level: 60,
-    scores: scores ?? undefined,
-    capturedAt: CAPTURED
-  })
-}
+// THE REAL CHARACTER, joined the way the handler joins it - and shared with the spec that covers
+// the per-item half of the body (characterShareItem.test.mts), so both read one character.
+import { APP, CAPTURED, cells, SCORES, totals, profileOf } from './characterShareFixture.mjs'
 
 // ---- the projection ---------------------------------------------------------------------
 
@@ -106,8 +53,12 @@ test('the profile carries the WORN cells and nothing else off the sheet', () => 
   // The two things a projection must not leak: a machine path, and the sheet's own bookkeeping.
   const json = canonicalJson(profile)
   assert.ok(!/[A-Za-z]:\\\\|\/Users\//.test(json), 'no path can appear - nothing here reads one')
-  assert.ok(!json.includes('"known"'), 'the DB-join flag is bookkeeping and stays home')
   assert.ok(!json.includes('"baseName"'), 'the join key stays home; the card prints the dump name')
+  // `known` USED TO STAY HOME, and v2 sends it on purpose: a reader of a share link has no item
+  // database, so "this item is not in the item database" is a fact only the body can carry. What
+  // is still bookkeeping - the join KEY, the icon's provenance, the model and dye - never travels.
+  assert.ok(profile.cells.every((c) => typeof c.known === 'boolean'), 'every v2 cell states it')
+  assert.ok(!json.includes('"material"') && !json.includes('"model"'), 'the look stays home')
 })
 
 test('the item names ride VERBATIM, ` +N` and all', () => {
@@ -297,11 +248,14 @@ test('the text summary states who, then the scores, then one line per worn slot'
   const lines = characterShareText(profileOf()).split('\n')
   assert.equal(lines[0], 'Primitive - level 60 - WAR / CLR / SHM')
   assert.equal(lines[1], 'Tank 74% · DPS 61% · Healer 38% · Solo 55%')
-  assert.match(lines[2], /^AC \d+ from \d+ of 22 worn items$/)
-  assert.equal(lines[3], '')
+  // THE OWNER'S SECOND ASK, IN ONE LINE: what the character reads with this gear on.
+  assert.match(lines[2], /^With gear: AC \d+ · HP \+\d+ · Mana \+\d+ · Strength \+\d+/)
+  assert.ok(lines[2].includes('Charisma'), 'and it runs to the last attribute the totals carry')
+  assert.match(lines[3], /^AC \d+ from \d+ of 22 worn items$/)
+  assert.equal(lines[4], '')
   assert.equal(lines.at(-1), 'Shared from EQ Zera')
   // One line per WORN slot and not one per place: the empty two say nothing.
-  const gear = lines.slice(4, lines.length - 2)
+  const gear = lines.slice(5, lines.length - 2)
   assert.equal(gear.length, 22)
   assert.ok(gear.every((l) => l.includes(': ')))
   assert.ok(!/[–—]/.test(lines.join('\n')), 'no em dashes in copy a player pastes')

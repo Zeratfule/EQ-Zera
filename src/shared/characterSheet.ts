@@ -271,6 +271,16 @@ export interface SheetItemView extends SheetItem {
    * count it as unknown.
    */
   known: boolean
+  /**
+   * The committed DB's stat block for this item, BASE - not scaled to the ` +N` the name states.
+   *
+   * It is the same record `sumGear` is handed (main's `wornOf` reads it straight off this field),
+   * so the sheet answers ONE lookup per worn item and the totals and this block are by construction
+   * the same fact. The scaling stays where it has always been - `wornBlock`, the one call into the
+   * upgrade algorithm - so nothing downstream can read this at a level the sheet did not intend.
+   * Absent means the DB had no record, which `known:false` already says out loud.
+   */
+  block?: ItemStatBlock
   /** the ornament donor's icon, when the DB knows it - what the character model draws over the slot */
   ornamentIconId?: number
   /** the item page's `Skill:` ("1H Slashing"), when the DB states one - the weapon model's fallback */

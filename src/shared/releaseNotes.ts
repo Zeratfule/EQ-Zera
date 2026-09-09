@@ -138,6 +138,24 @@ export const RELEASE_NOTES: readonly ReleaseNote[] = [
   // Character sharing, phase 2 (docs/plans/share-links.md): the card as a link. The service
   // behind share.eqzera.com went live 2026-09-09 (share-server/, Cloudflare Worker + KV).
   {
+    version: '1.22.0',
+    date: '2026-09-09',
+    entries: [
+      {
+        kind: 'new',
+        text: 'Shared profiles carry every item\x27s stats. Hover a gear cell on a shared card to see the item window: rank, flags, AC, HP, mana, stat lines, effects, exaltations and ornament, even for items your own app has never seen.'
+      },
+      {
+        kind: 'changed',
+        text: 'The share card shows each item\x27s rank as a +N badge beside the icon, so a long name no longer hides it. The plain-text summary adds a With gear line with AC, HP, mana and the six attributes.'
+      },
+      {
+        kind: 'changed',
+        text: 'share.eqzera.com pages show rank badges, a tap-to-open item detail per slot, and a Character with gear section above the totals.'
+      }
+    ]
+  },
+  {
     version: '1.21.2',
     date: '2026-09-09',
     entries: [

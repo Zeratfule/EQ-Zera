@@ -5,8 +5,14 @@
 // photographed by `webContents.capturePage` (main/ipc/characterShare.ts) and the photograph is
 // what ends up in a Discord channel, so it has ONE width on every machine, at every text size, and
 // a reader who narrows the window gets a scrollbar around the card rather than a differently
-// proportioned card. That is also why nothing inside it is a hover surface, a link or a control:
-// a share card is a picture, and every affordance on it would be a dead pixel in the copy.
+// proportioned card. That is also why nothing inside it is a link or a control: a share card is a
+// picture, and every affordance on it would be a dead pixel in the copy.
+//
+// THE ONE HOVER, AND WHY IT DOES NOT BREAK THAT (2026-09-09, the owner's report). Each worn cell
+// opens the item's own window on hover (`ShareItemTooltip`), drawn from the BODY and nothing else.
+// A tooltip is the only affordance that costs the photograph nothing: it draws no pixel until the
+// pointer stops, and the capture is started from a button outside the card. What it buys is the
+// half of a share that a still picture cannot carry - the reader asking what a piece of gear does.
 //
 // ONE COMPONENT, TWO CALLERS. The Share dialog renders it from your own live sheet; the viewer
 // renders it from a stranger's decoded string. Both hand it the same `CharacterProfileShare`, so
