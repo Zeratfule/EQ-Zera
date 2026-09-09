@@ -50,5 +50,5 @@ The Download button never needs editing: it points at
 `https://github.com/Zeratfule/EQ-Zera/releases/latest/download/eq-zera-Setup.exe`, and `release.yml`
 uploads an asset with exactly that name on every tag. Two things in `home-body.html` do need a hand edit:
 
-1. The version and size in the hero meta line (`v1.19.2`, `134 MB`).
+1. The version and size in the hero meta line (`v1.21.0`, `134 MB`).
 2. The "Recent releases" list. Copy the bullets from `src/shared/releaseNotes.ts`; keep three releases.
