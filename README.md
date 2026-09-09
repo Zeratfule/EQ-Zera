@@ -12,7 +12,9 @@ memory is read, nothing is automated.
 ## Origin
 
 EQ Zera is a fork of [everquest-companion](https://github.com/jmoyers/everquest-companion)
-("EQ Legends Companion") by Josh Moyers, whose development ended in September 2026. The upstream
+("EQ Legends Companion") by Josh Moyers, forked in September 2026. The original app is still
+published and still works for the game: get it from its
+[releases page](https://github.com/jmoyers/everquest-companion/releases/latest). The upstream
 README is preserved as [`README.upstream.md`](README.upstream.md); the upstream architecture
 guide is [`AGENTS.md`](AGENTS.md) and is still the best map of the code.
 
