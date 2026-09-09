@@ -216,11 +216,14 @@ win:
     # arguments instead. It self-skips when the AZURE_* env is absent, so local
     # dist builds stay unsigned; CI injects the env and signs.
     sign: scripts/azure-sign.cjs
-    # UPDATE SIGNATURE VERIFICATION — DELIBERATELY OFF (owner's call, 2026-09-08),
-    # and this line is the whole of it. Restoring it is the ONLY change needed
-    # the day a certificate exists.
-    #
-    #   publisherName: EQ Zera
+    # UPDATE SIGNATURE VERIFICATION - ON since 2026-09-09. The value is the subject CN of
+    # the Azure Trusted Signing certificate profile `eqzera-public` (account `eqzera`,
+    # individual public identity validation dabd72c6-44c7-4960-adea-f8abdba14ac4):
+    # "CN=Jack Thomas, O=Jack Thomas, L=Traverse City, S=mi, C=US". The certificates
+    # themselves rotate every few days; the CN does not, and the CN is what
+    # electron-updater compares. It was off from 2026-09-08 to 2026-09-09 (the history
+    # below is kept because it explains the shape of the release pipeline).
+    publisherName: Jack Thomas
     #
     # WHAT THE NAME DOES. app-builder-lib copies it into `app-update.yml`
     # (PublishManager.getAppUpdatePublishConfiguration -> computedPublisherName),

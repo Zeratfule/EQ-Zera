@@ -163,6 +163,16 @@ export const RELEASE_NOTES: readonly ReleaseNote[] = [
   // their own (1.19.4's build failed on a signing hook with no certificate behind it and
   // 1.20.0 carries it); they are kept as the honest record of what arrived when.
   {
+    version: '1.20.1',
+    date: '2026-09-09',
+    entries: [
+      {
+        kind: 'new',
+        text: 'Releases are now code signed through Azure Trusted Signing. Windows shows the publisher instead of an unknown-publisher warning, and every future update must carry that signature or the app refuses it.'
+      }
+    ]
+  },
+  {
     version: '1.20.0',
     date: '2026-09-08',
     entries: [

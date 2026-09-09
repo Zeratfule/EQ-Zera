@@ -12,10 +12,13 @@
 //      decision spelled in two files, and getting them out of step does not produce a warning —
 //      it produces an updater that downloads a build and then refuses it every time, forever
 //      (NsisUpdater.verifySignature rejects any update whose Authenticode publisher does not match
-//      the name in app-update.yml, and SKIPS all checking when that name is null). The fork ships
-//      unsigned on purpose, so the pair that must hold is: updater ON, publisher name ABSENT. Both
-//      are read out of the source text, because the constant lives in a module that imports
-//      Electron and the name lives in YAML.
+//      the name in app-update.yml, and SKIPS all checking when that name is null). Since
+//      2026-09-09 releases are signed by Azure Trusted Signing (profile eqzera-public, subject
+//      CN "Jack Thomas"), so the pair that must hold is: updater ON, publisher name PRESENT and
+//      equal to that CN, sign hook wired. From 2026-09-08 to 2026-09-09 the fork shipped
+//      unsigned and the pair was updater ON, name ABSENT. Both halves are read out of the source
+//      text, because the constant lives in a module that imports Electron and the name lives
+//      in YAML.
 //
 //   2. THE CARDS. `shared/updateToast.ts` is pure precisely so the four payloads can be pinned
 //      here: what each one SAYS, which of them carry an action and which do not, and the id rule
@@ -56,19 +59,26 @@ test('self-update is ON: the fork switch returns false', () => {
   )
 })
 
-test('…and the Authenticode publisher name is ABSENT, which is what makes that safe to ship', () => {
+test('…and the Authenticode publisher name is the signing certificate\'s CN, with the sign hook wired', () => {
   const yml = read('electron-builder.yml')
-  // An ACTIVE key is one at the start of a line (any indent) with no `#` before it. The commented
-  // restore line below is deliberately left in the file and must not count.
+  // An ACTIVE key is one at the start of a line (any indent) with no `#` before it.
   const active = yml.split(/\r?\n/).filter((l) => /^\s*publisherName:/.test(l))
   assert.deepEqual(
-    active,
-    [],
-    'publisherName must stay commented out while releases are unsigned: with it set, every update ' +
-      'is downloaded and then rejected (ERR_UPDATER_INVALID_SIGNATURE)'
+    active.map((l) => l.trim()),
+    ['publisherName: Jack Thomas'],
+    'publisherName must be exactly the Trusted Signing certificate subject CN: electron-updater ' +
+      'compares the CN of the downloaded installer\'s Authenticode signer against this name and ' +
+      'rejects any mismatch (ERR_UPDATER_INVALID_SIGNATURE), so a typo here bricks every update'
   )
-  // …and the way back is written down rather than remembered.
-  assert.match(yml, /#\s*publisherName: EQ Zera/, 'the restore line must stay, commented, in place')
+  // …and the signature the name is checked against actually gets applied: the hook stays wired
+  // (it self-skips locally; release.yml feeds it the endpoint only when SIGNING_ENABLED is true).
+  assert.match(yml, /^\s*sign: scripts\/azure-sign\.cjs\s*$/m, 'the Azure sign hook must stay wired')
+  const wf = read('.github/workflows/release.yml')
+  assert.match(
+    wf,
+    /AZURE_SIGNING_ENDPOINT: \$\{\{ vars\.SIGNING_ENABLED == 'true' && secrets\.AZURE_SIGNING_ENDPOINT \|\| '' \}\}/,
+    'release.yml must hand the hook its endpoint only behind the SIGNING_ENABLED repo variable'
+  )
 })
 
 test('the feed is compiled in, and it is this fork’s repository over HTTPS', () => {
