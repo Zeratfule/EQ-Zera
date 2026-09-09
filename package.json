@@ -92,7 +92,7 @@
     "electron-builder": "^26.15.7",
     "electron-vite": "^5.0.0",
     "esbuild": "^0.25.12",
-    "eslint": "^9.39.5",
+    "eslint": "^10.10.0",
     "eslint-plugin-react-hooks": "^5.2.0",
     "globals": "^15.15.0",
     "json-schema-to-typescript": "^15.0.4",
