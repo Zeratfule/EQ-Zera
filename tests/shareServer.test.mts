@@ -303,7 +303,9 @@ test('the card image is skipped, not faked, when the share carries none', async 
 test('a hostile item name never puts a raw < in the page', async () => {
   const h = harness()
   const hostile = profile()
-  hostile.cells[0] = { ...hostile.cells[0]!, item: `<img src=x onerror="alert(1)">`, label: '</h1><script>' }
+  // `base` too: the page prefers the tier-stripped name, so the hostile text must be there as well.
+  const name = `<img src=x onerror="alert(1)">`
+  hostile.cells[0] = { ...hostile.cells[0]!, item: name, base: name, label: '</h1><script>' }
   hostile.name = '<script>alert(2)</script>'
   const made = await create(h, { envelope: envelopeFor(hostile) })
   const html = await (await h.call('GET', `/s/${made.id}`)).text()
