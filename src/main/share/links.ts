@@ -25,6 +25,7 @@
 
 import { makeEnvelope, validateEnvelope, type ShareValidation } from '../../shared/profiles'
 import { sanitizeCharacterShare } from '../../shared/characterShare'
+import type { CardMapEntry } from '../../shared/shareCardMap'
 import { readCharacterEnvelope, type CharacterShareRead } from '../characterShare'
 import {
   createUrl,
@@ -57,6 +58,13 @@ export interface PublishRequest {
   appVersion: string
   /** the existing record for this character, when there is one */
   existing?: ShareTarget | undefined
+  /**
+   * where each drawn gear cell sits on THAT card, in fractions of it (shared/shareCardMap.ts), so
+   * the page can hover an armour piece and name it. Already sanitized by the caller against the
+   * profile's own slots (`src/main/ipc/characterShare.ts`); it travels only with a card, because
+   * fractions of a picture that was not sent describe nothing.
+   */
+  cardMap?: CardMapEntry[] | undefined
 }
 
 /**
@@ -104,14 +112,25 @@ function sentenceFor(status: number, fallback: string): string {
 interface PublishBody {
   envelope: unknown
   card?: string
+  cardMap?: CardMapEntry[]
 }
 
-/** The wire body: the envelope, and the card as a base64 image when there is one to send. */
-function publishBody(profile: unknown, card: Buffer | null, appVersion: string): PublishBody | null {
-  const body = sanitizeCharacterShare(profile)
+/**
+ * The wire body: the envelope, the card as a base64 image when there is one to send, and - only
+ * beside that card - where its gear cells were.
+ *
+ * THE MAP RIDES THE PICTURE OR IT DOES NOT GO. Every number in it is a fraction of the card that
+ * was captured, so a map sent without one would be measured against an image the page has to draw
+ * from the body instead, at a size nobody here knows. An empty map is simply not a field.
+ */
+function publishBody(req: PublishRequest): PublishBody | null {
+  const body = sanitizeCharacterShare(req.profile)
   if (!body) return null
-  const envelope = makeEnvelope('character', body, appVersion)
-  return card === null ? { envelope } : { envelope, card: card.toString('base64') }
+  const envelope = makeEnvelope('character', body, req.appVersion)
+  if (req.card === null) return { envelope }
+  const card = req.card.toString('base64')
+  const cardMap = req.cardMap ?? []
+  return cardMap.length === 0 ? { envelope, card } : { envelope, card, cardMap }
 }
 
 /** The `{ id, deleteToken }` a create replies with, or null when the reply was not one. */
@@ -160,7 +179,7 @@ async function createShare(deps: ShareFetch, body: unknown): Promise<PublishResu
  */
 export async function publishShare(req: PublishRequest, deps: ShareFetch): Promise<PublishResult> {
   if (!shareEndpointConfigured()) return { ok: false, error: ERR.dark }
-  const body = publishBody(req.profile, req.card, req.appVersion)
+  const body = publishBody(req)
   if (body === null) return { ok: false, error: ERR.empty }
   const existing = req.existing
   if (existing && isShareId(existing.id) && isDeleteToken(existing.deleteToken)) {

@@ -138,6 +138,16 @@ export const RELEASE_NOTES: readonly ReleaseNote[] = [
   // Character sharing, phase 2 (docs/plans/share-links.md): the card as a link. The service
   // behind share.eqzera.com went live 2026-09-09 (share-server/, Cloudflare Worker + KV).
   {
+    version: '1.22.2',
+    date: '2026-09-09',
+    entries: [
+      {
+        kind: 'new',
+        text: 'The card on a share link is interactive. Copy link now sends where each gear cell sits on the picture, so on share.eqzera.com every armor piece lights up on hover, shows its item facts, and can be pinned with a click or a tap.'
+      }
+    ]
+  },
+  {
     version: '1.22.1',
     date: '2026-09-09',
     entries: [

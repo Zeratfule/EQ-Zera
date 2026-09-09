@@ -143,6 +143,98 @@ async function checkGearDetail(page: Page, where: string): Promise<void> {
   check(`${where}: …carrying at least one stat line from the shared body`, tip.includes(RANK_STAT), tip.replace(/\n/g, ' · ').slice(0, 120))
 }
 
+// ── where the cells sit on the picture ─────────────────────────────────────────────────────
+
+/**
+ * THE HOTSPOT MAP, MEASURED THE WAY THE DIALOG MEASURES IT (the owner, 2026-09-09: an armour piece
+ * on the share page should answer the pointer). A publish carries `cardMap` beside the card - each
+ * worn cell's box as a FRACTION of the card picture (src/shared/shareCardMap.ts) - and the numbers
+ * come from `getBoundingClientRect`, which no unit test has.
+ *
+ * So the arithmetic is re-done here against the real DOM of the real card. That is a duplicate of
+ * `measureCardMap.ts` on purpose: this spec may not import `src/`, and what is being asserted is
+ * that the CARD ITSELF is a grid of twenty-two disjoint boxes inside its own picture. A layout
+ * change that overlapped two cells, or pushed one off the card, would land here rather than on a
+ * reader hovering the wrong item. No server is involved: nothing is published.
+ */
+interface Hotspot {
+  slot: string
+  x: number
+  y: number
+  w: number
+  h: number
+}
+
+function cardMap(page: Page): Promise<Hotspot[]> {
+  return page.evaluate((sel) => {
+    const root = document.querySelector(sel)
+    const out: { slot: string; x: number; y: number; w: number; h: number }[] = []
+    if (!root) return out
+    const card = root.getBoundingClientRect()
+    for (const el of [...root.querySelectorAll('[data-testid^="share-cell-"]')]) {
+      if (el.querySelector('[data-filled="true"]') === null) continue
+      const b = el.getBoundingClientRect()
+      out.push({
+        slot: (el.getAttribute('data-testid') ?? '').slice('share-cell-'.length),
+        x: (b.left - card.left) / card.width,
+        y: (b.top - card.top) / card.height,
+        w: b.width / card.width,
+        h: b.height / card.height
+      })
+    }
+    return out
+  }, CARD)
+}
+
+/** How much two boxes share, as a fraction of the smaller of them. 0 when they do not touch. */
+function overlapFraction(a: Hotspot, b: Hotspot): number {
+  const wide = Math.min(a.x + a.w, b.x + b.w) - Math.max(a.x, b.x)
+  const tall = Math.min(a.y + a.h, b.y + b.h) - Math.max(a.y, b.y)
+  if (wide <= 0 || tall <= 0) return 0
+  const smaller = Math.min(a.w * a.h, b.w * b.h)
+  return smaller <= 0 ? 1 : (wide * tall) / smaller
+}
+
+/** The worst-overlapping pair of a map, as `<slot>/<slot> <fraction>`. */
+function worstOverlap(map: Hotspot[]): { pair: string; share: number } {
+  let worst = { pair: '', share: 0 }
+  for (let i = 0; i < map.length; i++) {
+    for (let j = i + 1; j < map.length; j++) {
+      const a = map[i]
+      const b = map[j]
+      if (!a || !b) continue
+      const share = overlapFraction(a, b)
+      if (share > worst.share) worst = { pair: `${a.slot}/${b.slot}`, share }
+    }
+  }
+  return worst
+}
+
+/** The most a pair of grid cells may share before the page would tooltip the wrong item. */
+const MAX_OVERLAP = 0.05
+
+async function stepCardMap(page: Page): Promise<void> {
+  const map = await settle(() => cardMap(page), (m) => m.length === WORN, { timeoutMs: 20_000 })
+  const one = map[0]
+  check(`the card can be measured into one hotspot per worn cell (${String(WORN)})`, map.length === WORN, `${String(map.length)} boxes`)
+  if (one) note(`first hotspot: ${one.slot} x ${one.x.toFixed(4)} y ${one.y.toFixed(4)} w ${one.w.toFixed(4)} h ${one.h.toFixed(4)}`)
+
+  const inside = map.every(
+    (e) => e.x >= 0 && e.y >= 0 && e.w > 0 && e.h > 0 && e.x + e.w <= 1 && e.y + e.h <= 1
+  )
+  check('…every one of them a fraction of the picture, wholly inside it', map.length > 0 && inside, `${String(map.length)} boxes`)
+
+  const slots = new Set(map.map((e) => e.slot))
+  check('…one box per slot, each naming the slot the envelope carries', slots.size === map.length, [...slots].join(' '))
+
+  const worst = worstOverlap(map)
+  check(
+    '…and no two of them overlap - the card is a grid, and a hotspot must name one item',
+    worst.share <= MAX_OVERLAP,
+    `${worst.pair} ${worst.share.toFixed(3)}`
+  )
+}
+
 /** A button's transient outcome ("Copied" / "Saved" / "Could not"), or '' while it names its action. */
 function flashOf(page: Page, sel: string): Promise<string> {
   return page.evaluate((s) => document.querySelector(s)?.getAttribute('data-flash') ?? '', sel)
@@ -296,6 +388,7 @@ async function main(): Promise<void> {
 
     if (await openCharacterTab(page)) {
       if (await stepCard(page)) {
+        await stepCardMap(page)
         const text = await stepActions(page)
         await stepViewer(page, text)
       }

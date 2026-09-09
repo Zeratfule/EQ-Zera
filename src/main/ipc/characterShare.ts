@@ -29,6 +29,8 @@ import { app, clipboard, dialog, ipcMain } from 'electron'
 import { writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { IPC } from '../../shared/ipc'
+import { sanitizeCharacterShare } from '../../shared/characterShare'
+import { sanitizeCardMap, type CardMapEntry } from '../../shared/shareCardMap'
 import { logError } from '../errorLog'
 import { decodeCharacterShare, encodeCharacterShare, shareImageName, type CharacterShareRead } from '../characterShare'
 import { fetchSharedProfile, parseShareLink, publishShare, revokeShare } from '../share/links'
@@ -161,6 +163,8 @@ async function shareImage(req: unknown): Promise<ShareImageResult> {
 interface ShareLinkRequest {
   rect: unknown
   profile: unknown
+  /** where the card's gear cells sit on the picture at `rect`, as the renderer measured them */
+  cardMap: unknown
 }
 
 /** What `character:shareLink` answers. `updated` is "the same URL now shows the new card". */
@@ -234,17 +238,35 @@ function cardBytesForLink(image: Electron.NativeImage | null): Buffer | null {
   return null
 }
 
+/**
+ * THE CELL BOXES ARE THE RECTANGLE'S PROBLEM ALL OVER AGAIN (see this file's header). The renderer
+ * measured them, so they are untrusted numbers at the handler, and the slot names among them are
+ * checked against the profile as the ENVELOPE will carry it - `sanitizeCharacterShare` is the
+ * function that decides which cells travel, so asking it is the only way the map cannot name a
+ * cell the page will not be served. No picture means no map: the fractions are fractions of it.
+ */
+function cardMapFor(profile: unknown, card: Buffer | null, raw: unknown): CardMapEntry[] {
+  if (card === null) return []
+  const clean = sanitizeCharacterShare(profile)
+  if (!clean) return []
+  const slots = new Set<string>()
+  for (const cell of clean.cells) slots.add(cell.slot)
+  return sanitizeCardMap(raw, slots)
+}
+
 /** Publish, then record what came back. Never throws; every failure is a sentence. */
 async function shareLink(req: unknown): Promise<ShareLinkResult> {
   const request = (req && typeof req === 'object' ? req : {}) as Partial<ShareLinkRequest>
   const existing = findShareLink(ownerOf(request.profile))
   const image = await captureCard(request.rect)
+  const card = cardBytesForLink(image)
   const published = await publishShare(
     {
       profile: request.profile,
-      card: cardBytesForLink(image),
+      card,
       appVersion: app.getVersion(),
-      existing: existing ? { id: existing.id, deleteToken: existing.deleteToken } : undefined
+      existing: existing ? { id: existing.id, deleteToken: existing.deleteToken } : undefined,
+      cardMap: cardMapFor(request.profile, card, request.cardMap)
     },
     { fetch: globalThis.fetch }
   )

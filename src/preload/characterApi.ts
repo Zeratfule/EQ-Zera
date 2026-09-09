@@ -12,6 +12,7 @@ import { ipcRenderer } from 'electron'
 import { IPC } from '../shared/ipc'
 import type { CharacterSheet } from '../shared/characterSheet'
 import type { CharacterProfileShare } from '../shared/characterShare'
+import type { CardMapEntry } from '../shared/shareCardMap'
 import type { ShareLinkOwner, ShareLinkView } from '../shared/shareLinks'
 import type { EqModelHands, EqModelPayload, EqModelWear, ItemLook } from '../shared/eqModel'
 
@@ -66,9 +67,20 @@ export const characterApi = {
     name?: string
   ): Promise<CharacterShareImageResult> =>
     ipcRenderer.invoke(IPC.characterShareImage, { rect, op, name }),
-  /** Publish the card at `rect` as a share.eqzera.com link, replacing this character's if it has one. */
-  shareCharacterLink: (rect: ShareCardRect, profile: CharacterProfileShare): Promise<CharacterShareLinkResult> =>
-    ipcRenderer.invoke(IPC.characterShareLink, { rect, profile }),
+  /**
+   * Publish the card at `rect` as a share.eqzera.com link, replacing this character's if it has one.
+   *
+   * `cardMap` is where each gear cell sits on that same picture, in fractions of it
+   * (shared/shareCardMap.ts), so the page can hover an armour piece and name it. It is measured off
+   * the same element in the same breath as `rect` - a map from another moment would describe a
+   * differently sized card - and main re-checks every number in it.
+   */
+  shareCharacterLink: (
+    rect: ShareCardRect,
+    profile: CharacterProfileShare,
+    cardMap?: readonly CardMapEntry[]
+  ): Promise<CharacterShareLinkResult> =>
+    ipcRenderer.invoke(IPC.characterShareLink, { rect, profile, cardMap }),
   /** Stop a published link serving. Main holds the token that can do it; this only names the link. */
   revokeCharacterLink: (id: string): Promise<{ ok: boolean; error?: string }> =>
     ipcRenderer.invoke(IPC.characterShareRevoke, { id }),

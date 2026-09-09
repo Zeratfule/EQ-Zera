@@ -28,7 +28,9 @@ import ImageIcon from '@mui/icons-material/Image'
 import LinkIcon from '@mui/icons-material/Link'
 import SaveAltIcon from '@mui/icons-material/SaveAlt'
 import type { CharacterProfileShare } from '@shared/characterShare'
+import type { CardMapEntry } from '@shared/shareCardMap'
 import { copyText } from '../../../lib/clipboard'
+import { measureCardMap } from './measureCardMap'
 import ShareCard from './ShareCard'
 import { useCharacterShare } from './useCharacterShare'
 
@@ -170,6 +172,16 @@ interface CardRect {
   height: number
 }
 
+/**
+ * ONE READING OF THE CARD: the rectangle main photographs, and where each worn cell sits inside
+ * that same rectangle. They are taken together on purpose - the map is in fractions OF this
+ * picture, so a map measured at another moment would describe a card of another size.
+ */
+interface CardShot {
+  rect: CardRect
+  cardMap: CardMapEntry[]
+}
+
 /** What the dialog knows about this character's published link, and the two ways to move it. */
 interface LinkState {
   /** the published url, or '' when this character has none */
@@ -187,7 +199,7 @@ interface LinkState {
  */
 function useShareLink(
   profile: CharacterProfileShare | null,
-  rectOf: () => CardRect | null,
+  shotOf: () => CardShot | null,
   report: (id: string, outcome: string) => void
 ): LinkState {
   const [url, setUrl] = useState('')
@@ -215,11 +227,11 @@ function useShareLink(
   useEffect(load, [load])
 
   const publish = useCallback(() => {
-    const rect = rectOf()
-    if (profile === null || rect === null) return
+    const shot = shotOf()
+    if (profile === null || shot === null) return
     setError('')
     void window.eq
-      .shareCharacterLink(rect, profile)
+      .shareCharacterLink(shot.rect, profile, shot.cardMap)
       .then(async (res) => {
         if (!res.ok) {
           setError(res.error)
@@ -235,7 +247,7 @@ function useShareLink(
         setError('The link could not be created.')
         report('character-share-copy-link', 'Could not')
       })
-  }, [profile, rectOf, report, load])
+  }, [profile, shotOf, report, load])
 
   const revoke = useCallback(() => {
     if (id === '') return
@@ -325,17 +337,20 @@ export default function ShareDialog({ onClose }: { onClose: () => void }): JSX.E
     [report]
   )
 
-  // The card's own rectangle, read at the moment the button is pressed - main photographs the
-  // pixels that are on screen, so a rectangle measured on mount would be a rectangle from before
-  // the reader scrolled.
-  const rectOf = useCallback((): CardRect | null => {
+  // The card's own rectangle AND its cells' places inside it, read at the moment the button is
+  // pressed - main photographs the pixels that are on screen, so a rectangle measured on mount
+  // would be a rectangle from before the reader scrolled, and the map would be of that card.
+  const shotOf = useCallback((): CardShot | null => {
     const el = cardRef.current
     if (!el) return null
     const box = el.getBoundingClientRect()
-    return { x: box.x, y: box.y, width: box.width, height: box.height }
+    return {
+      rect: { x: box.x, y: box.y, width: box.width, height: box.height },
+      cardMap: measureCardMap(el)
+    }
   }, [])
 
-  const link = useShareLink(profile, rectOf, report)
+  const link = useShareLink(profile, shotOf, report)
 
   return (
     <Dialog open fullWidth maxWidth={false} onClose={onClose} scroll="paper">

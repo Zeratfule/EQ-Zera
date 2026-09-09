@@ -5,9 +5,10 @@
 // `fetch` is INJECTED, so every claim below is made without a network and without Cloudflare. What
 // is guarded, and why each one is load-bearing:
 //
-//   * PUBLISH SHAPE. The wire body is `{ envelope, card }`, the envelope is the app's own `EQC1`
-//     wrapper over a RE-SANITIZED profile, and the card is base64 PNG. The service validates the
-//     same envelope, so a shape drift here is a share nobody can store.
+//   * PUBLISH SHAPE. The wire body is `{ envelope, card, cardMap }`, the envelope is the app's own
+//     `EQC1` wrapper over a RE-SANITIZED profile, the card is a base64 image, and the map is where
+//     that card's gear cells were. The service validates the same envelope, so a shape drift here
+//     is a share nobody can store.
 //   * POST CREATES, PUT REPLACES, AND A REFUSED PUT FALLS BACK. A token revoked from another
 //     install (401) or a record that aged out (404, ruling 2) must not leave a character unable to
 //     ever share again — both create a fresh record instead.
@@ -135,6 +136,55 @@ test('a card-less publish sends the envelope alone rather than refusing', async 
   const res = await publishShare({ profile: PROFILE, card: null, appVersion: APP }, deps)
   assert.equal(res.ok, true)
   assert.equal((calls[0]?.body as { card?: string }).card, undefined)
+})
+
+// ---- the card map ---------------------------------------------------------------------------
+//
+// WHERE EACH GEAR CELL SAT ON THE PICTURE, so the page can put a tooltip over an armour piece
+// (the owner, 2026-09-09). The numbers are fractions OF the card that is being sent, which is the
+// whole reason the field cannot travel on its own: see `publishBody`.
+
+/** One cell's place, in fractions of the card. Already sanitized by the IPC layer. */
+const CARD_MAP = [{ slot: 'primary', x: 0.05, y: 0.4, w: 0.3, h: 0.06 }]
+
+test('a card map rides with the card it was measured on', async () => {
+  const { deps, calls } = fakeFetch([created])
+  const res = await publishShare(
+    { profile: PROFILE, card: Buffer.from('JPEGBYTES'), appVersion: APP, cardMap: CARD_MAP },
+    deps
+  )
+  assert.equal(res.ok, true)
+  const body = calls[0]?.body as { card?: string; cardMap?: unknown }
+  assert.equal(body.card, Buffer.from('JPEGBYTES').toString('base64'))
+  assert.deepEqual(body.cardMap, CARD_MAP)
+})
+
+test('a card map without a card is not sent at all', async () => {
+  // Fractions of a picture nobody was sent describe nothing, and the page draws that card from the
+  // body at a size this app never knew.
+  const { deps, calls } = fakeFetch([created])
+  const res = await publishShare(
+    { profile: PROFILE, card: null, appVersion: APP, cardMap: CARD_MAP },
+    deps
+  )
+  assert.equal(res.ok, true)
+  const body = calls[0]?.body as { card?: string; cardMap?: unknown }
+  assert.equal(body.card, undefined)
+  assert.equal(body.cardMap, undefined)
+})
+
+test('an empty or absent card map is not a field', async () => {
+  for (const cardMap of [[], undefined]) {
+    const { deps, calls } = fakeFetch([created])
+    await publishShare(
+      { profile: PROFILE, card: Buffer.from('JPEGBYTES'), appVersion: APP, cardMap },
+      deps
+    )
+    const body = calls[0]?.body as { card?: string; cardMap?: unknown }
+    assert.notEqual(body.card, undefined)
+    assert.equal(body.cardMap, undefined, JSON.stringify(cardMap ?? null))
+    assert.equal('cardMap' in body, false)
+  }
 })
 
 test('re-sharing PUTs over the same record, with the token in the header', async () => {
