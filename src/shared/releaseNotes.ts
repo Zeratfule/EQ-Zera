@@ -135,6 +135,26 @@ export interface ReleaseNote {
  * still sees exactly the releases above it.
  */
 export const RELEASE_NOTES: readonly ReleaseNote[] = [
+  // Character sharing, phase 2 (docs/plans/share-links.md): the card as a link. The service
+  // behind share.eqzera.com went live 2026-09-09 (share-server/, Cloudflare Worker + KV).
+  {
+    version: '1.21.0',
+    date: '2026-09-09',
+    entries: [
+      {
+        kind: 'new',
+        text: 'Share your character as a link. Copy link on the share card publishes it to share.eqzera.com and puts a short URL on your clipboard; anyone can open it in a browser, and pasting it on the Character tab shows the card in the app.'
+      },
+      {
+        kind: 'new',
+        text: 'Revoke a link. Your current link is shown under the share card with a Revoke button that removes it from the service right away. A link expires 180 days after it was last opened or updated.'
+      },
+      {
+        kind: 'changed',
+        text: 'The Character tab viewer accepts a share link as well as a share string.'
+      }
+    ]
+  },
   // EQ Zera's first release of its own (ROADMAP.md items 1 and 2). The version continues the
   // inherited line rather than restarting at 0.2.0: this list must ascend, and the comparison the
   // What's-new panel makes is by version, so a lower number here would read as ancient history.
