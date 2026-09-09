@@ -138,6 +138,16 @@ export const RELEASE_NOTES: readonly ReleaseNote[] = [
   // Character sharing, phase 2 (docs/plans/share-links.md): the card as a link. The service
   // behind share.eqzera.com went live 2026-09-09 (share-server/, Cloudflare Worker + KV).
   {
+    version: '1.22.4',
+    date: '2026-09-09',
+    entries: [
+      {
+        kind: 'changed',
+        text: 'The installer and the app name their publisher as Jack Thomas in the file properties, matching the code-signing certificate, so Windows sees one consistent identity while the signature builds its SmartScreen reputation.'
+      }
+    ]
+  },
+  {
     version: '1.22.3',
     date: '2026-09-09',
     entries: [
