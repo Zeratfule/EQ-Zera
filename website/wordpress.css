@@ -37,6 +37,10 @@
 .eqz-nav{display:flex;gap:26px;font-size:15px;min-width:0;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .eqz-nav::-webkit-scrollbar{display:none}
 .eqz-nav a{color:#b8b0d9;flex:0 0 auto;white-space:nowrap}
+/* WordPress.com's sanitizer drops the wrapper element the links sit in when it is a <nav> (it is a
+   <div class="eqz-nav"> in the source now), so a page pushed before that change has the links loose
+   in the bar; this keeps them styled and unbroken until that page is next pushed. */
+.eqz-top .eqz-wrap>a:not(.eqz-brand){color:#b8b0d9;flex:0 0 auto;white-space:nowrap;font-size:15px}
 /* Narrow screens: the brand keeps the first row, the nav takes a row of its own and scrolls sideways
    rather than wrapping its labels mid-phrase. No breakpoint hides the nav: a phone that reports a
    wide CSS viewport (Samsung screen zoom, "desktop site") still gets a header that fits. */
