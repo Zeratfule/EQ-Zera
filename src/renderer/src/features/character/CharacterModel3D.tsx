@@ -409,11 +409,69 @@ export function characterModelSnapshot(): string | null {
   const canvas = document.querySelector<HTMLCanvasElement>('[data-testid="character-model-3d"] canvas')
   if (!canvas) return null
   try {
-    return canvas.toDataURL('image/png')
+    return cropToFigure(canvas) ?? canvas.toDataURL('image/png')
   } catch {
     // A tainted or zero-sized canvas throws rather than answering; the card simply has no figure.
     return null
   }
+}
+
+/**
+ * THE SNAPSHOT IS CROPPED TO THE FIGURE (owner, 2026-09-10: "now the character model is very, very
+ * small. it needs to fit the portrait appropriately"). The 3D view is a wide landscape canvas with
+ * the figure standing small in its middle; pinned whole into the card's 200px portrait, the figure
+ * came out as a sixty-pixel doll under a lot of empty air. The canvas clears to transparent, so the
+ * figure's bounds are simply the opaque pixels (ring included): scan the alpha channel, take that
+ * box with a small margin, and hand the card only that. The card then scales it to fill the
+ * portrait at whatever size it is captured. A frame with nothing drawn answers null and the
+ * caller falls back to the whole canvas rather than a zero-sized image.
+ */
+const CROP_ALPHA_MIN = 8
+const CROP_MARGIN = 0.06
+
+function opaqueBounds(data: Uint8ClampedArray, w: number, h: number): [number, number, number, number] | null {
+  let minX = w
+  let minY = h
+  let maxX = -1
+  let maxY = -1
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      if (data[(y * w + x) * 4 + 3] <= CROP_ALPHA_MIN) continue
+      if (x < minX) minX = x
+      if (x > maxX) maxX = x
+      if (y < minY) minY = y
+      if (y > maxY) maxY = y
+    }
+  }
+  return maxX < 0 ? null : [minX, minY, maxX, maxY]
+}
+
+function cropToFigure(src: HTMLCanvasElement): string | null {
+  const w = src.width
+  const h = src.height
+  if (w === 0 || h === 0) return null
+  const probe = document.createElement('canvas')
+  probe.width = w
+  probe.height = h
+  const pctx = probe.getContext('2d')
+  if (!pctx) return null
+  pctx.drawImage(src, 0, 0)
+  const bounds = opaqueBounds(pctx.getImageData(0, 0, w, h).data, w, h)
+  if (!bounds) return null
+  const [minX, minY, maxX, maxY] = bounds
+  const pad = Math.round(Math.max(maxX - minX, maxY - minY) * CROP_MARGIN)
+  const sx = Math.max(0, minX - pad)
+  const sy = Math.max(0, minY - pad)
+  const cw = Math.min(w, maxX + pad + 1) - sx
+  const ch = Math.min(h, maxY + pad + 1) - sy
+  if (cw <= 0 || ch <= 0) return null
+  const out = document.createElement('canvas')
+  out.width = cw
+  out.height = ch
+  const octx = out.getContext('2d')
+  if (!octx) return null
+  octx.drawImage(probe, sx, sy, cw, ch, 0, 0, cw, ch)
+  return out.toDataURL('image/png')
 }
 
 /**

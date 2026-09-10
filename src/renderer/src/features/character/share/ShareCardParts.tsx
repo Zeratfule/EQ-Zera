@@ -66,8 +66,15 @@ export function ShareFigure({ look, image }: { look: CharacterProfileShare['look
         bgcolor: withAlpha(PALETTE.accent, 0.04)
       }}
     >
+      {/* The snapshot is already cropped to the figure (characterModelSnapshot), so it is scaled to
+          FILL the portrait: as tall as the tile allows, as wide as the tile at most, aspect kept. */}
       {image !== null && (
-        <Box component="img" src={image} alt="" sx={{ width: '100%', display: 'block' }} />
+        <Box
+          component="img"
+          src={image}
+          alt=""
+          sx={{ display: 'block', maxWidth: '100%', maxHeight: 400, width: 'auto', height: 'auto', flex: '1 1 auto', minHeight: 0, objectFit: 'contain' }}
+        />
       )}
       <Typography variant="caption" sx={{ color: 'text.disabled', mt: 0.5, textAlign: 'center' }}>
         {words.join(' · ')}
