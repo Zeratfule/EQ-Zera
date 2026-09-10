@@ -45,11 +45,15 @@
 /* ---------------- top bar ---------------- */
 .eqz-top{border-bottom:1px solid var(--eqz-line);background:rgba(12,10,31,.85);backdrop-filter:blur(8px)}
 .eqz-top .eqz-wrap{display:flex;align-items:center;justify-content:space-between;height:60px;gap:16px}
-.eqz-brand{display:flex;align-items:center;gap:10px;font-family:var(--eqz-display);font-weight:700;font-size:18px;letter-spacing:.04em;color:var(--eqz-ink)!important}
+.eqz-brand{display:flex;align-items:center;gap:10px;flex:0 0 auto;white-space:nowrap;font-family:var(--eqz-display);font-weight:700;font-size:18px;letter-spacing:.04em;color:var(--eqz-ink)!important}
 .eqz-brand img{width:28px;height:28px}
-.eqz-nav{display:flex;gap:26px;font-size:15px}
-.eqz-nav a{color:var(--eqz-ink-2)}
-@media (max-width:640px){.eqz-nav{display:none}}
+.eqz-nav{display:flex;gap:26px;font-size:15px;min-width:0;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.eqz-nav::-webkit-scrollbar{display:none}
+.eqz-nav a{color:var(--eqz-ink-2);flex:0 0 auto;white-space:nowrap}
+/* Narrow screens: the brand keeps the first row, the nav takes a row of its own and scrolls sideways
+   rather than wrapping its labels mid-phrase. No breakpoint hides the nav: a phone that reports a
+   wide CSS viewport (Samsung screen zoom, "desktop site") still gets a header that fits. */
+@media (max-width:640px){.eqz-top .eqz-wrap{height:auto;flex-wrap:wrap;padding-top:10px;padding-bottom:8px;gap:6px 16px}.eqz-nav{width:100%;gap:18px;font-size:14px;padding-bottom:4px}}
 
 /* ---------------- hero ---------------- */
 .eqz-hero{position:relative;padding:72px 0 64px;overflow:hidden;
