@@ -214,13 +214,13 @@ function coreChips(cell: ShareCell): string {
 /**
  * Damage, delay, the damage/delay ratio and the skill. The ratio is the same arithmetic as the
  * app's damageRatio (itemStats.ts), derived here rather than sent: it is nothing the envelope
- * does not already say. Three places, the way the game community quotes it.
+ * does not already say. Two places, the same as the app's Gear tab and item window (1.22.7).
  */
 function weaponChips(w: NonNullable<ShareCell['weapon']>): { label: string; text: string }[] {
   const out: { label: string; text: string }[] = []
   if (w.dmg !== undefined) out.push({ label: 'Damage', text: String(w.dmg) })
   if (w.delay !== undefined) out.push({ label: 'Delay', text: String(w.delay) })
-  if (w.dmg && w.delay) out.push({ label: 'Ratio', text: (w.dmg / w.delay).toFixed(3) })
+  if (w.dmg && w.delay) out.push({ label: 'Ratio', text: (w.dmg / w.delay).toFixed(2) })
   if (w.skill !== undefined) out.push({ label: 'Skill', text: w.skill })
   return out
 }
