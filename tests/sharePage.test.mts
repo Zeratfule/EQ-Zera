@@ -240,7 +240,8 @@ test('a card with a map gets one hotspot per entry, positioned by nonce\'d CSS, 
     { slot: 'no-such-slot', x: 0.1, y: 0.1, w: 0.1, h: 0.1 }
   ]
   const html = render(body, { hasCard: true, cardMap })
-  assert.ok(html.includes('<div class="cardwrap"><img class="card" src="/c/AbCdEfGhIj.png"'), 'the image, at column width')
+  assert.ok(html.includes('<div class="cardwrap"><img class="card" src="/c/AbCdEfGhIj.png?v=1757000000000"'), 'the image, at column width, versioned by the last write')
+  assert.ok(html.includes('<meta property="og:image" content="https://share.eqzera.com/c/AbCdEfGhIj.png?v=1757000000000">'), 'the unfurl URL is versioned the same way')
   assert.ok(!html.includes('srcset='), 'no half-size drawing any more')
   assert.equal((html.match(/<div class="hot hot-/g) ?? []).length, 2, 'the unknown slot draws no hotspot')
   assert.ok(html.includes(`<div class="hot hot-0" tabindex="0" data-slot="${first.slot}" role="button" aria-label="Drop of Crystallized Flame">`))

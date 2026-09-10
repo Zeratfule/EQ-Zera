@@ -334,8 +334,19 @@ function characterPanel(profile: CharacterProfileShare): string {
  * leftward so it stays over the card. No map, no overlay: the image alone, full column width -
  * it is a full-resolution JPEG since 1.22.1, so it can afford the width.
  */
+/**
+ * The card URL, versioned by the record's last write. The bytes under `/c/:id.png` CHANGE when a
+ * character is re-shared, but the path does not, and the card is served with an hour of cache -
+ * so without this a re-share showed the previous picture until the cache aged out (Jack, 2026-09-10:
+ * "still super small" while the served file was already right). The query string is ignored by
+ * the route, which matches the pathname only.
+ */
+function cardUrl(input: PageInput): string {
+  return `/c/${esc(input.id)}.png?v=${String(input.updatedAt)}`
+}
+
 function cardBlock(input: PageInput, title: string): string {
-  const img = `<img class="card" src="/c/${esc(input.id)}.png" alt="${esc(title)}">`
+  const img = `<img class="card" src="${cardUrl(input)}" alt="${esc(title)}">`
   if (!input.cardMap.length) return `<div class="cardwrap">${img}</div>`
   const bySlot = new Map(input.profile.cells.map((cell) => [cell.slot, cell]))
   const hots = input.cardMap
@@ -452,7 +463,7 @@ function hotspotScript(): string {
 /** The Open Graph / Twitter head — what Discord draws when the link is pasted (ruling 5). */
 function metaTags(input: PageInput, title: string, description: string): string {
   const pageUrl = `${input.origin}/s/${input.id}`
-  const cardUrl = `${input.origin}/c/${input.id}.png`
+  const card = `${input.origin}${cardUrl(input)}`
   const tags = [
     `<meta name="description" content="${esc(description)}">`,
     `<meta property="og:type" content="website">`,
@@ -460,11 +471,11 @@ function metaTags(input: PageInput, title: string, description: string): string 
     `<meta property="og:title" content="${esc(title)}">`,
     `<meta property="og:description" content="${esc(description)}">`,
     `<meta property="og:url" content="${esc(pageUrl)}">`,
-    `<meta property="og:image" content="${esc(cardUrl)}">`,
+    `<meta property="og:image" content="${esc(card)}">`,
     `<meta name="twitter:card" content="summary_large_image">`,
     `<meta name="twitter:title" content="${esc(title)}">`,
     `<meta name="twitter:description" content="${esc(description)}">`,
-    `<meta name="twitter:image" content="${esc(cardUrl)}">`
+    `<meta name="twitter:image" content="${esc(card)}">`
   ]
   return tags.join('')
 }

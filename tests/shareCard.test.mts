@@ -142,7 +142,7 @@ for (const [name, bytes, type] of [
     assert.equal(card.headers.get('Content-Type'), type)
     assert.deepEqual(new Uint8Array(await card.arrayBuffer()), bytes)
     const html = await (await h.call('GET', `/s/${id}`)).text()
-    assert.ok(html.includes(`<meta property="og:image" content="${ORIGIN}/c/${id}.png">`), 'the unfurl URL is unchanged')
+    assert.ok(html.includes(`<meta property="og:image" content="${ORIGIN}/c/${id}.png?v=1757000000000">`), 'the unfurl URL keeps the .png path, versioned by the write time')
   })
 }
 

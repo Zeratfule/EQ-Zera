@@ -276,8 +276,8 @@ test('the page carries the Open Graph tags an unfurl needs, built from PUBLIC_OR
   const res = await h.call('GET', `/s/${made.id}`)
   const html = await res.text()
   assert.ok(
-    html.includes(`<meta property="og:image" content="${ORIGIN}/c/${made.id}.png">`),
-    'og:image is the card URL on the public origin'
+    html.includes(`<meta property="og:image" content="${ORIGIN}/c/${made.id}.png?v=${String(T0)}">`),
+    'og:image is the card URL on the public origin, versioned by the write time'
   )
   assert.ok(html.includes(`<meta property="og:url" content="${ORIGIN}/s/${made.id}">`))
   assert.ok(html.includes('<meta name="twitter:card" content="summary_large_image">'))
