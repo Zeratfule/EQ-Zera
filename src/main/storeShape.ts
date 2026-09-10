@@ -311,4 +311,25 @@ export interface StoreShape {
    * one person's revocation tokens, and there is nothing in them another install could want.
    */
   shareLinks?: ShareLinkRecord[]
+  /**
+   * THE DISCORD CHANNEL WEBHOOK this install posts character cards to (owner, 2026-09-10;
+   * docs/plans/discord-webhook.md). One per install: one channel to post to.
+   *
+   * STORED SPLIT, NOT AS THE PASTED URL. `{ id, token }` are the two closed-class values a
+   * request is rebuilt from (`shared/discordWebhook.ts`), so the record cannot carry a host, a
+   * port, a query or a second path segment back out of this file and into a `fetch`.
+   *
+   * THE TOKEN IS A SECRET AND NEVER CROSSES IPC. Anyone holding it can post to that channel
+   * forever; the renderer is handed a masked VIEW instead (src/main/storeDiscord.ts), the post
+   * path is the only reader, and it is never logged (src/main/share/discord.ts, item 6).
+   *
+   * ADDITIVE + OPTIONAL ⇒ no schema bump, no migration — the `shareLinks` precedent directly
+   * above. Absent reads as "this install posts nowhere", which is exactly the state every store
+   * written before this key existed was in.
+   *
+   * NOT part of a shared settings profile (src/main/share.ts): it is a credential for one
+   * person's channel, and a settings bundle that carried one would hand a stranger the ability
+   * to post there.
+   */
+  discordWebhook?: { id: string; token: string }
 }

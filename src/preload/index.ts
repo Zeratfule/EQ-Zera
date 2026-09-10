@@ -25,6 +25,10 @@ import type { ClassAbbr, ComboDelta, ComboSnap } from '../shared/classCombo'
 // The level-unlock and planner types moved with their methods: knowledge.ts (JOS-293) carries
 // the spell/item/mob/unlock lookups, planner.ts (JOS-285) the exaltation + gear reads.
 import { characterApi } from './characterApi'
+// Posting that same character card to a Discord channel webhook (owner, 2026-09-10), split out for
+// the same file-mass reason - and because the five doors of a secret-bearing feature read better
+// together than scattered through this list. See ./discordApi.ts.
+import { discordApi } from './discordApi'
 // The quest tracker's read/write pair (EQ Zera), split out for the same file-mass reason.
 import { questsApi } from './questsApi'
 import { craftApi } from './craftApi'
@@ -450,6 +454,11 @@ const api = {
    *  transport that answers `null` for "no dump" has no business turning anything into a red box —
    *  but nothing is expected to produce one now. */
   ...characterApi,
+
+  /** Posting a character card to a Discord CHANNEL WEBHOOK (docs/plans/discord-webhook.md).
+   *  Five methods, and the webhook URL only ever travels INWARD: what comes back is a masked
+   *  view, a boolean or a sentence, never the token that can post to the channel. */
+  ...discordApi,
 
   /** Report a renderer-detected event into the live event feed (Task #59) — today only quest
    *  completions, which only the renderer's posky/turn-in detector can see. Fire-and-forget;

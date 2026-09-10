@@ -37,6 +37,8 @@
     // what `perf.ts` (the HUD's slice of the bridge) is doing in this list.
     "src/preload/perf.ts",
     "src/preload/characterApi.ts",
+    // …and `discordApi.ts` (posting a character card to a Discord channel webhook), likewise.
+    "src/preload/discordApi.ts",
     // …and `windows.ts` (the overlays + the celebration toast), for the same reason.
     "src/preload/windows.ts",
     // …and `roster.ts` (the group roster's user edits), likewise.

@@ -138,6 +138,16 @@ export const RELEASE_NOTES: readonly ReleaseNote[] = [
   // Character sharing, phase 2 (docs/plans/share-links.md): the card as a link. The service
   // behind share.eqzera.com went live 2026-09-09 (share-server/, Cloudflare Worker + KV).
   {
+    version: '1.23.0',
+    date: '2026-09-10',
+    entries: [
+      {
+        kind: 'new',
+        text: 'Post your character to Discord. Paste a channel webhook into Preferences, Sharing, and the share card gets a Post to Discord button that drops the card, the scores and the link straight into the channel.'
+      }
+    ]
+  },
+  {
     version: '1.22.7',
     date: '2026-09-10',
     entries: [

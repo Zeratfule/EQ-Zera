@@ -106,7 +106,11 @@ function stubReader(over: Partial<Record<keyof PrefsReader, unknown>> = {}): {
     getResistPrefs: answer('getResistPrefs', { includeNpcCasters: false }),
     getAppVersion: answer('getAppVersion', '9.9.9'),
     getUpdateStatus: answer('getUpdateStatus', { state: 'ready' }),
-    listAlerts: answer('listAlerts', [{ id: 'a' }, { id: 'b' }, { id: 'c' }])
+    listAlerts: answer('listAlerts', [{ id: 'a' }, { id: 'b' }, { id: 'c' }]),
+    // The Discord channel webhook (2026-09-10), stored - because the only card state worth
+    // seeding is the one that differs from a fresh install, and a card that painted "no webhook"
+    // for a frame at somebody who set one up last week is this gate's whole subject.
+    getDiscordWebhook: answer('getDiscordWebhook', { set: true, masked: '…/webhooks/17/••••wxyz' })
   } as unknown as PrefsReader
   return { reader, calls: () => calls }
 }
@@ -117,11 +121,11 @@ test('one read answers every card in the pane, and it snaps the text size to the
   const { reader, calls } = stubReader()
   const snap = await readPrefsSnapshot(reader)
 
-  // TWENTY-SIX reads, one batch (JOS-405 added the overlays' text size and its twelve per-kind
-  // values; JOS-407 the same pair for transparency). The number is not the claim; the claim is
-  // that the gate asks each question exactly once, so a pane that mounts does not stampede the
-  // store.
-  assert.equal(calls(), 26, 'every read fires exactly once')
+  // TWENTY-SEVEN reads, one batch (JOS-405 added the overlays' text size and its twelve per-kind
+  // values; JOS-407 the same pair for transparency; 2026-09-10 the Discord webhook view). The
+  // number is not the claim; the claim is that the gate asks each question exactly once, so a pane
+  // that mounts does not stampede the store.
+  assert.equal(calls(), 27, 'every read fires exactly once')
 
   // The overlays' size (JOS-405), which is TWO facts read together for the toast pair's reason:
   // the shared stepper and the twelve rows are one control group, and a frame where the size was
@@ -145,6 +149,10 @@ test('one read answers every card in the pane, and it snaps the text size to the
   // The resist-evidence switch (JOS-385), stored against its shipped ON. It is in the batch for
   // the `processPriority` reason, and it is asserted here for the same one.
   assert.equal(snap.resists.includeNpcCasters, false)
+
+  // The Discord webhook view (2026-09-10). The TOKEN is not in this object and cannot be - main
+  // only ever hands out the mask - so what the card seeds from is exactly what it draws.
+  assert.deepEqual(snap.discordWebhook, { set: true, masked: '…/webhooks/17/••••wxyz' })
 
   // A sample across the KINDS of value, because the defect was never boolean-only: two switches
   // that disagree with their defaults, a ladder stop, a slider pair, and two counts.
@@ -200,7 +208,7 @@ test('two mounts in one frame share ONE batch', async () => {
   resetPrefsSnapshotForTests()
   const { reader, calls } = stubReader()
   const [a, b] = await Promise.all([loadPrefsSnapshot(reader), loadPrefsSnapshot(reader)])
-  assert.equal(calls(), 26, 'not fifty-two')
+  assert.equal(calls(), 27, 'not fifty-four')
   assert.equal(a, b)
   resetPrefsSnapshotForTests()
 })

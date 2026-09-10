@@ -254,8 +254,25 @@ function cardMapFor(profile: unknown, card: Buffer | null, raw: unknown): CardMa
   return sanitizeCardMap(raw, slots)
 }
 
-/** Publish, then record what came back. Never throws; every failure is a sentence. */
-async function shareLink(req: unknown): Promise<ShareLinkResult> {
+/**
+ * What a publish produced, INCLUDING THE ID. Only `publishCharacterLink`'s callers see this shape;
+ * `character:shareLink` drops the id on its way to the renderer, because the renderer already gets
+ * the id it needs from `character:shareLinks` and a url is what a Copy button wants.
+ */
+export type PublishedLink =
+  | { ok: true; id: string; url: string; updated: boolean }
+  | { ok: false; error: string }
+
+/**
+ * MEASURE, PHOTOGRAPH, PUBLISH, RECORD — the whole of what pressing Copy link does, as one
+ * function so the DISCORD post can do exactly it rather than a second version of it
+ * (src/main/ipc/discord.ts). Two publish paths would be two opinions about which record a
+ * character re-uses, which card bytes travel and what gets written down afterwards, and the one
+ * that was not being looked at would drift.
+ *
+ * Never throws; every failure is a sentence.
+ */
+export async function publishCharacterLink(req: unknown): Promise<PublishedLink> {
   const request = (req && typeof req === 'object' ? req : {}) as Partial<ShareLinkRequest>
   const existing = findShareLink(ownerOf(request.profile))
   const image = await captureCard(request.rect)
@@ -272,6 +289,13 @@ async function shareLink(req: unknown): Promise<ShareLinkResult> {
   )
   if (!published.ok) return published
   recordLink(published, request.profile, existing)
+  return { ok: true, id: published.id, url: published.url, updated: published.updated }
+}
+
+/** Publish, then answer the renderer with the url and nothing else. */
+async function shareLink(req: unknown): Promise<ShareLinkResult> {
+  const published = await publishCharacterLink(req)
+  if (!published.ok) return published
   return { ok: true, url: published.url, updated: published.updated }
 }
 

@@ -1,10 +1,17 @@
-// character/share/ShareDialog — the five ways out of a character profile.
+// character/share/ShareDialog — the six ways out of a character profile.
 //
 //   Copy image        the card, photographed by main and put on the clipboard as an IMAGE
 //   Save image…       the same photograph, through the OS save dialog
 //   Copy share string  the `EQC1-` string, which another EQ Zera reader pastes into the viewer
 //   Copy text          a plain summary, for a chat client that would mangle a long string
 //   Copy link         the same card published as a share.eqzera.com page, which unfurls in chat
+//   Post to Discord   that same link, posted into a channel the user set up once (2026-09-10)
+//
+// POST TO DISCORD IS COPY LINK PLUS A MESSAGE, and it is deliberately built that way: the same
+// measure-then-publish flow, the same main-side function, and then an embed wrapping the link
+// that publish produced. It is disabled - with a native title saying where to fix that - until a
+// channel webhook is stored, and the renderer learns only THAT one boolean; the webhook URL is a
+// secret main keeps (./useDiscordPost.ts, src/main/share/discord.ts).
 //
 // THE LINK IS MAIN'S WORK, ALL OF IT. The renderer performs no fetch (`connect-src 'self'`), so
 // the button hands main the card's rectangle and its profile and gets back a url or a sentence;
@@ -24,6 +31,7 @@
 import { type JSX, useCallback, useEffect, useRef, useState } from 'react'
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack, Typography } from '@mui/material'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
+import ForumIcon from '@mui/icons-material/Forum'
 import ImageIcon from '@mui/icons-material/Image'
 import LinkIcon from '@mui/icons-material/Link'
 import SaveAltIcon from '@mui/icons-material/SaveAlt'
@@ -33,6 +41,7 @@ import { copyText } from '../../../lib/clipboard'
 import { measureCardMap } from './measureCardMap'
 import ShareCard from './ShareCard'
 import { useCharacterShare } from './useCharacterShare'
+import { showsSettingsLink, useDiscordPost, type DiscordPostState } from './useDiscordPost'
 
 /** How long an outcome stays on a button before it goes back to naming its action. */
 const FLASH_MS = 2200
@@ -67,6 +76,7 @@ function ActionButton({
   icon,
   flash,
   disabled,
+  hint,
   onRun
 }: {
   testId: string
@@ -74,15 +84,18 @@ function ActionButton({
   icon: JSX.Element
   flash: Flash
   disabled: boolean
+  /** a native `title`, for a button whose disabled state needs a reason (Post to Discord) */
+  hint?: string
   onRun: () => void
 }): JSX.Element {
   const showing = flash.id === testId
-  return (
+  const button = (
     <Button
       size="small"
       variant="outlined"
       data-testid={testId}
       {...(showing ? { 'data-flash': flash.outcome } : {})}
+      {...(hint === undefined ? {} : { title: hint })}
       startIcon={icon}
       disabled={disabled}
       onClick={onRun}
@@ -90,14 +103,23 @@ function ActionButton({
       {showing ? flash.outcome : label}
     </Button>
   )
+  // MUI puts `pointer-events: none` on a disabled button, so the title on the button itself never
+  // gets a hover to fire on. The wrapper is what actually shows the reason; the attribute stays on
+  // the button too, because that is where a reader of the DOM looks for it.
+  return hint === undefined ? button : <span title={hint}>{button}</span>
 }
 
-/** The five ways out, in one row. Its own component so the dialog stays inside the line ceiling. */
+/** What a disabled Post to Discord says about itself, in one clause (UI conventions: tooltips are
+ *  for enabling an action). */
+const DISCORD_HINT = 'Add a Discord webhook in Preferences, Sharing'
+
+/** The six ways out, in one row. Its own component so the dialog stays inside the line ceiling. */
 function ShareActions({
   flash,
   hasCard,
   text,
   summary,
+  discord,
   onImage,
   onCopy,
   onLink
@@ -106,6 +128,7 @@ function ShareActions({
   hasCard: boolean
   text: string
   summary: string
+  discord: DiscordPostState
   onImage: (op: 'copy' | 'save') => void
   onCopy: (id: string, payload: string) => void
   onLink: () => void
@@ -149,6 +172,15 @@ function ShareActions({
         flash={flash}
         disabled={!hasCard}
         onRun={onLink}
+      />
+      <ActionButton
+        testId="character-share-discord"
+        label="Post to Discord"
+        icon={<ForumIcon />}
+        flash={flash}
+        disabled={!hasCard || !discord.ready}
+        {...(discord.ready ? {} : { hint: DISCORD_HINT })}
+        onRun={discord.post}
       />
       <ActionButton
         testId="character-share-copy-text"
@@ -300,7 +332,42 @@ function ShareLinkRow({ link, flash }: { link: LinkState; flash: Flash }): JSX.E
   )
 }
 
-export default function ShareDialog({ onClose }: { onClose: () => void }): JSX.Element {
+/**
+ * What went wrong with a Discord post, and - when what went wrong is that nothing is set up yet -
+ * the way to go and set it up. The door is offered ONLY for that one sentence: a rate limit or an
+ * unreachable Discord is not something Preferences can fix, and a button that pretended otherwise
+ * would send the reader somewhere useless.
+ */
+function DiscordRow({
+  discord,
+  onOpenSharingPrefs
+}: {
+  discord: DiscordPostState
+  onOpenSharingPrefs: () => void
+}): JSX.Element | null {
+  if (discord.error === '') return null
+  return (
+    <Stack direction="row" spacing={1} alignItems="center" sx={{ flexWrap: 'wrap' }} useFlexGap>
+      <Typography variant="body2" color="error" data-testid="character-share-discord-error">
+        {discord.error}
+      </Typography>
+      {showsSettingsLink(discord.error) && (
+        <Button size="small" data-testid="character-share-discord-settings" onClick={onOpenSharingPrefs}>
+          Open Preferences, Sharing
+        </Button>
+      )}
+    </Stack>
+  )
+}
+
+export default function ShareDialog({
+  onClose,
+  onOpenSharingPrefs
+}: {
+  onClose: () => void
+  /** The way to Preferences, Sharing - handed down from App.tsx, like AlertsView's voice link. */
+  onOpenSharingPrefs: () => void
+}): JSX.Element {
   const { profile, text, summary, image, ready } = useCharacterShare()
   const { flash, report } = useFlash()
   const cardRef = useRef<HTMLDivElement>(null)
@@ -351,6 +418,7 @@ export default function ShareDialog({ onClose }: { onClose: () => void }): JSX.E
   }, [])
 
   const link = useShareLink(profile, shotOf, report)
+  const discord = useDiscordPost(profile, shotOf, report)
 
   return (
     <Dialog open fullWidth maxWidth={false} onClose={onClose} scroll="paper">
@@ -379,6 +447,7 @@ export default function ShareDialog({ onClose }: { onClose: () => void }): JSX.E
             hasCard={profile !== null}
             text={text}
             summary={summary}
+            discord={discord}
             onImage={shareImage}
             onCopy={copy}
             onLink={link.publish}
@@ -388,6 +457,7 @@ export default function ShareDialog({ onClose }: { onClose: () => void }): JSX.E
           </Button>
         </Stack>
         <ShareLinkRow link={link} flash={flash} />
+        <DiscordRow discord={discord} onOpenSharingPrefs={onOpenSharingPrefs} />
       </DialogActions>
     </Dialog>
   )

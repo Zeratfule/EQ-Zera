@@ -67,6 +67,10 @@ const COPY_FILES = [
   // meter row labels, segment names, the unparsed-line notice — is the ENGINE's to produce now,
   // and the em-dash law follows it there rather than being dropped: `engine/crates/fold` renders
   // those cells, so the check belongs in the Rust suite the day that copy grows a dash.
+  // The Discord post's failure sentences (owner, 2026-09-10). A main module that carries copy has
+  // to be listed here — that is exactly what the header's "main at large" paragraph asks for.
+  'src/main/share/discord.ts',
+  'src/main/ipc/discord.ts',
   'src/main/feedback/slice.ts',
   'src/main/feedback/submit.ts',
   'src/main/updater.ts',

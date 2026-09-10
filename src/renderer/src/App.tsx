@@ -94,7 +94,8 @@ function PlainView({
   viewKey,
   routing,
   onOpenVoicePrefs,
-  onOpenOverlayPrefs
+  onOpenOverlayPrefs,
+  onOpenSharingPrefs
 }: {
   view: View
   viewKey: string
@@ -105,6 +106,9 @@ function PlainView({
   /** The same contract for Preferences → Overlays (JOS-378): the alert editor's on-screen block
    *  links there when the banner overlay is off. */
   onOpenOverlayPrefs: () => void
+  /** The same contract for Preferences → Sharing (2026-09-10): the character share dialog links
+   *  there when no Discord channel webhook has been set up yet. */
+  onOpenSharingPrefs: () => void
 }): JSX.Element {
   return (
     <>
@@ -172,6 +176,7 @@ function PlainView({
           previewItem={routing.previewItem}
           previewNonce={routing.previewNonce}
           onPreviewApplied={routing.clearPreviewFocus}
+          onOpenSharingPrefs={onOpenSharingPrefs}
         />
       )}
       {/* THE SPELL DRILLDOWN (JOS-508). Its view check and its payload check live in the feature
@@ -229,6 +234,8 @@ function ViewContent({
   const { openSection } = prefs
   const onOpenVoicePrefs = useCallback(() => openSection('voice'), [openSection])
   const onOpenOverlayPrefs = useCallback(() => openSection('overlays'), [openSection])
+  // …and the Character tab's share dialog to where a Discord channel webhook is pasted in.
+  const onOpenSharingPrefs = useCallback(() => openSection('sharing'), [openSection])
   if (view === 'preferences') {
     return (
       <PreferencesView key={prefs.section ?? 'prefs'} onSendFeedback={onSendFeedback} section={prefs.section} />
@@ -254,6 +261,7 @@ function ViewContent({
         routing={routing}
         onOpenVoicePrefs={onOpenVoicePrefs}
         onOpenOverlayPrefs={onOpenOverlayPrefs}
+        onOpenSharingPrefs={onOpenSharingPrefs}
       />
       {/* The Mobs tab stays MOUNTED across a deep link (no `key` churn on target
           change) — remounting per character rebuild only, like every other view. */}

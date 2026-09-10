@@ -705,6 +705,36 @@ export const IPC = {
   // (shared/shareLinks.ts `shareLinkKey`) shared with the publish path. Returns ShareLinkView[].
   characterShareLinks: 'character:shareLinks',
 
+  // ---- posting a character card to DISCORD (docs/plans/discord-webhook.md) ----
+  // Five channels, and every one of them is main-only network again. The user pastes a CHANNEL
+  // WEBHOOK URL they made in their own Discord (channel settings, Integrations, Webhooks) and the
+  // app POSTs one embed to it: no bot, no OAuth, no server of ours, no slash commands.
+  //
+  // THE WEBHOOK URL IS A SECRET AND ONLY TRAVELS ONE WAY. It goes IN as text on `setWebhook`, is
+  // parsed main-side into `{id, token}` under closed character classes
+  // (src/shared/discordWebhook.ts) and stored there; what comes BACK, on every channel, is a
+  // masked `DiscordWebhookView` (`{set, masked?}`) and never the token. The outbound origin is
+  // compiled in and DARK under `EQ_E2E` (src/main/share/discord.ts), exactly like the share
+  // service's, so a headless run can never put a message in somebody's channel.
+  //
+  // renderer -> main: the masked view of the stored webhook. Returns DiscordWebhookView.
+  discordGetWebhook: 'discord:getWebhook',
+  // renderer -> main: store a pasted webhook URL. Arg: the text. PARSED AT THE HANDLER - a string
+  // that is not `https://discord.com/api/webhooks/<id>/<token>` (or the `discordapp.com`
+  // spelling) is refused with a sentence rather than stored. Returns
+  // {ok:true, view} | {ok:false, error}.
+  discordSetWebhook: 'discord:setWebhook',
+  // renderer -> main: forget it. Returns the (now empty) view.
+  discordClearWebhook: 'discord:clearWebhook',
+  // renderer -> main: post one plain line to the channel, so the person who just pasted a URL can
+  // watch it land. Returns {ok} | {ok:false, error}, `error` already user-facing prose.
+  discordTestWebhook: 'discord:testWebhook',
+  // renderer -> main: publish this character's card as a share link exactly the way
+  // `character:shareLink` does - the SAME internals, not a second copy - and then post an embed
+  // wrapping that link to the stored webhook. Args: ({rect, profile, cardMap}), validated at the
+  // handler the same way. Returns {ok:true, url} | {ok:false, error}.
+  discordPostProfile: 'discord:postProfile',
+
   // ---- map viewer (docs/plans/map-viewer.md §4.2) ----
   // Main owns `fs` and owns effectiveEqRoot(), so main reads and parses `<eqRoot>\maps` and
   // the renderer receives columnar typed arrays (~690 KB worst case, once per zone change).

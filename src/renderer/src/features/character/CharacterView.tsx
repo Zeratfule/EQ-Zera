@@ -234,7 +234,7 @@ function SheetBody({ sheet, preview }: { sheet: CharacterSheet | null; preview: 
  * viewer is never disabled - reading somebody else's character has nothing to do with having typed
  * `/outputfile` yourself, and it is the half of this feature a brand new reader meets first.
  */
-function ShareBar({ hasSheet }: { hasSheet: boolean }): JSX.Element {
+function ShareBar({ hasSheet, onOpenSharingPrefs }: { hasSheet: boolean; onOpenSharingPrefs: () => void }): JSX.Element {
   const [sharing, setSharing] = useState(false)
   const [viewing, setViewing] = useState(false)
   return (
@@ -265,6 +265,7 @@ function ShareBar({ hasSheet }: { hasSheet: boolean }): JSX.Element {
           onClose={() => {
             setSharing(false)
           }}
+          onOpenSharingPrefs={onOpenSharingPrefs}
         />
       )}
       {viewing && (
@@ -290,9 +291,17 @@ export interface CharacterViewProps {
   /** Told the moment the request is taken up, so the router drops it and a later plain visit to
    *  this tab shows the sheet rather than whatever the last link pointed at. */
   onPreviewApplied: () => void
+  /** The way to Preferences, Sharing - the share dialog offers it when no Discord webhook is set
+   *  up yet. Threaded from App.tsx like AlertsView's route to the voice settings. */
+  onOpenSharingPrefs: () => void
 }
 
-export default function CharacterView({ previewItem, previewNonce, onPreviewApplied }: CharacterViewProps): JSX.Element {
+export default function CharacterView({
+  previewItem,
+  previewNonce,
+  onPreviewApplied,
+  onOpenSharingPrefs
+}: CharacterViewProps): JSX.Element {
   const { sheet, ready } = useCharacterSheet()
   // THE REQUEST, TAKEN UP AS LOCAL STATE. It has to live here rather than being read off the prop:
   // the router retires the payload the instant it is applied (so a stale one cannot re-fire), and
@@ -316,7 +325,7 @@ export default function CharacterView({ previewItem, previewNonce, onPreviewAppl
       <CharacterIdentity />
 
       {/* SHARING (EQ Zera), directly under the identity it is about to put on a card. */}
-      <ShareBar hasSheet={sheet !== null} />
+      <ShareBar hasSheet={sheet !== null} onOpenSharingPrefs={onOpenSharingPrefs} />
 
       {/* Only once the read has settled: a card that flashes before the dump loads would teach
           a command to someone who already ran it. */}

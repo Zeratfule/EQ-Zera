@@ -22,6 +22,10 @@ import { registerCharacterIpc } from './character'
 import { registerCharacterSheetIpc } from './characterSheet'
 // Sharing a character profile (EQ Zera): the string codec's two doors and the card screenshot.
 import { registerCharacterShareIpc } from './characterShare'
+// Posting that same card to a Discord channel (docs/plans/discord-webhook.md): the settings doors
+// for the channel webhook, and the one post. It reuses characterShare's publish path rather than
+// growing a second one - see its header.
+import { registerDiscordIpc } from './discord'
 import { registerEqModelIpc } from './eqModel'
 import { registerItemLookIpc } from './itemLook'
 import { registerClipboardIpc } from './clipboard'
@@ -88,6 +92,7 @@ export function registerIpc(): void {
   // (../unreleased.ts explains what it is for and how to adopt it).
   registerCharacterSheetIpc()
   registerCharacterShareIpc()
+  registerDiscordIpc()
   registerEqModelIpc()
   registerItemLookIpc()
   registerOutputsIpc()

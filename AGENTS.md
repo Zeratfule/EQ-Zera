@@ -1886,7 +1886,14 @@ plumbing proven). Reuses the tier-2 lifecycle via
   (the card WARNS there rather than explaining). The access violation is
   unidentified: this is a workaround to re-measure when Wine or Electron moves.
 
-## Cloud — EQ Zera has none (2026-09-08)
+## Cloud — two deliberate outbound origins, nothing else (2026-09-08, updated 2026-09-10)
+
+Since 2026-09-09 the app speaks to exactly two hosts of its own choosing, each behind a compiled
+origin, POST from main only, 15 s timeout, dark under `EQ_E2E`: `share.eqzera.com` (the share-link
+service, `src/main/share/net.ts`, Cloudflare Worker in `share-server/`) and `discord.com` (a
+user-pasted channel webhook, `src/main/share/discord.ts`; the URL is stored main-side, masked in
+the UI, never logged). Everything below about feedback and telemetry still holds.
+
 
 The fork compiles NO feedback or telemetry endpoint (`src/main/feedback/net.ts`,
 `src/main/telemetry/net.ts`: empty URL constants, `endpointConfigured()` false), and `infra/` is

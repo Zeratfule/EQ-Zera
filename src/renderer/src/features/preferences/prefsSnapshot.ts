@@ -35,6 +35,7 @@ import type { OverlaySnapPrefs } from '@shared/overlaySnap'
 import type { OverlayTextSizePrefs } from '@shared/overlayTextScale'
 import type { OverlayBgAlphaPrefs } from '@shared/overlayBgAlpha'
 import type { CloseToTrayPrefs } from '@shared/closeToTray'
+import type { DiscordWebhookView } from '@shared/discordWebhook'
 import type { PerfHudPrefs, StartupProfile } from '@shared/perf'
 import type { ProcessPriorityPrefs } from '@shared/processPriority'
 import type { ResistPrefs } from '@shared/resistPrefs'
@@ -170,6 +171,16 @@ export interface PrefsSnapshot {
   updateStatus: UpdateStatus
   /** Profiles — how many alerts an export would carry. */
   alertCount: number
+  /**
+   * Sharing — whether this install holds a Discord channel webhook, and its masked form.
+   *
+   * In the batch for this gate's whole reason: the card draws a Remove button, a masked value and
+   * an enabled Test button when one is stored, and a card that painted "nothing here yet" for a
+   * frame at somebody who set one up last week is the JOS-340 defect wearing different clothes.
+   * The TOKEN is not in this object and cannot be - main only ever hands out the masked view
+   * (src/main/storeDiscord.ts).
+   */
+  discordWebhook: DiscordWebhookView
 }
 
 /**
@@ -207,6 +218,7 @@ export interface PrefsReader {
   getAppVersion: () => Promise<string>
   getUpdateStatus: () => Promise<UpdateStatus>
   listAlerts: () => Promise<AlertDef[]>
+  getDiscordWebhook: () => Promise<DiscordWebhookView>
 }
 
 /**
@@ -244,7 +256,8 @@ export async function readPrefsSnapshot(eq: PrefsReader): Promise<PrefsSnapshot>
     resists,
     version,
     updateStatus,
-    alerts
+    alerts,
+    discordWebhook
   ] = await Promise.all([
     eq.getEqConfig(),
     eq.getUiScale(),
@@ -271,7 +284,8 @@ export async function readPrefsSnapshot(eq: PrefsReader): Promise<PrefsSnapshot>
     eq.getResistPrefs(),
     eq.getAppVersion(),
     eq.getUpdateStatus(),
-    eq.listAlerts()
+    eq.listAlerts(),
+    eq.getDiscordWebhook()
   ])
   return {
     eqConfig,
@@ -314,7 +328,8 @@ export async function readPrefsSnapshot(eq: PrefsReader): Promise<PrefsSnapshot>
     resists,
     version,
     updateStatus,
-    alertCount: alerts.length
+    alertCount: alerts.length,
+    discordWebhook
   }
 }
 

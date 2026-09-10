@@ -60,6 +60,9 @@
 //             what makes it speak (schema v8). Lives in ./VoiceSetting.tsx.
 //   Profiles — export your GLOBAL settings as a paste-safe share string / file, and import
 //             someone else's ADDITIVELY (see src/shared/profiles.ts for the data model).
+//   Sharing  — where your character card gets posted: one Discord CHANNEL WEBHOOK, pasted in
+//             once, after which the share dialog grows a Post to Discord button. No bot, no
+//             login. Lives in ./SharingSetting.tsx, descriptor and all.
 //   Updates — app version, last-checked time, a manual check, background download
 //             progress, and the "Relaunch to update" action when one is waiting.
 //             Lives in ./UpdateSetting.tsx; this file only names it in the table.
@@ -136,6 +139,9 @@ import { whatsNewSection } from '../whatsnew/WhatsNewPanel'
 // Same arrangement again (JOS-198): the credit for the bundled wiki art names its own section
 // beside the card that renders it. See ./ThanksSetting.tsx for why it is a section at all.
 import { thanksSection } from './ThanksSetting'
+// Same arrangement again (owner, 2026-09-10): where your character card gets posted - today one
+// Discord channel webhook - names its own section beside the card that renders it.
+import { sharingSection } from './SharingSetting'
 // The section CARD and the arrival pulse live together in their own file — same ceiling, same
 // answer as PerfSetting's descriptor: split, don't widen the threshold.
 import PrefSectionBlock, { FILL_COLUMN_SX, FILL_ROOT_SX, FILL_ROW_SX, paneFills, useLandedSection } from './PrefSectionBlock'
@@ -378,6 +384,11 @@ function buildSections({ version, status, onSendFeedback, onWhatsNew }: SectionI
         }
       ]
     },
+    // NEXT TO Profiles and not inside it (owner, 2026-09-10). Both say 'share', and they share
+    // nothing else: Profiles hands another EQ Zera user your settings, this decides where your
+    // CHARACTER CARD gets posted. Adjacent so the rail reads as one neighbourhood, separate so a
+    // person looking for one is never shown the other.
+    sharingSection(),
     {
       id: 'updates',
       label: 'Updates',

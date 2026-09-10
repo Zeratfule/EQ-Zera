@@ -147,6 +147,18 @@ export function profileUrlFor(id: string): string {
   return `${SHARE_ORIGIN}/p/${id}`
 }
 
+/**
+ * The CARD IMAGE route, for a chat client that needs the picture by URL rather than by unfurl -
+ * today the Discord embed (src/main/ipc/discord.ts). Nothing in this app fetches it.
+ *
+ * `?v=` DEFEATS A CACHE, AND IT IS SAFE TO ADD because the service's route matches the PATHNAME
+ * only (share-server `CARD_ROUTE`); the bytes under `/c/<id>.png` genuinely change when a
+ * character re-shares, so a message posted after an update must not show last week's gear.
+ */
+export function cardUrlFor(id: string, version: number): string {
+  return `${SHARE_ORIGIN}/c/${id}.png?v=${String(version)}`
+}
+
 /** The create route, and the per-record route the update/delete pair address. */
 export function createUrl(): string {
   return `${SHARE_ORIGIN}/api/v1/shares`
