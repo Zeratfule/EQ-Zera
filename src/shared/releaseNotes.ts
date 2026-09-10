@@ -138,6 +138,16 @@ export const RELEASE_NOTES: readonly ReleaseNote[] = [
   // Character sharing, phase 2 (docs/plans/share-links.md): the card as a link. The service
   // behind share.eqzera.com went live 2026-09-09 (share-server/, Cloudflare Worker + KV).
   {
+    version: '1.22.7',
+    date: '2026-09-10',
+    entries: [
+      {
+        kind: 'changed',
+        text: 'Weapon windows show the damage ratio to two decimals, the same as the Gear tab and the share page, so a 32/22 fist reads 1.45 everywhere.'
+      }
+    ]
+  },
+  {
     version: '1.22.6',
     date: '2026-09-10',
     entries: [

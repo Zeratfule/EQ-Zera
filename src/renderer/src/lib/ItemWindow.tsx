@@ -320,7 +320,7 @@ function StatGrid({ block, compact }: { block?: ItemStatBlock; compact?: boolean
           <Row key={l} label={l} value={v} compact={compact} />
         ))}
         {ratio !== undefined && (
-          <Row label="Ratio" value={ratio.toFixed(1)} color={EQ_ITEM_COLORS.ratio} compact={compact} />
+          <Row label="Ratio" value={ratio.toFixed(2)} color={EQ_ITEM_COLORS.ratio} compact={compact} />
         )}
       </Box>
     </Box>
