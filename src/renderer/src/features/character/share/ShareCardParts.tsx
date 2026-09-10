@@ -63,17 +63,21 @@ export function ShareFigure({ look, image }: { look: CharacterProfileShare['look
         alignItems: 'center',
         justifyContent: 'center',
         minHeight: 240,
+        alignSelf: 'stretch',
         bgcolor: withAlpha(PALETTE.accent, 0.04)
       }}
     >
-      {/* The snapshot is already cropped to the figure (characterModelSnapshot), so it is scaled to
-          FILL the portrait: as tall as the tile allows, as wide as the tile at most, aspect kept. */}
+      {/* THE FIGURE FILLS THE TILE (owner, 2026-09-10, second report: "still extremely small").
+          Scaling the crop by WIDTH let the ground ring, which is wider than the body, decide the
+          size, and the body came out at a third of the tile. The image now takes the tile's whole
+          height above the caption and covers it: the larger of the two scale factors wins, the
+          ring's edges may be trimmed, and the body is as tall as the tile allows. */}
       {image !== null && (
         <Box
           component="img"
           src={image}
           alt=""
-          sx={{ display: 'block', maxWidth: '100%', maxHeight: 400, width: 'auto', height: 'auto', flex: '1 1 auto', minHeight: 0, objectFit: 'contain' }}
+          sx={{ display: 'block', width: '100%', flex: '1 1 0', minHeight: 0, objectFit: 'cover', objectPosition: 'center 40%' }}
         />
       )}
       <Typography variant="caption" sx={{ color: 'text.disabled', mt: 0.5, textAlign: 'center' }}>

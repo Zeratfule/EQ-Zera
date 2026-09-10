@@ -138,6 +138,16 @@ export const RELEASE_NOTES: readonly ReleaseNote[] = [
   // Character sharing, phase 2 (docs/plans/share-links.md): the card as a link. The service
   // behind share.eqzera.com went live 2026-09-09 (share-server/, Cloudflare Worker + KV).
   {
+    version: '1.22.6',
+    date: '2026-09-10',
+    entries: [
+      {
+        kind: 'fixed',
+        text: 'The character model now fills the share card portrait. The picture covers the tile\x27s full height above the caption, so the body is as tall as the tile allows, and the crop no longer keeps a faint band above the head.'
+      }
+    ]
+  },
+  {
     version: '1.22.5',
     date: '2026-09-10',
     entries: [

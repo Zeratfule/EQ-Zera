@@ -426,8 +426,9 @@ export function characterModelSnapshot(): string | null {
  * portrait at whatever size it is captured. A frame with nothing drawn answers null and the
  * caller falls back to the whole canvas rather than a zero-sized image.
  */
-const CROP_ALPHA_MIN = 8
-const CROP_MARGIN = 0.06
+// 8 caught a faint band above the head (a soft light falloff the eye never sees); 48 does not.
+const CROP_ALPHA_MIN = 48
+const CROP_MARGIN = 0.03
 
 function opaqueBounds(data: Uint8ClampedArray, w: number, h: number): [number, number, number, number] | null {
   let minX = w
