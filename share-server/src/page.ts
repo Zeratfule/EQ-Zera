@@ -207,11 +207,22 @@ function coreChips(cell: ShareCell): string {
   if (cell.hp !== undefined) core.push({ label: 'HP', text: String(cell.hp) })
   if (cell.mana !== undefined) core.push({ label: 'Mana', text: String(cell.mana) })
   if (cell.endurance !== undefined) core.push({ label: 'Endurance', text: String(cell.endurance) })
-  const w = cell.weapon
-  if (w?.dmg !== undefined) core.push({ label: 'Damage', text: String(w.dmg) })
-  if (w?.delay !== undefined) core.push({ label: 'Delay', text: String(w.delay) })
-  if (w?.skill !== undefined) core.push({ label: 'Skill', text: w.skill })
+  if (cell.weapon) core.push(...weaponChips(cell.weapon))
   return core.length ? `<ul class="chips core">${chips(core)}</ul>` : ''
+}
+
+/**
+ * Damage, delay, the damage/delay ratio and the skill. The ratio is the same arithmetic as the
+ * app's damageRatio (itemStats.ts), derived here rather than sent: it is nothing the envelope
+ * does not already say. Three places, the way the game community quotes it.
+ */
+function weaponChips(w: NonNullable<ShareCell['weapon']>): { label: string; text: string }[] {
+  const out: { label: string; text: string }[] = []
+  if (w.dmg !== undefined) out.push({ label: 'Damage', text: String(w.dmg) })
+  if (w.delay !== undefined) out.push({ label: 'Delay', text: String(w.delay) })
+  if (w.dmg && w.delay) out.push({ label: 'Ratio', text: (w.dmg / w.delay).toFixed(3) })
+  if (w.skill !== undefined) out.push({ label: 'Skill', text: w.skill })
+  return out
 }
 
 /** `Focus  Improved Damage II — detail` per effect. */

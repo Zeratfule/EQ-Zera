@@ -143,6 +143,12 @@ test('a v2 share renders rank badges, an openable stat block per item, and the c
   assert.ok(html.includes('<ul class="flags"><li>Lore Equipped</li>'), 'flags render as a row')
   assert.ok(html.includes('<span class="k">Intelligence</span><span class="v">+8</span>'), 'a stat line: label, verbatim value')
   assert.ok(html.includes('<span class="k">AC</span><span class="v">8</span>'), 'the core numbers render')
+  const weapon = body.cells.find((c) => c.weapon?.dmg && c.weapon.delay)!
+  assert.ok(weapon, 'the fixture wears a weapon with damage and delay')
+  const ratio = (weapon.weapon!.dmg! / weapon.weapon!.delay!).toFixed(3)
+  const ratioChip = `<span class="k">Ratio</span><span class="v">${ratio}</span>`
+  assert.ok(html.includes(ratioChip), 'damage/delay to three places')
+  assert.ok(html.indexOf('<span class="k">Delay</span>') < html.indexOf(ratioChip), 'the ratio chip follows delay')
   assert.ok(html.includes('<span class="k">Focus</span>Improved Damage II'), 'an effect renders with its kind')
   assert.ok(html.includes('Hover or tap an item to see its stats.'))
 
