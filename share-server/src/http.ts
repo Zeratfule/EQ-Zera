@@ -56,7 +56,10 @@ export function htmlResponse(html: string, nonce: string): Response {
       ...BASE_HEADERS,
       'Content-Type': 'text/html; charset=utf-8',
       'Content-Security-Policy': csp,
-      'Cache-Control': 'public, max-age=300'
+      // Revalidate every time: the page is a few KB, and it is what carries the versioned card
+      // URL, so a reload right after a re-share must show the new picture rather than a copy from
+      // minutes ago. The card bytes themselves stay cached, by URL (page.ts cardUrl).
+      'Cache-Control': 'no-cache'
     }
   })
 }
