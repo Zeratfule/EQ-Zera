@@ -172,23 +172,30 @@ interface LootTally {
 interface LootBreakdown {
   sources: LootTally[]
   zones: LootTally[]
+  /** how many of `sources` are MOBS. A chest is a source and is not one (Z Engine, 2026-09-11):
+   *  it handed the item over and dropped nothing, so it must not enter a count called mobs. */
+  mobs: number
 }
 
-// Who dropped it and where, most-seen first. A loot row with no `source` still counts —
-// it happened — so it tallies under `unknown` rather than vanishing from the breakdown.
+// Where it came from and where you were, most-seen first. A loot row with no `source` still
+// counts — it happened — so it tallies under `unknown` rather than vanishing from the breakdown.
+// Containers tally beside corpses (the list answers "where did mine come from") and are counted
+// apart, because the stat card beside it says MOBS.
 function aggregateLoot(events: LootEvent[]): LootBreakdown {
   const bySource = new Map<string, number>()
   const byZone = new Map<string, number>()
+  const mobs = new Set<string>()
   for (const e of events) {
     const s = e.source ?? 'unknown'
     bySource.set(s, (bySource.get(s) ?? 0) + 1)
+    if (e.source !== undefined && e.sourceKind === 'corpse') mobs.add(e.source)
     if (e.zone) byZone.set(e.zone, (byZone.get(e.zone) ?? 0) + 1)
   }
   const sources = [...bySource.entries()]
     .map(([name, count]) => ({ name, count }))
     .sort((a, b) => b.count - a.count)
   const zones = [...byZone.entries()].map(([name, count]) => ({ name, count })).sort((a, b) => b.count - a.count)
-  return { sources, zones }
+  return { sources, zones, mobs: mobs.size }
 }
 
 /* The item as the GAME shows it: wiki base data, drawn in the item-window language.
@@ -243,7 +250,7 @@ function ObservedHead({ title, hint }: { title: string; hint?: string }): JSX.El
 function DroppedByColumn({ sources, max }: { sources: LootTally[]; max: number }): JSX.Element {
   return (
     <Box sx={{ flex: 1, minWidth: 0 }}>
-      <ObservedHead title="Dropped by" hint="(times seen)" />
+      <ObservedHead title="Looted from" hint="(times seen)" />
       {sources.length === 0 && <Typography variant="caption">You have not looted this yet.</Typography>}
       {sources.map((s) => (
         <Bar key={s.name} label={s.name} value={s.count} max={max} right={`${s.count}× seen`} />
@@ -287,7 +294,7 @@ function ObservedColumn({
         {owned !== undefined && owned > 0 && (
           <StatCard label="In your inventory export" value={String(owned)} hint="from /outputfile inventory" />
         )}
-        <StatCard label="Distinct mobs" value={String(agg.sources.length)} />
+        <StatCard label="Distinct mobs" value={String(agg.mobs)} />
         <StatCard label="Zones seen" value={String(agg.zones.length)} />
       </Stack>
 
@@ -357,7 +364,7 @@ export function ItemDetailContent({
 }: Omit<ItemDetailProps, 'isQuestItem'> & { active: boolean }): JSX.Element {
   /**
    * EVERY NUMBER BELOW IS ABOUT LOOTING, so the destroys come out here (JOS-401, the census).
-   * `Times looted`, `Distinct mobs`, `Zones seen`, the mob breakdown, the per-zone rates and the
+   * `Times looted`, `Distinct mobs`, `Zones seen`, the source breakdown, the per-zone rates and the
    * "Looted over time" histogram would each be wrong in the same way otherwise: a destroy names no
    * mob (it would tally under `unknown`), it is not a drop, and it happened in your bags.
    *

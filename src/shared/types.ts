@@ -1,6 +1,6 @@
 // Types shared across the main process, preload bridge, and renderer.
 
-import type { ConsiderFaction, LootDisposition } from './logEvents'
+import type { ConsiderFaction, LootDisposition, LootSourceKind } from './logEvents'
 import type { ItemStatBlock } from './itemStats'
 import type { MobKnowledge } from './mobTypes'
 // The toast overlay's per-kind knobs live beside its payload in ./toast (this file is at its
@@ -24,7 +24,7 @@ import type { TimerGrouping } from './buffTimers'
 import type { XpRowId } from './xpOverlay'
 import type { SliceId } from './timeslice'
 
-export type { LootDisposition, ItemStatBlock }
+export type { LootDisposition, LootSourceKind, ItemStatBlock }
 
 /**
  * The spawnable overlay window KINDS (Task #54 — overlay v2; 'events' added in Task #59):
@@ -114,11 +114,20 @@ export type { LootDisposition, ItemStatBlock }
  * reserved slot at 380x320, and no two slots overlap on any of the four work areas.
  *
  * So the rule for the ELEVENTH is: a METER goes in before 'alertBanner'; a STRIP goes at the end.
+ *
+ * ── AND THE ELEVENTH ('run', 2026-09-11) TOOK THAT RULE AS WRITTEN ────────────────────────────
+ *
+ * The RUN TRACKER: where you are inside a dungeon instance — elapsed time, kills and pace, the
+ * named you have put down in order, the keys, the deaths. A METER, so it goes in before
+ * 'alertBanner' beside 'farm' and takes the next free dock slot; every existing meter keeps its
+ * index and nobody's window moves. It reads `progression`, `kills`, `loot`, `coin` and `deaths`,
+ * so it joins `worldRebuilt.MODULE_READING_OVERLAYS`; `shared/runTracker.ts` carries the fold and
+ * the four facts the engine does not emit that it therefore does not claim.
  */
 // prettier-ignore
-export type OverlayKind = 'fight' | 'overall' | 'events' | 'heal-fight' | 'heal-overall' | 'toast' | 'buffs' | 'debuffs' | 'xp' | 'respawn' | 'farm' | 'alertBanner' | 'conCard'
+export type OverlayKind = 'fight' | 'overall' | 'events' | 'heal-fight' | 'heal-overall' | 'toast' | 'buffs' | 'debuffs' | 'xp' | 'respawn' | 'farm' | 'run' | 'alertBanner' | 'conCard'
 // prettier-ignore
-export const OVERLAY_KINDS: OverlayKind[] = ['fight', 'overall', 'events', 'heal-fight', 'heal-overall', 'toast', 'buffs', 'debuffs', 'xp', 'respawn', 'farm', 'alertBanner', 'conCard']
+export const OVERLAY_KINDS: OverlayKind[] = ['fight', 'overall', 'events', 'heal-fight', 'heal-overall', 'toast', 'buffs', 'debuffs', 'xp', 'respawn', 'farm', 'run', 'alertBanner', 'conCard']
 
 /** True for the two HEALING overlay kinds (they render HealMeter, not OverlayMeter). */
 export function isHealOverlayKind(kind: OverlayKind): boolean {
@@ -373,8 +382,11 @@ export interface LogLine {
 export interface LootEvent {
   ts: number
   item: string
-  /** mob the item was looted from, if present */
+  /** mob OR container the item was looted from, if the line named one */
   source?: string
+  /** which of those it was; present exactly when `source` is (see LootSourceKind). A per-mob
+   *  statistic reads `'corpse'` and nothing else — a chest dropped none of what it handed you. */
+  sourceKind?: LootSourceKind
   /** zone the character was in when it was looted */
   zone?: string
   /**
@@ -991,7 +1003,7 @@ export type { ItemCountOverride } from './itemOverrides'
  * 'wishlist' is where both wish-list cards land (EQ Zera) — a bare tab switch, because the answer
  * to "one of the things I wrote down just dropped" is the list itself, not a row inside it.
  */
-export type AppFocusView = 'mobs' | 'posky' | 'leveling' | 'quests' | 'wishlist'
+export type AppFocusView = 'mobs' | 'posky' | 'leveling' | 'quests' | 'wishlist' | 'combat'
 
 /**
  * "Focus the app on this." Every payload field is OPTIONAL and view-scoped: the view is the
@@ -1009,6 +1021,18 @@ export interface AppFocus {
   quest?: string
   /** the character level the "New at this level" panel opens on ('leveling'). */
   level?: number
+  /**
+   * The fight the Combat tab should select ('combat'): a global fight selection
+   * (`shared/fightSelection.ts` - the `__live__` sentinel or an `e<n>` encounter id) or a zone
+   * session id, which is what tells the tab which SCOPE the asking window was looking at.
+   */
+  fight?: string
+  /**
+   * OPEN THE SHARE DIALOG on arrival ('combat'). The meter overlays' Share button is the one
+   * caller: an overlay window never posts anything itself (it holds no channel list and performs
+   * no fetch), so what it asks for is the app, on this fight, with the dialog up.
+   */
+  share?: boolean
 }
 
 // ----- Auto-update (Task #27) -----

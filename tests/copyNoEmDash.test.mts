@@ -71,6 +71,10 @@ const COPY_FILES = [
   // to be listed here — that is exactly what the header's "main at large" paragraph asks for.
   'src/main/share/discord.ts',
   'src/main/ipc/discord.ts',
+  // …and the connect flow's own sentences (owner, 2026-09-11): the two modules that carry the
+  // words a reader meets while Discord's picker is open in their browser.
+  'src/main/share/discordConnect.ts',
+  'src/main/discordConnect.ts',
   'src/main/feedback/slice.ts',
   'src/main/feedback/submit.ts',
   'src/main/updater.ts',

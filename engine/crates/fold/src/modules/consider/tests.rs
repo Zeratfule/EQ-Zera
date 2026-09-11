@@ -154,7 +154,7 @@ fn the_own_loot_index_reads_back_what_it_folded_and_refuses_a_destroy() {
     let mut module = ConsiderModule::new();
     let loot = |seq: i64, item: &str, source: &str, count: i64, ts: i64| {
         format!(
-            r#"{{"kind":"loot","item":"{item}","source":"{source}","count":{count},"seq":{seq},"ts":{ts},"raw":"x"}}"#
+            r#"{{"kind":"loot","item":"{item}","source":"{source}","sourceKind":"corpse","count":{count},"seq":{seq},"ts":{ts},"raw":"x"}}"#
         )
     };
     module.on_event(&ev(&loot(1, "Giant Toe", "a sand giant", 2, 100)), false);
@@ -190,9 +190,23 @@ fn the_own_loot_index_reads_back_what_it_folded_and_refuses_a_destroy() {
         .drops_across(&["nothing at all".to_owned()])
         .is_empty());
 
+    // A CHEST IS NOT A MOB: an instance reward chest hands you items it never dropped, so it
+    // files nothing here. The row is still in the loot ledger — this index is the per-mob one.
+    module.on_event(
+        &ev(
+            r#"{"kind":"loot","item":"Golem Metal Wand +4","source":"Reward Chest","sourceKind":"chest","seq":5,"ts":450,"raw":"x"}"#,
+        ),
+        false,
+    );
+    assert!(module
+        .as_own_loot()
+        .expect("the index")
+        .drops_across(&["Reward Chest".to_owned()])
+        .is_empty());
+
     // …and a character rebirth drops the history with the ring: it belonged to a dead
     // same-name character.
-    module.on_event(&ev(r#"{"kind":"epoch","seq":5,"ts":500,"raw":"x"}"#), false);
+    module.on_event(&ev(r#"{"kind":"epoch","seq":6,"ts":500,"raw":"x"}"#), false);
     assert!(module
         .as_own_loot()
         .expect("the index")
@@ -208,7 +222,7 @@ fn the_union_across_two_spellings_is_one_creatures_history() {
     for (seq, source, ts) in [(1_i64, "Cazic-Thule", 100_i64), (2, "Cazic Thule", 400)] {
         module.on_event(
             &ev(&format!(
-                r#"{{"kind":"loot","item":"Glowing Black Stone","source":"{source}","seq":{seq},"ts":{ts},"raw":"x"}}"#
+                r#"{{"kind":"loot","item":"Glowing Black Stone","source":"{source}","sourceKind":"corpse","seq":{seq},"ts":{ts},"raw":"x"}}"#
             )),
             false,
         );

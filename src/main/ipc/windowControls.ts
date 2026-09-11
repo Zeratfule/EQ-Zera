@@ -8,6 +8,7 @@ import { E2E } from '../e2e'
 import { logError, logInfo } from '../errorLog'
 import { noteOwnWindowRaise } from '../presence'
 import { getFightSelection, setFightSelection } from '../fightSelection'
+import { isSegmentSelection } from '../../shared/fightSelection'
 import { getScopeSelection, setScopeSelection } from '../scopeSelection'
 import { getSessionMarks, pressNewSession } from '../sessionMarks'
 import { getOverlayConfig, setOverlayConfig } from '../store'
@@ -178,6 +179,11 @@ function sanitizeFocus(focus: AppFocus): AppFocus {
   if (typeof focus.level === 'number' && Number.isInteger(focus.level) && focus.level > 0) {
     out.level = focus.level
   }
+  // THE FIGHT ANCHOR is a SELECTION, and the closed classes that decide what one is live in
+  // shared/ (a global fight id, or a zone session id) - so this boundary asks them rather than
+  // spelling a third opinion. Anything else is dropped and the link is a plain tab switch.
+  if (isSegmentSelection(focus.fight)) out.fight = focus.fight
+  if (focus.share === true) out.share = true
   return out
 }
 
@@ -200,7 +206,7 @@ function onFocusViewAsk(focus: AppFocus): void {
   // overlay's con rows, 'posky' from a celebration toast's reward card (optionally anchored at
   // ONE quest), 'leveling' from a level-up toast (anchored at the level that just dinged),
   // 'wishlist' from either wish-list card (a bare tab switch, no anchor).
-  const views: AppFocusView[] = ['mobs', 'posky', 'leveling', 'quests', 'wishlist']
+  const views: AppFocusView[] = ['mobs', 'posky', 'leveling', 'quests', 'wishlist', 'combat']
   if (!focus || !(views as string[]).includes(focus.view)) return
   const w = getMainWindow()
   if (!w || w.isDestroyed()) return

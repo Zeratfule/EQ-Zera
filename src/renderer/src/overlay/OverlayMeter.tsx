@@ -174,6 +174,35 @@ function useNewSessionAction(isFight: boolean, after: () => void): OverlayHeader
   }
 }
 
+/**
+ * SHARE THIS FIGHT (owner, 2026-09-11: *"We should also make the Discord sharing be able to have
+ * DPS meter sharing also."*), on BOTH meter kinds - a pull and a zone stay are both meters worth
+ * posting, and the selection this window is showing is the one that travels.
+ *
+ * NOTHING IS POSTED FROM HERE, and that is structural rather than a choice. An overlay window has
+ * its own tiny preload bridge: no channel list, no webhook, no capture path, and a card that is
+ * 720px wide has nowhere to be drawn in a 380px window. So the button asks MAIN for the APP - this
+ * segment selected, with the share dialog up - through the same `focusView` hop the events
+ * overlay's con rows and the celebration toasts use (src/main/ipc/windowControls.ts), whose
+ * vocabulary is re-validated at that handler like every other cross-window capability.
+ *
+ * THE SCOPE RIDES IN THE ID. A fight meter sends a fight selection and a zone meter sends a zone
+ * session's; App.tsx reads which it is from the closed classes in `shared/fightSelection.ts`, so
+ * neither window has to tell the other what kind of meter it is.
+ */
+function useShareFightAction(selection: string): OverlayHeaderAction {
+  return {
+    // The accessible NAME, not a tooltip - overlay chrome carries aria-labels and no native
+    // titles (the 1111d8d9 ruling).
+    label: 'Share this fight',
+    glyph: '↗',
+    testId: 'overlay-share-fight',
+    onClick: () => {
+      window.eqOverlay.focusApp({ view: 'combat', fight: selection, share: true })
+    }
+  }
+}
+
 export default function OverlayMeter(): JSX.Element {
   // `kind` comes from the preload bridge (read from the window's ?kind= query). Fall back to
   // 'fight' if the bridge is momentarily absent (e.g. an HMR reload before the preload re-runs).
@@ -208,6 +237,8 @@ export default function OverlayMeter(): JSX.Element {
     setZoneSelection('zone')
     setDrill(null)
   })
+
+  const share = useShareFightAction(selection)
 
   const { seg, live, headerName, rows, headIsLast } = meterView(
     snap,
@@ -269,9 +300,11 @@ export default function OverlayMeter(): JSX.Element {
         // instead of floating unlabelled beside a mob name. So this header passes NO tail at all,
         // and every pixel it was holding is width a long mob name gets to use at 380px.
         select={{ rows, value: selection, onChange: selectSegment, accent: ACCENT }}
-        // ONE small control beside the lock/close pair, on the ZONE kind only (JOS-322). Undefined
-        // on a fight meter, so that title bar is byte-for-byte the row it was.
-        action={newSession}
+        // The kind's own controls beside the lock/close pair: Share on both meters (2026-09-11),
+        // and "New session" on the ZONE kind only (JOS-322). The list is ordered so the one every
+        // meter has sits nearest the lock, and the zone-only one is what a narrow window loses
+        // first - see OverlayHeader's `actions`.
+        actions={newSession ? [share, newSession] : [share]}
         chrome={{ locked, hovering, dragRegion, noDrag, toggleLock, capture }}
       />
 

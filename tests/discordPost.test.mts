@@ -29,13 +29,19 @@ import { fileURLToPath } from 'node:url'
 import {
   DISCORD_ERR,
   DISCORD_TIMEOUT_MS,
+  MAX_POST_FILE_BYTES,
   discordEndpointConfigured,
   discordOriginFor,
+  isPostableFile,
   postDiscordWebhook,
+  postDiscordWebhookWithFile,
   testDiscordWebhook,
-  webhookUrl
+  webhookUrl,
+  type DiscordPostFile
 } from '../src/main/share/discord'
+import { discordFightEmbed, type FightShare } from '../src/shared/fightShare'
 import { discordEmbedFor, type DiscordWebhook } from '../src/shared/discordWebhook'
+import { pickChannel, type DiscordChannel } from '../src/shared/discordChannels'
 import type { CharacterProfileShare } from '../src/shared/characterShare'
 
 const HOOK: DiscordWebhook = { id: '1234567890123456789', token: 'a'.repeat(68) }
@@ -152,7 +158,8 @@ test('the exact sentences are the agreed ones', () => {
   assert.equal(DISCORD_ERR.refused, 'Discord refused the message.')
   assert.equal(DISCORD_ERR.offline, 'Could not reach Discord.')
   assert.equal(DISCORD_ERR.dark, 'This build cannot post to Discord.')
-  assert.equal(DISCORD_ERR.unset, 'Add a Discord webhook in Preferences, Sharing.')
+  // Reworded 2026-09-11 with Discord's own picker: there is nothing to add and nothing to paste.
+  assert.equal(DISCORD_ERR.unset, 'Connect a Discord channel in Preferences, Sharing.')
 })
 
 test('a webhook outside the classes never reaches the network at all', async () => {
@@ -203,4 +210,224 @@ test('an EQ_E2E build is DARK: the dark sentence, and the fetch is never called'
   assert.equal(said.configured, false)
   assert.deepEqual(said.res, { ok: false, error: DISCORD_ERR.dark })
   assert.equal(said.calls, 0, 'and nothing was even attempted')
+})
+
+// ---- WHICH CHANNEL A POST GOES TO (2026-09-11) --------------------------------------------------
+//
+// Connecting channels through Discord's own picker made this a LIST, and therefore made "where
+// does this card go" a question with a wrong answer available. The decision is pure and lives in
+// `shared/discordChannels.ts` so it can be made here without a store; `src/main/storeDiscord.ts`
+// reads the list and calls it, and `src/main/ipc/discord.ts` turns a null into the sentence.
+//
+// THE REFUSAL IS THE POINT OF THE LAST CASE. With two channels and no default, picking one of them
+// would be this app guessing which of somebody's servers gets their character card - so it refuses
+// in words and the share dialog's selector is how they say.
+
+const GEAR: DiscordChannel = {
+  id: '1234567890123456789',
+  token: 'g'.repeat(68),
+  channelId: '9876543210987654321',
+  guildId: '1111111111111111111',
+  label: '#gear · Guild of Thieves',
+  addedAt: 2
+}
+const FRIENDS: DiscordChannel = {
+  id: '2234567890123456789',
+  token: 'f'.repeat(68),
+  channelId: '8876543210987654321',
+  guildId: '2111111111111111111',
+  label: '#friends · Tavern',
+  addedAt: 1
+}
+
+test('a post with no channel named goes to the default', () => {
+  assert.equal(pickChannel([FRIENDS, GEAR], GEAR.id)?.id, GEAR.id)
+})
+
+test('…or to the only channel there is, so one channel never needs a default', () => {
+  assert.equal(pickChannel([GEAR], undefined)?.id, GEAR.id)
+})
+
+test('…and a named channel wins over the default, which is what the selector is for', () => {
+  assert.equal(pickChannel([FRIENDS, GEAR], GEAR.id, FRIENDS.id)?.id, FRIENDS.id)
+})
+
+test('a name this install does not hold is refused, never quietly swapped for another server', () => {
+  assert.equal(pickChannel([FRIENDS, GEAR], GEAR.id, '9999999999999999999'), null)
+})
+
+test('with several channels and no default, the app asks rather than guessing', () => {
+  assert.equal(pickChannel([FRIENDS, GEAR], undefined), null)
+  assert.equal(pickChannel([], undefined), null)
+  // …and the sentence a refusal becomes is the one the share dialog matches to offer the door.
+  assert.equal(DISCORD_ERR.unset, 'Connect a Discord channel in Preferences, Sharing.')
+})
+
+test('a channel posts exactly the way a pasted webhook did: same url, same body', async () => {
+  const { deps, calls } = fakeFetch(204)
+  assert.deepEqual(await testDiscordWebhook(GEAR, deps), { ok: true })
+  assert.equal(calls[0]?.url, `https://discord.com/api/webhooks/${GEAR.id}/${GEAR.token}`)
+})
+
+// ---- WITH A FILE: the fight card rides inside the post (2026-09-11) ------------------------------
+//
+// The owner's ask: *"We should also make the Discord sharing be able to have DPS meter sharing
+// also."* A character card is PUBLISHED and the embed points Discord at the picture; a fight has no
+// page to publish, so the bytes travel INSIDE the message as `multipart/form-data`. What is guarded:
+//
+//   * THE ENVELOPE IS DISCORD'S DOCUMENTED SHAPE: a `payload_json` part that parses back to the
+//     embed, and a `files[0]` part carrying the picture under the name the embed refers to.
+//   * THE BOUNDARY IS IN THE HEADER AND IN THE BODY, and they are the same boundary. A mismatch is
+//     a 400 nobody can debug from the sentence it becomes.
+//   * THE BYTES SURVIVE. The head and tail are text and the picture is not - encoding the whole
+//     body as a string would silently mangle every PNG.
+//   * SAME LAW, SAME DEADLINE, SAME SENTENCES as the JSON path. It is one transport.
+
+/** One recorded multipart call. The body is kept as it was handed over - bytes stay bytes. */
+interface BinaryCall {
+  url: string
+  type: string
+  body: Uint8Array
+  hasSignal: boolean
+}
+
+function fakeBinaryFetch(status: number): {
+  deps: { fetch: typeof globalThis.fetch }
+  calls: BinaryCall[]
+} {
+  const calls: BinaryCall[] = []
+  const fetchFn = (input: unknown, init?: RequestInit): Promise<Response> => {
+    const headers = (init?.headers ?? {}) as Record<string, string>
+    const raw = init?.body
+    calls.push({
+      url: String(input),
+      type: headers['Content-Type'] ?? '',
+      body: raw instanceof Uint8Array ? raw : new TextEncoder().encode(String(raw)),
+      hasSignal: init?.signal instanceof AbortSignal
+    })
+    return Promise.resolve({ status, text: () => Promise.resolve('') } as Response)
+  }
+  return { deps: { fetch: fetchFn as unknown as typeof globalThis.fetch }, calls }
+}
+
+/** A PNG's first eight bytes, plus one that is deliberately not valid UTF-8. */
+const PNG_BYTES = new Uint8Array([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0xff])
+const CARD: DiscordPostFile = { name: 'fight.png', bytes: PNG_BYTES, type: 'image/png' }
+
+const FIGHT: FightShare = {
+  v: 1,
+  mob: 'a dark elf priest',
+  zone: 'Befallen',
+  startedAt: 1_757_600_000_000,
+  durationMs: 66_000,
+  totalDamage: 48_204,
+  members: [
+    { name: 'Zeratfule', damage: 31_204, dps: 471, share: 0.647, isYou: true },
+    { name: 'Gorak', damage: 12_000, dps: 181.2, share: 0.249, isYou: false, pet: true }
+  ],
+  you: { dps: 471, share: 0.647 }
+}
+
+/** The boundary the module chose, read back out of the header it set. */
+function boundaryOf(type: string): string {
+  return type.slice(type.indexOf('boundary=') + 'boundary='.length)
+}
+
+/** The body as one latin1 string, so byte offsets and text offsets are the same number. */
+function bodyText(call: BinaryCall | undefined): string {
+  return Buffer.from(call?.body ?? new Uint8Array()).toString('latin1')
+}
+
+test('a post WITH a file is multipart, to exactly the same url, with the same deadline', async () => {
+  const { deps, calls } = fakeBinaryFetch(204)
+  const body = discordFightEmbed(FIGHT, true)
+  assert.deepEqual(await postDiscordWebhookWithFile(HOOK, body, CARD, deps), { ok: true })
+
+  assert.equal(calls.length, 1)
+  const call = calls[0]
+  assert.ok(call)
+  assert.equal(call.url, EXPECT_URL, 'the compiled host and the one path, nothing else')
+  assert.ok(call.type.startsWith('multipart/form-data; boundary='), call.type)
+  assert.equal(call.hasSignal, true)
+
+  // The BOUNDARY in the header is the boundary in the body. A mismatch is an undebuggable 400.
+  const boundary = boundaryOf(call.type)
+  assert.ok(boundary.length > 16, boundary)
+  const text = bodyText(call)
+  assert.ok(text.startsWith(`--${boundary}\r\n`), text.slice(0, 80))
+  assert.ok(text.endsWith(`\r\n--${boundary}--\r\n`), text.slice(-60))
+})
+
+test('the payload_json part parses back to the embed that was handed over', async () => {
+  const { deps, calls } = fakeBinaryFetch(204)
+  await postDiscordWebhookWithFile(HOOK, discordFightEmbed(FIGHT, true), CARD, deps)
+  const text = bodyText(calls[0])
+  assert.ok(text.includes('Content-Disposition: form-data; name="payload_json"'), text.slice(0, 200))
+  assert.ok(text.includes('Content-Type: application/json'))
+  // Offsets come from the latin1 reading (one char per byte) and the SLICE is decoded as UTF-8:
+  // the embed's separators are middots, and reading the whole body as text would mangle them
+  // exactly the way a body built as a string would mangle the PNG.
+  const from = text.indexOf('{"username"')
+  const json = Buffer.from(calls[0]?.body ?? new Uint8Array())
+    .subarray(from, text.indexOf('\r\n--', from))
+    .toString('utf8')
+  const sent = JSON.parse(json) as {
+    username: string
+    embeds: { title: string; image?: { url: string } }[]
+  }
+  assert.equal(sent.username, 'EQ Zera')
+  assert.equal(sent.embeds[0]?.title, 'a dark elf priest · 1:06 · 48,204 damage')
+  assert.deepEqual(sent.embeds[0]?.image, { url: 'attachment://fight.png' })
+})
+
+test('the files[0] part is named fight.png and its bytes are not mangled', async () => {
+  const { deps, calls } = fakeBinaryFetch(204)
+  await postDiscordWebhookWithFile(HOOK, discordFightEmbed(FIGHT, true), CARD, deps)
+  const text = bodyText(calls[0])
+  assert.ok(
+    text.includes('Content-Disposition: form-data; name="files[0]"; filename="fight.png"'),
+    text.slice(0, 400)
+  )
+  assert.ok(text.includes('Content-Type: image/png'))
+  // THE BYTES SURVIVE. `0xff` is not valid UTF-8; a body built as a string would have replaced it.
+  const at = Buffer.from(calls[0]?.body ?? new Uint8Array()).indexOf(Buffer.from(PNG_BYTES))
+  assert.ok(at > 0, 'the picture is in the body, byte for byte')
+})
+
+test('a file outside the classes is refused, and nothing is sent', async () => {
+  const bad: [string, DiscordPostFile][] = [
+    ['a name that is a header injection', { ...CARD, name: 'a"; name="files[1]' }],
+    ['a name with a path in it', { ...CARD, name: '../fight.png' }],
+    ['a type that is not one', { ...CARD, type: 'image/png; charset=x' }],
+    ['no bytes at all', { ...CARD, bytes: new Uint8Array() }],
+    ['more bytes than Discord takes', { ...CARD, bytes: new Uint8Array(MAX_POST_FILE_BYTES + 1) }]
+  ]
+  for (const [why, file] of bad) {
+    assert.equal(isPostableFile(file), false, why)
+    const { deps, calls } = fakeBinaryFetch(204)
+    const res = await postDiscordWebhookWithFile(HOOK, {}, file, deps)
+    assert.deepEqual(res, { ok: false, error: DISCORD_ERR.refused }, why)
+    assert.equal(calls.length, 0, `${why}: no request at all`)
+  }
+  assert.equal(isPostableFile(CARD), true, 'and the real card is fine')
+})
+
+test('the multipart path answers the same sentences the JSON path does', async () => {
+  const cases: [number, string][] = [
+    [404, DISCORD_ERR.gone],
+    [429, DISCORD_ERR.busy],
+    [400, DISCORD_ERR.refused]
+  ]
+  for (const [status, sentence] of cases) {
+    const { deps } = fakeBinaryFetch(status)
+    const res = await postDiscordWebhookWithFile(HOOK, {}, CARD, deps)
+    assert.deepEqual(res, { ok: false, error: sentence }, String(status))
+  }
+})
+
+test('two posts never share a boundary', async () => {
+  const { deps, calls } = fakeBinaryFetch(204)
+  await postDiscordWebhookWithFile(HOOK, {}, CARD, deps)
+  await postDiscordWebhookWithFile(HOOK, {}, CARD, deps)
+  assert.notEqual(boundaryOf(calls[0]?.type ?? ''), boundaryOf(calls[1]?.type ?? ''))
 })

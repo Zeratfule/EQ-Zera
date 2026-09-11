@@ -173,6 +173,10 @@ export const TELEMETRY_OVERLAY_KINDS = [
   // this one describe does not bite here. The value is listed because
   // tests/telemetryContract.test.mts pins this list to `OVERLAY_KINDS`, and rightly so.
   'farm',
+  // The run tracker (EQ Zera, 2026-09-11) - same note as the row above: telemetry is DARK in this
+  // fork, so the closed-enum deploy order does not bite here, and the value is listed because
+  // tests/telemetryContract.test.mts pins this list to `OVERLAY_KINDS`.
+  'run',
   // JOS-378 added the alert banner. THE SAME DEPLOY ORDER APPLIES A FOURTH TIME, for the fourth
   // identical reason: the enum is CLOSED, the ingest Lambda validates through this module, and a
   // batch carrying a value the server has not learned yet is refused WHOLE with a 400 the client

@@ -94,6 +94,24 @@
  *   already parsed and is unchanged (3,464 fixture lines, every one carrying its value) — it gained
  *   a module and a TS type on this side of the wire only.
  *
+ *   Z ENGINE 2026-09-11 — the loot family accepts a CONTAINER source and the lockpick sentence
+ *   became a kind. Phase 1: the byte-identity bar reds on three shapes and no others.
+ *     • `You looted <item> from <X> Chest ...` in all four loot shapes → `loot` where the golden
+ *       says `unknown`, and `--You have looted <item> from <X> Chest.--` → a `loot` whose `item`
+ *       no longer carries the container. 24 lines in the committed fixture corpus, every one of
+ *       them in `befallen-run.log`; a recorded slice of the owner's log will hold more.
+ *     • `You quickly and quietly unlock the door ...` → `doorUnlocked` where the golden says
+ *       `unknown` (1 fixture line).
+ *     • THE ONE CHANGE TO AN EXISTING SERIALIZED EVENT: a `loot` event that named a source now
+ *       carries `sourceKind` (`corpse` for every line the golden ever saw) immediately after
+ *       `source`. It is INSERTED rather than appended, so a sold row's `disposition`, `count` and
+ *       `coins` all shift right; the bytes AHEAD of `"sourceKind":` are byte-identical. A loot
+ *       divergence anywhere but that one key is still drift.
+ *   Phase 2: `loot` rows gain the same key, `progression` gains a `doorTs` column, and `coin`
+ *   gains the chest's auto-sell rows — on the fixture corpus that is 21 more rows in one file.
+ *   `consider`'s own-loot index REFUSES a chest, so no mob gains a drop it never made; a `kills`,
+ *   `deaths` or `buffs` move is still drift.
+ *
  * ── `--ledger`: WHAT A PARTIAL PORT IS ALLOWED TO CLAIM ────────────────────────────────────────
  *
  * `firstDiff` answers "are these the same?" and it is the right instrument for a bar that is

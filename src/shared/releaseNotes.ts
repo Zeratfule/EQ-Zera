@@ -135,6 +135,46 @@ export interface ReleaseNote {
  * still sees exactly the releases above it.
  */
 export const RELEASE_NOTES: readonly ReleaseNote[] = [
+  // The RUN TRACKER (owner, 2026-09-11, after a Befallen 4 (Refined) crawl: the game's own
+  // in-instance tracker "isn't sizeable and it's obtuse"). A new window, so it takes the extra
+  // bullets the rule above allows: one says what it is, one says the problem it replaces.
+  {
+    version: '1.24.0',
+    date: '2026-09-11',
+    entries: [
+      {
+        kind: 'new',
+        text: 'Share a fight to Discord. The Combat tab has a Share button that opens a card of the selected fight, every combatant with damage, DPS and share, and posts it to a connected channel, or copies or saves it. The fight and zone meter overlays carry the same button.'
+      },
+      {
+        kind: 'fixed',
+        text: 'Loot from an instance reward chest is read. Every chest line now lands in the loot ledger, the coin totals and the Farm meter, where a Befallen 4 run used to lose 23 items and 14 platinum of auto-sell. A chest is recorded as a container, not a mob, so no creature is credited with a drop it never made.'
+      },
+      {
+        kind: 'new',
+        text: 'The Run tracker counts the reward chest and the doors. A live run shows Reward chest: not yet until you open one, then what it paid and where each item went; a picked lock adds a Doors row; and the key count includes the keys the chest handed you.'
+      },
+      {
+        kind: 'new',
+        text: 'Run tracker overlay. While you are in a dungeon instance it shows elapsed time, kills and pace, the named you have killed in order, the keys you picked up, and deaths. Switch it on in the Overlay menu; it resizes and locks like the meters.'
+      },
+      {
+        kind: 'new',
+        text: "The game's own in-instance tracker cannot be resized and is hard to read at a glance. This one is a normal overlay window: put it where you want it, size it to the list, pin it and it goes click-through like every other meter."
+      },
+      {
+        kind: 'new',
+        text: 'Open-world dungeons get one too. Start run here begins a run wherever you are standing, and End run stops it.'
+      },
+      // Discord's own channel picker (owner, 2026-09-11: "There's got to be a better way to share
+      // to Discord instead of having people input webhooks for each channel they want to send
+      // to."). One bullet: it is a change to a setting that already existed, not a new surface.
+      {
+        kind: 'new',
+        text: 'Connect Discord channels without webhooks. Preferences, Sharing has Connect a Discord channel: Discord opens in your browser, you pick the server and channel, and the share card can post to any channel you connected. Pasting a webhook still works under Advanced.'
+      }
+    ]
+  },
   // The owner could not find the control that moves the celebration strip, which had been a
   // switch called "Move it" since JOS-378 (src/main/overlayMove.ts carries the whole report).
   {

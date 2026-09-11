@@ -109,6 +109,8 @@ export interface OverlayHeaderAction {
   label: string
   /** One character. It sits in a 20px box at 11px, beside 📌 and ✕. */
   glyph: string
+  /** The harness's handle on this one control. */
+  testId?: string
   onClick: () => void
 }
 
@@ -139,28 +141,74 @@ const CONTROL_PX = 20
  * (overlay-sync) proves the reveal by counting `<button>`s from zero, and a control that cannot be
  * pressed has no business being a button in the DOM: the placeholder is `aria-hidden` and inert.
  */
+/**
+ * THE KIND'S OWN CONTROLS, and they are the FIRST THING A NARROW WINDOW LOSES.
+ *
+ * They are a sibling of the lock/close pair rather than a member of it, and that is the whole
+ * point: the pair never shrinks (a window whose close button left it is a window you cannot fix
+ * from inside), while this group carries an enormous shrink weight. So at the app's 141px floor
+ * these clip away entirely and the fight NAME — which is what every pixel in this row exists for
+ * (JOS-158/JOS-278) — keeps its characters; at any ordinary width they draw whole. The drag gutter
+ * made exactly this trade first, and overlay-sync measures the name's fit at that floor.
+ *
+ * UNLOCKED ONLY, like the close ✕. A locked meter reveals only the unlock pin and the placeholder
+ * below is sized for exactly that one control, so an action appearing on hover while pinned would
+ * put back the title-bar height jump the owner had removed (2026-08-16). These are also actions on
+ * a click-through window: one you did not mean to press is one you have to undo somewhere else.
+ */
+function HeaderActions({
+  actions,
+  locked,
+  noDrag,
+  iconAccentBg
+}: {
+  actions?: readonly OverlayHeaderAction[]
+  locked: boolean
+  noDrag: React.CSSProperties
+  iconAccentBg: string
+}): JSX.Element | null {
+  if (locked || !actions || actions.length === 0) return null
+  return (
+    <div
+      style={{
+        ...noDrag,
+        display: 'flex',
+        alignItems: 'center',
+        gap: 2,
+        minWidth: 0,
+        overflow: 'hidden',
+        flexShrink: 1000
+      }}
+    >
+      {!locked &&
+        (actions ?? []).map((a) => (
+          <IconButton
+            key={a.label}
+            label={a.label}
+            onClick={a.onClick}
+            accentBg={iconAccentBg}
+            {...(a.testId === undefined ? {} : { testId: a.testId })}
+          >
+            {a.glyph}
+          </IconButton>
+        ))}
+    </div>
+  )
+}
+
 function HeaderControls({
   chrome,
-  iconAccentBg,
-  action
+  iconAccentBg
 }: {
   chrome: Pick<OverlayChrome, 'locked' | 'hovering' | 'noDrag' | 'toggleLock'>
   iconAccentBg: string
-  /** The kind's one extra control, drawn UNLOCKED ONLY — see `OverlayHeader`'s `action` prop. */
-  action?: OverlayHeaderAction
 }): JSX.Element | null {
   const { locked, hovering, noDrag, toggleLock } = chrome
   if (locked && !hovering) {
     return <div aria-hidden style={{ width: CONTROL_PX, height: CONTROL_PX, marginLeft: 2, flexShrink: 0 }} />
   }
   return (
-    <div style={{ ...noDrag, display: 'flex', alignItems: 'center', gap: 2, marginLeft: 2 }}>
-      {/* UNLOCKED ONLY, exactly like the close ✕ two lines down, and for both of its reasons. A
-          locked meter reveals only the unlock pin, and the placeholder above is sized for exactly
-          that one control — so an action that appeared on hover while pinned would put back the
-          title-bar height jump the owner had removed. It is also an irreversible-ish action on a
-          click-through window: a split you did not mean to make is one you have to press again to
-          live with (the undo is API-only, by ruling). */}
+    <div style={{ ...noDrag, display: 'flex', alignItems: 'center', gap: 2, marginLeft: 2, flexShrink: 0 }}>
       <IconButton
         label={locked ? 'Unlock (interactive)' : 'Lock (click-through)'}
         onClick={toggleLock}
@@ -169,11 +217,6 @@ function HeaderControls({
       >
         {locked ? '🔓' : '📌'}
       </IconButton>
-      {!locked && action && (
-        <IconButton label={action.label} onClick={action.onClick} accentBg={iconAccentBg}>
-          {action.glyph}
-        </IconButton>
-      )}
       {!locked && (
         <IconButton
           label="Close overlay"
@@ -418,7 +461,7 @@ export function OverlayHeader({
   tailColor = TAIL_COLOR,
   iconAccentBg = ICON_ACCENT_VIOLET,
   select,
-  action,
+  actions,
   chrome
 }: {
   /** omit entirely for a kind with no combat state (the event log draws no dot). */
@@ -434,9 +477,16 @@ export function OverlayHeader({
   tailColor?: string
   iconAccentBg?: string
   select?: OverlayHeaderSelect
-  /** ONE extra control beside the lock/close pair, unlocked only (JOS-322). Absent for every kind
-   *  but the zone meter, whose title bar carries "New session". */
-  action?: OverlayHeaderAction
+  /**
+   * THE KIND'S OWN CONTROLS beside the lock/close pair, unlocked only (JOS-322; a LIST since
+   * 2026-09-11, when the meters gained Share alongside the zone meter's "New session").
+   *
+   * IT IS STILL NOT A SLOT. A `ReactNode` here would let a kind hang arbitrary chrome in the one
+   * row whose whole business is the pixels a mob name gets to use (JOS-158/JOS-278). Widening it
+   * from one to a few TYPED actions keeps that: nothing can appear here that is not a label, a
+   * glyph and a handler, and nothing appears at all without editing this type.
+   */
+  actions?: readonly OverlayHeaderAction[]
   chrome: Pick<OverlayChrome, 'locked' | 'hovering' | 'dragRegion' | 'noDrag' | 'toggleLock'> & {
     /** P3: opt in to a WORKING selector while locked. Absent ⇒ the old plain locked header. */
     capture?: HeaderCapture
@@ -499,7 +549,8 @@ export function OverlayHeader({
           sentence from the panel floor now (overlay/scopeFloor.tsx); this is where a slice of the
           width it was holding went. */}
       <DragGutter />
-      <HeaderControls chrome={chrome} iconAccentBg={iconAccentBg} action={action} />
+      <HeaderActions actions={actions} locked={locked} noDrag={noDrag} iconAccentBg={iconAccentBg} />
+      <HeaderControls chrome={chrome} iconAccentBg={iconAccentBg} />
     </div>
   )
 }

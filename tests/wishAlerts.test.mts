@@ -8,6 +8,9 @@
 //   * a DESTROY rides the same loot lane as an acquisition (JOS-401). Congratulating somebody for
 //     throwing away the thing they wrote down that they wanted is the failure this guards.
 //   * an item that is NOT on the list says nothing. The list is the whole subscription.
+//   * an instance REWARD CHEST can drop a wished item (Z Engine, 2026-09-11). It is a loot row
+//     like any other here — the container is its `source` and the card prints it — and the only
+//     surfaces that care whether a source is a mob are the per-mob ones, which this is not.
 //   * the join is on `itemKey`, so the card fires for the log's ` +2` spelling of a wished item and
 //     prints the LOG'S OWN name on the card (world-model law 2).
 //   * the ZONE JOIN reaches through BOTH authorities — the `zoneKey` fold and the verified rename
@@ -65,6 +68,18 @@ test('the subtitle prints only what the LINE stated - never a corpse it had to i
   assert.equal(sub(loot(BLADE, { source: 'a shadowed man' })), 'from a shadowed man')
   assert.equal(sub(loot(BLADE, { zone: 'The Hole' })), 'The Hole')
   assert.equal(sub(loot(BLADE)), undefined)
+})
+
+test('a REWARD CHEST drop earns the same card, and the card names the container', () => {
+  const e = loot(BLADE, {
+    source: 'Reward Chest',
+    sourceKind: 'chest',
+    disposition: 'sold',
+    zone: 'Befallen 4 (Refined)'
+  })
+  const out = wishDropRequests([e], WISHED, sourceItemKey)
+  assert.equal(out.length, 1, 'a chest drop is a drop')
+  assert.equal(out[0].subtitle, 'from Reward Chest · Befallen 4 (Refined)')
 })
 
 test('an item nobody wished for says NOTHING - the list is the whole subscription', () => {

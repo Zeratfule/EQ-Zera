@@ -1,5 +1,5 @@
 {
-  "$comment": "GENERATED debt register — engine factoring ratchet (JOS-523). IT ONLY SHRINKS.,Every entry is a file or function that breaks a bar TODAY. Fix one and the gate says so;,rerun `npm run check:rust-factoring -- --write` in the SAME commit to record the shrink.,Adding or widening an entry is the integrator call, made by hand. Never by re-running a tool. | Widened by hand 2026-09-08 (EQ Zera engine wave: hail/factionHit kinds, sold coins, five modules): a new event kind costs match arms in Kind/Key as_str/parse and one classifier step, which no split can absorb. Widened again the same day after the first rustfmt pass (CI runs cargo fmt --check): four file/function line counts grew by reflow alone, no code moved.",
+  "$comment": "GENERATED debt register — engine factoring ratchet (JOS-523). IT ONLY SHRINKS.,Every entry is a file or function that breaks a bar TODAY. Fix one and the gate says so;,rerun `npm run check:rust-factoring -- --write` in the SAME commit to record the shrink.,Adding or widening an entry is the integrator call, made by hand. Never by re-running a tool. | Widened by hand 2026-09-08 (EQ Zera engine wave: hail/factionHit kinds, sold coins, five modules): a new event kind costs match arms in Kind/Key as_str/parse and one classifier step, which no split can absorb. Widened again the same day after the first rustfmt pass (CI runs cargo fmt --check): four file/function line counts grew by reflow alone, no code moved. | Widened by hand 2026-09-11 (reward-chest loot sources + the doorUnlocked kind): one Kind and one Key cost four match arms and two table rows, and the door classifier costs one step of the cascade — none of which a split absorbs. world.rs grew 447 -> 476 for the shared source clause, the corpse/chest split and the door classifier; it is the JOS-525 burn-down target it already was.",
   "bars": {
     "file-lines": 400,
     "function-lines": 100,
@@ -10,31 +10,31 @@
       "file": "crates/eqlog/src/event.rs",
       "metric": "complexity",
       "name": "Key::as_str",
-      "value": 86
+      "value": 87
     },
     {
       "file": "crates/eqlog/src/event.rs",
       "metric": "complexity",
       "name": "Key::parse",
-      "value": 86
+      "value": 87
     },
     {
       "file": "crates/eqlog/src/event.rs",
       "metric": "complexity",
       "name": "Kind::as_str",
-      "value": 68
+      "value": 69
     },
     {
       "file": "crates/eqlog/src/event.rs",
       "metric": "complexity",
       "name": "Kind::parse",
-      "value": 67
+      "value": 68
     },
     {
       "file": "crates/eqlog/src/event.rs",
       "metric": "file-lines",
       "name": "",
-      "value": 1186
+      "value": 1194
     },
     {
       "file": "crates/eqlog/src/names.rs",
@@ -64,13 +64,13 @@
       "file": "crates/eqlog/src/parse/mod.rs",
       "metric": "complexity",
       "name": "Parser::classify",
-      "value": 46
+      "value": 47
     },
     {
       "file": "crates/eqlog/src/parse/world.rs",
       "metric": "file-lines",
       "name": "",
-      "value": 447
+      "value": 476
     },
     {
       "file": "crates/eqlog/src/spelldb/overlay.rs",

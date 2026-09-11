@@ -30,15 +30,16 @@ export const OVERLAY_KIND_LABEL: Record<OverlayKind, string> = {
   xp: 'XP',
   respawn: 'Respawn',
   farm: 'Farm meter',
+  run: 'Run tracker',
   toast: 'Celebration toasts',
   alertBanner: 'Alert banner',
   conCard: 'Mob card on con'
 }
 
 /**
- * THE ORDER A LIST OF ALL THIRTEEN IS READ IN (Preferences → Per-overlay sizes).
+ * THE ORDER A LIST OF ALL FOURTEEN IS READ IN (Preferences → Per-overlay sizes).
  *
- * The ten windows you open from the Overlay menu, in the menu's own order, then the three STRIPS
+ * The eleven windows you open from the Overlay menu, in the menu's own order, then the three STRIPS
  * — the ones that appear by themselves when something happens rather than because you asked for a
  * window. That is the grouping a user already has in their head: "the meters I placed" and "the
  * things that pop up". The mob card is in the Overlay menu too (JOS-383, so its off switch is
@@ -57,6 +58,7 @@ export const OVERLAY_LABEL_ORDER: readonly OverlayKind[] = [
   'xp',
   'respawn',
   'farm',
+  'run',
   'toast',
   'alertBanner',
   'conCard'

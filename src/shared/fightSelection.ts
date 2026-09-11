@@ -42,6 +42,29 @@ export function isFightSelection(v: unknown): v is string {
 }
 
 /**
+ * THE LIVE ZONE SESSION'S id, and the shape a finalized one takes (`ZoneSessionSummary.id`).
+ *
+ * They live here beside the fight ids for ONE reason: a cross-window deep link names a segment
+ * without knowing which SCOPE it belongs to (src/main/ipc/windowControls.ts forwards it, App.tsx
+ * routes it), and a boundary that had to spell `zs<n>` for itself would be a third opinion about
+ * what an id is. They are NOT a global selection - the Overall selectors are per-surface by
+ * ruling (see the header), and nothing here changes that.
+ */
+export const LIVE_ZONE = 'zone'
+
+const ZONE_SESSION = /^zs[1-9][0-9]{0,8}$/
+
+/** Is this the live zone stay, or one this session has finished and kept? */
+export function isZoneSelection(v: unknown): v is string {
+  return typeof v === 'string' && (v === LIVE_ZONE || ZONE_SESSION.test(v))
+}
+
+/** Is this ANY segment a combat surface can be pointed at - a fight, or a zone session? */
+export function isSegmentSelection(v: unknown): v is string {
+  return isFightSelection(v) || isZoneSelection(v)
+}
+
+/**
  * VALIDATE RENDERER INPUT (the setter's gate — main never trusts the string it is handed, here
  * as everywhere). Returns the value to store, or null when the input is not a fight selection
  * at all: a non-string, a zone-session id ('zone' / 'zs<n>' — those belong to a per-overlay

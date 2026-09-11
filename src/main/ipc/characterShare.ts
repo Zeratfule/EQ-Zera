@@ -4,30 +4,12 @@
 // The RULES are pure (shared/characterShare.ts) and the codec is `../characterShare.ts`; this
 // file is the Electron half — the clipboard, the save dialog, and the one screenshot.
 //
-// ---------------------------------------------------------------------------
-// THE RECTANGLE IS RENDERER-SUPPLIED INPUT, AND IT REACHES `capturePage`
-// ---------------------------------------------------------------------------
-// `character:shareImage` is handed the share card's own `getBoundingClientRect()`. That is a
-// renderer string's problem in numeric clothing (AGENTS.md: validated AT THE HANDLER, not trusted
-// because today's only caller is this app's own UI), so `captureRect` refuses anything that is
-// not finite and positive, and clamps what is left INTO the window's content box. A rectangle
-// that misses the content entirely is refused rather than silently answering a black image.
-//
-// AND CSS PIXELS ARE NOT DIP. The main window carries an Electron ZOOM FACTOR (JOS-123,
-// shared/uiScale.ts), so a card measured at 720 CSS px is 900 device-independent pixels at the
-// 1.25 stop — and `capturePage` speaks DIP. One multiply by `getZoomFactor()` is the whole fix,
-// and without it every capture at a non-default text size is cropped. Electron then renders the
-// capture at the display's own scale factor, which is where the crispness comes from; there is no
-// devicePixelRatio argument to pass and nothing here invents one.
-//
-// THE CARD IS PHOTOGRAPHED WHERE IT ALREADY IS. No offscreen window, no second renderer: the
-// dialog is on screen when the button is pressed, so the capture is of the same pixels the reader
-// is looking at — the 3D figure included, which is why this is a `capturePage` and not a canvas
-// read.
+// THE SCREENSHOT IS NOT HERE ANY MORE. Measuring a renderer rectangle, clamping it into the
+// window and photographing it is ./cardCapture.ts now - one capture path for this card and for
+// the FIGHT card (2026-09-11), because two screenshots would have been two opinions about how a
+// CSS rectangle becomes device-independent pixels. Its header carries the whole argument.
 
-import { app, clipboard, dialog, ipcMain } from 'electron'
-import { writeFileSync } from 'node:fs'
-import { join } from 'node:path'
+import { app, ipcMain } from 'electron'
 import { IPC } from '../../shared/ipc'
 import { sanitizeCharacterShare } from '../../shared/characterShare'
 import { sanitizeCardMap, type CardMapEntry } from '../../shared/shareCardMap'
@@ -42,111 +24,16 @@ import {
   saveShareLink
 } from '../storeShareLinks'
 import type { ShareLinkOwner, ShareLinkRecord, ShareLinkView } from '../../shared/shareLinks'
-import { getMainWindow } from '../windows'
+import {
+  CARD_NOT_CAPTURED,
+  captureCard,
+  shareCardImage,
+  type CardImageResult
+} from './cardCapture'
 
-/** The card's DOM rectangle, in CSS pixels, as the renderer measured it. */
-interface DomRect {
-  x: number
-  y: number
-  width: number
-  height: number
-}
-
-/** What the renderer asks for. One object rather than three positional arguments. */
-interface ShareImageRequest {
-  rect: DomRect
-  op: 'copy' | 'save'
-  /** the character's name, for the save dialog's default file name; sanitized before use */
-  name?: string
-}
-
-/** The reply of `character:shareImage`. `canceled` is the save dialog being dismissed. */
-export interface ShareImageResult {
-  ok: boolean
-  path?: string
-  canceled?: boolean
-  error?: string
-}
-
-/** Biggest capture this app will take, per side. A share card is 720 CSS px wide. */
-const MAX_CAPTURE_PX = 4000
-
-function finitePositive(v: unknown): number | null {
-  return typeof v === 'number' && Number.isFinite(v) && v > 0 ? v : null
-}
-
-/**
- * The renderer's CSS rectangle -> an Electron capture rectangle inside the content box, or null
- * when there is nothing legal to capture. See the header for why each half is here.
- */
-function captureRect(raw: unknown, zoom: number, content: { width: number; height: number }): Electron.Rectangle | null {
-  if (!raw || typeof raw !== 'object') return null
-  const r = raw as Record<string, unknown>
-  const width = finitePositive(r.width)
-  const height = finitePositive(r.height)
-  if (width === null || height === null) return null
-  if (typeof r.x !== 'number' || !Number.isFinite(r.x)) return null
-  if (typeof r.y !== 'number' || !Number.isFinite(r.y)) return null
-  const x = Math.max(0, Math.min(content.width, Math.floor(r.x * zoom)))
-  const y = Math.max(0, Math.min(content.height, Math.floor(r.y * zoom)))
-  const w = Math.min(MAX_CAPTURE_PX, content.width - x, Math.ceil(width * zoom))
-  const h = Math.min(MAX_CAPTURE_PX, content.height - y, Math.ceil(height * zoom))
-  return w >= 1 && h >= 1 ? { x, y, width: w, height: h } : null
-}
-
-/** Put the captured card on the clipboard as an IMAGE (never as a data URL in a text field). */
-function copyImage(image: Electron.NativeImage): ShareImageResult {
-  if (image.isEmpty()) return { ok: false, error: 'The card could not be captured.' }
-  clipboard.writeImage(image)
-  return { ok: true }
-}
-
-/** Save the captured card through the OS dialog. */
-async function saveImage(image: Electron.NativeImage, name: string): Promise<ShareImageResult> {
-  if (image.isEmpty()) return { ok: false, error: 'The card could not be captured.' }
-  const window = getMainWindow()
-  const opts = {
-    title: 'Save share card',
-    defaultPath: join(app.getPath('pictures'), shareImageName(name)),
-    filters: [{ name: 'PNG image', extensions: ['png'] }]
-  }
-  const res = window ? await dialog.showSaveDialog(window, opts) : await dialog.showSaveDialog(opts)
-  if (res.canceled || !res.filePath) return { ok: false, canceled: true }
-  try {
-    writeFileSync(res.filePath, image.toPNG())
-    return { ok: true, path: res.filePath }
-  } catch (err) {
-    logError('main:characterShareImage', err)
-    return { ok: false, error: err instanceof Error ? err.message : String(err) }
-  }
-}
-
-/**
- * Photograph the card the renderer measured, or null when there is nothing legal to capture.
- * The ONE capture path: the link publisher below reuses it rather than growing a second opinion
- * about how a renderer rectangle becomes device-independent pixels.
- */
-async function captureCard(rect: unknown): Promise<Electron.NativeImage | null> {
-  const window = getMainWindow()
-  if (!window) return null
-  const [width, height] = window.getContentSize()
-  const box = captureRect(rect, window.webContents.getZoomFactor(), { width, height })
-  if (!box) return null
-  const image = await window.webContents.capturePage(box)
-  return image.isEmpty() ? null : image
-}
-
-/** Capture the card, then do the one thing that was asked of it. */
-async function shareImage(req: unknown): Promise<ShareImageResult> {
-  const window = getMainWindow()
-  if (!window) return { ok: false, error: 'There is no window to capture.' }
-  const request = (req && typeof req === 'object' ? req : {}) as Partial<ShareImageRequest>
-  const op = request.op === 'save' ? 'save' : 'copy'
-  const image = await captureCard(request.rect)
-  if (!image) return { ok: false, error: 'The card is not on screen.' }
-  if (op === 'copy') return copyImage(image)
-  return saveImage(image, typeof request.name === 'string' ? request.name : '')
-}
+/** What `character:shareImage` answers. ./cardCapture.ts owns the shape; this is its name here.
+ *  Exported because the preload mirrors it (preload/characterApi.ts CharacterShareImageResult). */
+export type ShareImageResult = CardImageResult
 
 // ---------------------------------------------------------------------------
 // SHARE LINKS (docs/plans/share-links.md)
@@ -331,10 +218,10 @@ export function registerCharacterShareIpc(): void {
   )
   ipcMain.handle(IPC.characterShareImage, async (_e, req: unknown) => {
     try {
-      return await shareImage(req)
+      return await shareCardImage(req, shareImageName)
     } catch (err) {
       logError('main:characterShareImage', err)
-      return { ok: false, error: 'The card could not be captured.' } satisfies ShareImageResult
+      return { ok: false, error: CARD_NOT_CAPTURED } satisfies ShareImageResult
     }
   })
   ipcMain.handle(IPC.characterShareLink, async (_e, req: unknown) => {

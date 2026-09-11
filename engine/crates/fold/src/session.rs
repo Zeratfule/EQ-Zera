@@ -66,6 +66,7 @@ const FIRST_PERSON_KINDS: &[&str] = &[
     "itemMerge",
     "itemMergeFailed",
     "consider",
+    "doorUnlocked",
     "stanceChange",
     "invocationChange",
     "petClaim",

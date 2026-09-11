@@ -390,6 +390,13 @@ impl EqModule for ConsiderModule {
                 if ev.str("disposition") == Some("destroyed") {
                     return;
                 }
+                // A CHEST IS NOT A MOB. An instance reward chest hands you items it never
+                // dropped, so it is refused here for the same reason: the row still reaches the
+                // loot ledger and every item total, and no mob is credited with a drop it never
+                // made. Anything but an explicit corpse stays out.
+                if ev.str("sourceKind") != Some("corpse") {
+                    return;
+                }
                 // Stacked loots add their COUNT, not 1.
                 self.own_loot.note(
                     ev.str("item").unwrap_or_default(),

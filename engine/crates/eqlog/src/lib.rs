@@ -351,7 +351,7 @@ mod tests {
         assert_eq!(
             parse_one(&p, raw),
             format!(
-                r#"{{"kind":"loot","seq":0,"ts":1787218866000,"raw":{},"item":"Sapphire Necklace +4","source":"Cleric of Innoruuk","disposition":"sold","coins":{{"platinum":125}}}}"#,
+                r#"{{"kind":"loot","seq":0,"ts":1787218866000,"raw":{},"item":"Sapphire Necklace +4","source":"Cleric of Innoruuk","sourceKind":"corpse","disposition":"sold","coins":{{"platinum":125}}}}"#,
                 serde_json::to_string(raw).unwrap()
             )
         );
@@ -376,6 +376,102 @@ mod tests {
             free.ends_with(r#""disposition":"sold","coins":{}}"#),
             "{free}"
         );
+    }
+
+    /// THE REWARD CHEST, in all four loot shapes it prints (measured on the owner's Befallen 4
+    /// (Refined) run, 2026-09-11). Every one of them was `unknown` or mis-split before: the source
+    /// clause required the literal ` corpse`, so `4 Bone Chips from Reward Chest` became an ITEM of
+    /// that name and the twenty-two auto-sell and merge lines parsed as nothing at all.
+    #[test]
+    fn a_reward_chest_is_a_loot_source_in_every_shape_the_log_prints_it() {
+        let p = bare();
+        let raw = "[Thu Sep 10 23:24:38 2026] --You have looted 4 Bone Chips from Reward Chest.--";
+        assert_eq!(
+            parse_one(&p, raw),
+            format!(
+                r#"{{"kind":"loot","seq":0,"ts":1789107878000,"raw":{},"item":"Bone Chips","source":"Reward Chest","sourceKind":"chest","count":4}}"#,
+                serde_json::to_string(raw).unwrap()
+            )
+        );
+        // The auto-vendor, with the price it stated.
+        let sold = parse_one(
+            &p,
+            "[Thu Sep 10 23:25:12 2026] You looted a Rusty Dagger +4 from Reward Chest and sold it for 2 silver and 1 copper.",
+        );
+        assert!(
+            sold.ends_with(
+                r#""item":"Rusty Dagger +4","source":"Reward Chest","sourceKind":"chest","disposition":"sold","coins":{"silver":2,"copper":1}}"#
+            ),
+            "{sold}"
+        );
+        // `for free.` out of a chest is the same present-and-empty price a corpse pays.
+        let free = parse_one(
+            &p,
+            "[Thu Sep 10 23:25:12 2026] You looted a Pristine Studded Leather Tunic +4 from Reward Chest and sold it for free.",
+        );
+        assert!(
+            free.ends_with(
+                r#""source":"Reward Chest","sourceKind":"chest","disposition":"sold","coins":{}}"#
+            ),
+            "{free}"
+        );
+        // The merge, whose line ends without a full stop at all.
+        let merged = parse_one(
+            &p,
+            "[Thu Sep 10 23:24:55 2026] You looted a Gossamer Robe +4 from Reward Chest to create a Gossamer Robe +5",
+        );
+        assert!(
+            merged.ends_with(
+                r#""item":"Gossamer Robe +4","source":"Reward Chest","sourceKind":"chest","disposition":"combined","created":"Gossamer Robe +5"}"#
+            ),
+            "{merged}"
+        );
+        // A CORPSE IS STILL A CORPSE, possessive stripped, and it says so in its own field.
+        let corpse = parse_one(
+            &p,
+            "[Thu Sep 10 23:04:53 2026] --You have looted 2 Bone Chips from a sturdy skeleton's corpse.--",
+        );
+        assert!(
+            corpse.contains(r#""source":"a sturdy skeleton","sourceKind":"corpse""#),
+            "{corpse}"
+        );
+        // AND AN ITEM WHOSE NAME ENDS IN `Chest` IS NOT ONE. The real log prints this shape, and the
+        // container arm must never reach past the corpse that actually paid it.
+        let plate = parse_one(
+            &p,
+            "[Sun Aug 09 20:08:56 2026] You looted a Rune Etched Chestplate +3 from Master of Spite's corpse to create a Rune Etched Chestplate +5",
+        );
+        assert!(
+            plate.contains(r#""source":"Master of Spite","sourceKind":"corpse""#),
+            "{plate}"
+        );
+    }
+
+    /// THE DOOR. Only the prefix is the claim: the rest of the sentence is the door's own flavour,
+    /// and the event states the instant and nothing else the log did not say.
+    #[test]
+    fn a_lockpicked_door_is_its_own_event_and_the_flavour_after_it_is_not_read() {
+        let p = bare();
+        let raw = "[Thu Sep 10 23:22:30 2026] You quickly and quietly unlock the door and push it open, only to startle the nearby residents with the horrible squeal that the rotting wood made.";
+        assert_eq!(
+            parse_one(&p, raw),
+            format!(
+                r#"{{"kind":"doorUnlocked","seq":0,"ts":1789107750000,"raw":{}}}"#,
+                serde_json::to_string(raw).unwrap()
+            )
+        );
+        // A DIFFERENT DOOR, whose tail this repo has never seen, is the same event.
+        let other = parse_one(
+            &p,
+            "[Thu Sep 10 23:22:30 2026] You quickly and quietly unlock the door and slip through.",
+        );
+        assert!(other.starts_with(r#"{"kind":"doorUnlocked""#), "{other}");
+        // A FAILED pick is not an unlock, and mints nothing.
+        let failed = parse_one(
+            &p,
+            "[Thu Sep 10 23:22:30 2026] You failed to pick the lock.",
+        );
+        assert!(failed.starts_with(r#"{"kind":"unknown""#), "{failed}");
     }
 
     #[test]

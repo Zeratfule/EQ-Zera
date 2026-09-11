@@ -1,10 +1,15 @@
-// ---- posting a character card to Discord (docs/plans/discord-webhook.md) ----
+// ---- posting a character card to Discord (docs/plans/discord-connect.md) ----
 //
 // The owner's ask, 2026-09-10: *"we should also develope a way to export your character profile
-// directly to a chat in Discord."* The agreed shape is a CHANNEL WEBHOOK the user makes and
-// pastes in — no bot, no OAuth, no server of ours — so this file is small on purpose: the URL
-// rules are in `shared/discordWebhook.ts`, the outbound origin is `share/discord.ts`, the storage
-// is `storeDiscord.ts`, and what is left here is the four settings doors and the one post.
+// directly to a chat in Discord."* And, 2026-09-11, the part that had been a chore: *"There's got
+// to be a better way to share to Discord instead of having people input webhooks for each channel
+// they want to send to."* There is - Discord's own picker - so this file now has two doors into
+// the same list: CONNECT (mint a state, open the browser, poll in main) and the old PASTE.
+//
+// It stays small on purpose: the URL rules are in `shared/discordWebhook.ts`, the channel
+// vocabulary and the service contract in `shared/discordChannels.ts`, the outbound origins in
+// `share/discord.ts` and `share/discordConnect.ts`, the attempt in `../discordConnect.ts`, the
+// storage in `../storeDiscord.ts`. What is left here is the doors and the one post.
 //
 // ---------------------------------------------------------------------------
 // THE POST REUSES THE COPY-LINK PATH; IT DOES NOT REIMPLEMENT IT
@@ -22,17 +27,19 @@
 // lives in one place), the four score tiles and the card picture by URL.
 //
 // ---------------------------------------------------------------------------
-// THE TOKEN NEVER REACHES THE RENDERER, IN EITHER DIRECTION
+// NO TOKEN REACHES THE RENDERER, IN EITHER DIRECTION
 // ---------------------------------------------------------------------------
-// It arrives once, as text on `discord:setWebhook`, is parsed here and stored main-side. Every
-// reply on every channel in this file is a `DiscordWebhookView` (`{set, masked?}`), a boolean or
-// a sentence. Nothing here logs the URL — see `share/discord.ts` header item 6 — which is also
-// why the `catch` blocks below log a FIXED string and never the thrown value's message.
+// One arrives as text on `discord:setWebhook` or out of the service's claim, is parsed here (or in
+// the connect session) and stored main-side. Every reply on every channel in this file is a
+// channels VIEW, a masked `DiscordWebhookView`, a status word, a boolean or a sentence. Nothing
+// here logs a webhook - see `share/discord.ts` header item 6 - which is also why the `catch`
+// blocks below log a FIXED string and never the thrown value's message.
 
 import { ipcMain } from 'electron'
 import { IPC } from '../../shared/ipc'
 import { discordEmbedFor, parseDiscordWebhook } from '../../shared/discordWebhook'
 import { sanitizeCharacterShare } from '../../shared/characterShare'
+import { CHANNELS_FULL } from '../../shared/discordChannels'
 import { logError } from '../errorLog'
 import {
   DISCORD_ERR,
@@ -42,19 +49,35 @@ import {
 } from '../share/discord'
 import { cardUrlFor } from '../share/net'
 import {
+  cancelDiscordConnect,
+  discordConnectStatus,
+  startDiscordConnect,
+  type DiscordConnectStart,
+  type DiscordConnectStatus
+} from '../discordConnect'
+import {
   clearDiscordWebhook,
+  discordChannelsView,
   discordWebhookView,
-  getDiscordWebhook,
+  pickDiscordChannel,
+  removeDiscordChannel,
+  renameDiscordChannel,
+  setDefaultDiscordChannel,
   setDiscordWebhook,
+  type DiscordChannelsView,
   type DiscordWebhookView
 } from '../storeDiscord'
 import { publishCharacterLink } from './characterShare'
 
-/** What `discord:setWebhook` answers: the new view, or the reason it was refused. */
-export type DiscordSetResult = { ok: true; view: DiscordWebhookView } | { ok: false; error: string }
+/** What `discord:setWebhook` answers: both views, or the reason the paste was refused. */
+export type DiscordSetResult =
+  | { ok: true; view: DiscordWebhookView; channels: DiscordChannelsView }
+  | { ok: false; error: string }
 
 /** What `discord:postProfile` answers. `url` is the link the message points at. */
 export type DiscordPostProfileResult = { ok: true; url: string } | { ok: false; error: string }
+
+export type { DiscordConnectStart, DiscordConnectStatus }
 
 /** The one sentence a badly pasted URL gets. It says what a GOOD one looks like, in one clause. */
 const BAD_URL =
@@ -64,8 +87,8 @@ const BAD_URL =
 function saveWebhook(raw: unknown): DiscordSetResult {
   const parsed = parseDiscordWebhook(raw)
   if (parsed === null) return { ok: false, error: BAD_URL }
-  setDiscordWebhook(parsed)
-  return { ok: true, view: discordWebhookView() }
+  if (!setDiscordWebhook(parsed)) return { ok: false, error: CHANNELS_FULL }
+  return { ok: true, view: discordWebhookView(), channels: discordChannelsView() }
 }
 
 /**
@@ -74,12 +97,17 @@ function saveWebhook(raw: unknown): DiscordSetResult {
  * THE DARK GATE IS FIRST, before anything is photographed or published: under `EQ_E2E` there is no
  * Discord endpoint at all, and a build that cannot deliver the message must not do the work of
  * building one - least of all publish a real share record on the way to not sending it.
+ *
+ * WHICH CHANNEL is decided in `storeDiscord.ts` from the id the dialog named, the default, or the
+ * fact that there is only one. A request that names a channel this install does not hold reads as
+ * "not connected" rather than falling back to another server's channel.
  */
 async function postProfile(req: unknown): Promise<DiscordPostProfileResult> {
   if (!discordEndpointConfigured()) return { ok: false, error: DISCORD_ERR.dark }
-  const webhook = getDiscordWebhook()
-  if (webhook === null) return { ok: false, error: DISCORD_ERR.unset }
   const request = (req && typeof req === 'object' ? req : {}) as Record<string, unknown>
+  const wanted = typeof request.channelId === 'string' ? request.channelId : undefined
+  const channel = pickDiscordChannel(wanted)
+  if (channel === null) return { ok: false, error: DISCORD_ERR.unset }
   // The renderer's profile is untrusted at the handler like every other one (this file's
   // siblings say so at length), and the embed reads NAME, LEVEL, CLASSES and SCORES off it.
   const profile = sanitizeCharacterShare(request.profile)
@@ -87,28 +115,63 @@ async function postProfile(req: unknown): Promise<DiscordPostProfileResult> {
   const published = await publishCharacterLink(req)
   if (!published.ok) return { ok: false, error: published.error }
   const body = discordEmbedFor(profile, published.url, cardUrlFor(published.id, Date.now()))
-  const posted = await postDiscordWebhook(webhook, body, { fetch: globalThis.fetch })
+  const posted = await postDiscordWebhook(channel, body, { fetch: globalThis.fetch })
   if (!posted.ok) return { ok: false, error: posted.error }
   return { ok: true, url: published.url }
 }
 
-/** The Test button. Refuses in words when there is nothing stored, rather than answering `false`. */
-async function testWebhook(): Promise<{ ok: boolean; error?: string }> {
-  const webhook = getDiscordWebhook()
-  if (webhook === null) return { ok: false, error: DISCORD_ERR.unset }
-  return testDiscordWebhook(webhook, { fetch: globalThis.fetch })
+/** The Test button. Refuses in words when that row is gone, rather than answering `false`. */
+async function testChannel(id: unknown): Promise<{ ok: boolean; error?: string }> {
+  const channel = pickDiscordChannel(typeof id === 'string' ? id : undefined)
+  if (channel === null) return { ok: false, error: DISCORD_ERR.unset }
+  return testDiscordWebhook(channel, { fetch: globalThis.fetch })
+}
+
+/** The four list doors, which all answer the same thing: what the list looks like NOW. */
+function registerChannelIpc(): void {
+  ipcMain.handle(IPC.discordListChannels, (): DiscordChannelsView => discordChannelsView())
+  ipcMain.handle(IPC.discordRemoveChannel, (_e, id: unknown): DiscordChannelsView => {
+    removeDiscordChannel(id)
+    return discordChannelsView()
+  })
+  ipcMain.handle(IPC.discordRenameChannel, (_e, id: unknown, label: unknown): DiscordChannelsView => {
+    // The CLAMP is main's (60 characters, `shared/discordChannels.ts`), so what comes back is what
+    // was stored rather than what the renderer asked for.
+    renameDiscordChannel(id, label)
+    return discordChannelsView()
+  })
+  ipcMain.handle(IPC.discordSetDefaultChannel, (_e, id: unknown): DiscordChannelsView => {
+    setDefaultDiscordChannel(id)
+    return discordChannelsView()
+  })
+}
+
+/** The connect attempt's three doors. The poll itself lives in main; see ../discordConnect.ts. */
+function registerConnectIpc(): void {
+  ipcMain.handle(IPC.discordConnectStart, async (): Promise<DiscordConnectStart> => {
+    try {
+      return await startDiscordConnect()
+    } catch {
+      logError('main:discordConnect', 'the Discord connect could not be started')
+      return { ok: false, error: 'That could not be started. Try again.' }
+    }
+  })
+  ipcMain.handle(IPC.discordConnectStatus, (): DiscordConnectStatus => discordConnectStatus())
+  ipcMain.handle(IPC.discordConnectCancel, (): DiscordConnectStatus => cancelDiscordConnect())
 }
 
 export function registerDiscordIpc(): void {
+  registerChannelIpc()
+  registerConnectIpc()
   ipcMain.handle(IPC.discordGetWebhook, (): DiscordWebhookView => discordWebhookView())
   ipcMain.handle(IPC.discordSetWebhook, (_e, text: unknown): DiscordSetResult => saveWebhook(text))
-  ipcMain.handle(IPC.discordClearWebhook, (): DiscordWebhookView => {
+  ipcMain.handle(IPC.discordClearWebhook, (): DiscordChannelsView => {
     clearDiscordWebhook()
-    return discordWebhookView()
+    return discordChannelsView()
   })
-  ipcMain.handle(IPC.discordTestWebhook, async () => {
+  ipcMain.handle(IPC.discordTestChannel, async (_e, id: unknown) => {
     try {
-      return await testWebhook()
+      return await testChannel(id)
     } catch {
       // A FIXED string: the thrown value could carry the URL, and the URL is a secret.
       logError('main:discordWebhook', 'the webhook test failed')

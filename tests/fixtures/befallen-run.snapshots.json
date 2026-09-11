@@ -1,0 +1,3761 @@
+{
+ "coin": {
+  "rows": [
+   {
+    "copper": 3,
+    "silver": 4,
+    "source": "corpse",
+    "ts": 1789095812000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 5,
+    "silver": 3,
+    "source": "corpse",
+    "ts": 1789095814000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 7,
+    "item": "Rusty Mining Pick +4",
+    "source": "sold",
+    "ts": 1789095819000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "silver": 3,
+    "source": "corpse",
+    "ts": 1789095820000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 7,
+    "item": "Rusty Mining Pick +4",
+    "source": "sold",
+    "ts": 1789095822000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 7,
+    "item": "Rat Ears",
+    "source": "sold",
+    "ts": 1789095834000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 7,
+    "item": "Rat Whiskers",
+    "source": "sold",
+    "ts": 1789095834000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 1,
+    "silver": 6,
+    "source": "corpse",
+    "ts": 1789095890000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 9,
+    "source": "corpse",
+    "ts": 1789095892000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 8,
+    "silver": 3,
+    "source": "corpse",
+    "ts": 1789095895000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 7,
+    "item": "Rusty Mining Pick +4",
+    "source": "sold",
+    "ts": 1789095897000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "item": "Skeletal Rod +4",
+    "source": "sold",
+    "ts": 1789095901000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 1,
+    "silver": 1,
+    "source": "corpse",
+    "ts": 1789095904000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 7,
+    "gold": 1,
+    "item": "Iron Ration",
+    "source": "sold",
+    "ts": 1789095905000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 7,
+    "item": "Rusty Mining Pick +4",
+    "source": "sold",
+    "ts": 1789095905000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "silver": 3,
+    "source": "corpse",
+    "ts": 1789095912000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 8,
+    "source": "corpse",
+    "ts": 1789095917000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 6,
+    "gold": 1,
+    "item": "Cloth Gloves +4",
+    "silver": 8,
+    "source": "sold",
+    "ts": 1789095920000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 7,
+    "item": "Rat Ears",
+    "source": "sold",
+    "ts": 1789095923000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "silver": 3,
+    "source": "corpse",
+    "ts": 1789095950000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 9,
+    "silver": 2,
+    "source": "corpse",
+    "ts": 1789095954000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 8,
+    "source": "corpse",
+    "ts": 1789095958000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 7,
+    "item": "Dark Elf Parts",
+    "source": "sold",
+    "ts": 1789095959000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "gold": 1,
+    "silver": 3,
+    "source": "corpse",
+    "ts": 1789095962000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 1,
+    "item": "Rusty Axe +4",
+    "silver": 2,
+    "source": "sold",
+    "ts": 1789095963000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 9,
+    "source": "corpse",
+    "ts": 1789095984000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 7,
+    "silver": 3,
+    "source": "corpse",
+    "ts": 1789095993000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 6,
+    "silver": 3,
+    "source": "corpse",
+    "ts": 1789096000000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 7,
+    "item": "Rat Whiskers",
+    "source": "sold",
+    "ts": 1789096007000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 9,
+    "gold": 1,
+    "item": "Rat Eye",
+    "silver": 7,
+    "source": "sold",
+    "ts": 1789096007000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 5,
+    "silver": 3,
+    "source": "corpse",
+    "ts": 1789096029000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 7,
+    "item": "Rat Ears",
+    "source": "sold",
+    "ts": 1789096032000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 9,
+    "source": "corpse",
+    "ts": 1789096036000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 5,
+    "source": "corpse",
+    "ts": 1789096038000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 9,
+    "gold": 1,
+    "item": "Cloth Shawl +4",
+    "silver": 2,
+    "source": "sold",
+    "ts": 1789096040000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 1,
+    "silver": 1,
+    "source": "corpse",
+    "ts": 1789096106000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 4,
+    "item": "Rat Whiskers",
+    "silver": 1,
+    "source": "sold",
+    "ts": 1789096109000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "gold": 2,
+    "silver": 1,
+    "source": "corpse",
+    "ts": 1789096121000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 6,
+    "source": "corpse",
+    "ts": 1789096124000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 8,
+    "source": "corpse",
+    "ts": 1789096129000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 2,
+    "silver": 2,
+    "source": "corpse",
+    "ts": 1789096131000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 3,
+    "gold": 3,
+    "item": "Backpack",
+    "silver": 9,
+    "source": "sold",
+    "ts": 1789096135000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 9,
+    "silver": 4,
+    "source": "corpse",
+    "ts": 1789096136000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 8,
+    "source": "corpse",
+    "ts": 1789096185000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 9,
+    "item": "Bead Necklace +4",
+    "silver": 2,
+    "source": "sold",
+    "ts": 1789096187000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 7,
+    "item": "Dark Elf Parts",
+    "source": "sold",
+    "ts": 1789096187000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 8,
+    "silver": 3,
+    "source": "corpse",
+    "ts": 1789096195000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 8,
+    "silver": 3,
+    "source": "corpse",
+    "ts": 1789096199000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 1,
+    "item": "Splintered Wooden Key",
+    "source": "sold",
+    "ts": 1789096201000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 6,
+    "gold": 1,
+    "item": "Rusty Scimitar +4",
+    "silver": 3,
+    "source": "sold",
+    "ts": 1789096201000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 9,
+    "gold": 1,
+    "item": "Rat Eye",
+    "silver": 7,
+    "source": "sold",
+    "ts": 1789096202000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 7,
+    "silver": 2,
+    "source": "corpse",
+    "ts": 1789096202000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "silver": 3,
+    "source": "corpse",
+    "ts": 1789096216000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 1,
+    "gold": 5,
+    "item": "Enchanted Fine Steel Morning Star +4",
+    "platinum": 3,
+    "silver": 7,
+    "source": "sold",
+    "ts": 1789096221000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 4,
+    "silver": 3,
+    "source": "corpse",
+    "ts": 1789096224000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 8,
+    "silver": 8,
+    "source": "corpse",
+    "ts": 1789096383000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 9,
+    "silver": 5,
+    "source": "corpse",
+    "ts": 1789096385000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 8,
+    "silver": 5,
+    "source": "corpse",
+    "ts": 1789096389000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 5,
+    "silver": 5,
+    "source": "corpse",
+    "ts": 1789096393000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 1,
+    "item": "Rusty Dagger +4",
+    "silver": 2,
+    "source": "sold",
+    "ts": 1789096396000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 4,
+    "silver": 6,
+    "source": "corpse",
+    "ts": 1789096400000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 9,
+    "gold": 1,
+    "item": "Rusty Warhammer +4",
+    "silver": 2,
+    "source": "sold",
+    "ts": 1789096401000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 8,
+    "silver": 6,
+    "source": "corpse",
+    "ts": 1789096402000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 5,
+    "source": "corpse",
+    "ts": 1789096441000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 3,
+    "gold": 1,
+    "item": "Rusty Spear +4",
+    "silver": 4,
+    "source": "sold",
+    "ts": 1789096442000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 1,
+    "item": "Rusty Dagger +4",
+    "silver": 2,
+    "source": "sold",
+    "ts": 1789096443000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "silver": 7,
+    "source": "corpse",
+    "ts": 1789096447000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 8,
+    "gold": 3,
+    "silver": 6,
+    "source": "corpse",
+    "ts": 1789096452000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 7,
+    "source": "corpse",
+    "ts": 1789096456000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 1,
+    "item": "Rusty Short Sword +4",
+    "silver": 2,
+    "source": "sold",
+    "ts": 1789096459000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 6,
+    "gold": 1,
+    "item": "Cloth Cape +4",
+    "silver": 8,
+    "source": "sold",
+    "ts": 1789096459000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 1,
+    "silver": 4,
+    "source": "corpse",
+    "ts": 1789096464000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "gold": 1,
+    "source": "corpse",
+    "ts": 1789096468000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 5,
+    "silver": 3,
+    "source": "corpse",
+    "ts": 1789096469000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 1,
+    "item": "Rusty Dagger +4",
+    "silver": 2,
+    "source": "sold",
+    "ts": 1789096471000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 9,
+    "source": "corpse",
+    "ts": 1789096473000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "silver": 5,
+    "source": "corpse",
+    "ts": 1789096476000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 7,
+    "gold": 8,
+    "item": "Antiqued Silver Band +4",
+    "silver": 5,
+    "source": "sold",
+    "ts": 1789096505000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 6,
+    "gold": 7,
+    "item": "Bronze Shortened Spear +4",
+    "platinum": 1,
+    "silver": 8,
+    "source": "sold",
+    "ts": 1789096505000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 4,
+    "silver": 5,
+    "source": "corpse",
+    "ts": 1789096521000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 3,
+    "silver": 6,
+    "source": "corpse",
+    "ts": 1789096523000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 3,
+    "gold": 1,
+    "item": "Rusty Long Sword +4",
+    "silver": 4,
+    "source": "sold",
+    "ts": 1789096523000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 9,
+    "silver": 2,
+    "source": "corpse",
+    "ts": 1789096530000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 3,
+    "gold": 1,
+    "item": "Small Box",
+    "silver": 4,
+    "source": "sold",
+    "ts": 1789096531000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 1,
+    "item": "Rusty Short Sword +4",
+    "silver": 2,
+    "source": "sold",
+    "ts": 1789096532000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 9,
+    "gold": 4,
+    "silver": 6,
+    "source": "corpse",
+    "ts": 1789096534000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "silver": 8,
+    "source": "corpse",
+    "ts": 1789096543000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "silver": 1,
+    "source": "corpse",
+    "ts": 1789096547000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 1,
+    "item": "Barbed Armplates +4",
+    "platinum": 1,
+    "silver": 7,
+    "source": "sold",
+    "ts": 1789096555000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 1,
+    "item": "Charred Bone Key",
+    "source": "sold",
+    "ts": 1789096556000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 1,
+    "item": "Smoked Glass Key",
+    "source": "sold",
+    "ts": 1789096556000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 2,
+    "silver": 9,
+    "source": "corpse",
+    "ts": 1789096561000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 7,
+    "item": "Gnome Meat",
+    "source": "sold",
+    "ts": 1789096563000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 9,
+    "gold": 1,
+    "item": "Cloth Wristband +4",
+    "silver": 2,
+    "source": "sold",
+    "ts": 1789096568000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "silver": 5,
+    "source": "corpse",
+    "ts": 1789096584000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 3,
+    "gold": 1,
+    "item": "Small Box",
+    "silver": 4,
+    "source": "sold",
+    "ts": 1789096586000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 8,
+    "gold": 3,
+    "silver": 5,
+    "source": "corpse",
+    "ts": 1789096589000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 1,
+    "item": "Splintered Wooden Key",
+    "source": "sold",
+    "ts": 1789096590000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 1,
+    "item": "Charred Bone Key",
+    "source": "sold",
+    "ts": 1789096591000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 7,
+    "gold": 8,
+    "item": "Antiqued Silver Band +4",
+    "silver": 5,
+    "source": "sold",
+    "ts": 1789096591000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "silver": 6,
+    "source": "corpse",
+    "ts": 1789096609000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 6,
+    "gold": 5,
+    "silver": 6,
+    "source": "corpse",
+    "ts": 1789096617000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "gold": 1,
+    "source": "corpse",
+    "ts": 1789096619000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 6,
+    "gold": 2,
+    "item": "Bronze Long Sword +4",
+    "platinum": 2,
+    "silver": 8,
+    "source": "sold",
+    "ts": 1789096621000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 6,
+    "silver": 4,
+    "source": "corpse",
+    "ts": 1789096628000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 8,
+    "gold": 5,
+    "silver": 5,
+    "source": "corpse",
+    "ts": 1789096633000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "item": "Silver Plated War Sword +4",
+    "source": "sold",
+    "ts": 1789096648000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 2,
+    "platinum": 1,
+    "silver": 7,
+    "source": "corpse",
+    "ts": 1789096654000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "item": "Mallet Head",
+    "source": "sold",
+    "ts": 1789096658000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "gold": 5,
+    "platinum": 1,
+    "silver": 8,
+    "source": "corpse",
+    "ts": 1789096671000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 7,
+    "gold": 3,
+    "item": "Copper Ring +4",
+    "silver": 5,
+    "source": "sold",
+    "ts": 1789096673000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 2,
+    "silver": 7,
+    "source": "corpse",
+    "ts": 1789096678000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 9,
+    "gold": 4,
+    "item": "Raw-Hide Wristbands +4",
+    "silver": 2,
+    "source": "sold",
+    "ts": 1789096679000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 4,
+    "gold": 2,
+    "item": "Pearl",
+    "platinum": 3,
+    "silver": 1,
+    "source": "sold",
+    "ts": 1789096707000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 6,
+    "gold": 2,
+    "item": "Fine Steel Long Sword +4",
+    "platinum": 4,
+    "silver": 8,
+    "source": "sold",
+    "ts": 1789096712000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "item": "Fine Steel Two Handed Sword +4",
+    "platinum": 5,
+    "source": "sold",
+    "ts": 1789096792000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 3,
+    "gold": 6,
+    "item": "Fine Steel Great Staff +4",
+    "platinum": 4,
+    "silver": 4,
+    "source": "sold",
+    "ts": 1789096831000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 9,
+    "gold": 9,
+    "item": "Ringmail Boots +4",
+    "platinum": 1,
+    "silver": 2,
+    "source": "sold",
+    "ts": 1789096841000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "item": "Fine Steel Two Handed Sword +4",
+    "platinum": 5,
+    "source": "sold",
+    "ts": 1789096841000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 9,
+    "silver": 5,
+    "source": "corpse",
+    "ts": 1789096850000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 1,
+    "item": "Charred Bone Key",
+    "source": "sold",
+    "ts": 1789096851000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 1,
+    "item": "Smoked Glass Key",
+    "source": "sold",
+    "ts": 1789096851000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 1,
+    "item": "Splintered Wooden Key",
+    "source": "sold",
+    "ts": 1789096851000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 1,
+    "gold": 5,
+    "item": "Enchanted Fine Steel Long Sword +4",
+    "platinum": 3,
+    "silver": 7,
+    "source": "sold",
+    "ts": 1789096872000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 4,
+    "gold": 2,
+    "item": "Fine Steel Dagger +4",
+    "platinum": 3,
+    "silver": 1,
+    "source": "sold",
+    "ts": 1789096889000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 1,
+    "gold": 5,
+    "item": "Enchanted Fine Steel Great Staff +4",
+    "platinum": 3,
+    "silver": 7,
+    "source": "sold",
+    "ts": 1789096922000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 7,
+    "gold": 8,
+    "item": "Gold Ring +4",
+    "silver": 5,
+    "source": "sold",
+    "ts": 1789096931000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "gold": 5,
+    "silver": 7,
+    "source": "corpse",
+    "ts": 1789096959000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 4,
+    "gold": 4,
+    "item": "Blackened Wand +4",
+    "silver": 6,
+    "source": "sold",
+    "ts": 1789096964000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "item": "Pristine Studded Leather Bracer +4",
+    "source": "sold",
+    "ts": 1789096972000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 3,
+    "silver": 7,
+    "source": "corpse",
+    "ts": 1789096983000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 7,
+    "item": "Gnome Meat",
+    "source": "sold",
+    "ts": 1789096985000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 4,
+    "gold": 2,
+    "item": "Bronze Spear +4",
+    "platinum": 2,
+    "silver": 1,
+    "source": "sold",
+    "ts": 1789096986000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 3,
+    "gold": 1,
+    "item": "Necromancer Blood",
+    "silver": 4,
+    "source": "sold",
+    "ts": 1789096986000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 9,
+    "gold": 4,
+    "platinum": 2,
+    "silver": 1,
+    "source": "corpse",
+    "ts": 1789097017000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 9,
+    "gold": 4,
+    "item": "Dagger +4",
+    "platinum": 1,
+    "silver": 2,
+    "source": "sold",
+    "ts": 1789097020000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "item": "Ringmail Bracelet +4",
+    "platinum": 1,
+    "source": "sold",
+    "ts": 1789097023000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 1,
+    "gold": 5,
+    "item": "Enchanted Fine Steel Rapier +4",
+    "platinum": 3,
+    "silver": 7,
+    "source": "sold",
+    "ts": 1789097045000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "item": "Pristine Studded Leather Leggings +4",
+    "source": "sold",
+    "ts": 1789097057000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 5,
+    "gold": 8,
+    "platinum": 2,
+    "silver": 4,
+    "source": "corpse",
+    "ts": 1789097066000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "item": "Pristine Studded Leather Tunic +4",
+    "source": "sold",
+    "ts": 1789097112000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 7,
+    "gold": 8,
+    "item": "Antiqued Silver Band +4",
+    "silver": 5,
+    "source": "sold",
+    "ts": 1789097112000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 1,
+    "item": "Barbed Armplates +4",
+    "platinum": 1,
+    "silver": 7,
+    "source": "sold",
+    "ts": 1789097112000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 4,
+    "gold": 4,
+    "item": "Blackened Wand +4",
+    "silver": 6,
+    "source": "sold",
+    "ts": 1789097112000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 4,
+    "gold": 2,
+    "item": "Bronze Spear +4",
+    "platinum": 2,
+    "silver": 1,
+    "source": "sold",
+    "ts": 1789097112000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 1,
+    "item": "Charred Bone Key",
+    "source": "sold",
+    "ts": 1789097112000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 4,
+    "gold": 7,
+    "item": "Chipped Bone Rod +4",
+    "silver": 1,
+    "source": "sold",
+    "ts": 1789097112000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 3,
+    "gold": 1,
+    "item": "Dagger of Marnek +4",
+    "platinum": 2,
+    "silver": 4,
+    "source": "sold",
+    "ts": 1789097112000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 4,
+    "item": "Dark Elf Parts",
+    "silver": 1,
+    "source": "sold",
+    "ts": 1789097112000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 1,
+    "gold": 5,
+    "item": "Enchanted Fine Steel Rapier +4",
+    "platinum": 3,
+    "silver": 7,
+    "source": "sold",
+    "ts": 1789097112000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "gold": 5,
+    "item": "Platinum Ring +4",
+    "source": "sold",
+    "ts": 1789097112000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "item": "Pristine Studded Leather Leggings +4",
+    "source": "sold",
+    "ts": 1789097112000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "item": "Pristine Studded Leather Tunic +4",
+    "source": "sold",
+    "ts": 1789097112000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 1,
+    "gold": 5,
+    "item": "Raw-Hide Skullcap +4",
+    "silver": 7,
+    "source": "sold",
+    "ts": 1789097112000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 3,
+    "gold": 6,
+    "item": "Ringmail Gloves +4",
+    "platinum": 1,
+    "silver": 4,
+    "source": "sold",
+    "ts": 1789097112000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 1,
+    "gold": 1,
+    "item": "Rusty Bastard Sword +4",
+    "silver": 7,
+    "source": "sold",
+    "ts": 1789097112000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 6,
+    "gold": 1,
+    "item": "Rusty Battle Axe +4",
+    "silver": 3,
+    "source": "sold",
+    "ts": 1789097112000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 1,
+    "item": "Rusty Dagger +4",
+    "silver": 2,
+    "source": "sold",
+    "ts": 1789097112000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 1,
+    "item": "Rusty Dagger +4",
+    "silver": 2,
+    "source": "sold",
+    "ts": 1789097112000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 3,
+    "item": "Rusty Shortened Spear +4",
+    "silver": 9,
+    "source": "sold",
+    "ts": 1789097112000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 1,
+    "item": "Smoked Glass Key",
+    "source": "sold",
+    "ts": 1789097112000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "copper": 1,
+    "item": "Splintered Wooden Key",
+    "source": "sold",
+    "ts": 1789097112000,
+    "zone": "Befallen 4 (Refined)"
+   }
+  ],
+  "v": 1
+ },
+ "deaths": {
+  "recaps": [],
+  "v": 1
+ },
+ "kills": {
+  "mobs": {
+   "a burnt zombie": {
+    "bestTier": 4,
+    "count": 2,
+    "credited": 0,
+    "display": "a burnt zombie",
+    "firstTs": 1789096473000,
+    "lastTs": 1789096530000,
+    "tiers": {
+     "4": {
+      "count": 2,
+      "credited": 0,
+      "firstTs": 1789096473000,
+      "lastCreditedTs": 0,
+      "lastTs": 1789096530000
+     }
+    }
+   },
+   "a cracked skeleton": {
+    "bestTier": 4,
+    "count": 4,
+    "credited": 0,
+    "display": "a cracked skeleton",
+    "firstTs": 1789095812000,
+    "lastTs": 1789096224000,
+    "tiers": {
+     "4": {
+      "count": 4,
+      "credited": 0,
+      "firstTs": 1789095812000,
+      "lastCreditedTs": 0,
+      "lastTs": 1789096224000
+     }
+    }
+   },
+   "a dread bone": {
+    "bestTier": 4,
+    "count": 2,
+    "credited": 0,
+    "display": "a dread bone",
+    "firstTs": 1789096476000,
+    "lastTs": 1789096567000,
+    "tiers": {
+     "4": {
+      "count": 2,
+      "credited": 0,
+      "firstTs": 1789096476000,
+      "lastCreditedTs": 0,
+      "lastTs": 1789096567000
+     }
+    }
+   },
+   "a ghoul": {
+    "bestTier": 4,
+    "count": 2,
+    "credited": 0,
+    "display": "a ghoul",
+    "firstTs": 1789096633000,
+    "lastTs": 1789096678000,
+    "tiers": {
+     "4": {
+      "count": 2,
+      "credited": 0,
+      "firstTs": 1789096633000,
+      "lastCreditedTs": 0,
+      "lastTs": 1789096678000
+     }
+    }
+   },
+   "a greater mummy": {
+    "bestTier": 4,
+    "count": 2,
+    "credited": 0,
+    "display": "a greater mummy",
+    "firstTs": 1789096675000,
+    "lastTs": 1789096698000,
+    "tiers": {
+     "4": {
+      "count": 2,
+      "credited": 0,
+      "firstTs": 1789096675000,
+      "lastCreditedTs": 0,
+      "lastTs": 1789096698000
+     }
+    }
+   },
+   "a greater skeleton": {
+    "bestTier": 4,
+    "count": 8,
+    "credited": 0,
+    "display": "a greater skeleton",
+    "firstTs": 1789096383000,
+    "lastTs": 1789096619000,
+    "tiers": {
+     "4": {
+      "count": 8,
+      "credited": 0,
+      "firstTs": 1789096383000,
+      "lastCreditedTs": 0,
+      "lastTs": 1789096619000
+     }
+    }
+   },
+   "a hardened skeleton": {
+    "bestTier": 4,
+    "count": 3,
+    "credited": 0,
+    "display": "a hardened skeleton",
+    "firstTs": 1789096968000,
+    "lastTs": 1789096968000,
+    "tiers": {
+     "4": {
+      "count": 3,
+      "credited": 0,
+      "firstTs": 1789096968000,
+      "lastCreditedTs": 0,
+      "lastTs": 1789096968000
+     }
+    }
+   },
+   "a hardened skeleton pet": {
+    "bestTier": 4,
+    "count": 1,
+    "credited": 0,
+    "display": "a hardened skeleton pet",
+    "firstTs": 1789096968000,
+    "lastTs": 1789096968000,
+    "tiers": {
+     "4": {
+      "count": 1,
+      "credited": 0,
+      "firstTs": 1789096968000,
+      "lastCreditedTs": 0,
+      "lastTs": 1789096968000
+     }
+    }
+   },
+   "a large plague rat": {
+    "bestTier": 4,
+    "count": 5,
+    "credited": 0,
+    "display": "a large plague rat",
+    "firstTs": 1789095832000,
+    "lastTs": 1789096193000,
+    "tiers": {
+     "4": {
+      "count": 5,
+      "credited": 0,
+      "firstTs": 1789095832000,
+      "lastCreditedTs": 0,
+      "lastTs": 1789096193000
+     }
+    }
+   },
+   "a large plague rat pet": {
+    "bestTier": 4,
+    "count": 1,
+    "credited": 0,
+    "display": "a large plague rat pet",
+    "firstTs": 1789096003000,
+    "lastTs": 1789096003000,
+    "tiers": {
+     "4": {
+      "count": 1,
+      "credited": 0,
+      "firstTs": 1789096003000,
+      "lastCreditedTs": 0,
+      "lastTs": 1789096003000
+     }
+    }
+   },
+   "a lesser mummy": {
+    "bestTier": 4,
+    "count": 5,
+    "credited": 0,
+    "display": "a lesser mummy",
+    "firstTs": 1789096389000,
+    "lastTs": 1789096628000,
+    "tiers": {
+     "4": {
+      "count": 5,
+      "credited": 0,
+      "firstTs": 1789096389000,
+      "lastCreditedTs": 0,
+      "lastTs": 1789096628000
+     }
+    }
+   },
+   "a necro acolyte": {
+    "bestTier": 4,
+    "count": 2,
+    "credited": 0,
+    "display": "A necro acolyte",
+    "firstTs": 1789096468000,
+    "lastTs": 1789096617000,
+    "tiers": {
+     "4": {
+      "count": 2,
+      "credited": 0,
+      "firstTs": 1789096468000,
+      "lastCreditedTs": 0,
+      "lastTs": 1789096617000
+     }
+    }
+   },
+   "a necro acolyte pet": {
+    "bestTier": 4,
+    "count": 1,
+    "credited": 0,
+    "display": "a necro acolyte pet",
+    "firstTs": 1789096613000,
+    "lastTs": 1789096613000,
+    "tiers": {
+     "4": {
+      "count": 1,
+      "credited": 0,
+      "firstTs": 1789096613000,
+      "lastCreditedTs": 0,
+      "lastTs": 1789096613000
+     }
+    }
+   },
+   "a necro apprentice": {
+    "bestTier": 4,
+    "count": 3,
+    "credited": 0,
+    "display": "a necro apprentice",
+    "firstTs": 1789096447000,
+    "lastTs": 1789096561000,
+    "tiers": {
+     "4": {
+      "count": 3,
+      "credited": 0,
+      "firstTs": 1789096447000,
+      "lastCreditedTs": 0,
+      "lastTs": 1789096561000
+     }
+    }
+   },
+   "a necro apprentice pet": {
+    "bestTier": 4,
+    "count": 2,
+    "credited": 0,
+    "display": "a necro apprentice pet",
+    "firstTs": 1789096461000,
+    "lastTs": 1789096559000,
+    "tiers": {
+     "4": {
+      "count": 2,
+      "credited": 0,
+      "firstTs": 1789096461000,
+      "lastCreditedTs": 0,
+      "lastTs": 1789096559000
+     }
+    }
+   },
+   "a necro initiate": {
+    "bestTier": 4,
+    "count": 4,
+    "credited": 0,
+    "display": "a necro initiate",
+    "firstTs": 1789096385000,
+    "lastTs": 1789096469000,
+    "tiers": {
+     "4": {
+      "count": 4,
+      "credited": 0,
+      "firstTs": 1789096385000,
+      "lastCreditedTs": 0,
+      "lastTs": 1789096469000
+     }
+    }
+   },
+   "a necro neophyte": {
+    "bestTier": 4,
+    "count": 11,
+    "credited": 0,
+    "display": "A necro neophyte",
+    "firstTs": 1789095739000,
+    "lastTs": 1789096202000,
+    "tiers": {
+     "4": {
+      "count": 10,
+      "credited": 0,
+      "firstTs": 1789095958000,
+      "lastCreditedTs": 0,
+      "lastTs": 1789096202000
+     },
+     "-1": {
+      "count": 1,
+      "credited": 0,
+      "firstTs": 1789095739000,
+      "lastCreditedTs": 0,
+      "lastTs": 1789095739000
+     }
+    }
+   },
+   "a necro neophyte pet": {
+    "bestTier": 4,
+    "count": 6,
+    "credited": 0,
+    "display": "a necro neophyte pet",
+    "firstTs": 1789095984000,
+    "lastTs": 1789096132000,
+    "tiers": {
+     "4": {
+      "count": 6,
+      "credited": 0,
+      "firstTs": 1789095984000,
+      "lastCreditedTs": 0,
+      "lastTs": 1789096132000
+     }
+    }
+   },
+   "a necro theurgist": {
+    "bestTier": 4,
+    "count": 1,
+    "credited": 0,
+    "display": "a necro theurgist",
+    "firstTs": 1789096983000,
+    "lastTs": 1789096983000,
+    "tiers": {
+     "4": {
+      "count": 1,
+      "credited": 0,
+      "firstTs": 1789096983000,
+      "lastCreditedTs": 0,
+      "lastTs": 1789096983000
+     }
+    }
+   },
+   "a plague rat": {
+    "bestTier": 4,
+    "count": 7,
+    "credited": 0,
+    "display": "A plague rat",
+    "firstTs": 1789095826000,
+    "lastTs": 1789096107000,
+    "tiers": {
+     "4": {
+      "count": 7,
+      "credited": 0,
+      "firstTs": 1789095826000,
+      "lastCreditedTs": 0,
+      "lastTs": 1789096107000
+     }
+    }
+   },
+   "a plague rat pet": {
+    "bestTier": 4,
+    "count": 1,
+    "credited": 0,
+    "display": "a plague rat pet",
+    "firstTs": 1789095823000,
+    "lastTs": 1789095823000,
+    "tiers": {
+     "4": {
+      "count": 1,
+      "credited": 0,
+      "firstTs": 1789095823000,
+      "lastCreditedTs": 0,
+      "lastTs": 1789095823000
+     }
+    }
+   },
+   "a putrid skeleton": {
+    "bestTier": 4,
+    "count": 10,
+    "credited": 0,
+    "display": "A putrid skeleton",
+    "firstTs": 1789095742000,
+    "lastTs": 1789096216000,
+    "tiers": {
+     "4": {
+      "count": 9,
+      "credited": 0,
+      "firstTs": 1789095917000,
+      "lastCreditedTs": 0,
+      "lastTs": 1789096216000
+     },
+     "-1": {
+      "count": 1,
+      "credited": 0,
+      "firstTs": 1789095742000,
+      "lastCreditedTs": 0,
+      "lastTs": 1789095742000
+     }
+    }
+   },
+   "a shadowknight": {
+    "bestTier": 4,
+    "count": 4,
+    "credited": 0,
+    "display": "a shadowknight",
+    "firstTs": 1789096199000,
+    "lastTs": 1789096850000,
+    "tiers": {
+     "4": {
+      "count": 4,
+      "credited": 0,
+      "firstTs": 1789096199000,
+      "lastCreditedTs": 0,
+      "lastTs": 1789096850000
+     }
+    }
+   },
+   "a shadowknight pet": {
+    "bestTier": 4,
+    "count": 2,
+    "credited": 0,
+    "display": "a shadowknight pet",
+    "firstTs": 1789096589000,
+    "lastTs": 1789096845000,
+    "tiers": {
+     "4": {
+      "count": 2,
+      "credited": 0,
+      "firstTs": 1789096589000,
+      "lastCreditedTs": 0,
+      "lastTs": 1789096845000
+     }
+    }
+   },
+   "a skeletal excavator": {
+    "bestTier": 4,
+    "count": 4,
+    "credited": 0,
+    "display": "a skeletal excavator",
+    "firstTs": 1789095814000,
+    "lastTs": 1789095904000,
+    "tiers": {
+     "4": {
+      "count": 4,
+      "credited": 0,
+      "firstTs": 1789095814000,
+      "lastCreditedTs": 0,
+      "lastTs": 1789095904000
+     }
+    }
+   },
+   "a sturdy skeleton": {
+    "bestTier": 4,
+    "count": 3,
+    "credited": 0,
+    "display": "a sturdy skeleton",
+    "firstTs": 1789095890000,
+    "lastTs": 1789095912000,
+    "tiers": {
+     "4": {
+      "count": 3,
+      "credited": 0,
+      "firstTs": 1789095890000,
+      "lastCreditedTs": 0,
+      "lastTs": 1789095912000
+     }
+    }
+   },
+   "a teir`dal priest": {
+    "bestTier": 4,
+    "count": 2,
+    "credited": 0,
+    "display": "a Teir`Dal priest",
+    "firstTs": 1789096705000,
+    "lastTs": 1789096903000,
+    "tiers": {
+     "4": {
+      "count": 2,
+      "credited": 0,
+      "firstTs": 1789096705000,
+      "lastCreditedTs": 0,
+      "lastTs": 1789096903000
+     }
+    }
+   },
+   "a teir`dal priestess": {
+    "bestTier": 4,
+    "count": 2,
+    "credited": 0,
+    "display": "a Teir`Dal priestess",
+    "firstTs": 1789096886000,
+    "lastTs": 1789097033000,
+    "tiers": {
+     "4": {
+      "count": 2,
+      "credited": 0,
+      "firstTs": 1789096886000,
+      "lastCreditedTs": 0,
+      "lastTs": 1789097033000
+     }
+    }
+   },
+   "a teir`dal ranger": {
+    "bestTier": 4,
+    "count": 7,
+    "credited": 0,
+    "display": "A Teir`Dal ranger",
+    "firstTs": 1789096711000,
+    "lastTs": 1789097009000,
+    "tiers": {
+     "4": {
+      "count": 7,
+      "credited": 0,
+      "firstTs": 1789096711000,
+      "lastCreditedTs": 0,
+      "lastTs": 1789097009000
+     }
+    }
+   },
+   "a teir`dal rogue": {
+    "bestTier": 4,
+    "count": 4,
+    "credited": 0,
+    "display": "a Teir`Dal rogue",
+    "firstTs": 1789096766000,
+    "lastTs": 1789097022000,
+    "tiers": {
+     "4": {
+      "count": 4,
+      "credited": 0,
+      "firstTs": 1789096766000,
+      "lastCreditedTs": 0,
+      "lastTs": 1789097022000
+     }
+    }
+   },
+   "a teir`dal shadowknight": {
+    "bestTier": 4,
+    "count": 6,
+    "credited": 0,
+    "display": "a Teir`Dal shadowknight",
+    "firstTs": 1789096722000,
+    "lastTs": 1789097038000,
+    "tiers": {
+     "4": {
+      "count": 6,
+      "credited": 0,
+      "firstTs": 1789096722000,
+      "lastCreditedTs": 0,
+      "lastTs": 1789097038000
+     }
+    }
+   },
+   "a zombie": {
+    "bestTier": 4,
+    "count": 1,
+    "credited": 0,
+    "display": "a zombie",
+    "firstTs": 1789096456000,
+    "lastTs": 1789096456000,
+    "tiers": {
+     "4": {
+      "count": 1,
+      "credited": 0,
+      "firstTs": 1789096456000,
+      "lastCreditedTs": 0,
+      "lastTs": 1789096456000
+     }
+    }
+   },
+   "an elf skeleton": {
+    "bestTier": 4,
+    "count": 1,
+    "credited": 0,
+    "display": "an elf skeleton",
+    "firstTs": 1789096654000,
+    "lastTs": 1789096654000,
+    "tiers": {
+     "4": {
+      "count": 1,
+      "credited": 0,
+      "firstTs": 1789096654000,
+      "lastCreditedTs": 0,
+      "lastTs": 1789096654000
+     }
+    }
+   },
+   "arisen thaumaturgist": {
+    "bestTier": 4,
+    "count": 1,
+    "credited": 0,
+    "display": "Arisen Thaumaturgist",
+    "firstTs": 1789096968000,
+    "lastTs": 1789096968000,
+    "tiers": {
+     "4": {
+      "count": 1,
+      "credited": 0,
+      "firstTs": 1789096968000,
+      "lastCreditedTs": 0,
+      "lastTs": 1789096968000
+     }
+    }
+   },
+   "asaka l`rei": {
+    "bestTier": 4,
+    "count": 1,
+    "credited": 0,
+    "display": "Asaka L`Rei",
+    "firstTs": 1789096219000,
+    "lastTs": 1789096219000,
+    "tiers": {
+     "4": {
+      "count": 1,
+      "credited": 0,
+      "firstTs": 1789096219000,
+      "lastCreditedTs": 0,
+      "lastTs": 1789096219000
+     }
+    }
+   },
+   "baron telyx v`zher": {
+    "bestTier": 4,
+    "count": 1,
+    "credited": 0,
+    "display": "Baron Telyx V`Zher",
+    "firstTs": 1789097066000,
+    "lastTs": 1789097066000,
+    "tiers": {
+     "4": {
+      "count": 1,
+      "credited": 0,
+      "firstTs": 1789097066000,
+      "lastCreditedTs": 0,
+      "lastTs": 1789097066000
+     }
+    }
+   },
+   "boondin babbinsbort": {
+    "bestTier": 4,
+    "count": 1,
+    "credited": 0,
+    "display": "Boondin Babbinsbort",
+    "firstTs": 1789097017000,
+    "lastTs": 1789097017000,
+    "tiers": {
+     "4": {
+      "count": 1,
+      "credited": 0,
+      "firstTs": 1789097017000,
+      "lastCreditedTs": 0,
+      "lastTs": 1789097017000
+     }
+    }
+   },
+   "footman of v`zher": {
+    "bestTier": 4,
+    "count": 1,
+    "credited": 0,
+    "display": "Footman of V`Zher",
+    "firstTs": 1789096641000,
+    "lastTs": 1789096641000,
+    "tiers": {
+     "4": {
+      "count": 1,
+      "credited": 0,
+      "firstTs": 1789096641000,
+      "lastCreditedTs": 0,
+      "lastTs": 1789096641000
+     }
+    }
+   },
+   "gynok moltor": {
+    "bestTier": 4,
+    "count": 1,
+    "credited": 0,
+    "display": "Gynok Moltor",
+    "firstTs": 1789096671000,
+    "lastTs": 1789096671000,
+    "tiers": {
+     "4": {
+      "count": 1,
+      "credited": 0,
+      "firstTs": 1789096671000,
+      "lastCreditedTs": 0,
+      "lastTs": 1789096671000
+     }
+    }
+   },
+   "ice boned skeleton": {
+    "bestTier": 4,
+    "count": 2,
+    "credited": 0,
+    "display": "ice boned skeleton",
+    "firstTs": 1789096638000,
+    "lastTs": 1789096662000,
+    "tiers": {
+     "4": {
+      "count": 2,
+      "credited": 0,
+      "firstTs": 1789096638000,
+      "lastCreditedTs": 0,
+      "lastTs": 1789096662000
+     }
+    }
+   },
+   "kahaptra z`taj": {
+    "bestTier": 4,
+    "count": 1,
+    "credited": 0,
+    "display": "Kahaptra Z`Taj",
+    "firstTs": 1789096921000,
+    "lastTs": 1789096921000,
+    "tiers": {
+     "4": {
+      "count": 1,
+      "credited": 0,
+      "firstTs": 1789096921000,
+      "lastCreditedTs": 0,
+      "lastTs": 1789096921000
+     }
+    }
+   },
+   "knight v`tal": {
+    "bestTier": 4,
+    "count": 1,
+    "credited": 0,
+    "display": "Knight V`Tal",
+    "firstTs": 1789096866000,
+    "lastTs": 1789096866000,
+    "tiers": {
+     "4": {
+      "count": 1,
+      "credited": 0,
+      "firstTs": 1789096866000,
+      "lastCreditedTs": 0,
+      "lastTs": 1789096866000
+     }
+    }
+   },
+   "korven nisere": {
+    "bestTier": 4,
+    "count": 1,
+    "credited": 0,
+    "display": "Korven Nisere",
+    "firstTs": 1789097042000,
+    "lastTs": 1789097042000,
+    "tiers": {
+     "4": {
+      "count": 1,
+      "credited": 0,
+      "firstTs": 1789097042000,
+      "lastCreditedTs": 0,
+      "lastTs": 1789097042000
+     }
+    }
+   },
+   "priest amiaz": {
+    "bestTier": 4,
+    "count": 1,
+    "credited": 0,
+    "display": "Priest Amiaz",
+    "firstTs": 1789096959000,
+    "lastTs": 1789096959000,
+    "tiers": {
+     "4": {
+      "count": 1,
+      "credited": 0,
+      "firstTs": 1789096959000,
+      "lastCreditedTs": 0,
+      "lastTs": 1789096959000
+     }
+    }
+   },
+   "skeleton l`rodd": {
+    "bestTier": 4,
+    "count": 1,
+    "credited": 0,
+    "display": "skeleton L`rodd",
+    "firstTs": 1789095900000,
+    "lastTs": 1789095900000,
+    "tiers": {
+     "4": {
+      "count": 1,
+      "credited": 0,
+      "firstTs": 1789095900000,
+      "lastCreditedTs": 0,
+      "lastTs": 1789095900000
+     }
+    }
+   },
+   "soldier of v`zher": {
+    "bestTier": 4,
+    "count": 1,
+    "credited": 0,
+    "display": "Soldier of V`Zher",
+    "firstTs": 1789097056000,
+    "lastTs": 1789097056000,
+    "tiers": {
+     "4": {
+      "count": 1,
+      "credited": 0,
+      "firstTs": 1789097056000,
+      "lastCreditedTs": 0,
+      "lastTs": 1789097056000
+     }
+    }
+   },
+   "the thaumaturgist": {
+    "bestTier": 4,
+    "count": 1,
+    "credited": 0,
+    "display": "the thaumaturgist",
+    "firstTs": 1789096487000,
+    "lastTs": 1789096487000,
+    "tiers": {
+     "4": {
+      "count": 1,
+      "credited": 0,
+      "firstTs": 1789096487000,
+      "lastCreditedTs": 0,
+      "lastTs": 1789096487000
+     }
+    }
+   }
+  },
+  "v": 5
+ },
+ "lastEventTs": 1789097172000,
+ "loot": [
+  {
+   "disposition": "sold",
+   "item": "Rusty Mining Pick +4",
+   "source": "a skeletal excavator",
+   "sourceKind": "corpse",
+   "ts": 1789095819000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Rusty Mining Pick +4",
+   "source": "a skeletal excavator",
+   "sourceKind": "corpse",
+   "ts": 1789095822000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Rat Ears",
+   "source": "a large plague rat",
+   "sourceKind": "corpse",
+   "ts": 1789095834000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Rat Whiskers",
+   "source": "a large plague rat",
+   "sourceKind": "corpse",
+   "ts": 1789095834000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "count": 2,
+   "item": "Bone Chips",
+   "source": "a sturdy skeleton",
+   "sourceKind": "corpse",
+   "ts": 1789095893000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Rusty Mining Pick +4",
+   "source": "a skeletal excavator",
+   "sourceKind": "corpse",
+   "ts": 1789095897000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Skeletal Rod +4",
+   "source": "skeleton L`rodd",
+   "sourceKind": "corpse",
+   "ts": 1789095901000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Iron Ration",
+   "source": "a skeletal excavator",
+   "sourceKind": "corpse",
+   "ts": 1789095905000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Rusty Mining Pick +4",
+   "source": "a skeletal excavator",
+   "sourceKind": "corpse",
+   "ts": 1789095905000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "count": 2,
+   "item": "Bone Chips",
+   "source": "a sturdy skeleton",
+   "sourceKind": "corpse",
+   "ts": 1789095913000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Cloth Gloves +4",
+   "source": "a putrid skeleton",
+   "sourceKind": "corpse",
+   "ts": 1789095920000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Rat Ears",
+   "source": "a plague rat",
+   "sourceKind": "corpse",
+   "ts": 1789095923000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "item": "Water Flask",
+   "source": "a putrid skeleton",
+   "sourceKind": "corpse",
+   "ts": 1789095953000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Dark Elf Parts",
+   "source": "a necro neophyte",
+   "sourceKind": "corpse",
+   "ts": 1789095959000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Rusty Axe +4",
+   "source": "a putrid skeleton",
+   "sourceKind": "corpse",
+   "ts": 1789095963000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Rat Whiskers",
+   "source": "a large plague rat",
+   "sourceKind": "corpse",
+   "ts": 1789096007000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Rat Eye",
+   "source": "a large plague rat",
+   "sourceKind": "corpse",
+   "ts": 1789096007000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Rat Ears",
+   "source": "a plague rat",
+   "sourceKind": "corpse",
+   "ts": 1789096032000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Cloth Shawl +4",
+   "source": "a cracked skeleton",
+   "sourceKind": "corpse",
+   "ts": 1789096040000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "count": 2,
+   "disposition": "sold",
+   "item": "Rat Whiskers",
+   "source": "a plague rat",
+   "sourceKind": "corpse",
+   "ts": 1789096109000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Backpack",
+   "source": "a cracked skeleton",
+   "sourceKind": "corpse",
+   "ts": 1789096135000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Bead Necklace +4",
+   "source": "a necro neophyte",
+   "sourceKind": "corpse",
+   "ts": 1789096187000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Dark Elf Parts",
+   "source": "a necro neophyte",
+   "sourceKind": "corpse",
+   "ts": 1789096187000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Splintered Wooden Key",
+   "source": "a shadowknight",
+   "sourceKind": "corpse",
+   "ts": 1789096201000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Rusty Scimitar +4",
+   "source": "a shadowknight",
+   "sourceKind": "corpse",
+   "ts": 1789096201000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Rat Eye",
+   "source": "a large plague rat",
+   "sourceKind": "corpse",
+   "ts": 1789096202000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Enchanted Fine Steel Morning Star +4",
+   "source": "Asaka L`Rei",
+   "sourceKind": "corpse",
+   "ts": 1789096221000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "count": 2,
+   "item": "Bone Chips",
+   "source": "a cracked skeleton",
+   "sourceKind": "corpse",
+   "ts": 1789096226000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Rusty Dagger +4",
+   "source": "a necro initiate",
+   "sourceKind": "corpse",
+   "ts": 1789096396000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Rusty Warhammer +4",
+   "source": "a lesser mummy",
+   "sourceKind": "corpse",
+   "ts": 1789096401000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "count": 2,
+   "item": "Bone Chips",
+   "source": "a greater skeleton",
+   "sourceKind": "corpse",
+   "ts": 1789096404000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Rusty Spear +4",
+   "source": "a necro initiate",
+   "sourceKind": "corpse",
+   "ts": 1789096442000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Rusty Dagger +4",
+   "source": "a necro initiate",
+   "sourceKind": "corpse",
+   "ts": 1789096443000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Rusty Short Sword +4",
+   "source": "a zombie",
+   "sourceKind": "corpse",
+   "ts": 1789096459000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Cloth Cape +4",
+   "source": "a zombie",
+   "sourceKind": "corpse",
+   "ts": 1789096459000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Rusty Dagger +4",
+   "source": "a necro initiate",
+   "sourceKind": "corpse",
+   "ts": 1789096471000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "item": "Dagger of Marnek +4",
+   "source": "the thaumaturgist",
+   "sourceKind": "corpse",
+   "ts": 1789096498000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "item": "Gossamer Robe +4",
+   "source": "the thaumaturgist",
+   "sourceKind": "corpse",
+   "ts": 1789096501000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Antiqued Silver Band +4",
+   "source": "the thaumaturgist",
+   "sourceKind": "corpse",
+   "ts": 1789096505000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Bronze Shortened Spear +4",
+   "source": "the thaumaturgist",
+   "sourceKind": "corpse",
+   "ts": 1789096505000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "count": 2,
+   "item": "Bone Chips",
+   "source": "a greater skeleton",
+   "sourceKind": "corpse",
+   "ts": 1789096523000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Rusty Long Sword +4",
+   "source": "a greater skeleton",
+   "sourceKind": "corpse",
+   "ts": 1789096523000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Small Box",
+   "source": "a burnt zombie",
+   "sourceKind": "corpse",
+   "ts": 1789096531000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Rusty Short Sword +4",
+   "source": "a burnt zombie",
+   "sourceKind": "corpse",
+   "ts": 1789096532000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "count": 2,
+   "item": "Bone Chips",
+   "source": "a greater skeleton",
+   "sourceKind": "corpse",
+   "ts": 1789096536000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Barbed Armplates +4",
+   "source": "a shadowknight",
+   "sourceKind": "corpse",
+   "ts": 1789096555000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Charred Bone Key",
+   "source": "a shadowknight",
+   "sourceKind": "corpse",
+   "ts": 1789096556000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Smoked Glass Key",
+   "source": "a shadowknight",
+   "sourceKind": "corpse",
+   "ts": 1789096556000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Gnome Meat",
+   "source": "a necro apprentice",
+   "sourceKind": "corpse",
+   "ts": 1789096563000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Cloth Wristband +4",
+   "source": "a dread bone",
+   "sourceKind": "corpse",
+   "ts": 1789096568000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Small Box",
+   "source": "a lesser mummy",
+   "sourceKind": "corpse",
+   "ts": 1789096586000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Splintered Wooden Key",
+   "source": "a shadowknight",
+   "sourceKind": "corpse",
+   "ts": 1789096590000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Charred Bone Key",
+   "source": "a shadowknight",
+   "sourceKind": "corpse",
+   "ts": 1789096591000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Antiqued Silver Band +4",
+   "source": "a shadowknight",
+   "sourceKind": "corpse",
+   "ts": 1789096591000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "item": "Bone Chips",
+   "source": "a greater skeleton",
+   "sourceKind": "corpse",
+   "ts": 1789096610000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "count": 2,
+   "item": "Bone Chips",
+   "source": "a greater skeleton",
+   "sourceKind": "corpse",
+   "ts": 1789096620000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Bronze Long Sword +4",
+   "source": "a greater skeleton",
+   "sourceKind": "corpse",
+   "ts": 1789096621000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Silver Plated War Sword +4",
+   "source": "Footman of V`Zher",
+   "sourceKind": "corpse",
+   "ts": 1789096648000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Mallet Head",
+   "source": "an elf skeleton",
+   "sourceKind": "corpse",
+   "ts": 1789096658000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Copper Ring +4",
+   "source": "Gynok Moltor",
+   "sourceKind": "corpse",
+   "ts": 1789096673000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Raw-Hide Wristbands +4",
+   "source": "a ghoul",
+   "sourceKind": "corpse",
+   "ts": 1789096679000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Pearl",
+   "source": "a Teir`Dal priest",
+   "sourceKind": "corpse",
+   "ts": 1789096707000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Fine Steel Long Sword +4",
+   "source": "a Teir`Dal ranger",
+   "sourceKind": "corpse",
+   "ts": 1789096712000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Fine Steel Two Handed Sword +4",
+   "source": "a Teir`Dal ranger",
+   "sourceKind": "corpse",
+   "ts": 1789096792000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Fine Steel Great Staff +4",
+   "source": "a Teir`Dal ranger",
+   "sourceKind": "corpse",
+   "ts": 1789096831000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Ringmail Boots +4",
+   "source": "a Teir`Dal ranger",
+   "sourceKind": "corpse",
+   "ts": 1789096841000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Fine Steel Two Handed Sword +4",
+   "source": "a Teir`Dal ranger",
+   "sourceKind": "corpse",
+   "ts": 1789096841000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Charred Bone Key",
+   "source": "a shadowknight",
+   "sourceKind": "corpse",
+   "ts": 1789096851000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Smoked Glass Key",
+   "source": "a shadowknight",
+   "sourceKind": "corpse",
+   "ts": 1789096851000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Splintered Wooden Key",
+   "source": "a shadowknight",
+   "sourceKind": "corpse",
+   "ts": 1789096851000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Enchanted Fine Steel Long Sword +4",
+   "source": "Knight V`Tal",
+   "sourceKind": "corpse",
+   "ts": 1789096872000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Fine Steel Dagger +4",
+   "source": "a Teir`Dal priestess",
+   "sourceKind": "corpse",
+   "ts": 1789096889000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Enchanted Fine Steel Great Staff +4",
+   "source": "Kahaptra Z`Taj",
+   "sourceKind": "corpse",
+   "ts": 1789096922000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Gold Ring +4",
+   "source": "a Teir`Dal rogue",
+   "sourceKind": "corpse",
+   "ts": 1789096931000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Blackened Wand +4",
+   "source": "Priest Amiaz",
+   "sourceKind": "corpse",
+   "ts": 1789096964000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Pristine Studded Leather Bracer +4",
+   "source": "Arisen Thaumaturgist",
+   "sourceKind": "corpse",
+   "ts": 1789096972000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Gnome Meat",
+   "source": "a necro theurgist",
+   "sourceKind": "corpse",
+   "ts": 1789096985000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Bronze Spear +4",
+   "source": "a necro theurgist",
+   "sourceKind": "corpse",
+   "ts": 1789096986000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Necromancer Blood",
+   "source": "a necro theurgist",
+   "sourceKind": "corpse",
+   "ts": 1789096986000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "item": "Icon of the Ardent",
+   "source": "Boondin Babbinsbort",
+   "sourceKind": "corpse",
+   "ts": 1789097019000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Dagger +4",
+   "source": "Boondin Babbinsbort",
+   "sourceKind": "corpse",
+   "ts": 1789097020000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Ringmail Bracelet +4",
+   "source": "a Teir`Dal rogue",
+   "sourceKind": "corpse",
+   "ts": 1789097023000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Enchanted Fine Steel Rapier +4",
+   "source": "Korven Nisere",
+   "sourceKind": "corpse",
+   "ts": 1789097045000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Pristine Studded Leather Leggings +4",
+   "source": "Soldier of V`Zher",
+   "sourceKind": "corpse",
+   "ts": 1789097057000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "count": 4,
+   "item": "Bone Chips",
+   "source": "Reward Chest",
+   "sourceKind": "chest",
+   "ts": 1789097078000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "item": "Golem Metal Wand +4",
+   "source": "Reward Chest",
+   "sourceKind": "chest",
+   "ts": 1789097093000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "created": "Gossamer Robe +5",
+   "disposition": "combined",
+   "item": "Gossamer Robe +4",
+   "source": "Reward Chest",
+   "sourceKind": "chest",
+   "ts": 1789097095000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Pristine Studded Leather Tunic +4",
+   "source": "Baron Telyx V`Zher",
+   "sourceKind": "corpse",
+   "ts": 1789097112000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Antiqued Silver Band +4",
+   "source": "Reward Chest",
+   "sourceKind": "chest",
+   "ts": 1789097112000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Barbed Armplates +4",
+   "source": "Reward Chest",
+   "sourceKind": "chest",
+   "ts": 1789097112000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Blackened Wand +4",
+   "source": "Reward Chest",
+   "sourceKind": "chest",
+   "ts": 1789097112000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Bronze Spear +4",
+   "source": "Reward Chest",
+   "sourceKind": "chest",
+   "ts": 1789097112000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Charred Bone Key",
+   "source": "Reward Chest",
+   "sourceKind": "chest",
+   "ts": 1789097112000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Chipped Bone Rod +4",
+   "source": "Reward Chest",
+   "sourceKind": "chest",
+   "ts": 1789097112000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Dagger of Marnek +4",
+   "source": "Reward Chest",
+   "sourceKind": "chest",
+   "ts": 1789097112000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "count": 2,
+   "disposition": "sold",
+   "item": "Dark Elf Parts",
+   "source": "Reward Chest",
+   "sourceKind": "chest",
+   "ts": 1789097112000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Enchanted Fine Steel Rapier +4",
+   "source": "Reward Chest",
+   "sourceKind": "chest",
+   "ts": 1789097112000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Platinum Ring +4",
+   "source": "Reward Chest",
+   "sourceKind": "chest",
+   "ts": 1789097112000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Pristine Studded Leather Leggings +4",
+   "source": "Reward Chest",
+   "sourceKind": "chest",
+   "ts": 1789097112000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Pristine Studded Leather Tunic +4",
+   "source": "Reward Chest",
+   "sourceKind": "chest",
+   "ts": 1789097112000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Raw-Hide Skullcap +4",
+   "source": "Reward Chest",
+   "sourceKind": "chest",
+   "ts": 1789097112000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Ringmail Gloves +4",
+   "source": "Reward Chest",
+   "sourceKind": "chest",
+   "ts": 1789097112000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Rusty Bastard Sword +4",
+   "source": "Reward Chest",
+   "sourceKind": "chest",
+   "ts": 1789097112000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Rusty Battle Axe +4",
+   "source": "Reward Chest",
+   "sourceKind": "chest",
+   "ts": 1789097112000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Rusty Dagger +4",
+   "source": "Reward Chest",
+   "sourceKind": "chest",
+   "ts": 1789097112000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Rusty Dagger +4",
+   "source": "Reward Chest",
+   "sourceKind": "chest",
+   "ts": 1789097112000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Rusty Shortened Spear +4",
+   "source": "Reward Chest",
+   "sourceKind": "chest",
+   "ts": 1789097112000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Smoked Glass Key",
+   "source": "Reward Chest",
+   "sourceKind": "chest",
+   "ts": 1789097112000,
+   "zone": "Befallen 4 (Refined)"
+  },
+  {
+   "disposition": "sold",
+   "item": "Splintered Wooden Key",
+   "source": "Reward Chest",
+   "sourceKind": "chest",
+   "ts": 1789097112000,
+   "zone": "Befallen 4 (Refined)"
+  }
+ ],
+ "note": "Folded from tests/fixtures/befallen-run.log by the REAL engine. See tests/runTracker.test.mts for how to regenerate.",
+ "progression": {
+  "aaGainAmount": [],
+  "aaGainTs": [],
+  "doorTs": [
+   1789096950000
+  ],
+  "dropped": 0,
+  "expFlag": [],
+  "expPct": [],
+  "expTs": [],
+  "killCredit": [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "killTs": [
+   1789095812000,
+   1789095814000,
+   1789095820000,
+   1789095823000,
+   1789095832000,
+   1789095890000,
+   1789095892000,
+   1789095895000,
+   1789095900000,
+   1789095904000,
+   1789095912000,
+   1789095917000,
+   1789095922000,
+   1789095925000,
+   1789095931000,
+   1789095951000,
+   1789095954000,
+   1789095962000,
+   1789095981000,
+   1789095984000,
+   1789095984000,
+   1789095993000,
+   1789095999000,
+   1789096000000,
+   1789096003000,
+   1789096004000,
+   1789096009000,
+   1789096029000,
+   1789096030000,
+   1789096036000,
+   1789096038000,
+   1789096094000,
+   1789096105000,
+   1789096106000,
+   1789096107000,
+   1789096121000,
+   1789096123000,
+   1789096129000,
+   1789096129000,
+   1789096131000,
+   1789096132000,
+   1789096185000,
+   1789096193000,
+   1789096195000,
+   1789096199000,
+   1789096202000,
+   1789096216000,
+   1789096224000,
+   1789096383000,
+   1789096385000,
+   1789096389000,
+   1789096394000,
+   1789096400000,
+   1789096402000,
+   1789096441000,
+   1789096447000,
+   1789096452000,
+   1789096456000,
+   1789096461000,
+   1789096464000,
+   1789096469000,
+   1789096473000,
+   1789096476000,
+   1789096487000,
+   1789096521000,
+   1789096523000,
+   1789096530000,
+   1789096534000,
+   1789096543000,
+   1789096547000,
+   1789096559000,
+   1789096561000,
+   1789096567000,
+   1789096584000,
+   1789096589000,
+   1789096589000,
+   1789096609000,
+   1789096613000,
+   1789096617000,
+   1789096619000,
+   1789096628000,
+   1789096633000,
+   1789096638000,
+   1789096654000,
+   1789096662000,
+   1789096671000,
+   1789096675000,
+   1789096678000,
+   1789096705000,
+   1789096722000,
+   1789096766000,
+   1789096774000,
+   1789096782000,
+   1789096788000,
+   1789096809000,
+   1789096822000,
+   1789096829000,
+   1789096845000,
+   1789096850000,
+   1789096886000,
+   1789096893000,
+   1789096903000,
+   1789096911000,
+   1789096921000,
+   1789096930000,
+   1789096959000,
+   1789096968000,
+   1789096968000,
+   1789096968000,
+   1789096968000,
+   1789096968000,
+   1789096983000,
+   1789097009000,
+   1789097017000,
+   1789097033000,
+   1789097038000,
+   1789097042000,
+   1789097066000
+  ],
+  "killZone": [
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1,
+   1
+  ],
+  "lastTs": 1789097172000,
+  "levelTs": [],
+  "levelValue": [],
+  "lootTs": [
+   1789095819000,
+   1789095822000,
+   1789095834000,
+   1789095834000,
+   1789095893000,
+   1789095897000,
+   1789095901000,
+   1789095905000,
+   1789095905000,
+   1789095913000,
+   1789095920000,
+   1789095923000,
+   1789095953000,
+   1789095959000,
+   1789095963000,
+   1789096007000,
+   1789096007000,
+   1789096032000,
+   1789096040000,
+   1789096109000,
+   1789096135000,
+   1789096187000,
+   1789096187000,
+   1789096201000,
+   1789096201000,
+   1789096202000,
+   1789096221000,
+   1789096226000,
+   1789096396000,
+   1789096401000,
+   1789096404000,
+   1789096442000,
+   1789096443000,
+   1789096459000,
+   1789096459000,
+   1789096471000,
+   1789096498000,
+   1789096501000,
+   1789096505000,
+   1789096505000,
+   1789096523000,
+   1789096523000,
+   1789096531000,
+   1789096532000,
+   1789096536000,
+   1789096555000,
+   1789096556000,
+   1789096556000,
+   1789096563000,
+   1789096568000,
+   1789096586000,
+   1789096590000,
+   1789096591000,
+   1789096591000,
+   1789096610000,
+   1789096620000,
+   1789096621000,
+   1789096648000,
+   1789096658000,
+   1789096673000,
+   1789096679000,
+   1789096707000,
+   1789096712000,
+   1789096792000,
+   1789096831000,
+   1789096841000,
+   1789096841000,
+   1789096851000,
+   1789096851000,
+   1789096851000,
+   1789096872000,
+   1789096889000,
+   1789096922000,
+   1789096931000,
+   1789096964000,
+   1789096972000,
+   1789096985000,
+   1789096986000,
+   1789096986000,
+   1789097019000,
+   1789097020000,
+   1789097023000,
+   1789097045000,
+   1789097057000,
+   1789097078000,
+   1789097093000,
+   1789097095000,
+   1789097112000,
+   1789097112000,
+   1789097112000,
+   1789097112000,
+   1789097112000,
+   1789097112000,
+   1789097112000,
+   1789097112000,
+   1789097112000,
+   1789097112000,
+   1789097112000,
+   1789097112000,
+   1789097112000,
+   1789097112000,
+   1789097112000,
+   1789097112000,
+   1789097112000,
+   1789097112000,
+   1789097112000,
+   1789097112000,
+   1789097112000,
+   1789097112000
+  ],
+  "offlineCamped": [],
+  "offlineEnd": [],
+  "offlineStart": [],
+  "recentKills": [
+   {
+    "credit": 0,
+    "name": "a greater skeleton",
+    "ts": 1789096543000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "credit": 0,
+    "name": "a shadowknight",
+    "ts": 1789096547000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "credit": 0,
+    "name": "a necro apprentice pet",
+    "ts": 1789096559000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "credit": 0,
+    "name": "a necro apprentice",
+    "ts": 1789096561000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "credit": 0,
+    "name": "a dread bone",
+    "ts": 1789096567000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "credit": 0,
+    "name": "a lesser mummy",
+    "ts": 1789096584000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "credit": 0,
+    "name": "a shadowknight pet",
+    "ts": 1789096589000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "credit": 0,
+    "name": "a shadowknight",
+    "ts": 1789096589000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "credit": 0,
+    "name": "a greater skeleton",
+    "ts": 1789096609000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "credit": 0,
+    "name": "a necro acolyte pet",
+    "ts": 1789096613000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "credit": 0,
+    "name": "a necro acolyte",
+    "ts": 1789096617000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "credit": 0,
+    "name": "a greater skeleton",
+    "ts": 1789096619000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "credit": 0,
+    "name": "a lesser mummy",
+    "ts": 1789096628000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "credit": 0,
+    "name": "a ghoul",
+    "ts": 1789096633000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "credit": 0,
+    "name": "ice boned skeleton",
+    "ts": 1789096638000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "credit": 0,
+    "name": "an elf skeleton",
+    "ts": 1789096654000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "credit": 0,
+    "name": "ice boned skeleton",
+    "ts": 1789096662000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "credit": 0,
+    "name": "Gynok Moltor",
+    "ts": 1789096671000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "credit": 0,
+    "name": "a greater mummy",
+    "ts": 1789096675000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "credit": 0,
+    "name": "a ghoul",
+    "ts": 1789096678000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "credit": 0,
+    "name": "a Teir`Dal priest",
+    "ts": 1789096705000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "credit": 0,
+    "name": "a Teir`Dal shadowknight",
+    "ts": 1789096722000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "credit": 0,
+    "name": "a Teir`Dal rogue",
+    "ts": 1789096766000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "credit": 0,
+    "name": "a Teir`Dal shadowknight",
+    "ts": 1789096774000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "credit": 0,
+    "name": "a Teir`Dal ranger",
+    "ts": 1789096782000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "credit": 0,
+    "name": "a Teir`Dal ranger",
+    "ts": 1789096788000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "credit": 0,
+    "name": "a Teir`Dal shadowknight",
+    "ts": 1789096809000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "credit": 0,
+    "name": "a Teir`Dal ranger",
+    "ts": 1789096822000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "credit": 0,
+    "name": "a Teir`Dal ranger",
+    "ts": 1789096829000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "credit": 0,
+    "name": "a shadowknight pet",
+    "ts": 1789096845000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "credit": 0,
+    "name": "a shadowknight",
+    "ts": 1789096850000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "credit": 0,
+    "name": "a Teir`Dal priestess",
+    "ts": 1789096886000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "credit": 0,
+    "name": "a Teir`Dal shadowknight",
+    "ts": 1789096893000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "credit": 0,
+    "name": "a Teir`Dal priest",
+    "ts": 1789096903000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "credit": 0,
+    "name": "a Teir`Dal rogue",
+    "ts": 1789096911000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "credit": 0,
+    "name": "Kahaptra Z`Taj",
+    "ts": 1789096921000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "credit": 0,
+    "name": "a Teir`Dal rogue",
+    "ts": 1789096930000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "credit": 0,
+    "name": "Priest Amiaz",
+    "ts": 1789096959000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "credit": 0,
+    "name": "a hardened skeleton pet",
+    "ts": 1789096968000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "credit": 0,
+    "name": "a hardened skeleton",
+    "ts": 1789096968000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "credit": 0,
+    "name": "a hardened skeleton",
+    "ts": 1789096968000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "credit": 0,
+    "name": "a hardened skeleton",
+    "ts": 1789096968000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "credit": 0,
+    "name": "Arisen Thaumaturgist",
+    "ts": 1789096968000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "credit": 0,
+    "name": "a necro theurgist",
+    "ts": 1789096983000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "credit": 0,
+    "name": "a Teir`Dal ranger",
+    "ts": 1789097009000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "credit": 0,
+    "name": "Boondin Babbinsbort",
+    "ts": 1789097017000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "credit": 0,
+    "name": "a Teir`Dal priestess",
+    "ts": 1789097033000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "credit": 0,
+    "name": "a Teir`Dal shadowknight",
+    "ts": 1789097038000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "credit": 0,
+    "name": "Korven Nisere",
+    "ts": 1789097042000,
+    "zone": "Befallen 4 (Refined)"
+   },
+   {
+    "credit": 0,
+    "name": "Baron Telyx V`Zher",
+    "ts": 1789097066000,
+    "zone": "Befallen 4 (Refined)"
+   }
+  ],
+  "windowStart": 0,
+  "witnessTs": [
+   1789095739000,
+   1789095742000,
+   1789095826000,
+   1789095958000,
+   1789096124000,
+   1789096136000,
+   1789096219000,
+   1789096468000,
+   1789096641000,
+   1789096698000,
+   1789096711000,
+   1789096838000,
+   1789096866000,
+   1789097022000,
+   1789097056000
+  ],
+  "zoneEnd": [
+   1789095806000,
+   1789097127000,
+   1789097166000,
+   0
+  ],
+  "zoneName": [
+   "Befallen",
+   "Befallen 4 (Refined)",
+   "Befallen",
+   "West Commonlands"
+  ],
+  "zoneStart": [
+   1789095731000,
+   1789095806000,
+   1789097127000,
+   1789097166000
+  ]
+ }
+}

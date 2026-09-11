@@ -727,35 +727,76 @@ export const IPC = {
   // (shared/shareLinks.ts `shareLinkKey`) shared with the publish path. Returns ShareLinkView[].
   characterShareLinks: 'character:shareLinks',
 
-  // ---- posting a character card to DISCORD (docs/plans/discord-webhook.md) ----
-  // Five channels, and every one of them is main-only network again. The user pastes a CHANNEL
-  // WEBHOOK URL they made in their own Discord (channel settings, Integrations, Webhooks) and the
-  // app POSTs one embed to it: no bot, no OAuth, no server of ours, no slash commands.
+  // ---- posting a character card to DISCORD (docs/plans/discord-connect.md) ----
+  // Every one of these is main-only network again. The user presses Connect a Discord channel,
+  // their BROWSER opens on the share service, Discord's own authorize page asks which server and
+  // which channel, and the service hands the resulting webhook back to the app. Pasting a webhook
+  // URL by hand still works and lands in the same list (owner, 2026-09-11: *"There's got to be a
+  // better way to share to Discord instead of having people input webhooks for each channel"*).
   //
-  // THE WEBHOOK URL IS A SECRET AND ONLY TRAVELS ONE WAY. It goes IN as text on `setWebhook`, is
-  // parsed main-side into `{id, token}` under closed character classes
-  // (src/shared/discordWebhook.ts) and stored there; what comes BACK, on every channel, is a
-  // masked `DiscordWebhookView` (`{set, masked?}`) and never the token. The outbound origin is
-  // compiled in and DARK under `EQ_E2E` (src/main/share/discord.ts), exactly like the share
-  // service's, so a headless run can never put a message in somebody's channel.
+  // THE WEBHOOK TOKEN IS A SECRET AND ONLY TRAVELS ONE WAY. It arrives either from the service's
+  // claim route or as text on `setWebhook`, is parsed main-side under closed character classes
+  // (src/shared/discordChannels.ts, src/shared/discordWebhook.ts) and stored there; what comes
+  // BACK, on every channel here, is a `DiscordChannelsView` (ids, labels, dates), a masked
+  // `DiscordWebhookView`, a status word or a sentence - never a token. Both outbound origins are
+  // compiled in and DARK under `EQ_E2E` (src/main/share/net.ts, src/main/share/discord.ts), so a
+  // headless run can neither put a message in somebody's channel nor open somebody's browser.
   //
-  // renderer -> main: the masked view of the stored webhook. Returns DiscordWebhookView.
+  // renderer -> main: mint a state, open the user's browser on the service's start route, and
+  // begin polling for the claim IN MAIN (a tab that unmounts must not take the wait with it).
+  // Returns {ok} | {ok:false, error}.
+  discordConnectStart: 'discord:connectStart',
+  // renderer -> main: how that attempt is going. Returns
+  // {state:'idle'|'waiting'|'done'|'failed'|'cancelled', label?, error?} - `label` is the newly
+  // connected channel's name, never a webhook. Polled by the card while it is waiting.
+  discordConnectStatus: 'discord:connectStatus',
+  // renderer -> main: stop waiting. Nothing that arrives afterwards is stored. Returns the status.
+  discordConnectCancel: 'discord:connectCancel',
+  // renderer -> main: the channels this install holds, WITHOUT their tokens. Returns
+  // DiscordChannelsView ({channels:[{id,label,addedAt}], defaultId?}).
+  discordListChannels: 'discord:listChannels',
+  // renderer -> main: forget one. Args: (id). Returns the new view.
+  discordRemoveChannel: 'discord:removeChannel',
+  // renderer -> main: rename one, clamped to 60 characters at the handler. Args: (id, label).
+  // Returns the new view - a label the renderer sent is never the label the renderer then draws.
+  discordRenameChannel: 'discord:renameChannel',
+  // renderer -> main: which channel a post with no channel named goes to. Args: (id). Returns the
+  // new view.
+  discordSetDefaultChannel: 'discord:setDefaultChannel',
+  // renderer -> main: the masked view of where a post would go. Returns DiscordWebhookView.
   discordGetWebhook: 'discord:getWebhook',
-  // renderer -> main: store a pasted webhook URL. Arg: the text. PARSED AT THE HANDLER - a string
-  // that is not `https://discord.com/api/webhooks/<id>/<token>` (or the `discordapp.com`
-  // spelling) is refused with a sentence rather than stored. Returns
-  // {ok:true, view} | {ok:false, error}.
+  // renderer -> main: store a pasted webhook URL, as one more channel in the list above (labelled
+  // for what it is). Arg: the text. PARSED AT THE HANDLER - a string that is not
+  // `https://discord.com/api/webhooks/<id>/<token>` (or the `discordapp.com` spelling) is refused
+  // with a sentence rather than stored. Returns {ok:true, view, channels} | {ok:false, error}.
   discordSetWebhook: 'discord:setWebhook',
-  // renderer -> main: forget it. Returns the (now empty) view.
+  // renderer -> main: forget every PASTED webhook (the compatibility door for the 2026-09-10
+  // Remove button; a connected channel is removed by its own row). Returns the new channels view.
   discordClearWebhook: 'discord:clearWebhook',
-  // renderer -> main: post one plain line to the channel, so the person who just pasted a URL can
-  // watch it land. Returns {ok} | {ok:false, error}, `error` already user-facing prose.
-  discordTestWebhook: 'discord:testWebhook',
+  // renderer -> main: post one plain line to ONE channel, so a freshly connected one can be
+  // watched landing. Args: (id). Returns {ok} | {ok:false, error}, `error` already user-facing.
+  discordTestChannel: 'discord:testChannel',
   // renderer -> main: publish this character's card as a share link exactly the way
   // `character:shareLink` does - the SAME internals, not a second copy - and then post an embed
-  // wrapping that link to the stored webhook. Args: ({rect, profile, cardMap}), validated at the
-  // handler the same way. Returns {ok:true, url} | {ok:false, error}.
+  // wrapping that link to one of the stored channels. Args: ({rect, profile, cardMap, channelId}),
+  // validated at the handler the same way; an absent `channelId` means the default, or the only
+  // channel, and otherwise the post is refused in words rather than guessing which server gets
+  // somebody's character card. Returns {ok:true, url} | {ok:false, error}.
   discordPostProfile: 'discord:postProfile',
+  // renderer -> main: photograph the FIGHT card at rect and either copy it or save it - the
+  // SAME capture path the character card uses (src/main/ipc/cardCapture.ts), with the same
+  // validation of a renderer-supplied rectangle. Args: ({rect, op, name}). Returns
+  // {ok, path?, canceled?, error?}.
+  combatShareImage: 'combat:shareImage',
+  // renderer -> main: post ONE fight to a connected channel - the fight card photographed and
+  // ATTACHED to the message (multipart, src/main/share/discord.ts) plus an embed carrying the
+  // same numbers as text. Args: ({rect, fight, channelId}); `fight` is a FightShare built in the
+  // renderer and RE-VALIDATED at the handler (src/shared/fightShare.ts sanitizeFightShare),
+  // because a body the renderer composed is untrusted input like every other one. A capture that
+  // produced nothing posts the embed ALONE rather than refusing. An absent `channelId` means the
+  // default, or the only channel, on the same terms as discordPostProfile. Returns
+  // {ok:true} | {ok:false, error}.
+  discordPostFight: 'discord:postFight',
 
   // ---- map viewer (docs/plans/map-viewer.md §4.2) ----
   // Main owns `fs` and owns effectiveEqRoot(), so main reads and parses `<eqRoot>\maps` and

@@ -57,6 +57,9 @@ const ZONE_CAP: usize = 4_000;
 /// Like the zone bands but rarer by orders of magnitude; it exists only so no column here can grow
 /// without a stated bound.
 const OFFLINE_CAP: usize = 4_000;
+/// Lockpicked doors, timestamps only. Rarer again than the zone bands — a dungeon crawl unlocks a
+/// handful — and capped for the same reason: no column here grows without a stated bound.
+const DOOR_CAP: usize = 4_000;
 /// The named recent-kills ring, capped by COUNT rather than by the column policy: it is a display
 /// feed for a card that renders 25 rows, so 50 is one screenful of headroom.
 const RECENT_KILL_CAP: usize = 50;
@@ -122,6 +125,7 @@ struct Snap {
     offline_start: Vec<i64>,
     offline_end: Vec<i64>,
     offline_camped: Vec<i64>,
+    door_ts: Vec<i64>,
     level_ts: Vec<i64>,
     level_value: Vec<i64>,
     aa_gain_ts: Vec<i64>,
@@ -140,6 +144,7 @@ struct DropFront {
     loot: i64,
     zone: i64,
     offline: i64,
+    door: i64,
 }
 
 #[derive(Default, Serialize, Deserialize)]
@@ -399,6 +404,12 @@ impl ProgressionModule {
             self.dropped_by.offline += n as i64;
             self.s.dropped += n as i64;
         }
+        let n = cap_drop(DOOR_CAP, self.s.door_ts.len());
+        if n > 0 {
+            self.s.door_ts.drain(0..n);
+            self.dropped_by.door += n as i64;
+            self.s.dropped += n as i64;
+        }
         self.recompute_window();
     }
 
@@ -407,7 +418,7 @@ impl ProgressionModule {
     /// would silently under-count; `clipped` is exactly "the selection reaches below this".
     fn recompute_window(&mut self) {
         let mut w = 0;
-        let pairs: [(i64, Option<i64>); 6] = [
+        let pairs: [(i64, Option<i64>); 7] = [
             (self.dropped_by.exp, self.s.exp_ts.first().copied()),
             (self.dropped_by.kill, self.s.kill_ts.first().copied()),
             (self.dropped_by.witness, self.s.witness_ts.first().copied()),
@@ -417,6 +428,7 @@ impl ProgressionModule {
                 self.dropped_by.offline,
                 self.s.offline_start.first().copied(),
             ),
+            (self.dropped_by.door, self.s.door_ts.first().copied()),
         ];
         for (dropped, first) in pairs {
             if dropped > 0 {
@@ -452,6 +464,13 @@ impl ProgressionModule {
                 // idle heuristic and the zone bands, never a drop count. Emptying your bags is you
                 // at the keyboard, so excluding it would manufacture idle time out of real play.
                 self.s.loot_ts.push(ev.ts());
+                self.trim();
+                self.announce.changed(self.seq);
+            }
+            // A lockpicked door. Timestamps only: the sentence names no door and no lock, so the
+            // column says WHEN one was opened and nothing else. No per-mob statistic reads it.
+            "doorUnlocked" => {
+                self.s.door_ts.push(ev.ts());
                 self.trim();
                 self.announce.changed(self.seq);
             }

@@ -8,6 +8,22 @@
 // it explicitly — so no importer moved and no import path changed. The QUERY over these shapes
 // lives in shared/progressionStats.ts.
 
+import type { LogEventBase } from './logEvents'
+
+/**
+ * `You quickly and quietly unlock the door ...` — a lock picked open (Z Engine, 2026-09-11).
+ *
+ * THE PREFIX IS THE WHOLE CLAIM. The tail of the sentence is that door's own flavour (the
+ * owner's Befallen door startles its residents with a squeal), so the event says a door opened
+ * and when, and nothing else: the line names no door, no zone and no lock (law 1).
+ *
+ * It is declared here, on the hailTypes.ts precedent, because the `doorTs` column below is its
+ * only surface — and logEvents.ts sits at the measured 400-code-line ceiling.
+ */
+export interface DoorUnlockedEvent extends LogEventBase {
+  kind: 'doorUnlocked'
+}
+
 // ----- Leveling analytics: the `progression` module (docs/plans/leveling-analytics.md) -----
 //
 // A range-queryable time series of everything that moves the level bar: experience samples,
@@ -94,6 +110,12 @@ export interface ProgressionSnap {
   // --- loot events, timestamps only: an activity signal for the idle heuristic ---
   lootTs: number[]
 
+  // --- doors picked open, timestamps only (Z Engine, 2026-09-11) ---
+  //
+  // The same shape and the same modesty as `lootTs`: a count of instants, capped like the zone
+  // bands. No mob statistic reads it, because a door is not something anything dropped.
+  doorTs: number[]
+
   // --- zone intervals, ascending, contiguous, half-open [start, end) ---
   zoneStart: number[]
   /** 0 for the still-open final interval; consumers clamp to `lastTs` (or the selection end). */
@@ -160,6 +182,7 @@ export interface ProgressionDropFront {
   loot: number
   zone: number
   offline: number
+  door: number
 }
 
 /**
@@ -187,6 +210,7 @@ export interface ProgressionDelta {
    */
   recentKillsDrop: number
   lootTs: number[]
+  doorTs: number[]
   zoneStart: number[]
   zoneEnd: number[]
   zoneName: string[]

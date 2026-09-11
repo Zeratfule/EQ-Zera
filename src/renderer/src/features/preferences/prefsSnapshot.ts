@@ -35,7 +35,7 @@ import type { OverlaySnapPrefs } from '@shared/overlaySnap'
 import type { OverlayTextSizePrefs } from '@shared/overlayTextScale'
 import type { OverlayBgAlphaPrefs } from '@shared/overlayBgAlpha'
 import type { CloseToTrayPrefs } from '@shared/closeToTray'
-import type { DiscordWebhookView } from '@shared/discordWebhook'
+import type { DiscordChannelsView } from '@shared/discordChannels'
 import type { PerfHudPrefs, StartupProfile } from '@shared/perf'
 import type { ProcessPriorityPrefs } from '@shared/processPriority'
 import type { ResistPrefs } from '@shared/resistPrefs'
@@ -172,15 +172,15 @@ export interface PrefsSnapshot {
   /** Profiles — how many alerts an export would carry. */
   alertCount: number
   /**
-   * Sharing — whether this install holds a Discord channel webhook, and its masked form.
+   * Sharing — the DISCORD CHANNELS this install can post to, and which one is the default.
    *
-   * In the batch for this gate's whole reason: the card draws a Remove button, a masked value and
-   * an enabled Test button when one is stored, and a card that painted "nothing here yet" for a
-   * frame at somebody who set one up last week is the JOS-340 defect wearing different clothes.
-   * The TOKEN is not in this object and cannot be - main only ever hands out the masked view
+   * In the batch for this gate's whole reason: the card draws a ROW PER CHANNEL, with Test,
+   * Rename, Remove and a Default radio, and a card that painted "no channels yet" for a frame at
+   * somebody who connected three last week is the JOS-340 defect wearing different clothes. The
+   * TOKENS are not in this object and cannot be - main only ever hands out ids, labels and dates
    * (src/main/storeDiscord.ts).
    */
-  discordWebhook: DiscordWebhookView
+  discordChannels: DiscordChannelsView
 }
 
 /**
@@ -218,7 +218,7 @@ export interface PrefsReader {
   getAppVersion: () => Promise<string>
   getUpdateStatus: () => Promise<UpdateStatus>
   listAlerts: () => Promise<AlertDef[]>
-  getDiscordWebhook: () => Promise<DiscordWebhookView>
+  listDiscordChannels: () => Promise<DiscordChannelsView>
 }
 
 /**
@@ -257,7 +257,7 @@ export async function readPrefsSnapshot(eq: PrefsReader): Promise<PrefsSnapshot>
     version,
     updateStatus,
     alerts,
-    discordWebhook
+    discordChannels
   ] = await Promise.all([
     eq.getEqConfig(),
     eq.getUiScale(),
@@ -285,7 +285,7 @@ export async function readPrefsSnapshot(eq: PrefsReader): Promise<PrefsSnapshot>
     eq.getAppVersion(),
     eq.getUpdateStatus(),
     eq.listAlerts(),
-    eq.getDiscordWebhook()
+    eq.listDiscordChannels()
   ])
   return {
     eqConfig,
@@ -329,7 +329,7 @@ export async function readPrefsSnapshot(eq: PrefsReader): Promise<PrefsSnapshot>
     version,
     updateStatus,
     alertCount: alerts.length,
-    discordWebhook
+    discordChannels
   }
 }
 

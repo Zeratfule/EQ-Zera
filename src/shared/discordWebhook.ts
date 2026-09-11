@@ -57,10 +57,16 @@ export interface DiscordEmbedField {
 /** The one embed a post carries. Field names are Discord's wire spelling, not ours. */
 export interface DiscordEmbed {
   title: string
-  url: string
+  /** OPTIONAL since the FIGHT embed (2026-09-11). A character card WRAPS a share link; a fight
+   *  card wraps nothing - it IS the message. Discord refuses `url: ''`, so a post with no link
+   *  omits the field rather than sending an empty one. */
+  url?: string
   description: string
   color: number
-  image: { url: string }
+  /** OPTIONAL for the same reason, and it carries a second spelling now: a character card names a
+   *  URL on the share service, a fight card names `attachment://fight.png` - the picture that rode
+   *  along in the same multipart body (src/main/share/discord.ts). */
+  image?: { url: string }
   fields: DiscordEmbedField[]
   footer: { text: string }
   timestamp: string
@@ -188,8 +194,22 @@ const EMBED_COLOR = 0x5ee6ff
 const POST_USERNAME = 'EQ Zera'
 const POST_AVATAR = 'https://share.eqzera.com/logo.png'
 
-/** Discord's own ceilings. Every string below is cut to one of them before it is sent. */
-const LIMIT = { title: 256, description: 4096, fieldName: 256, fieldValue: 1024, footer: 2048 } as const
+/**
+ * Discord's own ceilings. Every string below is cut to one of them before it is sent.
+ *
+ * EXPORTED since the fight embed (`shared/fightShare.ts`): a second embed builder cutting to a
+ * second set of numbers is a second opinion about what Discord accepts, and the copy nobody was
+ * looking at would be the one that started getting the whole message refused.
+ */
+export const DISCORD_LIMIT = {
+  title: 256,
+  description: 4096,
+  fieldName: 256,
+  fieldValue: 1024,
+  footer: 2048
+} as const
+
+const LIMIT = DISCORD_LIMIT
 
 /** The furthest ahead a `capturedAt` may sit before it is not a timestamp - 2100-01-01. */
 const MAX_CAPTURED_AT = 4_102_444_800_000
@@ -197,10 +217,16 @@ const MAX_CAPTURED_AT = 4_102_444_800_000
 /** The `With gear:` line's own prefix, so the summary can be found rather than counted to. */
 const WITH_GEAR = 'With gear:'
 
-/** Cut a string to a ceiling. Discord refuses the whole message over one long field. */
-function cut(text: string, max: number): string {
+/**
+ * Cut a string to a ceiling. Discord refuses the whole message over one long field.
+ *
+ * EXPORTED for `shared/fightShare.ts`, beside the ceilings themselves - see `DISCORD_LIMIT`.
+ */
+export function cutToDiscordLimit(text: string, max: number): string {
   return text.length <= max ? text : text.slice(0, max)
 }
+
+const cut = cutToDiscordLimit
 
 /**
  * The two lines this embed describes a profile with: the scores line and the `With gear:` line.
@@ -294,6 +320,18 @@ export function discordEmbedFor(
     footer: { text: cut('EQ Zera · eqzera.com', LIMIT.footer) },
     timestamp: embedTimestamp(profile.capturedAt)
   }
+  return discordPostBody(embed)
+}
+
+/**
+ * ONE EMBED, WEARING THIS APP'S NAME AND PICTURE - the envelope every embed post travels in.
+ *
+ * Its own function so the FIGHT post (`shared/fightShare.ts`) wears the same bot identity as the
+ * character post without either file learning the other's strings: two spellings of the username
+ * is two bots in one channel as far as anybody scrolling past it is concerned. `content` is empty
+ * on both for the reason it always was - the embed IS the message.
+ */
+export function discordPostBody(embed: DiscordEmbed): DiscordWebhookBody {
   return { username: POST_USERNAME, avatar_url: POST_AVATAR, content: '', embeds: [embed] }
 }
 

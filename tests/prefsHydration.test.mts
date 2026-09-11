@@ -107,10 +107,13 @@ function stubReader(over: Partial<Record<keyof PrefsReader, unknown>> = {}): {
     getAppVersion: answer('getAppVersion', '9.9.9'),
     getUpdateStatus: answer('getUpdateStatus', { state: 'ready' }),
     listAlerts: answer('listAlerts', [{ id: 'a' }, { id: 'b' }, { id: 'c' }]),
-    // The Discord channel webhook (2026-09-10), stored - because the only card state worth
-    // seeding is the one that differs from a fresh install, and a card that painted "no webhook"
-    // for a frame at somebody who set one up last week is this gate's whole subject.
-    getDiscordWebhook: answer('getDiscordWebhook', { set: true, masked: '…/webhooks/17/••••wxyz' })
+    // The Discord channels (2026-09-11), one stored - because the only card state worth seeding
+    // is the one that differs from a fresh install, and a card that painted "no channels yet" for
+    // a frame at somebody who connected one last week is this gate's whole subject.
+    listDiscordChannels: answer('listDiscordChannels', {
+      channels: [{ id: '17', label: '#gear · Guild of Thieves', addedAt: 1 }],
+      defaultId: '17'
+    })
   } as unknown as PrefsReader
   return { reader, calls: () => calls }
 }
@@ -150,9 +153,12 @@ test('one read answers every card in the pane, and it snaps the text size to the
   // the `processPriority` reason, and it is asserted here for the same one.
   assert.equal(snap.resists.includeNpcCasters, false)
 
-  // The Discord webhook view (2026-09-10). The TOKEN is not in this object and cannot be - main
-  // only ever hands out the mask - so what the card seeds from is exactly what it draws.
-  assert.deepEqual(snap.discordWebhook, { set: true, masked: '…/webhooks/17/••••wxyz' })
+  // The Discord channels view (2026-09-11). No TOKEN is in this object and none can be - main only
+  // ever hands out ids, labels and dates - so what the card seeds from is exactly what it draws.
+  assert.deepEqual(snap.discordChannels, {
+    channels: [{ id: '17', label: '#gear · Guild of Thieves', addedAt: 1 }],
+    defaultId: '17'
+  })
 
   // A sample across the KINDS of value, because the defect was never boolean-only: two switches
   // that disagree with their defaults, a ladder stop, a slider pair, and two counts.

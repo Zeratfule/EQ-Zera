@@ -90,6 +90,15 @@ test("the log's own spelling survives the join — a `+N` item still keys to its
   assert.equal(reqs[0].id, `questItem:${CHIPS_KEY}:7`)
 })
 
+test('a quest item out of a REWARD CHEST celebrates exactly the same (Z Engine, 2026-09-11)', () => {
+  // A chest is a source like a corpse is: this toast joins on the ITEM and reads no source at
+  // all, so the only thing that changed is that the line reaches it at all.
+  const reqs = run([loot(CHIPS, 9, { source: 'Reward Chest', sourceKind: 'chest' })])
+  assert.equal(reqs.length, 1)
+  assert.equal(reqs[0].title, CHIPS)
+  assert.equal(reqs[0].id, `questItem:${CHIPS_KEY}:9`)
+})
+
 test('an item the catalog does not know fires nothing', () => {
   assert.deepEqual(run([loot('Rat Ear', 1)]), [])
 })

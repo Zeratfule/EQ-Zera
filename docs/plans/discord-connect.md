@@ -121,3 +121,66 @@ before Discord is asked; the cancel page; the happy path (row stored, pending go
 no token in HTML); the token request's body (client secret, `redirect_uri` from `PUBLIC_ORIGIN`,
 even when the request arrived under another host); claim's not-ready → once → not-found; 503
 without the secret; methods; both rate limiters.
+
+---
+
+## The app half, as built (2026-09-11)
+
+The service's side is above; this is what the desktop app does with it, file by file. The sequence
+in "The app-side sequence" is implemented exactly, with one addition the owner's direction implies:
+**storage became a list**, because the moment connecting a channel is two clicks, people have
+several.
+
+### The files
+
+| file | what it owns |
+| --- | --- |
+| `src/shared/discordChannels.ts` | THE CONTRACT, in one function. `parseDiscordClaim` is the only place the reply's field names are spelled, so a rename on the service side is a one-line fix. Also the label rules, the state class, the record shape, the views that cross IPC, and `pickChannel`. Pure. |
+| `src/main/share/discordConnect.ts` | The two URLs (on `SHARE_ORIGIN`, through `shareRequest`, so this feature adds NO outbound origin), `mintConnectState`, `claimOnce` (the status table), `pollForClaim` (injected clock, so ten minutes is a millisecond in a test) and `openConnectPage`. |
+| `src/main/discordConnect.ts` | ONE attempt at a time: the session, the status the renderer reads, and the cancel. The poll runs here rather than in the renderer because Preferences is a tab and a tab unmounts. |
+| `src/main/storeDiscord.ts` | The list, the default, the one-time fold of the old singular `discordWebhook`, and the re-validation on the way out of the store file. |
+| `src/main/ipc/discord.ts` | The doors, and the one post. |
+| `src/renderer/src/features/preferences/{SharingSetting,DiscordChannelList,useDiscordChannels}.tsx` | Connect, the wait with its Cancel, the rows, and the collapsed Advanced paste. |
+| `src/renderer/src/features/character/share/{useDiscordPost,ShareDialog}.tsx` | Post to Discord, and the channel picker beside it when there is more than one. |
+
+### The label
+
+`channelName` and `guildName` when present → `#<channel> · <guild>`; channel only → `#<channel>`;
+server only → `<guild> channel`; neither → `Channel <last 4 of channelId>`. Clamped to 60
+characters, and renameable (`discord:renameChannel`, clamped in main) - which is what the last case
+is for: "Channel 4321" tells nobody anything, and the person who connected it knows it is the
+guild's gear channel.
+
+### The store
+
+`discordChannels?: DiscordChannel[]` and `discordDefaultChannelId?: string`, both additive and
+optional, so there is **no schema bump and no migration** (the `shareLinks` precedent). A store that
+still carries the singular `discordWebhook` is FOLDED into the list the first time it is read, as
+`Connected channel` with empty channel and server ids - nobody told us which channel it was, and an
+invented name would be exactly the made-up value world-model law 1 forbids. A webhook pasted under
+Advanced becomes a channel labelled `Pasted webhook`, with the same Test, Rename, Remove and
+Default as any other. Tokens never cross IPC; what the renderer holds is
+`{ channels: [{ id, label, addedAt }], defaultId? }`.
+
+### Which channel a post goes to
+
+The one the dialog named, else the default, else the only one, else **a refusal in words**
+("Connect a Discord channel in Preferences, Sharing."). With two channels and no default, picking
+one would be the app guessing which of somebody's servers gets their character card.
+
+### Opening the browser
+
+`shell.openExternal` on a URL built in main from the compiled origin, the fixed path and a state
+minted from `crypto.randomBytes`. It does NOT go through `security.ts`'s `allowedExternalUrl`, and
+the allowlist is deliberately not widened: that function governs URLs built from world data (wiki
+page titles, a renderer's `window.open`), and adding `/discord/start` to it would let
+renderer-supplied text through the same door. This is `feedback/mail.ts`'s argument exactly - a
+compiled prefix, asserted before the OS is asked, so the set of things this door can open has one
+member.
+
+### Dark under `EQ_E2E`
+
+`SHARE_ORIGIN` is empty in an `EQ_E2E` build, so `connectStartUrl` is `''`, no browser can be
+opened, no claim can be asked for, and the Connect button answers the dark sentence. Proven by
+running a dark child process in `tests/discordConnect.test.mts`, the way the post path's darkness
+is proven in `tests/discordPost.test.mts`.

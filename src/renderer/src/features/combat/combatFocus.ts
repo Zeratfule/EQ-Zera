@@ -16,4 +16,11 @@ import type { CombatScope } from './dashboardData'
 export interface CombatFocus {
   scope: CombatScope
   selection: string
+  /**
+   * OPEN THE SHARE DIALOG on arrival (2026-09-11). The meter overlays' Share button is the only
+   * caller: an overlay holds no channel list and performs no fetch, so what it asks for is the
+   * app, on this fight, with the dialog up. Absent everywhere else - an ordinary deep link into
+   * the Combat tab is not a request to start sharing.
+   */
+  share?: boolean
 }

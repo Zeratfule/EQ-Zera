@@ -78,6 +78,21 @@ test('a short history is returned whole, and the row carries the RAW item name',
   assert.equal(rows[0].source, 'a sphinx')
 })
 
+test('a REWARD CHEST reaches the drop row as the source it is, never inside the item name', () => {
+  // Z Engine, 2026-09-11: every loot shape accepts a container source, so the row carries
+  // `Reward Chest` in `source` where it used to carry it glued onto the item name (or nothing).
+  const chest: LootEvent = {
+    ts: 5,
+    item: 'Golem Metal Wand +4',
+    source: 'Reward Chest',
+    sourceKind: 'chest'
+  }
+  const rows = buildDropRows([chest], NO_POSKY, NO_KNOWLEDGE)
+  assert.equal(rows.length, 1)
+  assert.equal(rows[0].item, 'Golem Metal Wand +4')
+  assert.equal(rows[0].source, 'Reward Chest')
+})
+
 // =================================================================================
 // 2. THE HIGHLIGHT RULE
 // =================================================================================

@@ -21,6 +21,7 @@ import type { BuffAllowPrefs } from '../shared/buffAllow'
 import type { RespawnPrefs } from '../shared/respawn'
 import type { SoundPackPrefs } from '../shared/soundPacks'
 import type { ShareLinkRecord } from '../shared/shareLinks'
+import type { DiscordChannel } from '../shared/discordChannels'
 import type { WindowBounds } from './store'
 
 /**
@@ -332,4 +333,33 @@ export interface StoreShape {
    * to post there.
    */
   discordWebhook?: { id: string; token: string }
+  /**
+   * THE DISCORD CHANNELS this install posts character cards to (owner, 2026-09-11;
+   * docs/plans/discord-connect.md). The key above, made plural, because connecting a channel is
+   * two clicks now: the app opens Discord's own picker and stores whatever channel came back.
+   *
+   * SAME RECORD, ONE PER CHANNEL. `{ id, token }` are still the two closed-class values a request
+   * is rebuilt from (`shared/discordWebhook.ts`); `channelId` and `guildId` are Discord's own ids
+   * for what the user picked (EMPTY for a pasted webhook, because nobody told us which channel it
+   * points at); `label` is what the dropdown says, and is the one field a user may edit.
+   *
+   * THE TOKENS ARE SECRETS AND NEVER CROSS IPC. The renderer is handed a list of ids, labels and
+   * dates instead (src/main/storeDiscord.ts `discordChannelsView`).
+   *
+   * ADDITIVE + OPTIONAL ⇒ no schema bump, no migration - the `shareLinks` / `discordWebhook`
+   * precedent directly above. An absent key reads as "this install posts nowhere", and a store
+   * that still carries the singular `discordWebhook` is FOLDED into this list the first time it
+   * is read (storeDiscord.ts `foldLegacy`), so an upgrade loses nobody their working setup.
+   *
+   * NOT part of a shared settings profile (src/main/share.ts), for the singular key's reason: a
+   * bundle carrying one would hand a stranger the ability to post in somebody's server.
+   */
+  discordChannels?: DiscordChannel[]
+  /**
+   * …and which of them a post uses when the share dialog does not name one. A webhook id out of
+   * the list above; an absent or unknown value means "the only channel, or ask" - the app never
+   * guesses which of somebody's servers gets their character card
+   * (shared/discordChannels.ts `pickChannel`).
+   */
+  discordDefaultChannelId?: string
 }

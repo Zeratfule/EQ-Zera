@@ -33,21 +33,15 @@ export type { SpellForgetEvent, SpellMemorizeEvent, SpellSetEvent } from './gemE
 import type { HailEvent } from './hailTypes'
 import type { FactionCap, FactionHitEvent } from './factionTypes'
 import type { SkillUpEvent } from './skillTypes'
+import type { DoorUnlockedEvent } from './progressionTypes'
 
 // One re-export for all three, the `ConsiderFaction` line's own form: they are already imported
 // above for the union, so naming them again with a `from` clause would cost two more lines of a
 // budget this file does not have.
-export type { FactionCap, FactionHitEvent, HailEvent, SkillUpEvent }
+export type { DoorUnlockedEvent, FactionCap, FactionHitEvent, HailEvent, SkillUpEvent }
 
 export type { ConsiderFaction }
-export type {
-  Coins,
-  CoinEvent,
-  CoinSource,
-  ItemReceivedEvent,
-  ItemReceivedVia,
-  PurchaseEvent
-} from './acquireEvents'
+export type { Coins, CoinEvent, CoinSource, ItemReceivedEvent, ItemReceivedVia, PurchaseEvent } from './acquireEvents'
 export {
   CONSIDER_FACTION_COLOR,
   CONSIDER_FACTION_LABEL,
@@ -72,6 +66,19 @@ export interface ZoneEvent extends LogEventBase {
 }
 
 /**
+ * WHAT KIND OF THING HANDED YOU THE ITEM (Z Engine, 2026-09-11).
+ *
+ *   'corpse' — a mob's corpse, the source every loot line carried until instances shipped a
+ *      reward chest. The ONLY kind a per-mob statistic may read.
+ *   'chest'  — a container the line named (`from Reward Chest`). It handed you the items and
+ *      dropped none of them, so it belongs in item totals and in NO mob statistic.
+ *
+ * It is a discriminator rather than a name test on purpose: `Reward Chest` is what one chest is
+ * called, not a marker, and a consumer that means MOBS must not have to know the difference.
+ */
+export type LootSourceKind = 'corpse' | 'chest'
+
+/**
  * Where a looted-and-routed item went (Tasks #40/#47). The held-vs-gone rule lives in
  * ONE place — `computeHeldCounts` (renderer, features/posky/heldCounts.ts):
  *   'currency' — stored in the currency tab (kept, quest-countable — e.g. Wind Runes)
@@ -92,6 +99,8 @@ export interface LootEventE extends LogEventBase {
   kind: 'loot'
   item: string
   source?: string
+  /** what `source` IS — present exactly when it is. See LootSourceKind. */
+  sourceKind?: LootSourceKind
   /**
    * Auto-disposition (Tasks #40/#47) for the one-line looted-and-routed variants
    * (`You looted …` — no leading "have", no dashes). Undefined for the ordinary
@@ -1457,6 +1466,9 @@ export interface UnknownEvent extends LogEventBase {
 export type LogEvent =
   | ZoneEvent
   | LootEventE
+  // A lock picked open (Z Engine, 2026-09-11). Declared in ./progressionTypes, beside the one
+  // column that reads it; measured `{kind:'unknown'}` before it existed.
+  | DoorUnlockedEvent
   // The three acquisition families that carry no corpse (JOS-144, ./acquireEvents). They sit
   // beside loot because they answer the same question — how did this reach me — and every line
   // any of them claims was MEASURED `{kind:'unknown'}` before they existed.

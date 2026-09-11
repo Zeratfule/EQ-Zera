@@ -62,6 +62,7 @@ pub enum Kind {
     Consider,
     Damage,
     Death,
+    DoorUnlocked,
     ExpGain,
     FactionHit,
     Group,
@@ -141,6 +142,7 @@ impl Kind {
             Kind::Consider => "consider",
             Kind::Damage => "damage",
             Kind::Death => "death",
+            Kind::DoorUnlocked => "doorUnlocked",
             Kind::ExpGain => "expGain",
             Kind::FactionHit => "factionHit",
             Kind::Group => "group",
@@ -218,6 +220,7 @@ impl Kind {
             "consider" => Kind::Consider,
             "damage" => Kind::Damage,
             "death" => Kind::Death,
+            "doorUnlocked" => Kind::DoorUnlocked,
             "expGain" => Kind::ExpGain,
             "factionHit" => Kind::FactionHit,
             "group" => Kind::Group,
@@ -268,7 +271,7 @@ impl Kind {
 
     /// Every kind this build knows, for the round-trip test. `Other` is deliberately absent: it is
     /// the answer to an unknown string, not a kind anything writes.
-    pub const ALL: [Kind; 65] = [
+    pub const ALL: [Kind; 66] = [
         Kind::AaActivate,
         Kind::AaGain,
         Kind::AaPotion,
@@ -291,6 +294,7 @@ impl Kind {
         Kind::Consider,
         Kind::Damage,
         Kind::Death,
+        Kind::DoorUnlocked,
         Kind::ExpGain,
         Kind::FactionHit,
         Kind::Group,
@@ -414,6 +418,7 @@ pub enum Key {
     Set,
     Skill,
     Source,
+    SourceKind,
     Spell,
     Stance,
     Strike,
@@ -507,6 +512,7 @@ impl Key {
             Key::Set => "set",
             Key::Skill => "skill",
             Key::Source => "source",
+            Key::SourceKind => "sourceKind",
             Key::Spell => "spell",
             Key::Stance => "stance",
             Key::Strike => "strike",
@@ -601,6 +607,7 @@ impl Key {
             "set" => Key::Set,
             "skill" => Key::Skill,
             "source" => Key::Source,
+            "sourceKind" => Key::SourceKind,
             "spell" => Key::Spell,
             "stance" => Key::Stance,
             "strike" => Key::Strike,
@@ -621,7 +628,7 @@ impl Key {
     }
 
     /// Every key, for the round-trip test.
-    pub const ALL: [Key; 85] = [
+    pub const ALL: [Key; 86] = [
         Key::Ability,
         Key::Action,
         Key::Amount,
@@ -692,6 +699,7 @@ impl Key {
         Key::Set,
         Key::Skill,
         Key::Source,
+        Key::SourceKind,
         Key::Spell,
         Key::Stance,
         Key::Strike,

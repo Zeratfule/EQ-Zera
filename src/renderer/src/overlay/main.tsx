@@ -10,6 +10,7 @@ import BuffsOverlay from './BuffsOverlay'
 import XpOverlay from './XpOverlay'
 import RespawnOverlay from './RespawnOverlay'
 import FarmOverlay from './FarmOverlay'
+import RunOverlay from './RunOverlay'
 import { isHealOverlayKind } from '@shared/types'
 import { isTimerOverlayKind } from '@shared/buffTimers'
 import { installOverlayPointerExit } from './pointerExit'
@@ -46,6 +47,9 @@ import { installOverlayPointerExit } from './pointerExit'
 //   'farm'                            → the farm meter (roadmap 2 item 8): kills, XP, drops and
 //                                       coin per hour since you zoned in, over the current zone
 //                                       stay - one line per reading, no configurability
+//   'run'                             → the run tracker (2026-09-11): where you are inside a
+//                                       dungeon instance - elapsed time, kills and pace, the named
+//                                       in the order they went down, the keys, the deaths
 //   everything else                   → the damage meter (fight / zone selection lives inside)
 const kind = window.eqOverlay?.kind ?? 'fight'
 
@@ -57,6 +61,7 @@ function Surface(): React.JSX.Element {
   if (kind === 'xp') return <XpOverlay />
   if (kind === 'respawn') return <RespawnOverlay />
   if (kind === 'farm') return <FarmOverlay />
+  if (kind === 'run') return <RunOverlay />
   if (isTimerOverlayKind(kind)) return <BuffsOverlay kind={kind} />
   if (isHealOverlayKind(kind)) return <HealMeter />
   return <OverlayMeter />

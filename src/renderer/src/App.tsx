@@ -22,6 +22,10 @@ import NoLogsEmptyState from './components/NoLogsEmptyState'
 import { VIEW_KEY, loadView, rememberGearTab, type View } from './appViews'
 // The app's navigation MODEL — the deep-link routers and their nonce contract. See appRouting.ts.
 import { useAppRouting, usePrefsRouting, type AppRouting, type PrefsRouting } from './appRouting'
+// The meter overlays' Share button deep-links here; the id it carries says which scope it came
+// from, and these are the closed classes that decide (shared/fightSelection.ts).
+import { LIVE_FIGHT, isFightSelection } from '@shared/fightSelection'
+import type { CombatFocus } from './features/combat/combatFocus'
 // The mouse's Back button (JOS-201): the app-level answer, behind whatever drill is on screen.
 import { useBackFallback } from './appBack'
 import PoskyView from './features/posky/PoskyView'
@@ -234,7 +238,8 @@ function ViewContent({
   const { openSection } = prefs
   const onOpenVoicePrefs = useCallback(() => openSection('voice'), [openSection])
   const onOpenOverlayPrefs = useCallback(() => openSection('overlays'), [openSection])
-  // …and the Character tab's share dialog to where a Discord channel webhook is pasted in.
+  // …and the two share dialogs (a character card, and a FIGHT - 2026-09-11) to where a Discord
+  // channel is connected.
   const onOpenSharingPrefs = useCallback(() => openSection('sharing'), [openSection])
   if (view === 'preferences') {
     return (
@@ -309,6 +314,7 @@ function ViewContent({
           focus={routing.combatFocus}
           focusNonce={routing.combatNonce}
           onFocusConsumed={routing.clearCombatFocus}
+          onOpenSharingPrefs={onOpenSharingPrefs}
         />
       )}
     </SpellLinkProvider>
@@ -379,6 +385,8 @@ async function selectCharacter(
  */
 interface DeepLinkOpeners {
   openMob: (t: { mob: string }) => void
+  /** The Combat tab, on the fight the asking window was watching (2026-09-11). */
+  openCombat: (f: CombatFocus) => void
   openQuest: (quest?: string) => void
   /** The catalog Quests tab, optionally opened on one quest's wiki PAGE (ROADMAP §1). */
   openQuestPage: (page?: string) => void
@@ -403,26 +411,51 @@ interface DeepLinkOpeners {
  * and this is the branchy part of that effect, not the subscription bookkeeping around it.
  */
 function applyDeepLink(focus: AppFocus | null, open: DeepLinkOpeners): void {
-  if (focus?.view === 'posky') {
+  // THE NULL CHECK IS ONCE, AT THE TOP. It used to be `focus?.view === …` on every branch, which
+  // is a point of the measured complexity ceiling per destination — and the sixth destination
+  // (combat, 2026-09-11) is what made that arithmetic bite.
+  if (!focus) return
+  if (focus.view === 'posky') {
     open.openQuest(focus.quest)
     return
   }
-  if (focus?.view === 'leveling') {
+  if (focus.view === 'leveling') {
     open.openLeveling(focus.level)
     return
   }
-  if (focus?.view === 'quests') {
+  if (focus.view === 'quests') {
     open.openQuestPage(focus.quest)
     return
   }
   // A wish-list card names no row: the list IS the answer, so this is a plain tab switch.
-  if (focus?.view === 'wishlist') {
+  if (focus.view === 'wishlist') {
     open.selectView('wishlist')
     return
   }
-  if (focus?.view !== 'mobs') return
+  if (focus.view === 'combat') {
+    openCombatLink(focus, open.openCombat)
+    return
+  }
+  if (focus.view !== 'mobs') return
   if (focus.mob) open.openMob({ mob: focus.mob })
   else open.selectView('mobs')
+}
+
+/**
+ * THE METER OVERLAYS' SHARE BUTTON (2026-09-11). An overlay window holds no channel list and
+ * performs no fetch, so it asks for the APP: this fight, selected, with the share dialog up.
+ *
+ * THE SCOPE FALLS OUT OF WHICH KIND OF ID RODE ALONG — a fight meter sends a fight selection and a
+ * zone meter sends a zone session's — so neither window has to be told which meter pressed it, and
+ * the classes that decide live in one place (shared/fightSelection.ts).
+ */
+function openCombatLink(focus: AppFocus, openCombat: (f: CombatFocus) => void): void {
+  const selection = focus.fight ?? LIVE_FIGHT
+  openCombat({
+    scope: isFightSelection(selection) ? 'fight' : 'overall',
+    selection,
+    ...(focus.share === true ? { share: true } : {})
+  })
 }
 
 /**
@@ -471,7 +504,7 @@ export default function App(): JSX.Element {
   // the drill it opens can offer a Back that returns there (JOS-43, navOrigin.ts).
   const routing = useAppRouting(view, setView)
   const prefsRouting = usePrefsRouting(view, routing.selectView)
-  const { openMob, openQuest, openQuestPage, openLeveling, selectView } = routing
+  const { openMob, openCombat, openQuest, openQuestPage, openLeveling, selectView } = routing
   // The mouse's Back button, when no drill on screen claimed it (JOS-201): the SAME parked-origin
   // walk every Back affordance in the app reads. `back()` reports whether it navigated, so a press
   // with nothing parked is a no-op rather than a surprise tab switch.
@@ -526,7 +559,7 @@ export default function App(): JSX.Element {
       void window.eq.listCharacters().then(setCharacters)
     })
     const offFocus = window.eq.onFocusView((focus) =>
-      applyDeepLink(focus, { openMob, openQuest, openQuestPage, openLeveling, selectView })
+      applyDeepLink(focus, { openMob, openCombat, openQuest, openQuestPage, openLeveling, selectView })
     )
     const offPrefs = keepPrefsSnapshotCurrent()
     return () => {
@@ -536,7 +569,7 @@ export default function App(): JSX.Element {
       offFocus()
       offPrefs()
     }
-  }, [openMob, openQuest, openQuestPage, openLeveling, selectView])
+  }, [openMob, openCombat, openQuest, openQuestPage, openLeveling, selectView])
 
   const onCharacterSwitched = (c: CharacterRef): void => {
     setCharacter(c)

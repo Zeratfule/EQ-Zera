@@ -11,6 +11,14 @@ use super::data::CONSIDER_FACTION_RUNGS;
 use super::Ctx;
 
 const YOU_DIED: &str = "You died.";
+/// A lockpick's success sentence. Only this PREFIX is stable — the rest is per-door flavour, so
+/// the whole sentence would read one door and miss every other.
+const DOOR_UNLOCK_PREFIX: &str = "You quickly and quietly unlock the door";
+/// THE LOOT SOURCE CLAUSE, shared by every loot shape: a mob's corpse, or a container the line
+/// named. `corpse` is tried first so a mob whose name ends in `Chest` still reads as a corpse, and
+/// the container arm is anchored on the trailing word so an ITEM called `... Chestplate` (which
+/// the real log prints) can never be mistaken for one.
+const LOOT_SOURCE: &str = r"(.+? corpse|.+? Chest)";
 const AA_POTION_LANDING: &str = "You are filled with the spirit of alternate adventure.";
 
 pub struct WorldRes {
@@ -57,29 +65,29 @@ impl WorldRes {
             .collect::<Vec<_>>()
             .join("|");
         WorldRes {
-            loot: Regex::new(
-                r"^--You have looted (?:([0-9]+) |an? )?(.+?)(?: from (.+?) corpse)?\.--$",
-            )
+            loot: Regex::new(&format!(
+                r"^--You have looted (?:([0-9]+) |an? )?(.+?)(?: from {LOOT_SOURCE})?\.--$"
+            ))
             .unwrap(),
-            loot_plain: Regex::new(
-                r"^You have looted (?:([0-9]+) |an? )?(.+?)(?: from (.+?) corpse)?\.$",
-            )
+            loot_plain: Regex::new(&format!(
+                r"^You have looted (?:([0-9]+) |an? )?(.+?)(?: from {LOOT_SOURCE})?\.$"
+            ))
             .unwrap(),
-            loot_currency: Regex::new(
-                r"^You looted (?:([0-9]+) |an? )?(.+?) from (.+?) corpse and stored it in your currency\.?$",
-            )
+            loot_currency: Regex::new(&format!(
+                r"^You looted (?:([0-9]+) |an? )?(.+?) from {LOOT_SOURCE} and stored it in your currency\.?$"
+            ))
             .unwrap(),
-            loot_sold: Regex::new(
-                r"^You looted (?:([0-9]+) |an? )?(.+?) from (.+?) corpse and sold it for (free|[0-9,]+ (?:platinum|gold|silver|copper).*?)\.?$",
-            )
+            loot_sold: Regex::new(&format!(
+                r"^You looted (?:([0-9]+) |an? )?(.+?) from {LOOT_SOURCE} and sold it for (free|[0-9,]+ (?:platinum|gold|silver|copper).*?)\.?$"
+            ))
             .unwrap(),
-            loot_stored: Regex::new(
-                r"^You looted (?:([0-9]+) |an? )?(.+?) from (.+?) corpse and stored it in your (Dragon Hoard|tradeskill depot)\.?$",
-            )
+            loot_stored: Regex::new(&format!(
+                r"^You looted (?:([0-9]+) |an? )?(.+?) from {LOOT_SOURCE} and stored it in your (Dragon Hoard|tradeskill depot)\.?$"
+            ))
             .unwrap(),
-            loot_combine: Regex::new(
-                r"^You looted (?:([0-9]+) |an? )?(.+?) from (.+?) corpse to create (?:an? )?(.+?)\.?$",
-            )
+            loot_combine: Regex::new(&format!(
+                r"^You looted (?:([0-9]+) |an? )?(.+?) from {LOOT_SOURCE} to create (?:an? )?(.+?)\.?$"
+            ))
             .unwrap(),
             destroy: Regex::new(r"^You successfully destroyed ([0-9]+) (.+?)\.$").unwrap(),
             zone: Regex::new(r"^You have entered (.+?)\.$").unwrap(),
@@ -122,19 +130,47 @@ impl WorldRes {
     }
 }
 
+/// The source phrase split into the NAME and WHAT KIND OF THING it is.
+///
+/// A corpse is a mob and is the only source a per-mob statistic may read; a chest is a place the
+/// items came out of and dropped none of them. The discriminator ships so no consumer has to match
+/// on the string — `Reward Chest` is a name, not a marker.
+fn loot_source(phrase: Option<&str>) -> (Option<String>, Option<&'static str>) {
+    let Some(p) = phrase else {
+        return (None, None);
+    };
+    if let Some(mob) = p.strip_suffix(" corpse") {
+        return match clean_mob(Some(mob)) {
+            Some(name) => (Some(name), Some("corpse")),
+            None => (None, None),
+        };
+    }
+    // The container keeps the line's own spelling: `clean_mob`'s possessive strip is a rule about
+    // mob names, and a chest never wears one.
+    let name = js_trim(p);
+    if name.is_empty() {
+        (None, None)
+    } else {
+        (Some(name.to_string()), Some("chest"))
+    }
+}
+
 /// The shared loot capture layout: optional stack count, item, source, disposition.
 fn loot(
     c: &Ctx,
     out: &mut Ev,
     item: &str,
-    source: Option<String>,
+    source: Option<&str>,
     disposition: Option<&str>,
     count_str: Option<&str>,
 ) {
+    let (name, kind) = loot_source(source);
     out.begin(Kind::Loot);
     out.envelope(c.seq, c.ts, c.raw);
     out.s(Key::Item, js_trim(item));
-    out.s_opt(Key::Source, source.as_deref());
+    out.s_opt(Key::Source, name.as_deref());
+    // Present exactly when `source` is: absent means the line named nothing to be a kind OF.
+    out.s_opt(Key::SourceKind, kind);
     if let Some(d) = disposition {
         out.s(Key::Disposition, d);
     }
@@ -251,6 +287,17 @@ pub fn classify_instance_create(r: &WorldRes, c: &Ctx, out: &mut Ev) -> bool {
 }
 
 /// Self-loot, the auto-disposition variants, and the destroy (which is the negative).
+/// The lockpicked door. A minimal event on purpose: the sentence states no door, no zone and no
+/// lock, so the kind and the instant are the whole of what the log said.
+pub fn classify_door(c: &Ctx, out: &mut Ev) -> bool {
+    if !c.text.starts_with(DOOR_UNLOCK_PREFIX) {
+        return false;
+    }
+    out.begin(Kind::DoorUnlocked);
+    out.envelope(c.seq, c.ts, c.raw);
+    true
+}
+
 pub fn classify_loot(r: &WorldRes, a: &AcquireRes, c: &Ctx, out: &mut Ev) -> bool {
     let text = c.text;
     if text.starts_with("You successfully destroyed ") {
@@ -278,7 +325,7 @@ pub fn classify_loot(r: &WorldRes, a: &AcquireRes, c: &Ctx, out: &mut Ev) -> boo
             c,
             out,
             &m[2],
-            clean_mob(m.get(3).map(|g| g.as_str())),
+            m.get(3).map(|g| g.as_str()),
             None,
             m.get(1).map(|g| g.as_str()),
         );
@@ -289,7 +336,7 @@ pub fn classify_loot(r: &WorldRes, a: &AcquireRes, c: &Ctx, out: &mut Ev) -> boo
             c,
             out,
             &m[2],
-            clean_mob(m.get(3).map(|g| g.as_str())),
+            m.get(3).map(|g| g.as_str()),
             Some("currency"),
             m.get(1).map(|g| g.as_str()),
         );
@@ -300,7 +347,7 @@ pub fn classify_loot(r: &WorldRes, a: &AcquireRes, c: &Ctx, out: &mut Ev) -> boo
             c,
             out,
             &m[2],
-            clean_mob(m.get(3).map(|g| g.as_str())),
+            m.get(3).map(|g| g.as_str()),
             Some("sold"),
             m.get(1).map(|g| g.as_str()),
         );
@@ -317,7 +364,7 @@ pub fn classify_loot(r: &WorldRes, a: &AcquireRes, c: &Ctx, out: &mut Ev) -> boo
             c,
             out,
             &m[2],
-            clean_mob(m.get(3).map(|g| g.as_str())),
+            m.get(3).map(|g| g.as_str()),
             Some(disposition),
             m.get(1).map(|g| g.as_str()),
         );
@@ -328,7 +375,7 @@ pub fn classify_loot(r: &WorldRes, a: &AcquireRes, c: &Ctx, out: &mut Ev) -> boo
             c,
             out,
             &m[2],
-            clean_mob(m.get(3).map(|g| g.as_str())),
+            m.get(3).map(|g| g.as_str()),
             Some("combined"),
             m.get(1).map(|g| g.as_str()),
         );

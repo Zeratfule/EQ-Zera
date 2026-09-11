@@ -19,6 +19,7 @@ export function IconButton({
   children,
   danger,
   accent,
+  testId,
   accentBg = ICON_ACCENT_VIOLET
 }: {
   onClick: () => void
@@ -27,12 +28,16 @@ export function IconButton({
   children: React.ReactNode
   danger?: boolean
   accent?: boolean
+  /** A harness handle. The lock and close pair are found by their aria-label; a kind's own
+   *  control is found by name, because two kinds may spell theirs with the same glyph. */
+  testId?: string
   accentBg?: string
 }): JSX.Element {
   return (
     <button
       type="button"
       aria-label={label}
+      {...(testId === undefined ? {} : { 'data-testid': testId })}
       onClick={onClick}
       style={{
         width: 20,

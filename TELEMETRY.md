@@ -182,7 +182,7 @@ When you open or close a floating meter.
 
 | Field | Values | What it means |
 | --- | --- | --- |
-| `kind` | `fight` · `overall` · `heal-fight` · `heal-overall` · `events` · `toast` · `buffs` · `debuffs` · `xp` · `respawn` · `farm` · `alertBanner` · `conCard` | Which overlay. |
+| `kind` | `fight` · `overall` · `heal-fight` · `heal-overall` · `events` · `toast` · `buffs` · `debuffs` · `xp` · `respawn` · `farm` · `run` · `alertBanner` · `conCard` | Which overlay. |
 | `open` | true / false | Opened or closed. |
 
 ### `featureUse`
@@ -212,7 +212,7 @@ Once per session: what a typical install looks like.
 | `charCountBucket` | bucket index | How many character logs the app can see. |
 | `logSizeBucket` | bucket index | How big the log it reads is. |
 | `alertCountBucket` | bucket index | How many alerts you keep. |
-| `overlaysEnabled` | list of `fight` · `overall` · `heal-fight` · `heal-overall` · `events` · `toast` · `buffs` · `debuffs` · `xp` · `respawn` · `farm` · `alertBanner` · `conCard` | Which floating meters are open. |
+| `overlaysEnabled` | list of `fight` · `overall` · `heal-fight` · `heal-overall` · `events` · `toast` · `buffs` · `debuffs` · `xp` · `respawn` · `farm` · `run` · `alertBanner` · `conCard` | Which floating meters are open. |
 | `cursorRing` | true / false | Is the cursor ring on. |
 | `autoHide` | true / false | Is overlay auto-hide on. |
 | `voiceEngine` | `system` · `kokoro` · `off` | Which speech tier your spoken alerts use — off when no alert is set to speak. |

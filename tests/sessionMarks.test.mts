@@ -163,7 +163,13 @@ test('the ZONE meter carries the button; the FIGHT meter carries nothing new', (
   const mod = code('../src/renderer/src/overlay/OverlayMeter.tsx')
   assert.match(mod, /useSessionMarks\(window\.eqOverlay\)/, 'the overlay presses the same app-wide mark')
   assert.match(mod, /if \(isFight\) return undefined/, 'a fight meter has no Overall to restart')
-  assert.match(mod, /action=\{newSession\}/, 'and the zone meter hands it to the header')
+  // A LIST since 2026-09-11, when both meters gained Share: the zone meter hands the header its
+  // own control BESIDE the shared one, and a fight meter hands over only the shared one.
+  assert.match(
+    mod,
+    /actions=\{newSession \? \[share, newSession\] : \[share\]\}/,
+    'and the zone meter hands it to the header'
+  )
 })
 
 test('the button is CHROME: aria-labelled, one glyph, and unlocked-only', () => {
@@ -173,14 +179,14 @@ test('the button is CHROME: aria-labelled, one glyph, and unlocked-only', () => 
   // lock and close it sits beside.
   assert.match(
     header,
-    /<IconButton label=\{action\.label\} onClick=\{action\.onClick\}/,
-    'the action must be an IconButton, not hand-rolled chrome'
+    /\(actions \?\? \[\]\)\.map\(\(a\) => \([\s\S]{0,120}<IconButton/,
+    'the actions must be IconButtons, not hand-rolled chrome'
   )
   const button = code('../src/renderer/src/overlay/IconButton.tsx')
   assert.match(button, /aria-label=\{label\}/)
   assert.doesNotMatch(button, /title=/, 'a native tooltip reached the overlay chrome')
 
-  assert.match(header, /\{!locked && action &&/, 'a locked, click-through meter must not offer it')
+  assert.match(header, /\{!locked &&\s+\(actions \?\? \[\]\)\.map/, 'a locked, click-through meter must not offer it')
   const meter = code('../src/renderer/src/overlay/OverlayMeter.tsx')
   assert.match(meter, /label: 'New session'/, 'the same three words the ledger prints')
 })

@@ -46,6 +46,7 @@
 // `fetch` IS INJECTED so this module is drivable under plain node with no network at all
 // (tests/discordPost.test.mts); the IPC layer passes the global.
 
+import { randomUUID } from 'node:crypto'
 import { E2E } from '../e2e'
 import {
   isWebhookId,
@@ -111,7 +112,7 @@ export type DiscordPostResult = { ok: true } | { ok: false; error: string }
 
 const ERR = {
   dark: 'This build cannot post to Discord.',
-  unset: 'Add a Discord webhook in Preferences, Sharing.',
+  unset: 'Connect a Discord channel in Preferences, Sharing.',
   gone: 'That webhook no longer exists or the URL is wrong. Check Preferences, Sharing.',
   busy: 'Discord is rate limiting this webhook. Try again in a moment.',
   refused: 'Discord refused the message.',
@@ -137,9 +138,25 @@ function sentenceFor(status: number): string | null {
  * The body is whatever the caller built (`discordEmbedFor`, `discordTestBody`) — this function
  * owns the TRANSPORT and the sentences, not the message.
  */
-export async function postDiscordWebhook(
+export function postDiscordWebhook(
   webhook: DiscordWebhook,
   body: unknown,
+  deps: DiscordFetch
+): Promise<DiscordPostResult> {
+  return sendToWebhook(webhook, { type: 'application/json', body: JSON.stringify(body) }, deps)
+}
+
+/**
+ * THE ONE REQUEST, for both body shapes. Never throws; see header item 5.
+ *
+ * Split out when the FIGHT card arrived (2026-09-11) so the JSON path and the multipart path are
+ * one transport with one deadline, one User-Agent and one table of sentences. Two `fetch` calls
+ * would be two chances for a post to grow a second opinion about what a 429 means - and the one
+ * nobody was looking at would be the one that started throwing at an IPC boundary.
+ */
+async function sendToWebhook(
+  webhook: DiscordWebhook,
+  payload: { type: string; body: string | Uint8Array },
   deps: DiscordFetch
 ): Promise<DiscordPostResult> {
   if (!discordEndpointConfigured()) return { ok: false, error: ERR.dark }
@@ -149,8 +166,8 @@ export async function postDiscordWebhook(
   try {
     const res = await deps.fetch(url, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'User-Agent': UA },
-      body: JSON.stringify(body),
+      headers: { 'Content-Type': payload.type, 'User-Agent': UA },
+      body: payload.body as BodyInit,
       signal: AbortSignal.timeout(DISCORD_TIMEOUT_MS)
     })
     status = res.status
@@ -160,6 +177,112 @@ export async function postDiscordWebhook(
   }
   const error = sentenceFor(status)
   return error === null ? { ok: true } : { ok: false, error }
+}
+
+// ---------------------------------------------------------------------------------- with a file
+//
+// THE FIGHT CARD RIDES IN THE SAME REQUEST AS ITS NUMBERS (owner, 2026-09-11: *"We should also
+// make the Discord sharing be able to have DPS meter sharing also."*).
+//
+// WHY MULTIPART AND NOT A URL. A character card is PUBLISHED first — it becomes a page on the
+// share service, and the embed points Discord at a picture Discord then fetches. A fight is not a
+// page: there is nothing to visit, nothing to revoke, and nothing this app wants to keep serving.
+// So the bytes travel INSIDE the post, Discord stores them as that message's own attachment, and
+// this app publishes nothing at all. It is also the only shape that works while the share service
+// is unreachable, which is a state a meter share should survive.
+//
+// WHY THE BODY IS BUILT BY HAND rather than with `FormData`. Three reasons, in order of weight:
+// the `ShareFetch`-style seam this module is built on hands the injected `fetch` a body a TEST CAN
+// READ (a `FormData` instance arrives at a fake fetch as an opaque object whose boundary nobody
+// chose); the `Content-Type` header — boundary and all — stays this module's own, beside the
+// header it already sets; and there is one fewer global to be true about in a main-process bundle.
+// The layout below is Discord's documented shape and nothing else: `payload_json`, then `files[0]`.
+
+/** One file riding along with a post. `bytes` are the encoded image, not a data URL. */
+export interface DiscordPostFile {
+  name: string
+  bytes: Uint8Array
+  type: string
+}
+
+/**
+ * The file-name class. CLOSED, because the value is interpolated into a `Content-Disposition`
+ * header: a name carrying a quote, a newline or a semicolon would not be a file name, it would be
+ * a second header field. Today's only caller sends the constant `fight.png`; the class is what
+ * makes that a fact rather than a habit.
+ */
+const POST_FILE_NAME = /^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$/
+
+/** …and the content-type class, interpolated into a header for the same reason. */
+const POST_FILE_TYPE = /^[a-z]+\/[a-z0-9.+-]{1,32}$/
+
+/**
+ * Biggest attachment this app will send. Discord's own free-tier ceiling is 10 MB; this is under
+ * it with room to spare, and a PNG of a 720px card is two orders of magnitude smaller — so the
+ * bound is a guard against a bug, never something a user meets.
+ */
+export const MAX_POST_FILE_BYTES = 8 * 1024 * 1024
+
+/**
+ * Is this something this module will put in a request? ASKED BY THE CALLER FIRST (see
+ * src/main/ipc/combatShare.ts), which is what keeps the embed honest: an embed that names
+ * `attachment://fight.png` when the file was refused renders as a broken picture, so the decision
+ * to attach and the decision to SAY it is attached are one decision, made once, before either.
+ */
+export function isPostableFile(file: DiscordPostFile): boolean {
+  if (!POST_FILE_NAME.test(file.name) || !POST_FILE_TYPE.test(file.type)) return false
+  return file.bytes.length > 0 && file.bytes.length <= MAX_POST_FILE_BYTES
+}
+
+/** The multipart boundary: a token nothing in a PNG or a JSON body can contain. */
+function multipartBoundary(): string {
+  return `eqzera${randomUUID().replace(/-/g, '')}`
+}
+
+/**
+ * Discord's documented two-part body: the message as `payload_json`, then the picture as
+ * `files[0]`. Bytes, not a string — a PNG is not text and `TextEncoder` would mangle it.
+ */
+function multipartBody(body: unknown, file: DiscordPostFile, boundary: string): Uint8Array {
+  const encoder = new TextEncoder()
+  const head = encoder.encode(
+    `--${boundary}\r\n` +
+      'Content-Disposition: form-data; name="payload_json"\r\n' +
+      'Content-Type: application/json\r\n\r\n' +
+      `${JSON.stringify(body)}\r\n` +
+      `--${boundary}\r\n` +
+      `Content-Disposition: form-data; name="files[0]"; filename="${file.name}"\r\n` +
+      `Content-Type: ${file.type}\r\n\r\n`
+  )
+  const tail = encoder.encode(`\r\n--${boundary}--\r\n`)
+  const out = new Uint8Array(head.length + file.bytes.length + tail.length)
+  out.set(head, 0)
+  out.set(file.bytes, head.length)
+  out.set(tail, head.length + file.bytes.length)
+  return out
+}
+
+/**
+ * POST one body AND one file to one webhook. Never throws; same origin law, same deadline, same
+ * sentences as the JSON path — the only thing that differs is the envelope.
+ *
+ * A file outside the classes above answers `refused` rather than quietly posting the numbers on
+ * their own: the caller has already decided whether to SAY there is a picture, so silently
+ * dropping one would publish a message pointing at an attachment that never left.
+ */
+export function postDiscordWebhookWithFile(
+  webhook: DiscordWebhook,
+  body: unknown,
+  file: DiscordPostFile,
+  deps: DiscordFetch
+): Promise<DiscordPostResult> {
+  if (!isPostableFile(file)) return Promise.resolve({ ok: false, error: ERR.refused })
+  const boundary = multipartBoundary()
+  return sendToWebhook(
+    webhook,
+    { type: `multipart/form-data; boundary=${boundary}`, body: multipartBody(body, file, boundary) },
+    deps
+  )
 }
 
 /**

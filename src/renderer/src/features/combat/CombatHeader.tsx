@@ -10,8 +10,9 @@
 // click. Nothing was dropped — these strings are the only statement of the coat list, the
 // modifier groups and why Timeline is disabled.
 
-import { Box, Divider, Paper, Stack, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material'
+import { Box, Button, Divider, Paper, Stack, ToggleButton, ToggleButtonGroup, Typography } from '@mui/material'
 import CircleIcon from '@mui/icons-material/Circle'
+import ShareIcon from '@mui/icons-material/Share'
 import { FightPicker } from './FightPicker'
 // The pill-track chrome for all three switches below. It moved to its own module when the meter
 // card grew tabs of its own (JOS-361) and had to wear the same control — see segmented.ts.
@@ -185,6 +186,34 @@ function HeadlineStat({ seg }: { seg: SegmentView | null }): React.JSX.Element |
 }
 
 /**
+ * SHARE THIS FIGHT (owner, 2026-09-11: *"We should also make the Discord sharing be able to have
+ * DPS meter sharing also."*).
+ *
+ * IT SITS ON LINE 1, at the end, beside the headline stat — because what it shares is the SUBJECT
+ * this line names, not the lens line 2 chooses. Line 2 was the other candidate and is the wrong
+ * one twice over: it never wraps (its two-rank height is a contract the headless harness measures)
+ * and every control on it changes how you are LOOKING at the fight, which a Share button does not.
+ *
+ * It is withheld — not disabled — when there is nothing selected: a button offering to share the
+ * empty state is a button about nothing, and the scope's own empty pane is already saying so.
+ */
+function ShareFightButton({ onShare }: { onShare?: (() => void) | undefined }): React.JSX.Element | null {
+  if (!onShare) return null
+  return (
+    <Button
+      size="small"
+      variant="outlined"
+      data-testid="combat-share"
+      startIcon={<ShareIcon />}
+      onClick={onShare}
+      sx={{ flexShrink: 0 }}
+    >
+      Share
+    </Button>
+  )
+}
+
+/**
  * LINE 1 — SUBJECT ("what am I looking at"). The scope toggle is fused tight against the
  * encounter selector as ONE unit, because scope is not a peer of anything: it only decides what
  * that selector may LIST. The selector HUGS its content (it used to flexGrow across the whole
@@ -206,7 +235,8 @@ function SubjectLine({
   loadMore,
   capped,
   hydrating,
-  now
+  now,
+  onShare
 }: {
   seg: SegmentView | null
   scope: CombatScope
@@ -218,6 +248,7 @@ function SubjectLine({
   capped: boolean
   hydrating: boolean
   now: number
+  onShare?: (() => void) | undefined
 }): React.JSX.Element {
   return (
     <Stack direction="row" spacing={1} alignItems="center" sx={{ minWidth: 0 }}>
@@ -273,6 +304,7 @@ function SubjectLine({
       <Box sx={{ flexGrow: 1, minWidth: 8 }} />
 
       <HeadlineStat seg={seg} />
+      <ShareFightButton onShare={onShare} />
     </Stack>
   )
 }
@@ -421,6 +453,8 @@ export interface CombatHeaderProps {
    *  choice lives in Preferences > Combat, this line only states which one is in force. */
   meterScope: MeterScope
   roster: RosterSnap
+  /** Open the share dialog on the selected fight. Absent while there is nothing to share. */
+  onShare?: (() => void) | undefined
 }
 
 /**
@@ -458,6 +492,7 @@ export function CombatHeader(p: CombatHeaderProps): React.JSX.Element {
         capped={p.capped}
         hydrating={p.hydrating}
         now={p.now}
+        onShare={p.onShare}
       />
 
       {/* ── LINE 2: LENS + REFINEMENTS ── controls left, passive state right. It NEVER wraps:

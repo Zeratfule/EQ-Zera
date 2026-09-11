@@ -5,6 +5,13 @@ profile directly to a chat in Discord. that would be cool."*
 
 **Shipped in 1.23.0.** The whole feature is one CHANNEL WEBHOOK the user pastes in, and one POST.
 
+**Superseded in 1.24.0 by [discord-connect.md](discord-connect.md)** (owner, 2026-09-11: *"There's
+got to be a better way to share to Discord instead of having people input webhooks for each channel
+they want to send to."*). Discord's own picker connects a channel in two clicks, storage became a
+LIST of channels, and pasting a URL is now the collapsed Advanced fallback. Everything below still
+describes the POST, the outbound origin and the URL grammar, all of which are unchanged; what it
+says about ONE webhook per install and about Preferences is history.
+
 ---
 
 ## 1. The ruling, and what it rules out

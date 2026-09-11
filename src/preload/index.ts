@@ -455,9 +455,10 @@ const api = {
    *  but nothing is expected to produce one now. */
   ...characterApi,
 
-  /** Posting a character card to a Discord CHANNEL WEBHOOK (docs/plans/discord-webhook.md).
-   *  Five methods, and the webhook URL only ever travels INWARD: what comes back is a masked
-   *  view, a boolean or a sentence, never the token that can post to the channel. */
+  /** Posting a character card to a Discord CHANNEL (docs/plans/discord-connect.md).
+   *  A channel is CONNECTED through Discord's own picker (2026-09-11) or, under Advanced, pasted
+   *  as a webhook URL. Either way the secret only ever travels INWARD: what comes back is a list of
+   *  ids and labels, a masked view, a status word or a sentence, never the token. */
   ...discordApi,
 
   /** Report a renderer-detected event into the live event feed (Task #59) — today only quest

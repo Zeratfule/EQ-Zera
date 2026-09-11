@@ -92,6 +92,9 @@ function tallyGroups(events: KeyedLoot[]): Map<string, Group> {
     // Stacked loots count their stack size (Task #47): "2 Bone Chips" is two items.
     cur.count += e.count ?? 1
     cur.last = Math.max(cur.last, e.ts)
+    // A CONTAINER IS A SOURCE HERE, ON PURPOSE (Z Engine, 2026-09-11). This tally answers "where
+    // did these come from", and `Reward Chest` is a true answer to it — the per-MOB surfaces are
+    // the ones that read `sourceKind` and refuse a chest.
     if (e.source) cur.sources.set(e.source, (cur.sources.get(e.source) ?? 0) + 1)
     if (e.zone) cur.zones.add(e.zone)
     cur.dispositions.add(e.disposition)

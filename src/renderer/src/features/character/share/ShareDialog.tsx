@@ -5,13 +5,14 @@
 //   Copy share string  the `EQC1-` string, which another EQ Zera reader pastes into the viewer
 //   Copy text          a plain summary, for a chat client that would mangle a long string
 //   Copy link         the same card published as a share.eqzera.com page, which unfurls in chat
-//   Post to Discord   that same link, posted into a channel the user set up once (2026-09-10)
+//   Post to Discord   that same link, posted into a channel the user connected once (2026-09-11)
 //
 // POST TO DISCORD IS COPY LINK PLUS A MESSAGE, and it is deliberately built that way: the same
 // measure-then-publish flow, the same main-side function, and then an embed wrapping the link
 // that publish produced. It is disabled - with a native title saying where to fix that - until a
-// channel webhook is stored, and the renderer learns only THAT one boolean; the webhook URL is a
-// secret main keeps (./useDiscordPost.ts, src/main/share/discord.ts).
+// channel is connected, and beside it sits a picker WHEN THERE IS MORE THAN ONE. What the renderer
+// learns is a list of ids and labels; the webhook tokens are secrets main keeps
+// (./useDiscordPost.ts, src/main/share/discord.ts).
 //
 // THE LINK IS MAIN'S WORK, ALL OF IT. The renderer performs no fetch (`connect-src 'self'`), so
 // the button hands main the card's rectangle and its profile and gets back a url or a sentence;
@@ -29,7 +30,16 @@
 // a couple of seconds instead of the UI pretending. Nothing here throws at the reader.
 
 import { type JSX, useCallback, useEffect, useRef, useState } from 'react'
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack, Typography } from '@mui/material'
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  Stack,
+  Typography
+} from '@mui/material'
 import ContentCopyIcon from '@mui/icons-material/ContentCopy'
 import ForumIcon from '@mui/icons-material/Forum'
 import ImageIcon from '@mui/icons-material/Image'
@@ -38,80 +48,13 @@ import SaveAltIcon from '@mui/icons-material/SaveAlt'
 import type { CharacterProfileShare } from '@shared/characterShare'
 import type { CardMapEntry } from '@shared/shareCardMap'
 import { copyText } from '../../../lib/clipboard'
+// The reporting button and its flash timer are shared with the FIGHT dialog (2026-09-11).
+import { ActionButton, useFlash, type Flash } from '../../../lib/shareActions'
 import { measureCardMap } from './measureCardMap'
 import ShareCard from './ShareCard'
 import { useCharacterShare } from './useCharacterShare'
-import { showsSettingsLink, useDiscordPost, type DiscordPostState } from './useDiscordPost'
-
-/** How long an outcome stays on a button before it goes back to naming its action. */
-const FLASH_MS = 2200
-
-/** The last action that reported, and a counter so pressing the same one twice re-arms the timer. */
-interface Flash {
-  id: string
-  outcome: string
-  n: number
-}
-
-function useFlash(): { flash: Flash; report: (id: string, outcome: string) => void } {
-  const [flash, setFlash] = useState<Flash>({ id: '', outcome: '', n: 0 })
-  useEffect(() => {
-    if (!flash.id) return
-    const timer = setTimeout(() => {
-      setFlash({ id: '', outcome: '', n: 0 })
-    }, FLASH_MS)
-    return () => {
-      clearTimeout(timer)
-    }
-  }, [flash])
-  const report = useCallback((id: string, outcome: string) => {
-    setFlash((f) => ({ id, outcome, n: f.n + 1 }))
-  }, [])
-  return { flash, report }
-}
-
-function ActionButton({
-  testId,
-  label,
-  icon,
-  flash,
-  disabled,
-  hint,
-  onRun
-}: {
-  testId: string
-  label: string
-  icon: JSX.Element
-  flash: Flash
-  disabled: boolean
-  /** a native `title`, for a button whose disabled state needs a reason (Post to Discord) */
-  hint?: string
-  onRun: () => void
-}): JSX.Element {
-  const showing = flash.id === testId
-  const button = (
-    <Button
-      size="small"
-      variant="outlined"
-      data-testid={testId}
-      {...(showing ? { 'data-flash': flash.outcome } : {})}
-      {...(hint === undefined ? {} : { title: hint })}
-      startIcon={icon}
-      disabled={disabled}
-      onClick={onRun}
-    >
-      {showing ? flash.outcome : label}
-    </Button>
-  )
-  // MUI puts `pointer-events: none` on a disabled button, so the title on the button itself never
-  // gets a hover to fire on. The wrapper is what actually shows the reason; the attribute stays on
-  // the button too, because that is where a reader of the DOM looks for it.
-  return hint === undefined ? button : <span title={hint}>{button}</span>
-}
-
-/** What a disabled Post to Discord says about itself, in one clause (UI conventions: tooltips are
- *  for enabling an action). */
-const DISCORD_HINT = 'Add a Discord webhook in Preferences, Sharing'
+import { useDiscordPost, type DiscordPostState } from './useDiscordPost'
+import { DiscordChannelPick, DiscordRow, DISCORD_HINT } from './DiscordShareControls'
 
 /** The six ways out, in one row. Its own component so the dialog stays inside the line ceiling. */
 function ShareActions({
@@ -182,6 +125,7 @@ function ShareActions({
         {...(discord.ready ? {} : { hint: DISCORD_HINT })}
         onRun={discord.post}
       />
+      <DiscordChannelPick discord={discord} />
       <ActionButton
         testId="character-share-copy-text"
         label="Copy text"
@@ -327,34 +271,6 @@ function ShareLinkRow({ link, flash }: { link: LinkState; flash: Flash }): JSX.E
         <Typography variant="body2" color="error" data-testid="character-share-link-error">
           {link.error}
         </Typography>
-      )}
-    </Stack>
-  )
-}
-
-/**
- * What went wrong with a Discord post, and - when what went wrong is that nothing is set up yet -
- * the way to go and set it up. The door is offered ONLY for that one sentence: a rate limit or an
- * unreachable Discord is not something Preferences can fix, and a button that pretended otherwise
- * would send the reader somewhere useless.
- */
-function DiscordRow({
-  discord,
-  onOpenSharingPrefs
-}: {
-  discord: DiscordPostState
-  onOpenSharingPrefs: () => void
-}): JSX.Element | null {
-  if (discord.error === '') return null
-  return (
-    <Stack direction="row" spacing={1} alignItems="center" sx={{ flexWrap: 'wrap' }} useFlexGap>
-      <Typography variant="body2" color="error" data-testid="character-share-discord-error">
-        {discord.error}
-      </Typography>
-      {showsSettingsLink(discord.error) && (
-        <Button size="small" data-testid="character-share-discord-settings" onClick={onOpenSharingPrefs}>
-          Open Preferences, Sharing
-        </Button>
       )}
     </Stack>
   )

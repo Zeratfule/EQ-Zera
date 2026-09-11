@@ -565,6 +565,7 @@ export const OVERLAY_TITLE: Partial<Record<OverlayKind, string>> = {
   // Roadmap 2 item 8, in this table's own `<Something> Overlay` voice (owner, 2026-09-08): the
   // window list reads consistently, and the Overlay menu's shorter "Farm meter" is the label there.
   farm: 'Farm Meter Overlay',
+  run: 'Run Tracker Overlay',
   alertBanner: 'Alert Banner Overlay',
   conCard: 'Mob Card Overlay'
 }

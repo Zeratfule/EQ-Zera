@@ -55,6 +55,7 @@
 
 import type { LootEvent, ProgressionSnap } from '@shared/types'
 import type { CoinRow } from '@shared/coinTypes'
+import type { Coins } from '@shared/acquireEvents'
 import type { RangeStats } from '@shared/progressionStats'
 import type { RespawnRow, RespawnSnap } from '@shared/respawn'
 import { rangeStats } from '../../../shared/progressionStats'
@@ -130,8 +131,13 @@ export interface FarmOverlayView {
 /**
  * Σ copper of one coin row, on the DECLARED ladder — a field the line did not name contributes
  * nothing, because "the line did not say" is not "you got none" (shared/coinTypes.ts).
+ *
+ * It takes the DENOMINATIONS rather than a whole `CoinRow` (a row is assignable, so no caller
+ * moved): the run tracker sums a run's auto-sell lines into one bag of denominations and needs the
+ * same ladder applied to it, and a second copy of these four numbers is exactly what the
+ * declaration exists to prevent.
  */
-export function coinCopper(row: CoinRow): number {
+export function coinCopper(row: Coins): number {
   return (
     (row.platinum ?? 0) * COIN_LADDER.platinum +
     (row.gold ?? 0) * COIN_LADDER.gold +

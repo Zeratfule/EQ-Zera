@@ -19,6 +19,10 @@ pub struct LootRow {
     item: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     source: Option<String>,
+    /// `corpse` | `chest`. Present exactly when `source` is; a consumer that means MOBS reads
+    /// this rather than matching on the name.
+    #[serde(rename = "sourceKind", skip_serializing_if = "Option::is_none")]
+    source_kind: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     zone: Option<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -50,6 +54,12 @@ impl LootRow {
     #[must_use]
     pub fn source(&self) -> Option<&str> {
         self.source.as_deref()
+    }
+    /// Which of those it was: `corpse` (a mob, and the only kind a per-mob statistic may read)
+    /// or `chest` (a container, which dropped nothing and belongs in item totals alone).
+    #[must_use]
+    pub fn source_kind(&self) -> Option<&str> {
+        self.source_kind.as_deref()
     }
     /// The zone the module was standing in when the row was folded. Absent for rows folded before
     /// the scan reached a zone line.
@@ -153,6 +163,7 @@ impl EqModule for LootModule {
                     ts: ev.ts(),
                     item: ev.str("item").unwrap_or_default().to_string(),
                     source: ev.str("source").map(str::to_string),
+                    source_kind: ev.str("sourceKind").map(str::to_string),
                     zone: self.zone.clone(),
                     disposition: ev.str("disposition").map(str::to_string),
                     count: ev.int("count"),

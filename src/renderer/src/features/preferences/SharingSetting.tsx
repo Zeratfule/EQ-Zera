@@ -1,182 +1,148 @@
-// SharingSetting — where a Discord channel webhook is pasted in (owner, 2026-09-10;
-// docs/plans/discord-webhook.md).
+// SharingSetting — where a Discord channel is connected (owner, 2026-09-11;
+// docs/plans/discord-connect.md, docs/plans/discord-webhook.md).
 //
 // Its own file for the reason UpdateSetting.tsx and FeedbackSetting.tsx are: PreferencesView.tsx
 // is the settings TABLE, and a section's actual UI lives beside it rather than inside it.
 //
-// WHAT THE USER DOES ONCE: in Discord, open the channel they want cards in, Edit channel,
-// Integrations, Webhooks, New Webhook, Copy Webhook URL. Paste, Save. From then on the share
-// dialog has a Post to Discord button. No bot, no login, no account of theirs this app can reach.
+// WHAT THE USER DOES NOW: press Connect a Discord channel. Their browser opens, Discord asks which
+// server and which channel with its own two dropdowns, they press Authorize, and the row appears
+// here. Nothing is copied and nothing is pasted. That is the whole of the owner's 2026-09-11
+// direction - *"There's got to be a better way to share to Discord instead of having people input
+// webhooks for each channel they want to send to."*
 //
-// THE FIELD IS ALWAYS EMPTY WHEN THIS CARD MOUNTS, AND THAT IS THE DESIGN. What is stored is a
-// SECRET (anyone holding it can post to that channel forever), so it never comes back across IPC:
-// main hands out a masked view and nothing else (src/main/storeDiscord.ts). A text box that
-// re-showed the value would need the value. So the card states what is stored in words, next to
-// Test and Remove, and the box is for pasting a NEW one.
+// PASTING STILL WORKS, UNDER ADVANCED AND COLLAPSED. Somebody who cannot authorize an app in a
+// server they do not run can still copy a webhook URL out of channel settings, and what they paste
+// lands in the SAME list with the same Test, Rename, Remove and Default. It is collapsed because
+// it is now the unusual path, not because it is deprecated.
 //
-// AND THE PARSING IS MAIN'S. This card does not test the string, does not know the hosts and does
-// not know what a token looks like — `discord:setWebhook` refuses a bad paste with a sentence and
-// this shows it. One validator, at the boundary that is about to make the request
-// (src/shared/discordWebhook.ts).
+// NO SECRET IS EVER DRAWN HERE. What the card holds is a list of ids, labels and dates; the
+// webhook tokens never cross IPC at all (src/main/storeDiscord.ts). That is also why the paste box
+// is always empty on mount: a box that re-showed the value would need the value.
+//
+// AND THE PARSING, THE CLAMPING AND THE WAITING ARE MAIN'S. This card does not test a URL, does not
+// know the hosts, does not cut a label and does not own the connect poll - it shows what main says.
 
 import { type JSX, useState } from 'react'
-import { Button, Stack, TextField, Typography } from '@mui/material'
+import { Button, Collapse, Stack, TextField, Typography } from '@mui/material'
 import ForumIcon from '@mui/icons-material/Forum'
-import type { DiscordWebhookView } from '@shared/discordWebhook'
-import { recordPref, usePrefsSeed } from './prefsHydration'
+import { DiscordChannelList } from './DiscordChannelList'
+import { useDiscordChannels, type DiscordChannelsState } from './useDiscordChannels'
 import type { PrefSection } from './PreferencesView'
 
-/** What the card is saying right now: nothing, an outcome, or a refusal. */
-interface Status {
-  text: string
-  bad: boolean
-}
+/** The one line of help under the button, which is the whole setup written out. */
+const HELP = 'Discord opens in your browser and asks which server and channel. Nothing to copy or paste.'
 
-const NONE: Status = { text: '', bad: false }
+/** …and the one under the advanced box, which is the old setup written out. */
+const PASTE_HELP = 'In Discord: channel settings, Integrations, Webhooks, New Webhook, Copy Webhook URL.'
 
-/** The one line of help, which is the whole setup written out. */
-const HELP = 'In Discord: channel settings, Integrations, Webhooks, New Webhook, Copy Webhook URL.'
+/** What the card says about a list that is empty, which is what a fresh install sees. */
+const EMPTY = 'No Discord channels yet.'
 
-/** What the card says while it is waiting on main, so a slow round trip is not silence. */
-const WORKING: Status = { text: 'Working…', bad: false }
-
-/** The stored webhook in words, or the invitation to add one. */
-function CurrentValue({ view }: { view: DiscordWebhookView }): JSX.Element {
+/** The primary action, or - while an attempt is running - the wait and the way out of it. */
+function ConnectRow({ state }: { state: DiscordChannelsState }): JSX.Element {
+  if (state.waiting) {
+    return (
+      <Stack direction="row" spacing={1} alignItems="center" sx={{ flexWrap: 'wrap' }} useFlexGap>
+        <Typography variant="body2" data-testid="pref-discord-waiting">
+          Waiting for Discord…
+        </Typography>
+        <Button size="small" data-testid="pref-discord-connect-cancel" onClick={state.cancel}>
+          Cancel
+        </Button>
+      </Stack>
+    )
+  }
   return (
-    <Typography variant="body2" color="text.secondary" data-testid="pref-discord-current">
-      {view.set ? `Posting to ${view.masked ?? 'a channel webhook'}` : 'No channel webhook yet.'}
-    </Typography>
-  )
-}
-
-/** Save / Test / Remove. Its own component so the card stays inside the function-line ceiling. */
-function SharingButtons({
-  view,
-  busy,
-  canSave,
-  onSave,
-  onTest,
-  onRemove
-}: {
-  view: DiscordWebhookView
-  busy: boolean
-  canSave: boolean
-  onSave: () => void
-  onTest: () => void
-  onRemove: () => void
-}): JSX.Element {
-  return (
-    <Stack direction="row" spacing={1} flexWrap="wrap">
-      <Button size="small" variant="outlined" data-testid="pref-discord-save" disabled={busy || !canSave} onClick={onSave}>
-        Save
-      </Button>
-      <Button size="small" variant="outlined" data-testid="pref-discord-test" disabled={busy || !view.set} onClick={onTest}>
-        Test
-      </Button>
-      <Button size="small" data-testid="pref-discord-remove" disabled={busy || !view.set} onClick={onRemove}>
-        Remove
+    <Stack direction="row" spacing={1} alignItems="center">
+      <Button
+        size="small"
+        variant="contained"
+        data-testid="pref-discord-connect"
+        disabled={state.busy}
+        onClick={state.connect}
+      >
+        Connect a Discord channel
       </Button>
     </Stack>
   )
 }
 
-export function SharingSetting(): JSX.Element {
-  // SEEDED SYNCHRONOUSLY (JOS-340): the pane's gate has already read main, so this card's first
-  // painted frame states what is actually stored rather than "nothing here yet".
-  const seed = usePrefsSeed()
-  const [view, setView] = useState<DiscordWebhookView>(seed.discordWebhook)
+/** The collapsed paste box. Kept for the servers where authorizing an app is not on offer. */
+function AdvancedPaste({ state }: { state: DiscordChannelsState }): JSX.Element {
+  const [open, setOpen] = useState(false)
   const [text, setText] = useState('')
-  const [status, setStatus] = useState<Status>(NONE)
-  const [busy, setBusy] = useState(false)
-
-  // MAIN'S REPLY IS AUTHORITATIVE, and it is what the cache keeps (prefsSnapshot.ts): the card
-  // never assembles a view of its own out of what it just sent.
-  const adopt = (next: DiscordWebhookView): void => {
-    setView(next)
-    recordPref('discordWebhook', next)
-  }
-
-  const save = (): void => {
-    setBusy(true)
-    setStatus(WORKING)
-    void window.eq
-      .setDiscordWebhook(text.trim())
-      .then((res) => {
-        if (!res.ok) {
-          setStatus({ text: res.error, bad: true })
-          return
-        }
-        adopt(res.view)
-        setText('')
-        setStatus({ text: 'Saved. Try Test to see a message appear in the channel.', bad: false })
-      })
-      .catch(() => {
-        setStatus({ text: 'That webhook could not be saved.', bad: true })
-      })
-      .finally(() => {
-        setBusy(false)
-      })
-  }
-
-  const test = (): void => {
-    setBusy(true)
-    setStatus(WORKING)
-    void window.eq
-      .testDiscordWebhook()
-      .then((res) => {
-        setStatus(
-          res.ok
-            ? { text: 'Sent. Check the channel.', bad: false }
-            : { text: res.error ?? 'Could not reach Discord.', bad: true }
-        )
-      })
-      .catch(() => {
-        setStatus({ text: 'Could not reach Discord.', bad: true })
-      })
-      .finally(() => {
-        setBusy(false)
-      })
-  }
-
-  const remove = (): void => {
-    setBusy(true)
-    setStatus(WORKING)
-    void window.eq
-      .clearDiscordWebhook()
-      .then((next) => {
-        adopt(next)
-        setStatus({ text: 'Removed. Nothing is posted to Discord now.', bad: false })
-      })
-      .catch(() => {
-        setStatus({ text: 'That webhook could not be removed.', bad: true })
-      })
-      .finally(() => {
-        setBusy(false)
-      })
-  }
-
   return (
     <Stack spacing={1}>
-      <CurrentValue view={view} />
-      <TextField
+      <Button
         size="small"
-        fullWidth
-        label="Discord webhook URL"
-        placeholder="https://discord.com/api/webhooks/…"
-        value={text}
-        data-testid="pref-discord-webhook"
-        onChange={(e) => {
-          setText(e.target.value)
-          setStatus(NONE)
+        color="inherit"
+        sx={{ alignSelf: 'flex-start' }}
+        data-testid="pref-discord-advanced"
+        onClick={() => {
+          setOpen((was) => !was)
         }}
-      />
-      <SharingButtons view={view} busy={busy} canSave={text.trim() !== ''} onSave={save} onTest={test} onRemove={remove} />
+      >
+        Advanced: paste a webhook URL
+      </Button>
+      <Collapse in={open} unmountOnExit>
+        <Stack spacing={1}>
+          <TextField
+            size="small"
+            fullWidth
+            label="Discord webhook URL"
+            placeholder="https://discord.com/api/webhooks/…"
+            value={text}
+            data-testid="pref-discord-webhook"
+            onChange={(e) => {
+              setText(e.target.value)
+              state.clearStatus()
+            }}
+          />
+          <Button
+            size="small"
+            variant="outlined"
+            sx={{ alignSelf: 'flex-start' }}
+            data-testid="pref-discord-save"
+            disabled={state.busy || text.trim() === ''}
+            onClick={() => {
+              state.savePasted(text)
+              setText('')
+            }}
+          >
+            Save
+          </Button>
+          <Typography variant="caption" color="text.secondary">
+            {PASTE_HELP}
+          </Typography>
+        </Stack>
+      </Collapse>
+    </Stack>
+  )
+}
+
+export function SharingSetting(): JSX.Element {
+  const state = useDiscordChannels()
+  return (
+    <Stack spacing={1}>
+      <ConnectRow state={state} />
       <Typography variant="caption" color="text.secondary">
         {HELP}
       </Typography>
-      {status.text !== '' && (
-        <Typography variant="body2" color={status.bad ? 'error' : 'success.main'} data-testid="pref-discord-status">
-          {status.text}
+      {state.view.channels.length === 0 ? (
+        <Typography variant="body2" color="text.secondary" data-testid="pref-discord-current">
+          {EMPTY}
+        </Typography>
+      ) : (
+        <DiscordChannelList state={state} />
+      )}
+      <AdvancedPaste state={state} />
+      {state.status.text !== '' && (
+        <Typography
+          variant="body2"
+          color={state.status.bad ? 'error' : 'success.main'}
+          data-testid="pref-discord-status"
+        >
+          {state.status.text}
         </Typography>
       )}
     </Stack>
@@ -202,7 +168,8 @@ export function sharingSection(): PrefSection {
       {
         id: 'discord-webhook',
         label: 'Post to Discord',
-        keywords: 'discord webhook share post channel chat server card character profile link integration',
+        keywords:
+          'discord webhook share post channel chat server card character profile link integration connect oauth',
         content: <SharingSetting />
       }
     ]

@@ -18,6 +18,9 @@ import {
 import { useMeterScope } from './useCombatPrefs'
 import { useDrillMemory, type DrillMemoryApi } from './useDrillMemory'
 import { AbilityExpandProvider } from './abilityExpand'
+// SHARING A FIGHT (owner, 2026-09-11). The derivation and the dialog live together in their own
+// file; this view gains a mount, not a wire shape - see FightShareSlot's header.
+import { FightShareSlot, useFightShare } from './share/FightShareSlot'
 import { EMPTY_ROSTER, type MeterScope, type RosterSnap } from '@shared/roster'
 import type { CombatFocus } from './combatFocus'
 import type { CombatSnapshot, SegmentView, TimelineView } from '@shared/combat'
@@ -304,16 +307,20 @@ function ScopeEmptyPane({ scope }: { scope: 'fight' | 'overall' }): React.JSX.El
 export default function CombatView({
   focus,
   focusNonce,
-  onFocusConsumed
+  onFocusConsumed,
+  onOpenSharingPrefs
 }: {
   focus?: CombatFocus | null
   focusNonce?: number
   onFocusConsumed?: () => void
+  /** The way to Preferences, Sharing - handed down from App.tsx, like the character card's. */
+  onOpenSharingPrefs: () => void
 }): React.JSX.Element {
   const { snap, showUnparsed, setShowUnparsed, selection, scope, maxSegments, loadMore, ...combat } =
     useCombat()
   const [mode, setModeState] = useState<MeterMode>('out')
   const [view, setView] = useState<'dash' | 'timeline'>('dash')
+
   // WHERE YOU HAD DRILLED TO — persisted, so a tab switch (which unmounts this whole view) no
   // longer throws it away, and neither does a restart (JOS-116).
   const { drill, setDrill, isOpen, setOpen } = useDashboardDrill(view)
@@ -340,6 +347,10 @@ export default function CombatView({
   useEffect(() => {
     if (!focus) return
     focusFight(focus)
+    // …AND A LINK MAY ASK FOR THE DIALOG (2026-09-11). The meter overlays' Share button is the one
+    // caller: an overlay posts nothing itself, so it asks for the app on this fight with the
+    // dialog up. It rides the NONCE like the selection does, so asking twice opens twice.
+    if (focus.share === true) share.show()
     onFocusConsumed?.()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [focusNonce])
@@ -366,6 +377,10 @@ export default function CombatView({
   // strand you on an empty timeline falls back to the dashboard. `hydrating` is excluded because
   // during the startup replay `tl` is legitimately absent for a moment; disabling then would make
   // the switch flicker.
+  // THE SHARE DIALOG's own state, and the opener the header gets only when there is something to
+  // share. Below `seg`/`hydrating` because it is asked about both - see useFightShare.
+  const share = useFightShare(seg, hydrating)
+
   const noTimeline = !hydrating && !tl
   useEffect(() => {
     if (view === 'timeline' && noTimeline) setView('dash')
@@ -396,6 +411,7 @@ export default function CombatView({
         setMode={setMode}
         meterScope={meterScope}
         roster={roster}
+        onShare={share.opener}
       />
 
       {/* The expanded per-ability stats are remembered beside the drill they sit inside (JOS-116),
@@ -419,6 +435,16 @@ export default function CombatView({
       </AbilityExpandProvider>
 
       <ProcessingLog lines={snap?.recent ?? []} showUnparsed={showUnparsed} setShowUnparsed={setShowUnparsed} />
+
+      {/* The share card and its four ways out. It draws nothing until asked, and nothing at all
+          for a selection with no rows in it. */}
+      <FightShareSlot
+        snap={snap}
+        seg={seg}
+        open={share.open}
+        onClose={share.close}
+        onOpenSharingPrefs={onOpenSharingPrefs}
+      />
     </Stack>
   )
 }

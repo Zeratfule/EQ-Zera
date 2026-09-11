@@ -34,7 +34,11 @@ import type { CharacterRef, OverlayKind } from '../shared/types'
 // drop rate, `coin` for the income, `respawn` for the next clock and `character` for the level on
 // its header. Every one of them is a fold over months of log, so it needs the rebuild signal for
 // the reason 'xp' does.
-export const MODULE_READING_OVERLAYS: OverlayKind[] = ['events', 'buffs', 'debuffs', 'xp', 'respawn', 'farm']
+// 'run' (2026-09-11) reads FIVE — `progression` for the zone timeline and the kill columns,
+// `kills` for the named, `loot` for the keys, `coin` for the auto-sell and `deaths` for the
+// deaths. A crawl is a live thing, but the record it is cut out of is months of log, so it needs
+// the rebuild signal for exactly the reason 'farm' and 'xp' do.
+export const MODULE_READING_OVERLAYS: OverlayKind[] = ['events', 'buffs', 'debuffs', 'xp', 'respawn', 'farm', 'run']
 
 /**
  * Push to every overlay window that reads modules.

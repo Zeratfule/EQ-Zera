@@ -26,6 +26,10 @@ import { registerCharacterShareIpc } from './characterShare'
 // for the channel webhook, and the one post. It reuses characterShare's publish path rather than
 // growing a second one - see its header.
 import { registerDiscordIpc } from './discord'
+// Sharing a FIGHT (owner, 2026-09-11): the meter card's own screenshot, and posting it to a
+// channel with the numbers beside it. It reuses cardCapture.ts rather than growing a second
+// screenshot - see its header.
+import { registerCombatShareIpc } from './combatShare'
 import { registerEqModelIpc } from './eqModel'
 import { registerItemLookIpc } from './itemLook'
 import { registerClipboardIpc } from './clipboard'
@@ -97,6 +101,7 @@ export function registerIpc(): void {
   registerCharacterSheetIpc()
   registerCharacterShareIpc()
   registerDiscordIpc()
+  registerCombatShareIpc()
   registerEqModelIpc()
   registerItemLookIpc()
   registerOutputsIpc()

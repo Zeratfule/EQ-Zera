@@ -30,6 +30,12 @@ import {
   maskWebhook,
   parseDiscordWebhook
 } from '../src/shared/discordWebhook'
+import {
+  channelsViewOf,
+  clampChannelLabel,
+  LABEL_MAX,
+  sanitizeChannel
+} from '../src/shared/discordChannels'
 import { characterShareText, type CharacterProfileShare } from '../src/shared/characterShare'
 
 const ID = '1234567890123456789'
@@ -250,4 +256,57 @@ test('the Test message is one plain line and carries no profile at all', () => {
   assert.equal(body.content, 'EQ Zera connected. Character cards you post will appear here.')
   // A connection test that also published somebody's gear would be a surprise.
   assert.equal((body as { embeds?: unknown }).embeds, undefined)
+})
+
+// ---- the channel list (2026-09-11) --------------------------------------------------------------
+//
+// Connecting a channel through Discord's own picker made the stored value a LIST, and gave a
+// channel two things a pasted webhook never had: a NAME and an editable LABEL. What is guarded
+// here is the label - the string a dropdown row and a "Posted to …" flash are both built from -
+// and the same closed-class re-read on the way out of the store that the URL grammar above gets
+// on the way in. See `tests/discordConnect.test.mts` for the service contract and the poll.
+
+test('a label is clamped to what a row can hold, and junk is not a label at all', () => {
+  assert.equal(clampChannelLabel('Guild gear'), 'Guild gear')
+  assert.equal(clampChannelLabel('  Guild gear  '), 'Guild gear')
+  // Sixty characters, which is the rename box's own bound: the 61st is cut, never stored.
+  assert.equal(clampChannelLabel('x'.repeat(200)).length, LABEL_MAX)
+  assert.equal(LABEL_MAX, 60)
+  // A newline would make a row two rows tall; it becomes a space like any other control character.
+  assert.equal(clampChannelLabel('Guild\ngear'), 'Guild gear')
+  for (const junk of [undefined, null, 42, {}, '', '   ', '\n\n']) {
+    assert.equal(clampChannelLabel(junk), '', String(junk))
+  }
+})
+
+test('a stored record is re-read through the same closed classes it was written under', () => {
+  const now = 1_757_600_000_000
+  const record = {
+    id: ID,
+    token: TOKEN,
+    channelId: '9876543210987654321',
+    guildId: '1111111111111111111',
+    label: 'Guild gear',
+    addedAt: 5
+  }
+  assert.deepEqual(sanitizeChannel(record, now), record)
+  // A record that could not produce a request is dropped entirely, rather than kept as a row that
+  // silently does nothing - the store file is a file somebody else can also write to.
+  assert.equal(sanitizeChannel({ ...record, id: '12/../34' }, now), null)
+  assert.equal(sanitizeChannel({ ...record, token: 'short' }, now), null)
+  assert.equal(sanitizeChannel('a string', now), null)
+  // Everything else DEGRADES rather than refusing: a label that is somehow gone is not a reason to
+  // lose a working channel, and a channel id that is not a snowflake is honestly empty.
+  const bent = sanitizeChannel({ ...record, label: '', channelId: 'general', addedAt: 'soon' }, now)
+  assert.deepEqual(bent, { ...record, label: 'Connected channel', channelId: '', addedAt: now })
+})
+
+test('the view that crosses IPC carries labels and ids, and no token anywhere in it', () => {
+  const channel = { id: ID, token: TOKEN, channelId: '', guildId: '', label: 'Pasted webhook', addedAt: 7 }
+  const view = channelsViewOf([channel], ID)
+  assert.deepEqual(view, { channels: [{ id: ID, label: 'Pasted webhook', addedAt: 7 }], defaultId: ID })
+  assert.ok(!JSON.stringify(view).includes(TOKEN), 'the token is the one thing that never crosses')
+  // A default naming a channel this install does not hold is not a default: the view says so
+  // rather than pointing the share dialog's radio at a row that is not there.
+  assert.equal(channelsViewOf([channel], 'nope').defaultId, undefined)
 })
