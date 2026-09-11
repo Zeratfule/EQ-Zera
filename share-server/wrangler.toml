@@ -34,6 +34,12 @@ id = "d39ee75537644522afeaba88191730e8"
 # Every URL this service hands out is built from this - never from the request's Host header,
 # which is attacker-controlled and would let a link the app stores point somewhere else.
 PUBLIC_ORIGIN = "https://share.eqzera.com"
+# The Discord application's PUBLIC client id (docs/plans/discord-connect.md). It is not a secret -
+# it is in every authorize URL the browser sees - so it is a var. Its partner,
+# DISCORD_CLIENT_SECRET, is a Worker SECRET set with `npx wrangler secret put DISCORD_CLIENT_SECRET
+# --config share-server/wrangler.toml` and is never written here; until both exist the /discord
+# routes answer 503 `discord-off`. FILL THIS IN from the Discord developer portal.
+DISCORD_CLIENT_ID = "1547834842408943686"
 
 # Per-IP rate limiting. `[[unsafe.bindings]]` is how the rate-limiting binding is declared today
 # (wrangler warns that unsafe fields are experimental; that warning is expected). The namespace

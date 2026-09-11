@@ -51,6 +51,15 @@ export interface Env {
   READ_LIMIT?: RateLimiterLike
   /** the origin every URL this service hands out is built from (`[vars]` in wrangler.toml) */
   PUBLIC_ORIGIN?: string
+  /** the Discord application's public client id (`[vars]`); absent = the /discord routes are off */
+  DISCORD_CLIENT_ID?: string
+  /**
+   * The Discord application's client secret — a Worker SECRET (`wrangler secret put`), never a
+   * var and never in this repo. Absent (as it is under `wrangler dev` and in the unit suite) the
+   * /discord routes answer 503 `discord-off`; it is read by discord.ts and sent only to
+   * discord.com's token endpoint.
+   */
+  DISCORD_CLIENT_SECRET?: string
 }
 
 /**
@@ -103,3 +112,15 @@ export const ID_LENGTH = 10
 
 export const KEY_SHARE = (id: string): string => `share:${id}`
 export const KEY_CARD = (id: string): string => `card:${id}`
+
+/**
+ * The Discord connect flow's two rows (discord.ts), in the SAME namespace under their own prefix:
+ * a second KV binding would be a second namespace to create per account for two keys that live
+ * ten minutes. `pending` says "/discord/start issued a redirect for this state"; `result` is the
+ * webhook, parked until the app claims it once.
+ */
+export const KEY_DISCORD_PENDING = (state: string): string => `discord:pending:${state}`
+export const KEY_DISCORD_RESULT = (state: string): string => `discord:result:${state}`
+
+/** Ten minutes: a pending state, and an unclaimed result, live this long and no longer. */
+export const DISCORD_TTL_SECONDS = 600

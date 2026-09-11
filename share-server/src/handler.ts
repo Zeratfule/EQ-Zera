@@ -16,6 +16,9 @@
 //   GET    /c/:id.png           -                            -> the card image, PNG/JPEG/WebP (404 when absent)
 //   GET    /s/:id               -                            -> the HTML page
 //   GET    /                    -                            -> 302 https://eqzera.com/
+//   GET    /discord/start       ?state=                      -> 302 to Discord's channel picker   (discord.ts)
+//   GET    /discord/callback    ?code=&state=                -> an HTML notice page               (discord.ts)
+//   GET    /discord/claim/:st   -                            -> 200 the webhook, ONCE; 404 not-ready | not-found
 //   anything else                                            -> 404 JSON
 //
 // NO CORS HEADERS ON /api, deliberately: the app calls these from its MAIN process, never from a
@@ -24,6 +27,7 @@
 // and "there is nothing here" is the truthful answer to `GET /api/v1/shares/x` anyway.
 
 import { fromBase64, newDeleteToken, newId, newNonce, sha256Hex, digestsMatch } from './codec'
+import { discordRoute, platformFetch } from './discord'
 import {
   ID_LENGTH,
   KEY_CARD,
@@ -384,16 +388,24 @@ async function viewRoute(ctx: Ctx, path: string): Promise<Response> {
   return notFound()
 }
 
-/** The service. Pure: everything it can observe arrives in its three arguments. */
+/**
+ * The service. Pure: everything it can observe arrives in its arguments. `fetchImpl` is the one
+ * outbound call the service makes (discord.ts's token exchange), injected so the suite can
+ * record it and answer it without a network.
+ */
 export async function handleRequest(
   request: Request,
   env: Env,
-  now: () => number = Date.now
+  now: () => number = Date.now,
+  fetchImpl: typeof fetch = platformFetch()
 ): Promise<Response> {
   const url = new URL(request.url)
   const ctx: Ctx = { request, env, now, origin: env.PUBLIC_ORIGIN ?? url.origin }
   const path = url.pathname
   if (path === '/') return redirectResponse(HOME)
+  if (path.startsWith('/discord/')) {
+    return (await discordRoute({ ...ctx, fetchImpl }, path)) ?? notFound()
+  }
   // The site mark the page's top bar shows: static bytes, no id, no rate limit worth spending.
   if (path === '/logo.png') {
     return request.method === 'GET' || request.method === 'HEAD' ? logoResponse(logoPng()) : notFound()
