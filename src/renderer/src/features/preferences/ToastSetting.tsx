@@ -22,6 +22,10 @@
 import { type JSX, useCallback, useEffect, useState } from 'react'
 import { FormControlLabel, Stack, Switch, Typography } from '@mui/material'
 import { recordPref, usePrefsSeed, type ToastSeed } from './prefsHydration'
+// MOVING A STRIP IS A BUTTON NOW (2026-09-10). The three strips' move/reset/preview row is ONE
+// component, because it is one row: they differ in what they show and in nothing about how they
+// are placed. Its header carries the report this ticket answers.
+import { OverlayMoveRow } from './OverlayMoveRow'
 
 /** The two facts this panel shows. The toast's `durationMs` is not exposed — it is a timing
  *  constant with a good default, and the card pins under the pointer anyway. */
@@ -81,11 +85,6 @@ function useToastState(): [ToastState, (patch: Partial<ToastState>) => void] {
 export function ToastSetting(): JSX.Element {
   const [state, update] = useToastState()
 
-  const setLocked = (locked: boolean): void => {
-    update({ locked })
-    window.eq.setToastLocked(locked)
-  }
-
   return (
     <Stack spacing={2} data-testid="pref-toast">
       <Stack spacing={0.5}>
@@ -112,25 +111,13 @@ export function ToastSetting(): JSX.Element {
         </Typography>
       </Stack>
 
-      <Stack spacing={0.5}>
-        <FormControlLabel
-          control={
-            <Switch
-              size="small"
-              data-testid="pref-toast-move"
-              disabled={!state.open}
-              checked={!state.locked}
-              onChange={(e) => setLocked(!e.target.checked)}
-            />
-          }
-          label={<Typography variant="body2">Move it</Typography>}
-        />
-        <Typography variant="caption" color="text.secondary">
-          {state.locked
-            ? 'The strip sits where you left it and clicks pass straight through to the game.'
-            : 'The strip is showing its outline - drag it anywhere, and size its text with A− / A+ on the frame. Turn this off (or press Done) when it sits where you want it.'}
-        </Typography>
-      </Stack>
+      <OverlayMoveRow
+        kind="toast"
+        testId="toast"
+        open={state.open}
+        locked={state.locked}
+        onLockedChange={(locked) => update({ locked })}
+      />
     </Stack>
   )
 }

@@ -202,6 +202,35 @@ export const windowsApi = {
   /** Lock (click-through) / unlock (position it). APPLIED to the live window as well as stored. */
   setConCardLocked: (locked: boolean): void => ipcRenderer.send(IPC.overlaySetLocked, 'conCard', locked),
 
+  // ---- MOVING A STRIP IS A BUTTON (2026-09-10; src/main/overlayMove.ts) ---------------------
+  //
+  // PREFERENCES DRIVES THE LOCK THROUGH `setOverlayMoving` NOW, not through the three plain setters
+  // above: moving a strip is unlock + make sure the window exists + put it on screen + raise it, and
+  // a card that did three of those for itself would be a second opinion about what Move means. The
+  // three stay as the PLAIN lock door — one fact, no window lifecycle — which is what the con
+  // card's link spec drives (tests/e2e/conCardLinkSteps.mts) and what the overlays' own Done
+  // buttons send over the same channel.
+  //
+  // KIND-FIRST AND GENERAL, where the three cards above are spelled out per kind. The reason the
+  // reads are spelled out is that each is one door onto one kind's own config; these three are ONE
+  // action applied to whichever strip's card you are standing in front of, so three names per verb
+  // would be nine members saying the same sentence. Main refuses any kind that is not a strip, so
+  // the wider signature is not a wider door.
+  /**
+   * Begin (`true`) or end (`false`) POSITIONING a strip. Beginning unlocks it, makes sure its
+   * window exists and is on screen, and raises it over the game; ending locks it and puts back a
+   * window that was only opened to be positioned.
+   */
+  setOverlayMoving: (kind: OverlayKind, moving: boolean): void =>
+    ipcRenderer.send(IPC.overlayMove, kind, moving),
+  /** Put a strip back where it shipped. Answers the rectangle main applied, or null where there is
+   *  no display information to place against. MAIN decides what the default is. */
+  resetOverlayBounds: (kind: OverlayKind): Promise<NonNullable<OverlayConfig['bounds']> | null> =>
+    ipcRenderer.invoke(IPC.overlayResetBounds, kind),
+  /** Show this strip's SAMPLE card for a few seconds, so you can see where a real one lands.
+   *  Nothing is recorded anywhere - see src/main/overlayMove.ts. */
+  previewOverlay: (kind: OverlayKind): void => ipcRenderer.send(IPC.overlayPreview, kind),
+
   // ---- the overlays' TEXT SIZE (JOS-405; shared/overlayTextScale.ts) ------------------------
   //
   // IN THIS SLICE rather than a module of its own, and the reason is the ceiling that put the

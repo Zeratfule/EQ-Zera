@@ -4,7 +4,7 @@
 // strips — the celebration toast, the alert banner and the mob card — never had one: their 0.72 was
 // the only transparency they have ever had, because a window that renders nothing most of the time
 // has no footer to hang a control off. So it goes in the DRAG FRAME beside the A− / A+, which is
-// exactly where their text size already lives, and "Move it" is the whole route to both knobs.
+// exactly where their text size already lives, and "Move this overlay" is the whole route to both knobs.
 //
 // ONE COMPONENT FOR THE THREE, and not for the nine: each panel paints its slider in its OWN accent
 // (the heal meter's accent is not the damage meter's, and the buffs window's is computed per row set),

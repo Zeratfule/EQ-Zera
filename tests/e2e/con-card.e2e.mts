@@ -92,12 +92,32 @@ import {
   stepNoDropsOnTheCard,
   stepUnlockedClickDoesNotNavigate
 } from './conCardLinkSteps.mjs'
+// MOVING A STRIP IS A BUTTON (2026-09-10). Shared between the three strips' specs for the same
+// reason the size step is: one rule for all three, and three copies of it would be three rules.
+import {
+  openOverlayPrefs,
+  stepMoveButtonRaisesFrame,
+  stepPreview,
+  stepResetPosition,
+  type StripUnderTest
+} from './overlayMoveSteps.mjs'
 
 const CARD = '[data-testid="con-card"]'
 const NAME = '[data-testid="con-card-name"]'
 const FACTS = '[data-testid="con-card-facts"]'
 /** The box the renderer measures for the window fit (JOS-386): the drag frame + the scaled card. */
 const FIT = '[data-testid="con-card-fit"]'
+
+/** This strip, as the shared move/reset/preview steps need to know it (2026-09-10). The sample
+ *  names a mob that cannot exist, which is also what identifies it on screen. */
+const MOVE_STRIP: StripUnderTest = {
+  kind: 'conCard',
+  testId: 'con-card',
+  frame: 'con-card-drag-frame',
+  card: CARD,
+  previewNeedle: 'a preview mob',
+  label: 'mob card'
+}
 
 
 /**
@@ -699,6 +719,20 @@ async function main(): Promise<void> {
       await stepOpaqueModeFitsToo(app, page, log)
       // …the knob comes OFF here, and the default gets the last word before the window is closed.
       await stepDefaultHideLeaves(app, page, log)
+      // MOVING IT IS A BUTTON (2026-09-10), on an EMPTY card window — this kind's queue is one deep
+      // by design, so a preview drawn while the lich was up would evict it under a step above.
+      // Before the switch goes off next door, because all three need a window.
+      // …AND THE WINDOW IS NOT `card` ANY MORE. `stepOpaqueModeFitsToo` closes this kind's window
+      // and opens it twice more (opaque, then transparent again), so the handle this spec has been
+      // carrying since the first step belongs to a page that is gone — which is what a stale Page
+      // looks like from here: "Target page, context or browser has been closed". Re-found rather
+      // than threaded back out of that step, because every step below it is about the LIVE window.
+      const live = await settle(() => findCardWindow(app), (w) => w !== null, { timeoutMs: 30_000 })
+      if (live && (await openOverlayPrefs(page, 'pref-con-card'))) {
+        await stepMoveButtonRaisesFrame(page, live, MOVE_STRIP)
+        await stepResetPosition(app, page, live, MOVE_STRIP)
+        await stepPreview(page, live, MOVE_STRIP)
+      }
       await stepPreferenceTurnsItOff(app, page)
     } else {
       note('no con card window — every claim below it was skipped')

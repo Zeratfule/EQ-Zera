@@ -31,6 +31,7 @@ interface RendererErrorPayload {
   view?: string
 }
 import { fitOverlayHeight, refitStripsForTextScale } from '../overlayBounds'
+import { endMoveIfOpened } from '../overlayMove'
 import {
   applyOverlayLocked,
   getMainWindow,
@@ -296,6 +297,12 @@ export function registerWindowIpc(): void {
     const next = setOverlayConfig(kind, { locked })
     applyOverlayLocked(kind, locked)
     getOverlayWindow(kind)?.webContents.send(IPC.onOverlayConfig, { kind, config: next })
+    // THE FRAME'S OWN DONE IS ALSO A DONE (2026-09-10). Pressing "Move this overlay" on a strip
+    // that is switched OFF opens its window for as long as the frame is up (../overlayMove.ts), and
+    // there are two buttons that end that — Preferences' Done, which goes through `overlay:move`,
+    // and the frame's, which comes here. So this path asks too, and a strip that was off is put
+    // back whichever one was pressed. A no-op in every other case, meter or strip.
+    if (locked) endMoveIfOpened(kind)
   })
   // Fine-grained pass-through toggle: the meters' hover sensor (locked mode), and the toast
   // overlay's queue transitions (empty ⇒ pass everything through; a card on screen ⇒ capture).

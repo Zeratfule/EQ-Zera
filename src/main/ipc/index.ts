@@ -61,6 +61,10 @@ import { registerConCardIpc } from '../conCard'
 // like the toast's producer channel above, rather than in a fourth file in this folder.
 import { registerTrayIpc } from '../tray'
 import { registerWindowIpc } from './windowControls'
+// MOVING A STRIP IS A BUTTON (2026-09-10). Beside the windows it drives (src/main/overlayMove.ts),
+// like the toast and con-card producer registrations above, rather than in a file here: every line
+// of it is window lifecycle, placement and a push at an overlay's webContents.
+import { registerOverlayMoveIpc } from '../overlayMove'
 import { registerWorldIpc } from './world'
 // The data server's renderer brokerage (JOS-484). It lives beside the supervisor that owns the
 // launch it hands out (src/main/dataServer/), like the toast and con-card producer channels above,
@@ -110,6 +114,7 @@ export function registerIpc(): void {
   registerQuestPinsIpc()
   registerCraftIpc()
   registerWindowIpc()
+  registerOverlayMoveIpc()
   registerToastIpc()
   registerAlertBannerIpc()
   registerConCardIpc()

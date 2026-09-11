@@ -16,7 +16,7 @@
 // LOCKED: an unlocked (interactive) toast is being positioned, and must keep the pointer.
 //
 // INTERACTIVE MODE is how you move it. Locked, there is nothing to grab — by design, since the
-// window is empty most of the time. Unlocked (Preferences → Overlays → "Move the toast"), the
+// window is empty most of the time. Unlocked (Preferences → Overlays → "Move this overlay"), the
 // strip shows its outline and a drag bar, so "configurable position later" is the mechanism
 // every other overlay already has rather than a new one.
 //
@@ -43,6 +43,7 @@ import { useUnpinOnPointerExit } from './cardQueue'
 import { toastReduce, type ToastAction, type ToastCardState } from './toastQueue'
 import { TextScaleStepper } from './TextScaleStepper'
 import { BgAlphaSlider } from './BgAlphaSlider'
+import { DragGrip } from './DragGrip'
 import { useOverlayChrome, type OverlayChrome } from './useOverlayChrome'
 import { fitChanged, overlayFitRequest } from './overlayFit'
 import { PALETTE, withAlpha } from '../../../shared/palette'
@@ -71,13 +72,23 @@ const FIT_MIN_PX = 120
 const ACCENT = PALETTE.accent
 
 /**
+ * WHAT THE FRAME SAYS (2026-09-10, owner: "we need a way to move the celebration overlays").
+ *
+ * The old line was "Drag me where celebrations should appear", which describes the drag and not the
+ * window: somebody who has just pressed Move this overlay in Preferences and is now looking at a
+ * dashed rectangle over their game needs to be told WHAT THIS RECTANGLE IS — it is where the cards
+ * come out — and how to finish. Two sentences, and the second names the button beside it.
+ */
+const FRAME_TEXT = 'Celebration cards appear here. Drag to move, then Done.'
+
+/**
  * The positioning frame, shown only while the overlay is unlocked.
  *
  * It is also where the TEXT SIZE and the TRANSPARENCY live for this kind, for the same reason the
  * drag handle does: the toast has no header and no footer to hang a control off — it renders
  * nothing at all most of the time — so this frame is the only chrome it ever shows. Preferences →
- * Overlays → "Move it" is therefore the whole route to all three knobs: move it, size it, fade it,
- * Done. (The `bg` slider arrived in JOS-407; until then this kind's 0.72 was not settable at all.)
+ * Overlays → "Move this overlay" is therefore the whole route to all three knobs: move it, size it,
+ * fade it, Done. (The `bg` slider arrived in JOS-407; until then this kind's 0.72 was not settable.)
  */
 function DragFrame({
   onDone,
@@ -109,10 +120,15 @@ function DragFrame({
         fontSize: 11
       }}
     >
+      {/* THE GRAB HANDLE (2026-09-10). The whole frame already drags — the root carries
+          `chrome.dragRegion` while unlocked and every control in here carries `no-drag` — but a
+          rectangle that can be picked up looks exactly like one that cannot, and this frame is the
+          only thing the user was ever told to drag. See DragGrip.tsx. */}
+      <DragGrip testId="toast-drag-grip" />
       {/* The PROSE is the give on a narrow strip; the three controls beside it are the whole point
           of the frame and stay whole at every width. */}
       <span style={{ minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-        Drag me where celebrations should appear
+        {FRAME_TEXT}
       </span>
       <BgAlphaSlider bgAlpha={bgAlpha} patch={patch} noDrag={noDrag} />
       <TextScaleStepper textScale={textScale} patch={patch} noDrag={noDrag} />

@@ -18,7 +18,7 @@
 // read by main to decide whether an OPAQUE strip window is visible at all (windows.ts).
 //
 // INTERACTIVE MODE IS HOW YOU MOVE IT. Locked, there is nothing to grab — by design, since the
-// window is empty most of the time. Unlocked (Preferences → Overlays → "Move it"), the strip shows
+// window is empty most of the time. Unlocked (Preferences → Overlays → "Move this overlay"), the strip shows
 // its outline and a drag bar, and that frame is also where the TEXT SIZE lives, for the reason the
 // toast's does: this kind has no header and no footer to hang a control off.
 //
@@ -52,10 +52,15 @@ import {
 } from './cardQueue'
 import { TextScaleStepper } from './TextScaleStepper'
 import { BgAlphaSlider } from './BgAlphaSlider'
+import { DragGrip } from './DragGrip'
 import { useOverlayChrome, type OverlayChrome } from './useOverlayChrome'
 import { PALETTE, withAlpha } from '../../../shared/palette'
 
 const ACCENT = PALETTE.accent
+
+/** WHAT THE FRAME SAYS (2026-09-10) — the toast's rule, one window over: name what the rectangle
+ *  IS before describing the drag, and name the button that ends it. */
+const FRAME_TEXT = 'Alert banner lands here. Drag to move, then Done.'
 
 type BannerAction = CardAction<AlertBannerPayload>
 type BannerState = CardState<AlertBannerPayload>[]
@@ -70,7 +75,7 @@ function bannerConfig(config: OverlayConfig | null): AlertBannerOverlayConfig {
  * The positioning frame, shown only while the overlay is unlocked — the toast's DragFrame, with
  * this window's own words. It is also where the TEXT SIZE and the TRANSPARENCY live, for the same
  * reason: this kind renders nothing at all most of the time, so the frame is the only chrome it
- * ever shows, and Preferences → Overlays → "Move it" is the whole route to all three knobs. (The
+ * ever shows, and Preferences → Overlays → "Move this overlay" is the whole route to all three knobs. (The
  * `bg` slider arrived in JOS-407; until then this kind's 0.72 was not settable at all.)
  */
 function DragFrame({
@@ -103,10 +108,12 @@ function DragFrame({
         fontSize: 11
       }}
     >
+      {/* THE GRAB HANDLE (2026-09-10) — the celebration strip's, for its reason. See DragGrip.tsx. */}
+      <DragGrip testId="banner-drag-grip" />
       {/* The PROSE is the give on a narrow strip; the three controls beside it are the whole point
           of the frame and stay whole at every width. */}
       <span style={{ minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-        Drag me where alerts should appear
+        {FRAME_TEXT}
       </span>
       <BgAlphaSlider bgAlpha={bgAlpha} patch={patch} noDrag={noDrag} />
       <TextScaleStepper textScale={textScale} patch={patch} noDrag={noDrag} />

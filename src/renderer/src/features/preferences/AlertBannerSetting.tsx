@@ -30,6 +30,9 @@ import {
   type AlertBannerOverlayConfig
 } from '@shared/alertBanner'
 import { recordPref, usePrefsSeed, type AlertBannerSeed } from './prefsHydration'
+// MOVING A STRIP IS A BUTTON NOW (2026-09-10) - the same row the toast and the con card carry,
+// because it is the same row. Its header carries the report this ticket answers.
+import { OverlayMoveRow } from './OverlayMoveRow'
 
 /** The holds this card offers, in seconds. A closed list, not a slider: the difference between
  *  4 s and 4.3 s is not a decision anybody has, and the cap is the owner's 15. */
@@ -152,10 +155,6 @@ function BannerKnobs({
 export function AlertBannerSetting(): JSX.Element {
   const [state, update] = useBannerState()
 
-  const setLocked = (locked: boolean): void => {
-    update({ locked })
-    window.eq.setAlertBannerLocked(locked)
-  }
   const setCfg = (patch: Partial<AlertBannerOverlayConfig>): void => {
     const cfg = { ...state.cfg, ...patch }
     update({ cfg })
@@ -189,25 +188,13 @@ export function AlertBannerSetting(): JSX.Element {
         </Typography>
       </Stack>
 
-      <Stack spacing={0.5}>
-        <FormControlLabel
-          control={
-            <Switch
-              size="small"
-              data-testid="pref-banner-move"
-              disabled={!state.open}
-              checked={!state.locked}
-              onChange={(e) => setLocked(!e.target.checked)}
-            />
-          }
-          label={<Typography variant="body2">Move it</Typography>}
-        />
-        <Typography variant="caption" color="text.secondary">
-          {state.locked
-            ? 'The strip sits where you left it and clicks pass straight through to the game.'
-            : 'The strip is showing its outline - drag it anywhere, and size its text with A- / A+ on the frame. Turn this off (or press Done) when it sits where you want it.'}
-        </Typography>
-      </Stack>
+      <OverlayMoveRow
+        kind="alertBanner"
+        testId="banner"
+        open={state.open}
+        locked={state.locked}
+        onLockedChange={(locked) => update({ locked })}
+      />
 
       <BannerKnobs cfg={state.cfg} disabled={!state.open} onChange={setCfg} />
     </Stack>

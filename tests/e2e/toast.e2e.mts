@@ -64,6 +64,27 @@ import { DING_LEVEL, stepDeepLinkRoundtrip, stepRepeatDeepLink } from './toastDe
 // HEIGHT against what it drew live next door, with the quest-item card they need — the same
 // 400-code-line split that put the deep links in their own file.
 import { stepFitAtDoubleText, stepWindowFitsItsCards } from './toastFitSteps.mjs'
+// MOVING A STRIP IS A BUTTON (2026-09-10). The three claims — Move raises the frame and Done takes
+// it away, Reset puts the window back, Preview draws a sample that leaves — are shared between the
+// three strips' specs for `stripScaleSteps`' reason: one rule, one copy of it.
+import {
+  openOverlayPrefs,
+  stepMoveButtonRaisesFrame,
+  stepPreview,
+  stepResetPosition,
+  type StripUnderTest
+} from './overlayMoveSteps.mjs'
+
+/** This strip, as the shared move/reset/preview steps need to know it (2026-09-10). The preview
+ *  sample IS the introduction card, so its needle is the introduction's own title. */
+const MOVE_STRIP: StripUnderTest = {
+  kind: 'toast',
+  testId: 'toast',
+  frame: 'toast-drag-frame',
+  card: '[data-testid="toast-card"]',
+  previewNeedle: 'celebration overlay',
+  label: 'celebration strip'
+}
 
 /** A Sky reward that exists in the committed item DB, so the card resolves with NO network. */
 const REWARD = 'Shining Metallic Robes'
@@ -494,6 +515,15 @@ async function main(): Promise<void> {
       // is the claim, and empty it again. Everything above wants the stack it built left alone.
       await stepWindowFitsItsCards(app, page, t)
       await stepFitAtDoubleText(app, t)
+      // MOVING IT IS A BUTTON (2026-09-10). LAST, and after the lane is empty: the preview draws
+      // the introduction card again, and a step that ran while three celebrations were stacked
+      // would be asserting against a window somebody else's claim is about.
+      await setOverlayTextScale(t, 1)
+      if (await openOverlayPrefs(page, 'pref-toast')) {
+        await stepMoveButtonRaisesFrame(page, t, MOVE_STRIP)
+        await stepResetPosition(app, page, t, MOVE_STRIP)
+        await stepPreview(page, t, MOVE_STRIP)
+      }
     }
 
     check('no renderer console errors', consoleErrors.length === 0, consoleErrors.slice(0, 3).join(' | '))

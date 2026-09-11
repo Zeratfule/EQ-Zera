@@ -220,6 +220,28 @@ export const IPC = {
   // window shrinks instead" true even for a card dragged to the bottom of the screen. Main clamps
   // the request to the work area and does NOT persist the result as a chosen size.
   overlayFitHeight: 'overlay:fitHeight',
+  // ---- MOVING A STRIP IS A BUTTON (2026-09-10; src/main/overlayMove.ts) ----------------------
+  //
+  // The three strips could always be moved - Preferences, Overlays carried a "Move it" switch that
+  // unlocked one - and the owner could not find it. A locked strip is an invisible click-through
+  // window, so a switch labelled like a setting was the only sign the feature existed, there was
+  // no way back to the shipped position, and no way to see where a card would land without waiting
+  // for one. These three channels are the answer, and all three take the kind as their first arg
+  // like every other overlay channel.
+  //
+  // renderer(main app) -> main: begin / end POSITIONING a kind. Args: kind, moving.
+  // Beginning unlocks the strip, makes sure its window exists and is on screen (a strip that is
+  // switched OFF is opened for the duration, and closed again on Done - see overlayMove.ts) and
+  // raises it over the game. Ending locks it and puts that back.
+  overlayMove: 'overlay:move',
+  // renderer(main app) -> main: put a kind back where it shipped. Arg: kind. Returns the applied
+  // Rectangle, or null on a machine with no display information. MAIN COMPUTES IT: the default is
+  // `overlayLayout.ts`'s and the renderer never has an opinion about a rectangle.
+  overlayResetBounds: 'overlay:resetBounds',
+  // renderer(main app) -> main: show this kind's SAMPLE card for a few seconds (shared/overlayPreview.ts).
+  // Arg: kind. Fire-and-forget, and deliberately not a producer path: nothing is recorded anywhere,
+  // exactly like the update card, and a kind with no window simply draws nothing.
+  overlayPreview: 'overlay:preview',
   // renderer(overlay) -> main: read a kind's persisted config. Arg: kind. Returns OverlayConfig.
   overlayGetConfig: 'overlay:getConfig',
   // renderer(overlay) -> main: persist a kind's config (partial merge). Args: kind, patch.

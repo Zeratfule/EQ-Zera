@@ -253,6 +253,17 @@ export interface ConCardPayload {
   /** False when the client's `spells_us.txt` could not be read; the card says so instead of
    *  drawing five identical "not enough data" chips with no explanation. */
   spellData: boolean
+  /**
+   * HOW LONG THIS PARTICULAR CARD HOLDS, in ms. Absent on every real `/con` - and absent is the
+   * normal case, because how long a card stays is the USER's knob (`autoHideMs`, and zero means
+   * never).
+   *
+   * Present only on the PREVIEW (2026-09-10, shared/overlayPreview.ts), where it has to be: a
+   * preview is a glance at where the card lands, so it cannot inherit "until I close it" from a
+   * setting about real cards. The banner's payload has carried exactly this field, for exactly this
+   * reason, since JOS-378.
+   */
+  holdMs?: number
 }
 
 /**
@@ -266,8 +277,14 @@ export function conCardChips(profile: MobResistProfile): ConCardChip[] {
   return RESIST_AXES.map((axis) => chipFor(axis, byAxis.get(axis)))
 }
 
-/** The empty chip: what an axis the profile omits, or has nothing behind, looks like on the wire. */
-function blankChip(axis: ResistAxis): ConCardChip {
+/**
+ * The empty chip: what an axis the profile omits, or has nothing behind, looks like on the wire.
+ *
+ * EXPORTED SINCE THE PREVIEW CARD (2026-09-10). `shared/overlayPreview.ts` builds a sample card for
+ * a mob that does not exist, and a sample whose five chips were written out by hand would be a
+ * second opinion about the shape of this wire. It asks for the empty one instead.
+ */
+export function blankChip(axis: ResistAxis): ConCardChip {
   return {
     axis,
     tag: null,

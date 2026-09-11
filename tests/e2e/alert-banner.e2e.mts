@@ -53,10 +53,29 @@ import {
   stepStripBgSlider,
   stepStripScalesWithText
 } from './stripScaleSteps.mjs'
+// MOVING A STRIP IS A BUTTON (2026-09-10). Shared between the three strips' specs for the same
+// reason the size step is: one rule for all three, and three copies of it would be three rules.
+import {
+  openOverlayPrefs,
+  stepMoveButtonRaisesFrame,
+  stepPreview,
+  stepResetPosition,
+  type StripUnderTest
+} from './overlayMoveSteps.mjs'
 
 const ROW = '[data-testid="alert-row"]'
 const LINE = '[data-testid="banner-line"]'
 const ROW_TOGGLE = '[data-testid="alert-show-on-screen-toggle"]'
+
+/** This strip, as the shared move/reset/preview steps need to know it (2026-09-10). */
+const MOVE_STRIP: StripUnderTest = {
+  kind: 'alertBanner',
+  testId: 'banner',
+  frame: 'banner-drag-frame',
+  card: LINE,
+  previewNeedle: 'Preview:',
+  label: 'alert banner'
+}
 
 /** The banner overlay's page, identified by the `?kind=` query its window was opened with. */
 async function findBannerWindow(app: ElectronApplication): Promise<Page | null> {
@@ -349,6 +368,13 @@ async function main(): Promise<void> {
       await stepStripBgSlider(banner, 'banner-drag-frame', 'alert banner')
       await stepPerAlertSwitchHides(page, banner)
       await stepMutedStillShows(page, banner, name)
+      // MOVING IT IS A BUTTON (2026-09-10). LAST, because it leaves Preferences open and the steps
+      // above are all about the Alerts tab.
+      if (await openOverlayPrefs(page, 'pref-alert-banner')) {
+        await stepMoveButtonRaisesFrame(page, banner, MOVE_STRIP)
+        await stepResetPosition(app, page, banner, MOVE_STRIP)
+        await stepPreview(page, banner, MOVE_STRIP)
+      }
     }
 
     check('no renderer console errors', consoleErrors.length === 0, consoleErrors.slice(0, 3).join(' | '))

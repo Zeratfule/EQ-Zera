@@ -135,6 +135,18 @@ export interface ReleaseNote {
  * still sees exactly the releases above it.
  */
 export const RELEASE_NOTES: readonly ReleaseNote[] = [
+  // The owner could not find the control that moves the celebration strip, which had been a
+  // switch called "Move it" since JOS-378 (src/main/overlayMove.ts carries the whole report).
+  {
+    version: '1.23.1',
+    date: '2026-09-10',
+    entries: [
+      {
+        kind: 'changed',
+        text: 'Moving the celebration, alert banner and con card overlays is a button now. Preferences, Overlays has Move this overlay, Reset position and Preview for each strip; Move shows a dashed frame you drag, Preview shows a sample card so you can see where it lands.'
+      }
+    ]
+  },
   // Character sharing, phase 2 (docs/plans/share-links.md): the card as a link. The service
   // behind share.eqzera.com went live 2026-09-09 (share-server/, Cloudflare Worker + KV).
   {

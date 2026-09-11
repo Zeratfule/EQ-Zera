@@ -51,11 +51,16 @@ import { cardReduce, useCardTick, useQueueMouseCapture, useUnpinOnPointerExit } 
 import type { CardAction, CardState } from './cardQueue'
 import { TextScaleStepper } from './TextScaleStepper'
 import { BgAlphaSlider } from './BgAlphaSlider'
+import { DragGrip } from './DragGrip'
 import { useOverlayChrome, type OverlayChrome } from './useOverlayChrome'
 import { fitChanged, overlayFitRequest } from './overlayFit'
 import { PALETTE, withAlpha } from '../../../shared/palette'
 
 const ACCENT = PALETTE.accent
+
+/** WHAT THE FRAME SAYS (2026-09-10) — the toast's rule, one window over: name what the rectangle
+ *  IS before describing the drag, and name the button that ends it. */
+const FRAME_TEXT = 'Con card appears here. Drag to move, then Done.'
 
 /** One card at a time, by design — see the header. */
 const CAP = 1
@@ -108,8 +113,10 @@ function DragFrame({
         fontSize: 11
       }}
     >
+      {/* THE GRAB HANDLE (2026-09-10) — the celebration strip's, for its reason. See DragGrip.tsx. */}
+      <DragGrip testId="con-card-drag-grip" />
       <span style={{ minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-        Drag me where mob cards should appear
+        {FRAME_TEXT}
       </span>
       <BgAlphaSlider bgAlpha={bgAlpha} patch={patch} noDrag={noDrag} />
       <TextScaleStepper textScale={textScale} patch={patch} noDrag={noDrag} />
@@ -140,13 +147,19 @@ function DragFrame({
  * THE HOLD IS READ AT ARRIVAL, through a ref, so a user who changes the auto-hide in Preferences
  * sees it apply to the very next `/con` without this effect re-subscribing (and therefore without
  * dropping a card in the gap) — the banner's arrangement, for the same reason.
+ *
+ * …UNLESS THE PAYLOAD NAMED ONE (2026-09-10), which today means the PREVIEW and nothing else. A
+ * sample card exists to show where a card lands, so it must not inherit "until I close it" from a
+ * setting about real cards — the banner's payload has carried its own `holdMs` for the same reason
+ * since JOS-378. Every real `/con` sends none and the user's knob still decides.
  */
 function useCardFeed(cfg: ConCardOverlayConfig, dispatch: (a: ConAction) => void): void {
   const cfgRef = useRef(cfg)
   cfgRef.current = cfg
   useEffect(() => {
     return window.eqOverlay.onConCard((payload: ConCardPayload) => {
-      dispatch({ type: 'show', payload, holdMs: conCardHoldMs(cfgRef.current), cap: CAP })
+      const holdMs = payload.holdMs ?? conCardHoldMs(cfgRef.current)
+      dispatch({ type: 'show', payload, holdMs, cap: CAP })
     })
   }, [dispatch])
 }
@@ -232,8 +245,19 @@ export default function ConCardOverlay(): JSX.Element {
   // up on the render the wrapper mounts rather than the one after it. Quiet on an empty queue (the
   // window keeps what it had) and while anything is fading out (a resize would replace the fade
   // with a snap).
+  //
+  // …EXCEPT WHILE THE FRAME IS UP (2026-09-10), which is the toast's `frameUp` rule arriving here.
+  // An empty queue said nothing at all, so pressing Move on a strip whose last card was short left
+  // the dashed frame in a window too small to hold it — a positioning affordance you cannot see is
+  // the whole defect this ticket is about. The frame IS content: it is the only chrome this kind
+  // ever shows, and the window has to be at least as tall as the thing the user is being asked to
+  // drag.
   const [fitEl, setFitEl] = useState<HTMLDivElement | null>(null)
-  useFitWindowHeight(fitEl, cards.length === 0 || cards.some((c) => c.exitingMs !== null))
+  const frameUp = chrome.ready && !chrome.locked
+  useFitWindowHeight(
+    fitEl,
+    (cards.length === 0 && !frameUp) || cards.some((c) => c.exitingMs !== null)
+  )
 
   return (
     <div
@@ -249,7 +273,7 @@ export default function ConCardOverlay(): JSX.Element {
         {/* The drag frame is CHROME: unscaled, so "Done" and A- / A+ stay inside the window at 2.0.
             It is INSIDE the measured box on purpose — the JOS-378 rule is that the frame stays in
             the window at every text scale, and a window fitted to the card alone would cut it off. */}
-        {chrome.ready && !chrome.locked && (
+        {frameUp && (
           <DragFrame
             onDone={chrome.toggleLock}
             textScale={chrome.textScale}

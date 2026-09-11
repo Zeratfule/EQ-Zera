@@ -28,6 +28,9 @@ import {
   type ConCardOverlayConfig
 } from '@shared/conCard'
 import { recordPref, usePrefsSeed, type ConCardSeed } from './prefsHydration'
+// MOVING A STRIP IS A BUTTON NOW (2026-09-10) - the same row the toast and the banner carry,
+// because it is the same row. Its header carries the report this ticket answers.
+import { OverlayMoveRow } from './OverlayMoveRow'
 
 /**
  * The auto-hides this card offers, in seconds, plus the owner's NEVER.
@@ -92,10 +95,6 @@ function useConCardState(): [CardState, (patch: Partial<CardState>) => void] {
 export function ConCardSetting(): JSX.Element {
   const [state, update] = useConCardState()
 
-  const setLocked = (locked: boolean): void => {
-    update({ locked })
-    window.eq.setConCardLocked(locked)
-  }
   const setHide = (autoHideMs: number): void => {
     const cfg: ConCardOverlayConfig = { ...state.cfg, autoHideMs }
     update({ cfg })
@@ -129,25 +128,13 @@ export function ConCardSetting(): JSX.Element {
         </Typography>
       </Stack>
 
-      <Stack spacing={0.5}>
-        <FormControlLabel
-          control={
-            <Switch
-              size="small"
-              data-testid="pref-con-card-move"
-              disabled={!state.open}
-              checked={!state.locked}
-              onChange={(e) => setLocked(!e.target.checked)}
-            />
-          }
-          label={<Typography variant="body2">Move it</Typography>}
-        />
-        <Typography variant="caption" color="text.secondary">
-          {state.locked
-            ? 'The card sits where you left it and clicks pass straight through to the game.'
-            : 'The card area is showing its outline - drag it anywhere, and size its text with A- / A+ on the frame. Turn this off (or press Done) when it sits where you want it.'}
-        </Typography>
-      </Stack>
+      <OverlayMoveRow
+        kind="conCard"
+        testId="con-card"
+        open={state.open}
+        locked={state.locked}
+        onLockedChange={(locked) => update({ locked })}
+      />
 
       <Stack sx={{ minWidth: 200, maxWidth: 260 }}>
         <Typography variant="caption" color="text.secondary">
