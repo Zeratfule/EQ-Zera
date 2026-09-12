@@ -30,6 +30,9 @@ import { registerDiscordIpc } from './discord'
 // channel with the numbers beside it. It reuses cardCapture.ts rather than growing a second
 // screenshot - see its header.
 import { registerCombatShareIpc } from './combatShare'
+// Mirroring the CELEBRATION OVERLAY into one of those channels: the two preference doors only -
+// the posting itself hangs off `sendToToastOverlay` in main, not off a channel - see its header.
+import { registerCelebrationPostIpc } from './celebrationPost'
 import { registerEqModelIpc } from './eqModel'
 import { registerItemLookIpc } from './itemLook'
 import { registerClipboardIpc } from './clipboard'
@@ -102,6 +105,7 @@ export function registerIpc(): void {
   registerCharacterShareIpc()
   registerDiscordIpc()
   registerCombatShareIpc()
+  registerCelebrationPostIpc()
   registerEqModelIpc()
   registerItemLookIpc()
   registerOutputsIpc()

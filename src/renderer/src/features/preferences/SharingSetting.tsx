@@ -25,6 +25,7 @@
 import { type JSX, useState } from 'react'
 import { Button, Collapse, Stack, TextField, Typography } from '@mui/material'
 import ForumIcon from '@mui/icons-material/Forum'
+import { CelebrationPostSetting } from './CelebrationPostSetting'
 import { DiscordChannelList } from './DiscordChannelList'
 import { useDiscordChannels, type DiscordChannelsState } from './useDiscordChannels'
 import type { PrefSection } from './PreferencesView'
@@ -171,6 +172,16 @@ export function sharingSection(): PrefSection {
         keywords:
           'discord webhook share post channel chat server card character profile link integration connect oauth',
         content: <SharingSetting />
+      },
+      {
+        // The SECOND item rather than a line inside the first, because they answer different
+        // questions: the card above is WHERE this app may post, and this is what gets posted there
+        // without anybody pressing a button (./CelebrationPostSetting.tsx).
+        id: 'celebration-post',
+        label: 'Post celebrations to Discord',
+        keywords:
+          'discord celebration toast overlay post channel level boss quest wish list death automatic announce guild',
+        content: <CelebrationPostSetting />
       }
     ]
   }

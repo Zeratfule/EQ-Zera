@@ -18,6 +18,12 @@
 // here: `useBossKills` and `useProgress` already own "a LIVE transition, never hydration", and a
 // second predicate in this file could only ever disagree with them.
 //
+// AND SINCE "POST CELEBRATIONS TO DISCORD" THERE IS ONE MORE HOP OUT, hanging off
+// `sendToToastOverlay` rather than off any producer: every celebration card in this app passes that
+// one function, so it is the only place "what the overlay showed" and "what the channel got" can be
+// the same list (src/main/celebrationPost.ts, shared/celebrationPost.ts). It is guarded and
+// fire-and-forget — see the note at the call itself.
+//
 // A CLOSED TOAST OVERLAY IS SILENT. Nothing is rendered and nothing is played when the window
 // is not open — the sound belongs to the toast, not to the event (the event already has its own
 // alert). That also makes the Preferences switch honest: off means off, everywhere.
@@ -32,6 +38,7 @@
 
 import { ipcMain } from 'electron'
 import { IPC } from '../shared/ipc'
+import { postCelebration } from './celebrationPost'
 import { logError } from './errorLog'
 import { lookupItem } from './itemLookup'
 import { questByPage } from './questCatalog'
@@ -109,6 +116,18 @@ function resolveQuestCards(req: ToastRequest): ToastQuestCard[] {
  * celebration overlay switched off, so the update is never only reachable from here.
  */
 export function sendToToastOverlay(payload: ToastPayload): void {
+  // THE DISCORD MIRROR HANGS HERE, AND IT HANGS FIRST-AND-DETACHED (src/main/celebrationPost.ts).
+  // Every celebration card in this app passes through this one function, so this is the only place
+  // "what the overlay showed" and "what the channel gets" can be the same list. The try/catch is
+  // not defensive habit: the overlay send below is the feature the user is looking at, and a
+  // Discord preference, a store read or a queue bug must never be allowed to cost them a card.
+  // The post itself is fire-and-forget and never throws (that module's own law); this catches the
+  // synchronous path anyway, because "never throws" is a claim, and the card is worth more.
+  try {
+    postCelebration(payload)
+  } catch (err) {
+    logError('main:celebrationPost', err)
+  }
   const w = getOverlayWindow('toast')
   if (!w || w.isDestroyed()) return
   const wc = w.webContents
