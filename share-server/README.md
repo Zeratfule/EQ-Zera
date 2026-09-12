@@ -12,14 +12,19 @@ table live in **`docs/plans/share-links.md`** — this file is only how to run i
 | `src/index.ts` | the Worker entry. Three lines; all it does is call the handler. |
 | `src/handler.ts` | `handleRequest(request, env, now)` — the whole service, as a pure function. |
 | `src/store.ts` | the two trust gates (`validateEnvelope` + `sanitizeCharacterShare`), the KV record, the 180-day/30-day clock. |
+| `src/history.ts` | the gear history: the states a share was re-published over, as compact snapshots under `hist:<id>`. |
+| `src/sync.ts` | settings sync: one client-encrypted bundle parked under a code for 24 hours (`docs/plans/settings-sync.md`). |
 | `src/page.ts` | the HTML page: server-rendered, everything escaped, Open Graph tags, the copy button. |
+| `src/pageHistory.ts` | the page's History panel: what each re-share changed, from those snapshots. |
 | `src/codec.ts` | base64url, deflate-raw over `CompressionStream`, id/token generation, SHA-256. |
 | `src/env.ts` | the bindings, declared structurally so no Cloudflare types are needed to build or test. |
 | `tsconfig.json` | the worker's own program (share-server/ is in neither root tsconfig — see the header there). |
 
-The tests are in the ROOT suite: `tests/shareServer.test.mts`, run by `npm test` like everything
-else. They drive `handleRequest` with an in-memory KV fake and an injected clock, so there is no
-workerd emulator in the loop and no separate test command to forget.
+The tests are in the ROOT suite — `tests/shareServer.test.mts` (the API and the clock),
+`shareCard.test.mts`, `sharePage.test.mts`, `shareDiscord.test.mts`, `shareHistory.test.mts` and
+`shareSync.test.mts` — run by `npm test` like everything else. They drive `handleRequest` with an
+in-memory KV fake and an injected clock, so there is no workerd emulator in the loop and no
+separate test command to forget.
 
 ## First-time setup
 
@@ -91,9 +96,9 @@ custom domain has to exist before share links work from a shipped build.
 
 | binding | what it is | notes |
 | --- | --- | --- |
-| `SHARES` | KV namespace | holds `share:<id>` (JSON) and `card:<id>` (PNG, JPEG or WebP bytes, ≤ 1 MB), both with a 180-day TTL |
-| `CREATE_LIMIT` | rate limiter, 20 / 60 s / IP | guards POST, PUT and DELETE |
-| `READ_LIMIT` | rate limiter, 300 / 60 s / IP | guards `/p/`, `/c/` and `/s/` |
+| `SHARES` | KV namespace | holds `share:<id>` (JSON), `card:<id>` (PNG, JPEG or WebP bytes, ≤ 1 MB) and `hist:<id>` (the gear history, JSON), all three with a 180-day TTL; plus `discord:*` (10 min) and `sync:<code>` (24 h) |
+| `CREATE_LIMIT` | rate limiter, 20 / 60 s / IP | guards POST, PUT and DELETE, `/discord/start`, `/discord/callback`, and the sync write routes |
+| `READ_LIMIT` | rate limiter, 300 / 60 s / IP | guards `/p/`, `/c/`, `/s/`, `/discord/claim` and `GET /api/v1/sync/<code>` |
 | `PUBLIC_ORIGIN` | plain var | the origin every URL handed out is built from |
 
 A missing rate-limiter binding is treated as **allowed** so `wrangler dev` and the unit suite run
@@ -104,9 +109,15 @@ deploy without a namespace id fails at deploy time, which is the right place for
 
 * **Expiry** is entirely KV TTL — there is no sweeper and nothing to run. A share lives 180 days
   from its last write; a view rewrites (and so extends) only when the record is more than 30 days
-  stale, which bounds a share's real life at 180–210 days from its last read.
-* **Revocation is real.** `DELETE /api/v1/shares/:id` with the delete token removes both keys, and
-  every route then answers 404. The token is stored only as a SHA-256 digest, so a dump of the KV
-  namespace lets nobody delete anything.
+  stale, which bounds a share's real life at 180–210 days from its last read. All three of a
+  share's keys are rewritten together, so the record, its card and its history never expire apart.
+* **Revocation is real.** `DELETE /api/v1/shares/:id` with the delete token removes all three keys,
+  and every route then answers 404. The token is stored only as a SHA-256 digest, so a dump of the
+  KV namespace lets nobody delete anything.
+* **Settings sync stores ciphertext only.** `sync:<code>` holds bytes the app encrypted before it
+  sent them (AES-GCM, the key never on the wire — `docs/plans/settings-sync.md`), for 24 hours.
+  There is no decrypt path here and nothing to add one to; a dump of the namespace is noise. The
+  code is the only secret, so `DELETE /api/v1/sync/<code>` takes no token, and a read does not
+  consume the parcel.
 * **There are no logs and no analytics.** Nothing here records who viewed a share (spec: "Not in
   this phase").
