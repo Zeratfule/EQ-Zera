@@ -41,6 +41,9 @@
     "src/preload/discordApi.ts",
     // …and `syncApi.ts` (sending your settings to another PC of your own), likewise.
     "src/preload/syncApi.ts",
+    // …and `awayAlerts.ts` (alerts that also go to one of those channels while you are away),
+    // likewise.
+    "src/preload/awayAlerts.ts",
     // …and `windows.ts` (the overlays + the celebration toast), for the same reason.
     "src/preload/windows.ts",
     // …and `roster.ts` (the group roster's user edits), likewise.
