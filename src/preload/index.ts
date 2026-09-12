@@ -98,6 +98,10 @@ import { engineBridge } from './engine'
 // What's new (JOS-73): the one store key behind the release-notes panel and its teaser strip.
 // The NOTES are committed source the renderer imports directly — see ./releaseNotes.ts.
 import { releaseNotesBridge } from './releaseNotes'
+// "Post celebrations to Discord" (./celebrationPost.ts), split out for the same file-mass reason.
+// PREFERENCES ONLY: the messages are sent by main off the one function every celebration card
+// already passes through, so there is no door here a renderer could post through.
+import { celebrationPostBridge } from './celebrationPost'
 // The DEV-ONLY triage surface (see the banner above its methods, below). Types only — the
 // contract lives in src/shared so main, preload and the renderer name one definition.
 import type {
@@ -301,6 +305,8 @@ const api = {
   ...engineBridge,
   // …and the two what's-new methods (./releaseNotes.ts), for the same file-size reason.
   ...releaseNotesBridge,
+  // …and the celebration-post preferences (./celebrationPost.ts), likewise.
+  ...celebrationPostBridge,
 
   /**
    * Is this the headless integration-test channel (`EQ_E2E=1`, src/main/e2e.ts)?

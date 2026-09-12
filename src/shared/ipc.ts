@@ -798,6 +798,25 @@ export const IPC = {
   // {ok:true} | {ok:false, error}.
   discordPostFight: 'discord:postFight',
 
+  // ---- mirroring the CELEBRATION OVERLAY into a Discord channel ----
+  // The switch that makes every card the celebration overlay shows also a message in one of the
+  // channels above (shared/celebrationPost.ts). Only PREFERENCES cross here: the posting itself
+  // happens in main off `sendToToastOverlay` (src/main/celebrationPost.ts), so no renderer ever
+  // asks for a message to be sent and none of these channels carries one.
+  //
+  // NO SECRET, SAME AS EVERY OTHER DISCORD CHANNEL ABOVE. What travels is `{ prefs, lastError?,
+  // lastErrorAt? }` - a boolean, a WEBHOOK ID the renderer already holds, a list of kinds, and a
+  // sentence main wrote. Never a token.
+  //
+  // renderer -> main: the stored preferences and whatever went wrong last. Returns
+  // CelebrationPostView.
+  celebrationPostGet: 'celebrationPost:get',
+  // renderer -> main: merge-patch them - `{enabled?}`, `{channelId?}`, `{kinds?}`, in any
+  // combination. NORMALIZED AT THE HANDLER by the same function the store reader uses (the
+  // `graphicsPrefs:set` rule), so an unknown kind or an id that is not in the class cannot be
+  // stored. Returns the new CelebrationPostView.
+  celebrationPostSet: 'celebrationPost:set',
+
   // ---- map viewer (docs/plans/map-viewer.md §4.2) ----
   // Main owns `fs` and owns effectiveEqRoot(), so main reads and parses `<eqRoot>\maps` and
   // the renderer receives columnar typed arrays (~690 KB worst case, once per zone change).

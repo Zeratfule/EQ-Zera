@@ -22,6 +22,7 @@ import type { RespawnPrefs } from '../shared/respawn'
 import type { SoundPackPrefs } from '../shared/soundPacks'
 import type { ShareLinkRecord } from '../shared/shareLinks'
 import type { DiscordChannel } from '../shared/discordChannels'
+import type { CelebrationPostPrefs } from '../shared/celebrationPost'
 import type { WindowBounds } from './store'
 
 /**
@@ -362,4 +363,17 @@ export interface StoreShape {
    * (shared/discordChannels.ts `pickChannel`).
    */
   discordDefaultChannelId?: string
+  /**
+   * POST CELEBRATIONS TO DISCORD - the switch that mirrors the celebration overlay's cards into one
+   * of the channels above (shared/celebrationPost.ts, src/main/celebrationPost.ts).
+   *
+   * `{ enabled, channelId?, kinds }`. NO SECRET IS IN HERE: `channelId` is a WEBHOOK ID, the same
+   * value the renderer already holds and draws in a dropdown; the token it resolves to stays in
+   * `discordChannels` and is never copied out of it.
+   *
+   * ADDITIVE + OPTIONAL ⇒ no schema bump, no migration - the `discordChannels` / `shareLinks`
+   * carve-out above. An absent key reads as OFF with the shipped four kinds, which is exactly the
+   * state every store written before this key existed was in.
+   */
+  celebrationPost?: CelebrationPostPrefs
 }
