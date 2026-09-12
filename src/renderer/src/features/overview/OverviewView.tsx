@@ -73,6 +73,8 @@ export interface OverviewViewProps {
   onOpenLoot: (item?: string) => void
   /** Leveling card → the Leveling tab: charts, the drag-selected range, AA. */
   onOpenLeveling: () => void
+  /** Last-session card → its Share dialog's "Preferences, Sharing" door when no channel is connected. */
+  onOpenSharingPrefs: () => void
 }
 
 /**
@@ -120,7 +122,8 @@ export default function OverviewView({
   onOpenCombat,
   onOpenMob,
   onOpenLoot,
-  onOpenLeveling
+  onOpenLeveling,
+  onOpenSharingPrefs
 }: OverviewViewProps): JSX.Element {
   const snap = useOverviewCombat()
   const mob = useCurrentMob(snap)
@@ -223,7 +226,7 @@ export default function OverviewView({
             '& > *': { minWidth: 0, minHeight: 0 }
           }}
         >
-          <LastSessionCard />
+          <LastSessionCard onOpenSharingPrefs={onOpenSharingPrefs} />
           <DeathCard />
         </Box>
       </Box>

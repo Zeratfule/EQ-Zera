@@ -304,6 +304,7 @@ function ViewContent({
           onOpenMob={routing.openMob}
           onOpenLoot={routing.openLoot}
           onOpenLeveling={onOpenLeveling}
+          onOpenSharingPrefs={onOpenSharingPrefs}
         />
       )}
       {/* Like Mobs, the Combat tab stays MOUNTED across a deep link — the focus arrives
