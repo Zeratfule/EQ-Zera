@@ -36,6 +36,8 @@ import { registerCelebrationPostIpc } from './celebrationPost'
 // …and sharing a PLAY SESSION: the Overview's last-session card, photographed and posted. Same two
 // handlers again, same capture path, its own file name - see its header.
 import { registerSessionShareIpc } from './sessionShare'
+// …and posting a chosen alert to that same channel while nobody is at the keyboard (away alerts).
+import { registerAwayAlertsIpc } from './awayAlerts'
 import { registerEqModelIpc } from './eqModel'
 import { registerItemLookIpc } from './itemLook'
 import { registerClipboardIpc } from './clipboard'
@@ -114,6 +116,7 @@ export function registerIpc(): void {
   registerCombatShareIpc()
   registerCelebrationPostIpc()
   registerSessionShareIpc()
+  registerAwayAlertsIpc()
   registerEqModelIpc()
   registerItemLookIpc()
   registerOutputsIpc()

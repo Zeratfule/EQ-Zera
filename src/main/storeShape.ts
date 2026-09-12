@@ -23,6 +23,7 @@ import type { SoundPackPrefs } from '../shared/soundPacks'
 import type { ShareLinkRecord } from '../shared/shareLinks'
 import type { DiscordChannel } from '../shared/discordChannels'
 import type { CelebrationPostPrefs } from '../shared/celebrationPost'
+import type { AwayAlertsPrefs } from '../shared/awayAlerts'
 import type { WindowBounds } from './store'
 
 /**
@@ -376,4 +377,19 @@ export interface StoreShape {
    * state every store written before this key existed was in.
    */
   celebrationPost?: CelebrationPostPrefs
+  /**
+   * AWAY ALERTS (shared/awayAlerts.ts): which of your alerts are ALSO posted to a connected
+   * Discord channel while you are away from the keyboard, and what "away" means on this machine.
+   *
+   * `channelId` names one of the channels in `discordChannels` above, by its webhook id; it never
+   * carries a token, because the token is what `discordChannels` holds and what the post path reads
+   * (src/main/storeDiscord.ts). An absent id means "whichever channel main would pick anyway".
+   *
+   * ADDITIVE + OPTIONAL ⇒ no schema bump, no migration - the `closeToTray` / `discordChannels`
+   * carve-out above, in its easiest form: the feature ships OFF with nothing selected, so an absent
+   * key is exactly the state every store written before it existed was in, and nothing downstream
+   * ever has to tell a stored default from an inherited one. `sanitizeAwayAlertsPrefs` defaults
+   * every field, so an older build reading a store written here is unaffected and vice versa.
+   */
+  awayAlerts?: AwayAlertsPrefs
 }

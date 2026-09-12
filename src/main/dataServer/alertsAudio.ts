@@ -53,10 +53,11 @@
 // the engine honours `earlyWarnSec` end to end since JOS-492 (the timer projection evaluates it
 // at the engine's own heartbeat), so on relaunch the engine's evaluator carries it.
 
-import { logInfo } from '../errorLog'
+import { logError, logInfo } from '../errorLog'
 import { IPC } from '../../shared/ipc'
 import { sendToMain } from '../windows'
 import { getAlerts } from '../store'
+import { noteAlertFired } from '../awayAlerts'
 import { armVerdict, fireToFiring } from './alertsAudioRules'
 import type { FireMessage } from '../../shared/dataServer/protocol.generated'
 
@@ -195,6 +196,18 @@ export function playEngineFire(fire: FireMessage): boolean {
   // reach the renderer through the served `module:getSnapshot`. What this call is responsible for
   // is the one thing the engine cannot do, which is ruling 9's whole point: make a noise.
   sendToMain(IPC.onAlertFired, firing)
+  // …AND, IF NOBODY IS AT THE KEYBOARD, ONE MORE PLACE (away alerts, shared/awayAlerts.ts).
+  //
+  // AFTER the send, and inside a `try`, and both halves are the contract. The line above is the
+  // product — a sound, now — and this is a courtesy on top of it; a courtesy that could delay or
+  // throw into the fire path would be a defect however well it posted. `noteAlertFired` is
+  // synchronous and cheap by construction (a store read, a membership test, one idle-time
+  // reading); everything that can be slow or fail happens later, on that module's own timer.
+  try {
+    noteAlertFired(firing)
+  } catch (err) {
+    logError('main:awayAlerts', err)
+  }
   return true
 }
 

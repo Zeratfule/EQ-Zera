@@ -146,6 +146,9 @@ import { sharingSection } from './SharingSetting'
 // your own - encrypted here, through a service that cannot read them - names its own section
 // beside the card that renders it. See ./SyncSetting.tsx for why it is not a line under Profiles.
 import { syncSection } from './SyncSetting'
+// Same arrangement again: which alerts ALSO reach a connected Discord channel while nobody is at
+// the keyboard names its own section beside its card. See ./AwayAlertsSetting.tsx.
+import { awayAlertsSection } from './AwayAlertsSetting'
 // The section CARD and the arrival pulse live together in their own file — same ceiling, same
 // answer as PerfSetting's descriptor: split, don't widen the threshold.
 import PrefSectionBlock, { FILL_COLUMN_SX, FILL_ROOT_SX, FILL_ROW_SX, paneFills, useLandedSection } from './PrefSectionBlock'
@@ -397,6 +400,7 @@ function buildSections({ version, status, onSendFeedback, onWhatsNew }: SectionI
     // a second machine of the user's own, which is a different audience and therefore its own rail
     // row (docs/plans/settings-sync.md).
     syncSection(),
+    awayAlertsSection(),
     {
       id: 'updates',
       label: 'Updates',

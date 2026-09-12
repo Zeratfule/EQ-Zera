@@ -51,6 +51,7 @@ import { initProcessPriority } from './processPriority'
 import { startEngineSupervisor, stopEngineSupervisor } from './dataServer/engineHost'
 import { getProcessPriorityPrefs } from './storeProcessPriority'
 import { initPresenceEffects, stopPresenceEffects } from './presenceEffects'
+import { initAwayAlerts, stopAwayAlerts } from './awayAlerts'
 import { provisionDefaultPacks } from './provisionPacks'
 import { removedPackIds } from './storeSoundPacks'
 import { startTailing, stopSession } from './session'
@@ -410,6 +411,13 @@ if (!gotSingleInstanceLock) {
     // default install: `presenceNeeded()` decides whether the watcher thread is started at all.
     initPresenceEffects()
 
+    // Away alerts (src/shared/awayAlerts.ts): the drain timer for alerts that also go to a Discord
+    // channel while nobody is at the keyboard. Costs one store read when the feature is off — which
+    // is the default install: with `awayAlerts.enabled` false no timer is created at all. Placed
+    // after the presence wiring on purpose, because the away verdict READS `presenceSnapshot()`
+    // (passively — it never subscribes, so it never starts the watcher itself).
+    initAwayAlerts()
+
     // The performance HUD (docs/plans/perf-profiling.md P1). Costs one store read when it is
     // off — which is the default install: with `perfHud.enabled` false no timer is created at
     // all, so there is nothing to skip on each tick. The pref is read HERE rather than inside
@@ -439,6 +447,10 @@ if (!gotSingleInstanceLock) {
  */
 app.on('before-quit', () => {
   teardownStep('main:stopPresence', stopPresenceEffects)
+  // …and the away-alerts drain tick. Unref'd, so it could never hold the process open by itself;
+  // stopped here anyway for the reason every other timer in this teardown is - a tick that fires
+  // mid-quit would reach a store this process is about to flush.
+  teardownStep('main:stopAwayAlerts', stopAwayAlerts)
   // …and the data-server engine, on BOTH quit events and for a stronger version of the reason the
   // presence watcher is: the engine is a CHILD PROCESS, and Windows does not kill children with
   // their parent. The one hazard JOS-182 retired by moving the presence watcher off a child is

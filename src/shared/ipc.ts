@@ -832,6 +832,24 @@ export const IPC = {
   // `graphicsPrefs:set` rule), so an unknown kind or an id that is not in the class cannot be
   // stored. Returns the new CelebrationPostView.
   celebrationPostSet: 'celebrationPost:set',
+  // ---- AWAY ALERTS (src/shared/awayAlerts.ts) ----
+  // Which of your alerts are ALSO posted to a connected Discord channel while you are away from
+  // the keyboard. The channel is named by ID only: no token crosses here in either direction, and
+  // the post is main's, on main's own timer, against the same dark-under-`EQ_E2E` origin every
+  // other Discord post in this app uses.
+  //
+  // renderer(main app) -> main: everything the Preferences card draws in ONE read - the stored
+  // preference, the last attempt's outcome, and how long this machine has been idle right now.
+  // Returns AwayAlertsView ({prefs, lastError?, lastErrorAt?, lastSentAt?, idleSeconds}).
+  awayAlertsGet: 'awayAlerts:get',
+  // renderer(main app) -> main: store the WHOLE preference (a replace, not a merge - an empty
+  // `alertIds` has to be expressible). RE-VALIDATED at the handler through the same filter the
+  // store reader uses, so the reply is what will actually happen. Returns AwayAlertsView.
+  awayAlertsSet: 'awayAlerts:set',
+  // renderer(main app) -> main: post ONE sample embed to that channel now, so a person can watch
+  // it land on their phone before they walk away. Bypasses the batcher on purpose - a test nobody
+  // waits ten seconds for is a test nobody trusts. Returns {ok} | {ok:false, error}.
+  awayAlertsTest: 'awayAlerts:test',
 
   // ---- map viewer (docs/plans/map-viewer.md §4.2) ----
   // Main owns `fs` and owns effectiveEqRoot(), so main reads and parses `<eqRoot>\maps` and
