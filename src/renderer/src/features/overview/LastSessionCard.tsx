@@ -15,13 +15,15 @@
 //
 // It chooses no content — every string comes from `lastSession.ts`, which is pure and node-tested.
 
-import type { JSX } from 'react'
-import { Paper, Stack, Typography } from '@mui/material'
+import { useCallback, useState, type JSX } from 'react'
+import { Button, Paper, Stack, Typography } from '@mui/material'
+import ShareIcon from '@mui/icons-material/Share'
 import type { CoinSnap, DeathSnap, ProgressionSnap } from '@shared/types'
 import { DashCard, QuietNote } from '../combat/combatShared'
 import { useModule } from '../../lib/useModule'
 import { formatDateTime } from '../../lib/formatDate'
 import { lastSessionView, type LastSessionTile } from './lastSession'
+import { SessionShareSlot } from './share/SessionShareSlot'
 
 /** ONE tile. The leveling card's shape, deliberately: two tile rows on one page must read alike. */
 function SessionTile({ tile }: { tile: LastSessionTile }): JSX.Element {
@@ -45,14 +47,52 @@ function SessionTile({ tile }: { tile: LastSessionTile }): JSX.Element {
   )
 }
 
-export function LastSessionCard(): JSX.Element {
+/**
+ * The way out of the card - a picture, a file, a Discord post or a line of chat (share/).
+ *
+ * OFFERED ONLY WHEN THERE IS A SESSION, for `FightShareState.opener`'s reason: a button offering to
+ * share the empty state is a button about nothing. The dialog is SESSION state and deliberately not
+ * a preference - a tab switch unmounts this view, which is the same as closing it.
+ */
+function ShareButton({ onOpen }: { onOpen: () => void }): JSX.Element {
+  return (
+    <Button size="small" startIcon={<ShareIcon />} data-testid="session-share-open" onClick={onOpen}>
+      Share
+    </Button>
+  )
+}
+
+export function LastSessionCard({
+  onOpenSharingPrefs
+}: {
+  /** The way to Preferences, Sharing, when the surface holding this card has one to hand down. */
+  onOpenSharingPrefs?: () => void
+}): JSX.Element {
+  const [sharing, setSharing] = useState(false)
+  const open = useCallback(() => {
+    setSharing(true)
+  }, [])
+  const close = useCallback(() => {
+    setSharing(false)
+  }, [])
   const view = lastSessionView({
     progression: useModule<ProgressionSnap>('progression'),
     coin: useModule<CoinSnap>('coin'),
     deaths: useModule<DeathSnap>('deaths')
   })
   return (
-    <DashCard title="Last session" testId="overview-last-session">
+    <DashCard
+      title="Last session"
+      testId="overview-last-session"
+      {...(view === null ? {} : { right: <ShareButton onOpen={open} /> })}
+    >
+      {view !== null && sharing && (
+        <SessionShareSlot
+          view={view}
+          onClose={close}
+          {...(onOpenSharingPrefs === undefined ? {} : { onOpenSharingPrefs })}
+        />
+      )}
       {view === null ? (
         <QuietNote>No earlier session in this log.</QuietNote>
       ) : (
