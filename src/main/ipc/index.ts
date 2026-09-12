@@ -50,6 +50,10 @@ import { registerCraftIpc } from './craft'
 import { registerReleaseNotesIpc } from './releaseNotes'
 import { registerRosterIpc } from './roster'
 import { registerShareIpc } from './share'
+// …and the same bundle carried to the user's OTHER PC as ciphertext (docs/plans/settings-sync.md).
+// A leaf of its own because it holds one piece of state — the decrypted payload between a preview
+// and an apply, which must never cross to the renderer. See its header.
+import { registerSyncIpc } from './sync'
 import { registerSoundsIpc } from './sounds'
 import { registerSpeechIpc } from './speech'
 import { registerTelemetryIpc } from './telemetry'
@@ -110,6 +114,7 @@ export function registerIpc(): void {
   registerRosterIpc()
   registerAlertsIpc()
   registerShareIpc()
+  registerSyncIpc()
   registerSoundsIpc()
   registerSpeechIpc()
   registerKnowledgeIpc()
