@@ -135,6 +135,43 @@ export interface ReleaseNote {
  * still sees exactly the releases above it.
  */
 export const RELEASE_NOTES: readonly ReleaseNote[] = [
+  // The 2026-09-12 feature program, wave 1 (owner: "I love all of those ideas, let's get them
+  // implemented and roll them out"). Five app features from five executors on disjoint branches,
+  // merged one at a time; the two service halves (gear history, the sync store) went live first.
+  {
+    version: '1.25.0',
+    date: '2026-09-12',
+    entries: [
+      {
+        kind: 'new',
+        text: 'Post celebrations to Discord. Preferences, Sharing has a switch that mirrors the celebration cards into a connected channel: level ups, boss kills, quest completions, quest items, wish-list drops and deaths, each one a checkbox. Cards keep their text; item icons stay in the app.'
+      },
+      {
+        kind: 'new',
+        text: 'Share this session. The Overview tab\x27s Last session card has a Share button that builds a card of the session: duration, zones, kills, levels, deaths, coin, best fight and drops. Copy it, save it, post it to a connected Discord channel, or copy a text summary for chat.'
+      },
+      {
+        kind: 'new',
+        text: 'Send settings to another PC. Preferences, Sync makes a transfer code that works for 24 hours; paste it on the other PC and your alerts, overlay look and view preferences import with the usual add-only merge.'
+      },
+      {
+        kind: 'new',
+        text: 'Settings are encrypted on your PC before they leave it, so the sync service only ever holds ciphertext. Connected Discord channels travel only when you tick the box.'
+      },
+      {
+        kind: 'new',
+        text: 'Away alerts. Preferences, Away alerts sends the alerts you choose to a private Discord channel once you have been away from the keyboard for a few minutes, in small batches, so a raid target or a tell reaches your phone through Discord\x27s own notifications.'
+      },
+      {
+        kind: 'new',
+        text: 'Crawl progress, estimated. In a dungeon with a known rare list the Run tracker shows Rares killed, or Rares X of Y where the community has counted them, and Kills N of ~M where a full-clear total is known. Marked as an estimate: the game keeps the real number in its own tracker.'
+      },
+      {
+        kind: 'new',
+        text: 'Gear history on your share link. Every re-share keeps the previous state, and the page shows a History panel: date, AC and score changes, and each slot whose item changed.'
+      }
+    ]
+  },
   // The RUN TRACKER (owner, 2026-09-11, after a Befallen 4 (Refined) crawl: the game's own
   // in-instance tracker "isn't sizeable and it's obtuse"). A new window, so it takes the extra
   // bullets the rule above allows: one says what it is, one says the problem it replaces.

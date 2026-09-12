@@ -56,6 +56,7 @@
     </ol>
     <h3>Run tracker</h3>
     <p>The <b>Run tracker</b> overlay follows a dungeon run: elapsed time, kills and pace, the named you have killed in order, the keys you picked up, the reward chest and where its items went, doors, and deaths. It starts on its own when you enter an instance; in an open-world dungeon press <b>Start run here</b> and <b>End run</b> when you are done. It is a normal overlay window, so put it where you want it, size it to the list, and lock it to make it click-through. The game's own instance tracker cannot be resized; this one can.</p>
+    <p>In a dungeon the community has documented, the tracker adds a <b>Crawl (estimated)</b> block: rares killed against the zone's known rare list, or X of Y where the count is published, and kills against the full-clear total where one is known. It is an estimate from community counts; the real number lives only in the game's own tracker.</p>
   </div>
 </section>
 
@@ -69,6 +70,8 @@
       <li>Sounds come from packs. <b>Alerts → Sound packs…</b> lists the community packs you can install from inside the app. To add your own, drop a folder with your <code>.wav</code>, <code>.mp3</code> or <code>.ogg</code> files and a small <code>manifest.json</code> naming them into <code>%AppData%\everquest-companion\soundpacks\your-pack\</code>; it shows up in every sound picker.</li>
       <li>Any alert, or all of them at once, copies to a short paste-safe string. Paste it in guild chat or Discord; whoever pastes it back in gets a preview before anything is added. Imports only ever add, never overwrite.</li>
     </ol>
+    <h3>Alerts while you are away</h3>
+    <p>Connect a private Discord channel and turn on its mobile notifications in Discord. Then open <b>Preferences</b>, <b>Away alerts</b>, switch it on, pick that channel, choose how long without keyboard or mouse input counts as away, and tick the alerts to send. While you are away they are posted there in small batches, at most one message every ten seconds, so a raid target going up or a tell arriving reaches your phone. <b>Send a test</b> posts one sample so you can check the channel.</p>
   </div>
 </section>
 
@@ -103,11 +106,17 @@
     <h2>Sharing your setup</h2>
     <p>Your whole settings bundle exports as one string or a file: alerts, volume, overlay look, view preferences, favourites. It carries no file paths, no window positions and no character progress, so it is safe to hand to a guildmate. Importing it on another PC adds to what is there rather than replacing it.</p>
     <p>Coming from EQ Legends Companion? Nothing to do. EQ Zera reads the same settings folder, so alerts, sound packs, overlay positions and character history are there on first launch.</p>
+    <h3>Moving settings to another PC</h3>
+    <p>Open <b>Preferences</b>, then <b>Sync</b>, and press <b>Send settings to another PC</b>. You get a transfer code that works for 24 hours. On the other PC, paste it under <b>Receive</b>, check the preview and press <b>Apply</b>; the import adds and never overwrites, like the paste box. Settings are encrypted on your PC before they leave it, so the service only ever holds ciphertext, and connected Discord channels travel only when you tick <b>Include connected Discord channels</b>. Anyone with the code can import the settings, so share it only with yourself.</p>
     <h3>Sharing your character</h3>
     <p>The Character tab's <b>Share</b> button builds a card from your gear: every slot with its rank, the stats the gear adds, and your Tank, DPS, Healer and Solo scores. <b>Copy link</b> publishes it to share.eqzera.com and puts a short link on your clipboard. Anyone who opens it sees the card with every armor piece lighting up on hover, the item facts behind each slot, and a Character section that gathers level, classes and gear totals. Paste the link in Discord and it unfurls with the picture and the score line. The link stays live for 180 days after it was last opened, and <b>Revoke</b> takes it down at once.</p>
     <h3>Posting straight to Discord</h3>
     <p>To skip the paste, connect a channel. Open <b>Preferences</b>, then <b>Sharing</b>, and press <b>Connect a Discord channel</b>. Discord opens in your browser and asks which server and channel; pick one, and the tab says Connected. Back in EQ Zera the channel appears in the list with <b>Test</b>, <b>Rename</b>, <b>Remove</b> and <b>Default</b>, and the share card gets a <b>Post to Discord</b> button that drops the card, the scores and the link into that channel in one click. Connect as many channels as you like; with more than one, the button asks which. Nothing to copy or paste, and the connection is stored on your PC only and is never sent anywhere but Discord.</p>
     <p>If you would rather not authorise the app on a server, <b>Advanced: paste a webhook URL</b> under the same section still takes a channel webhook (in Discord: channel settings, Integrations, Webhooks, New Webhook, Copy Webhook URL).</p>
+    <h3>Posting celebrations automatically</h3>
+    <p>Once a channel is connected, <b>Preferences</b>, <b>Sharing</b> has <b>Post celebrations to Discord</b>. Switch it on, pick the channel, and tick which cards to mirror: level ups, boss kills, quest completions, quest items, wish-list drops and deaths. Each card the celebration overlay shows is then posted to the channel as text; item icons stay in the app.</p>
+    <h3>Sharing a session</h3>
+    <p>The Overview tab's <b>Last session</b> card has a <b>Share</b> button. It builds a card of the session, duration, zones, kills, levels, deaths, coin, best fight and drops, with the same choices as a fight: <b>Copy image</b>, <b>Save image…</b>, <b>Post to Discord</b> and <b>Copy text</b>.</p>
     <h3>Sharing a fight</h3>
     <p>The Combat tab's <b>Share</b> button on the fight header opens a card of the selected fight: every combatant with damage, DPS and share. <b>Post to Discord</b> sends it to a connected channel, <b>Copy image</b> and <b>Save image…</b> keep it, and <b>Copy text</b> gives a plain summary for chat. The fight and zone meter overlays carry the same button.</p>
   </div>
