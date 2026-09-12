@@ -7,9 +7,18 @@ licensed under the Functional Source License, Version 1.1, MIT Future License
 (FSL-1.1-MIT). The full license text is in the LICENSE file and applies to this
 derivative as well.
 
+Everything added or changed since the fork (September 2026 onward) is
+Copyright (c) 2026 Jack Thomas, https://github.com/Zeratfule/EQ-Zera, and is
+licensed under the same terms, FSL-1.1-MIT, with Jack Thomas as the licensor of
+those parts; each release's additions convert to MIT two years after that release.
+
 Under the FSL the original author's product names and trademarks are not licensed;
 this fork is therefore distributed under the name "EQ Zera" and is not affiliated
 with or endorsed by the original author.
+
+"EQ Zera", the EQZ mark and the eqzera.com name are trademarks of Jack Thomas and
+are likewise not licensed: the same Trademark clause of the license withholds them,
+so a further fork or redistribution must ship under its own name.
 
 Bundled data is scraped from eqlwiki.com under that wiki's terms. The bundled sound
 pack (resources/soundpacks/eq-zera-console/) is original to this fork, synthesized by

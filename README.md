@@ -46,4 +46,5 @@ See [`SETUP.md`](SETUP.md). Feature plans are in [`ROADMAP.md`](ROADMAP.md).
 Functional Source License 1.1 with MIT future license (FSL-1.1-MIT). See [`LICENSE`](LICENSE)
 and [`NOTICE`](NOTICE). In short: use, modify, and share it freely for any non-commercial
 purpose; do not sell it or offer it as a paid service until the MIT conversion date.
-Copyright (c) 2026 Josh Moyers (original work).
+Copyright (c) 2026 Josh Moyers (original work). Copyright (c) 2026 Jack Thomas (EQ Zera
+additions since September 2026, under the same license). See [`NOTICE`](NOTICE).
