@@ -22,6 +22,7 @@ import type { CardMapEntry } from '../shared/shareCardMap'
 import type { DiscordWebhookView } from '../shared/discordWebhook'
 import type { DiscordChannelsView } from '../shared/discordChannels'
 import type { FightShare } from '../shared/fightShare'
+import type { SessionShare } from '../shared/sessionShare'
 import type { CharacterShareImageResult, ShareCardRect } from './characterApi'
 
 /** What main says about the stored channels. Labels and ids, never a token. */
@@ -41,6 +42,9 @@ export type DiscordSetResult =
 
 /** What `discord:postFight` answers. Nothing to say on success - the fight is in the channel. */
 export type DiscordPostFightResult = { ok: true } | { ok: false; error: string }
+
+/** …and what `discord:postSession` answers, for the same reason and in the same shape. */
+export type DiscordPostSessionResult = { ok: true } | { ok: false; error: string }
 
 /** What `discord:postProfile` answers. `url` is the link the posted message points at. */
 export type DiscordPostResult = { ok: true; url: string } | { ok: false; error: string }
@@ -105,5 +109,23 @@ export const discordApi = {
     ipcRenderer.invoke(IPC.discordPostFight, { rect, fight, channelId }),
   /** Photograph the fight card at `rect` and either copy it or save it. `name` seeds the file name. */
   shareFightImage: (rect: ShareCardRect, op: 'copy' | 'save', name?: string): Promise<CharacterShareImageResult> =>
-    ipcRenderer.invoke(IPC.combatShareImage, { rect, op, name })
+    ipcRenderer.invoke(IPC.combatShareImage, { rect, op, name }),
+  /**
+   * Post ONE PLAY SESSION to a channel: the session card at `rect`, photographed by main and
+   * ATTACHED to the message, plus an embed carrying the same numbers as text.
+   *
+   * `postFightToDiscord`'s twin in every respect that matters - nothing is published, there is no
+   * link and nothing is left serving afterwards, and `session` is re-validated at the handler like
+   * every other body the renderer composes.
+   */
+  postSessionToDiscord: (
+    rect: ShareCardRect,
+    session: SessionShare,
+    channelId?: string
+  ): Promise<DiscordPostSessionResult> =>
+    ipcRenderer.invoke(IPC.discordPostSession, { rect, session, channelId }),
+  /** Photograph the session card at `rect` and either copy it or save it. Its own channel rather
+   *  than the fight's for one reason: the default FILE NAME (src/main/ipc/sessionShare.ts). */
+  shareSessionImage: (rect: ShareCardRect, op: 'copy' | 'save', name?: string): Promise<CharacterShareImageResult> =>
+    ipcRenderer.invoke(IPC.sessionShareImage, { rect, op, name })
 }

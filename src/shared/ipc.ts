@@ -797,6 +797,22 @@ export const IPC = {
   // default, or the only channel, on the same terms as discordPostProfile. Returns
   // {ok:true} | {ok:false, error}.
   discordPostFight: 'discord:postFight',
+  // renderer -> main: photograph the SESSION card at rect and either copy it or save it - the
+  // SAME capture path the character and fight cards use (src/main/ipc/cardCapture.ts), with the
+  // same validation of a renderer-supplied rectangle. Its own channel rather than the fight's
+  // because the only thing that differs is the DEFAULT FILE NAME, and a saved picture called
+  // `eq-zera-fight-…` for a night's play is a file the user has to rename. Args: ({rect, op,
+  // name}). Returns {ok, path?, canceled?, error?}.
+  sessionShareImage: 'session:shareImage',
+  // renderer -> main: post ONE PLAY SESSION to a connected channel - the session card photographed
+  // and ATTACHED to the message (multipart, src/main/share/discord.ts) plus an embed carrying the
+  // same numbers as text. Args: ({rect, session, channelId}); `session` is a SessionShare built in
+  // the renderer and RE-VALIDATED at the handler (src/shared/sessionShare.ts sanitizeSessionShare),
+  // because a body the renderer composed is untrusted input like every other one. A capture that
+  // produced nothing posts the embed ALONE rather than refusing. An absent `channelId` means the
+  // default, or the only channel, on the same terms as discordPostFight. Returns
+  // {ok:true} | {ok:false, error}.
+  discordPostSession: 'discord:postSession',
 
   // ---- map viewer (docs/plans/map-viewer.md §4.2) ----
   // Main owns `fs` and owns effectiveEqRoot(), so main reads and parses `<eqRoot>\maps` and

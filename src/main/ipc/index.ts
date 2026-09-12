@@ -30,6 +30,9 @@ import { registerDiscordIpc } from './discord'
 // channel with the numbers beside it. It reuses cardCapture.ts rather than growing a second
 // screenshot - see its header.
 import { registerCombatShareIpc } from './combatShare'
+// …and sharing a PLAY SESSION: the Overview's last-session card, photographed and posted. Same two
+// handlers again, same capture path, its own file name - see its header.
+import { registerSessionShareIpc } from './sessionShare'
 import { registerEqModelIpc } from './eqModel'
 import { registerItemLookIpc } from './itemLook'
 import { registerClipboardIpc } from './clipboard'
@@ -102,6 +105,7 @@ export function registerIpc(): void {
   registerCharacterShareIpc()
   registerDiscordIpc()
   registerCombatShareIpc()
+  registerSessionShareIpc()
   registerEqModelIpc()
   registerItemLookIpc()
   registerOutputsIpc()
