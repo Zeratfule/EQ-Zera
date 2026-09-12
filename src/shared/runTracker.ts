@@ -50,10 +50,19 @@
 // keep. MEASURED on the owner's run: it names exactly the fourteen he listed, in his order,
 // including the two kills of `ice boned skeleton` — a mob whose name carries no article either.
 //
-// THE ROSTER IS NOT AVAILABLE AND NO "X of Y" IS CLAIMED. `src/main/data/respawns.json` is keyed by
-// mob name and carries NO zone column, so there is no way to ask it what lives in Befallen; the mob
-// catalog answers "what lives here" but not "which of those are named". Law 1: a count with no
-// denominator is printed without one, rather than against a number this app made up.
+// THIS FOLD STILL CLAIMS NO "X of Y", AND THE ROSTER THAT EXISTS IS AN ESTIMATE LAYERED ON TOP.
+// Nothing in this file has a denominator to divide by: `src/main/data/respawns.json` is keyed by mob
+// name and carries NO zone column, so there is no way to ask it what lives in Befallen, and the mob
+// catalog answers "what lives here" but not "which of those are named". Law 1 holds here - a count
+// with no denominator is printed without one.
+//
+// Since 2026-09-12 there IS a per-zone table of rare creatures and kill totals, gathered from the
+// community wiki and committed as `src/renderer/src/data/eqlegends/crawlRosters.json`, and
+// `src/shared/crawlRoster.ts` folds `RunState.named` against it. It is a SEPARATE FILE on purpose:
+// its numbers are somebody else's measurement rather than this log's, every reading it produces
+// carries `estimated: true`, and the surface that draws it says "estimated" in the block's own
+// title. It changes NOTHING about how a named mob is detected above - that law is still the log's
+// own spelling - and a zone the table has never described gets no estimate at all.
 //
 // ─────────────────────────────────────────────────────────────────────────────────────────
 // ONE FACT THE ENGINE DOES NOT EMIT, so nothing here claims it (law 1):

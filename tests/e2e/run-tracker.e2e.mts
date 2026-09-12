@@ -177,6 +177,21 @@ async function stepDrawsTheRun(overlay: Page): Promise<void> {
     seen.find((r) => r.row === 'sold') !== undefined && head.includes('1p=10g=100s=1000c'),
     JSON.stringify(seen)
   )
+  // THE CRAWL ESTIMATE, drawn from the committed community table rather than from the log (the fold
+  // and the twelve names are pinned in tests/crawlRoster.test.mts). Befallen's row is `inferred`, so
+  // the honest shape here is a bare count with no denominator - and the caption is what makes the
+  // whole block legible as an estimate rather than as the game's own meter.
+  const crawl = await overlay.evaluate(
+    () => (document.querySelector('[data-testid="run-crawl"]') as HTMLElement | null)?.innerText.trim() ?? ''
+  )
+  check(
+    'the crawl block estimates his rares against the community roster, and says it is an estimate',
+    crawl.includes('Crawl (estimated)') &&
+      crawl.includes('Rares killed') &&
+      crawl.includes('12') &&
+      crawl.includes("not the game's own tracker"),
+    crawl.slice(0, 200)
+  )
   // NO DEATHS ROW, because he did not die: a zero the log never stated is not printed.
   check('a run with no deaths draws no deaths row', seen.every((r) => r.row !== 'deaths'), JSON.stringify(seen))
   check('…and the empty state is gone, because the fold arrived', (await countOf(overlay, '[data-testid="run-empty"]')) === 0)

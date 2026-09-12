@@ -17,6 +17,13 @@
 // that finished without one draws no chest row at all, and a run with no doors draws no door row
 // (world-model law 1: an unstated zero is not a measurement).
 //
+// ONE BLOCK HERE IS NOT A READING OFF THE LOG, and it is labelled as such on screen. The game keeps
+// its Dungeon Crawl percentage inside its own in-instance window and prints it in no log line, so
+// `Crawl (estimated)` is an approximation built from a committed community table (`crawlRows.ts` ->
+// `shared/crawlRoster.ts`): how many of the zone's known rares this run killed, and - only where a
+// source published a kill total - how far along the kill count is. A zone the table has never
+// described draws nothing at all, and the caption never leaves the block's side.
+//
 // IT TICKS ITSELF, at 1 Hz, because the elapsed clock is the one number here that has to keep
 // moving while the log is silent — the respawn window's beat, for the respawn window's reason. A
 // FINISHED run freezes: the tick still fires, and `runElapsedMs` reads the run's own end.
@@ -54,6 +61,10 @@ import { type OverlayChrome, useOverlayChrome } from './useOverlayChrome'
 // denominations into a single number owns the declaration and every other surface reads it
 // (shared/acquireEvents.ts's law, farmRows.ts's implementation).
 import { COIN_LADDER_TEXT, coinCopper, coinText } from './farmRows'
+// The CRAWL ESTIMATE, which is the one block in this window whose numbers are not the log's
+// (crawlRows.ts + shared/crawlRoster.ts): the game keeps its crawl percentage inside its own
+// window, so this is community counts and says so on screen.
+import { CRAWL_ESTIMATE_CAPTION, CRAWL_HEAD_TEXT, crawlRows } from './crawlRows'
 import { PALETTE, withAlpha } from '../../../shared/palette'
 
 /** This window's accent — a rose, deliberately none of the five already worn by a window (damage
@@ -186,6 +197,34 @@ function KeyChips({ state }: { state: RunState }): JSX.Element {
 }
 
 /**
+ * THE CRAWL ESTIMATE - the only block here that is not a reading off the log.
+ *
+ * It draws nothing for a zone the community table has never described, which is most of the game.
+ * The head says `estimated` and the caption says what it is an estimate FROM, because a percentage
+ * a user could mistake for the game's own tracker would be a wrong answer rather than a feature.
+ */
+function CrawlBlock({ state }: { state: RunState }): JSX.Element | null {
+  const rows = crawlRows(state)
+  if (rows.length === 0) return null
+  return (
+    <div data-testid="run-crawl" style={{ marginTop: 3 }}>
+      <div data-testid="run-crawl-head" style={{ fontSize: 9.5, letterSpacing: 0.3, color: DIM, padding: '0 2px' }}>
+        {CRAWL_HEAD_TEXT}
+      </div>
+      {rows.map((r) => (
+        <RunLine key={r.id} id={r.id} label={r.label} value={r.value} />
+      ))}
+      <div
+        data-testid="run-crawl-note"
+        style={{ fontSize: 9, color: DIM, padding: '0 2px', whiteSpace: 'normal' }}
+      >
+        {CRAWL_ESTIMATE_CAPTION}
+      </div>
+    </div>
+  )
+}
+
+/**
  * The named, in the order they went down, each with how far into the run it was.
  *
  * NO `by` COLUMN. The log names the killer on `<Mob> has been slain by <Name>!` and the parser
@@ -309,6 +348,7 @@ function RunBody({ state, nowMs }: { state: RunState; nowMs: number }): JSX.Elem
       {sold > 0 && (
         <RunLine id="sold" label={`Auto-sold (${COIN_LADDER_TEXT})`} value={coinText(sold)} />
       )}
+      <CrawlBlock state={state} />
       {state.named.length > 0 && <NamedList state={state} />}
     </>
   )

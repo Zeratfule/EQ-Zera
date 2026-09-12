@@ -1,0 +1,463 @@
+{
+  "The Ruins of Old Guk": {
+    "aliases": [
+      "Lower Guk"
+    ],
+    "rares": [
+      "frenzied ghoul",
+      "froglok crusader",
+      "froglok herbalist",
+      "froglok king",
+      "froglok noble",
+      "froglok yun priest",
+      "froglok tactician",
+      "ghoul arch magi",
+      "ghoul assassin",
+      "ghoul cavalier",
+      "ghoul executioner",
+      "ghoul lord",
+      "ghoul ritualist",
+      "ghoul sage",
+      "ghoul savant",
+      "ghoul scribe",
+      "ghoul sentinel",
+      "ghoul supplier",
+      "huge water elemental",
+      "minotaur elder",
+      "minotaur patriarch",
+      "reanimated hand",
+      "Raster of Guk",
+      "Slaythe the Slayer"
+    ],
+    "rareCount": 25,
+    "killsToComplete": 124,
+    "confidence": "stated on wiki",
+    "source": "https://eqlwiki.com/Dungeon_Crawl ; https://eqlwiki.com/Talk:Dungeon_Crawl ; https://eqlwiki.com/Lower_Guk",
+    "notes": "Counts stated (D0, L50; ~1% per 1.3 kills). Wiki row lists 24 of the 25 counted rares; 'evil eye' is the likely 25th."
+  },
+  "Nagafen's Lair": {
+    "rares": [
+      "death beetle",
+      "Efreeti Lord Djarn",
+      "guano harvester",
+      "kobold champion",
+      "kobold noble",
+      "kobold priest",
+      "noxious spider",
+      "Solusek kobold king",
+      "stone spider",
+      "Targin the Rock"
+    ],
+    "rareCount": 10,
+    "killsToComplete": 100,
+    "confidence": "player report",
+    "source": "https://chasingdings.com/2026/09/09/everquest-legends-the-new-dungeon-crawl/ ; https://eqlwiki.com/Nagafen%27s_Lair",
+    "notes": "Blog: 10 rares, ~100 mobs at D4. Raid bosses (King Tranix, Warlord Skarlon, Magus Rokyl, Lord Nagafen) are raid-instance only."
+  },
+  "The Plane of Hate": {
+    "rares": [
+      "Ashenbone Broodmaster",
+      "Avatar of Abhorrence",
+      "Coercer T`vala",
+      "Grandmaster R`Tal",
+      "High Priest M`kari",
+      "Lord of Ire",
+      "Lord of Loathing",
+      "Magi P`Tasa",
+      "Master of Spite",
+      "Mistress of Scorn"
+    ],
+    "rareCount": 11,
+    "killsToComplete": 137,
+    "confidence": "inferred",
+    "source": "https://eqlwiki.com/Talk:Dungeon_Crawl ; https://eqlwiki.com/Plane_of_Hate",
+    "notes": "Counts stated on the Talk page (D0, L50); the 10 names are the wiki's miniboss table, the 11th is unknown."
+  },
+  "Temple of Cazic-Thule": {
+    "aliases": [
+      "Cazic-Thule",
+      "Cazic Thule"
+    ],
+    "rares": [
+      "Radiant",
+      "Tae Ew Templar",
+      "Tae Ew Diviner",
+      "Tae Ew Archon",
+      "clay golem",
+      "steel golem",
+      "stone golem",
+      "Cazic Cenobite",
+      "Avatar of Fear"
+    ],
+    "rareCount": 9,
+    "killsToComplete": 94,
+    "confidence": "inferred",
+    "source": "https://eqlwiki.com/Talk:Dungeon_Crawl ; https://eqlwiki.com/Cazic_Thule_(Zone)",
+    "notes": "Counts stated (D0, L50); names are the wiki's Notable NPCs row."
+  },
+  "The Plane of Sky": {
+    "rares": [
+      "Thunder Spirit Princess",
+      "Noble Dojorn",
+      "Protector of Sky",
+      "Gorgalosk",
+      "Keeper of Souls",
+      "The Spiroc Lord",
+      "Bazzt Zzzt",
+      "Sister of the Spire",
+      "Eye of Veeshan"
+    ],
+    "rareCount": null,
+    "killsToComplete": null,
+    "confidence": "player report",
+    "source": "https://www.everquestlegends.com/patch-notes/eql-update-notes-9-09-2026 ; https://eqlwiki.com/Plane_of_Sky",
+    "notes": "Patch notes: all Sky bosses are flagged rare. Players report the meter behaving inconsistently here."
+  },
+  "The Plane of Fear": {
+    "rares": [],
+    "rareCount": 0,
+    "killsToComplete": null,
+    "confidence": "stated on wiki",
+    "source": "https://eqlwiki.com/Dungeon_Crawl",
+    "notes": "Dev statement: no labeled rare creatures in Fear."
+  },
+  "The Castle of Mistmoore": {
+    "aliases": [
+      "Mistmoore Castle",
+      "Castle Mistmoore"
+    ],
+    "rares": [
+      "cloaked dhampyre",
+      "glyphed ghoul",
+      "dark librarian",
+      "hemo enologist",
+      "fallen noble",
+      "imp familiar",
+      "avenging caitiff",
+      "Butler Syncall",
+      "Enynti",
+      "Garton Viswin",
+      "Lasna Cheroon",
+      "Maid Issis",
+      "Mynthi Davissi",
+      "Princess Cherista",
+      "Ssynthi",
+      "Xicotl"
+    ],
+    "rareCount": null,
+    "killsToComplete": null,
+    "confidence": "stated on wiki",
+    "source": "https://eqlwiki.com/Mistmoore_Castle",
+    "notes": "16 names in the wiki's Rare NPCs row."
+  },
+  "The Estate of Unrest": {
+    "aliases": [
+      "Unrest"
+    ],
+    "rares": [
+      "priest of najena",
+      "gnomish spelunker",
+      "reanimated hand",
+      "undead barkeep",
+      "undead brewer",
+      "undead knight of Unrest",
+      "Garanel Rucksif",
+      "Khrix Fritchoff",
+      "lesser blade fiend",
+      "reclusive ghoul magus",
+      "Torklar Battlemaster",
+      "zombie of an Unrest noble"
+    ],
+    "rareCount": null,
+    "killsToComplete": null,
+    "confidence": "stated on wiki",
+    "source": "https://eqlwiki.com/The_Estate_of_Unrest",
+    "notes": "12 names in the wiki's Rare NPCs row."
+  },
+  "Clan Crushbone": {
+    "aliases": [
+      "Crushbone"
+    ],
+    "rares": [
+      "Ambassador DVinn",
+      "Bloodgurgler",
+      "Bonefire",
+      "Chokehold",
+      "Emperor Crush",
+      "Lord Darish",
+      "Marrowbane",
+      "orc oracle",
+      "Orc Trainer",
+      "Orc Warden",
+      "Orc Warlord",
+      "Retlon Brenclog",
+      "Rondo Dunfire",
+      "The Prophet"
+    ],
+    "rareCount": null,
+    "killsToComplete": null,
+    "confidence": "stated on wiki",
+    "source": "https://eqlwiki.com/Crushbone",
+    "notes": "14 names in the wiki's Rare NPCs row."
+  },
+  "Solusek's Eye": {
+    "rares": [
+      "Captain Bipnubble",
+      "CWG Model CX",
+      "CWG Model EXG",
+      "Fire Goblin Bartender",
+      "Inferno Goblin Captain",
+      "Fire Goblin Drunkard",
+      "Goblin High Shaman",
+      "Solusek Goblin King",
+      "Gabbie Mardoddle",
+      "flame goblin foreman",
+      "Inferno Goblin Torturer",
+      "Kindle",
+      "Kobold predator",
+      "lava elemental",
+      "Lord Gimblox",
+      "Lynada the Exiled",
+      "Marfen Binkdirple",
+      "Reckless Efreeti",
+      "Singe",
+      "Solusek Mage"
+    ],
+    "rareCount": null,
+    "killsToComplete": null,
+    "confidence": "inferred",
+    "source": "https://eqlwiki.com/Solusek%27s_Eye",
+    "notes": "Notable NPCs row plus the map."
+  },
+  "Kedge Keep": {
+    "rares": [
+      "Cauldronboil",
+      "Cauldronbubble",
+      "Coralyn Kelpmaiden",
+      "Estrella of Gloomwater",
+      "Fierce Impaler",
+      "ferocious cauldron shark",
+      "Frenzied Cauldron Shark",
+      "Golden Haired Mermaid",
+      "Stiletto Fang Piranha",
+      "Seahorse Patriarch",
+      "Seahorse Matriarch",
+      "Shellara Ebbhunter",
+      "Undertow",
+      "Swirlspine Guardian",
+      "frenzied bull shark",
+      "ferocious hammerhead"
+    ],
+    "rareCount": null,
+    "killsToComplete": null,
+    "confidence": "inferred",
+    "source": "https://eqlwiki.com/Kedge_Keep",
+    "notes": "Phinigel Autropos is a raid boss; unknown whether he counts."
+  },
+  "The City of Guk": {
+    "aliases": [
+      "Upper Guk"
+    ],
+    "rares": [
+      "froglok gaz squire",
+      "froglok idealist",
+      "froglok realist",
+      "froglok necromancer",
+      "froglok scryer",
+      "froglok summoner",
+      "froglok nokta shaman",
+      "froglok shin knight",
+      "froglok shin lord",
+      "Tempus",
+      "giant heart spider",
+      "ancient croc",
+      "Fungus Mutant",
+      "froglok warden",
+      "Froglok Tonta Knight"
+    ],
+    "rareCount": null,
+    "killsToComplete": null,
+    "confidence": "inferred",
+    "source": "https://eqlwiki.com/Upper_Guk",
+    "notes": "Notable NPCs row plus the map."
+  },
+  "Befallen": {
+    "rares": [
+      "Boondin Babbinsbort",
+      "Commander Windstream",
+      "Elf Skeleton",
+      "Gynok Moltor",
+      "Priest Amiaz",
+      "Skeleton Lrodd",
+      "The Thaumaturgist",
+      "Baron Telyx V`Zher",
+      "Korven Nisere",
+      "Kahaptra Z`Taj",
+      "Arisen Thaumaturgist",
+      "Asaka L`Rei",
+      "Soldier of V`Zher",
+      "Footman of V`Zher",
+      "Knight V`Tal",
+      "shadowknight"
+    ],
+    "rareCount": null,
+    "killsToComplete": null,
+    "confidence": "inferred",
+    "source": "https://eqlwiki.com/Befallen",
+    "notes": "Notable NPCs row plus the map; the log fixture tests/fixtures/befallen-run.log has 'You have slain Baron Telyx V`Zher!'."
+  },
+  "Blackburrow": {
+    "rares": [
+      "Lord Elgnub",
+      "Master Brewer",
+      "Refugee Splitpaw",
+      "gnoll commander",
+      "Splitpaw Commander",
+      "Socho Darkpaw",
+      "gnoll high shaman",
+      "Sabertooth Clan Necromancer",
+      "Tranixx Darkpaw",
+      "Splitpaw Sentry"
+    ],
+    "rareCount": null,
+    "killsToComplete": null,
+    "confidence": "inferred",
+    "source": "https://eqlwiki.com/Blackburrow",
+    "notes": "Notable NPCs row."
+  },
+  "The Liberated Citadel of Runnyeye": {
+    "aliases": [
+      "Runnyeye",
+      "RunnyEye Citadel"
+    ],
+    "rares": [
+      "Borxx",
+      "Evil Eye prisoner",
+      "Sludge Dankmire",
+      "Goblin Captain",
+      "Goblin Warlord",
+      "The Goblin King",
+      "Slime Elemental",
+      "Gelatinous Cube",
+      "Battlelord Paluk",
+      "Lord Pickclaw",
+      "Goblin Knight"
+    ],
+    "rareCount": null,
+    "killsToComplete": null,
+    "confidence": "inferred",
+    "source": "https://eqlwiki.com/Runnyeye",
+    "notes": "Notable NPCs row plus the map."
+  },
+  "Permafrost Keep": {
+    "aliases": [
+      "Permafrost"
+    ],
+    "rares": [
+      "Priest of Nagafen",
+      "High Priest Zaharn",
+      "goblin alchemist",
+      "King Thex'Ka IV",
+      "Goblin Archeologist",
+      "Goblin Patriarch",
+      "Goblin Preacher",
+      "Goblin Jail Master",
+      "Goblin Scryer",
+      "Elite Honor Guard",
+      "Injured Polar Bear",
+      "Ice Goblin Champion",
+      "Ice Giant Diplomat",
+      "icy goblin"
+    ],
+    "rareCount": null,
+    "killsToComplete": null,
+    "confidence": "inferred",
+    "source": "https://eqlwiki.com/Permafrost",
+    "notes": "Lady Vox is a raid boss. Some sources spell King Thex`Ka IV with a backtick."
+  },
+  "Najena": {
+    "rares": [
+      "Akksstaff",
+      "BoneCracker",
+      "Drelzna",
+      "Ekeros",
+      "Linara Parlone",
+      "Lost Crusader",
+      "Moosh",
+      "Najena",
+      "Officer Grush",
+      "Rathyl",
+      "Rathyl reincarnate",
+      "The Blood Artist",
+      "guard captain",
+      "The Tenderizer",
+      "The Widowmistress",
+      "Trazdon",
+      "Unbound Flame",
+      "visiting priestess"
+    ],
+    "rareCount": null,
+    "killsToComplete": null,
+    "confidence": "inferred",
+    "source": "https://eqlwiki.com/Najena",
+    "notes": "Notable NPCs row."
+  },
+  "The Lair of the Splitpaw": {
+    "aliases": [
+      "Splitpaw Lair",
+      "Splitpaw"
+    ],
+    "rares": [
+      "Brother Hayle",
+      "The Ishva Mal",
+      "Kurrpok Splitpaw",
+      "Nisch Val Torash Mashk",
+      "Rosch Val L'Vlor",
+      "Tesch Val Kadvem",
+      "Tesch Val Deval`Nmak",
+      "Tesch Val Brute"
+    ],
+    "rareCount": null,
+    "killsToComplete": null,
+    "confidence": "inferred",
+    "source": "https://eqlwiki.com/Splitpaw_Lair",
+    "notes": "Notable NPCs row plus the map."
+  },
+  "The Ruins of Old Paineel": {
+    "aliases": [
+      "The Hole",
+      "Old Paineel"
+    ],
+    "rares": [
+      "Bejeweled Elemental",
+      "Commander Yarik",
+      "Caradon",
+      "Dartain the Lost",
+      "Ghost of Kindle",
+      "Ghost of Glohnor",
+      "Gibartik",
+      "High Scale Kirn",
+      "Initiate Sirlis",
+      "Irslak the Wretched",
+      "Jaeil the Wretched",
+      "Keeper of the Tombs",
+      "Kejar the Mighty",
+      "Niltoth the Unholy",
+      "Nortlav the Scalekeeper",
+      "Polzin Mrid",
+      "ratman guard",
+      "Rocksoul",
+      "Slizik the Mighty",
+      "Schnozz the Flighty",
+      "Stonegrinder Minion",
+      "Stonesoul the Unmoving",
+      "Ulrik the Devout",
+      "Retseth Tretse"
+    ],
+    "rareCount": null,
+    "killsToComplete": null,
+    "confidence": "inferred",
+    "source": "https://eqlwiki.com/The_Hole",
+    "notes": "Master Yael is a raid boss."
+  }
+}
