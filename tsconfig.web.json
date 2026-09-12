@@ -39,6 +39,8 @@
     "src/preload/characterApi.ts",
     // …and `discordApi.ts` (posting a character card to a Discord channel webhook), likewise.
     "src/preload/discordApi.ts",
+    // …and `syncApi.ts` (sending your settings to another PC of your own), likewise.
+    "src/preload/syncApi.ts",
     // …and `windows.ts` (the overlays + the celebration toast), for the same reason.
     "src/preload/windows.ts",
     // …and `roster.ts` (the group roster's user edits), likewise.

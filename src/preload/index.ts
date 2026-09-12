@@ -29,6 +29,9 @@ import { characterApi } from './characterApi'
 // the same file-mass reason - and because the five doors of a secret-bearing feature read better
 // together than scattered through this list. See ./discordApi.ts.
 import { discordApi } from './discordApi'
+// Carrying that same settings bundle to the user's OTHER PC as ciphertext (docs/plans/
+// settings-sync.md), split out for the same file-mass reason. See ./syncApi.ts.
+import { syncApi } from './syncApi'
 // The quest tracker's read/write pair (EQ Zera), split out for the same file-mass reason.
 import { questsApi } from './questsApi'
 import { craftApi } from './craftApi'
@@ -466,6 +469,11 @@ const api = {
    *  as a webhook URL. Either way the secret only ever travels INWARD: what comes back is a list of
    *  ids and labels, a masked view, a status word or a sentence, never the token. */
   ...discordApi,
+
+  /** Sending your settings to another PC (docs/plans/settings-sync.md). Main encrypts locally and
+   *  uploads ciphertext; the key rides in the transfer code the user carries, so the service
+   *  stores bytes it cannot read. No key and no decrypted payload ever crosses this bridge. */
+  ...syncApi,
 
   /** Report a renderer-detected event into the live event feed (Task #59) — today only quest
    *  completions, which only the renderer's posky/turn-in detector can see. Fire-and-forget;

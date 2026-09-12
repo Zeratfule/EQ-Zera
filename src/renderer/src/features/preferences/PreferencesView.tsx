@@ -142,6 +142,10 @@ import { thanksSection } from './ThanksSetting'
 // Same arrangement again (owner, 2026-09-10): where your character card gets posted - today one
 // Discord channel webhook - names its own section beside the card that renders it.
 import { sharingSection } from './SharingSetting'
+// Same arrangement again (docs/plans/settings-sync.md): carrying your settings to another PC of
+// your own - encrypted here, through a service that cannot read them - names its own section
+// beside the card that renders it. See ./SyncSetting.tsx for why it is not a line under Profiles.
+import { syncSection } from './SyncSetting'
 // The section CARD and the arrival pulse live together in their own file — same ceiling, same
 // answer as PerfSetting's descriptor: split, don't widen the threshold.
 import PrefSectionBlock, { FILL_COLUMN_SX, FILL_ROOT_SX, FILL_ROW_SX, paneFills, useLandedSection } from './PrefSectionBlock'
@@ -389,6 +393,10 @@ function buildSections({ version, status, onSendFeedback, onWhatsNew }: SectionI
     // CHARACTER CARD gets posted. Adjacent so the rail reads as one neighbourhood, separate so a
     // person looking for one is never shown the other.
     sharingSection(),
+    // …and directly under it, the OTHER thing "share" can mean: the same settings bundle carried to
+    // a second machine of the user's own, which is a different audience and therefore its own rail
+    // row (docs/plans/settings-sync.md).
+    syncSection(),
     {
       id: 'updates',
       label: 'Updates',

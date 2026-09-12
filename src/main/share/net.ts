@@ -168,6 +168,24 @@ export function recordUrl(id: string): string {
   return `${SHARE_ORIGIN}/api/v1/shares/${id}`
 }
 
+/**
+ * The SETTINGS-SYNC routes (docs/plans/settings-sync.md): create a transfer, and the per-record
+ * route its read and its delete address.
+ *
+ * They live beside the share routes rather than in a module of their own because they are the SAME
+ * service on the SAME compiled-in origin, and therefore under the same gate: `SHARE_ORIGIN` is
+ * empty under `EQ_E2E`, so a headless run cannot post somebody's settings anywhere. There is no
+ * token here at all - the code IS the secret (`share/syncCrypto.ts`), so a DELETE carries nothing
+ * but the code, and nothing this app stores can revoke somebody else's transfer.
+ */
+export function syncUrl(): string {
+  return `${SHARE_ORIGIN}/api/v1/sync`
+}
+
+export function syncRecordUrl(code: string): string {
+  return `${SHARE_ORIGIN}/api/v1/sync/${code}`
+}
+
 /** Is this an id this app will put in a URL? See `SHARE_ID`. */
 export function isShareId(raw: unknown): raw is string {
   return typeof raw === 'string' && SHARE_ID.test(raw)

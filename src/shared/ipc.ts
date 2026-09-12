@@ -868,6 +868,34 @@ export const IPC = {
   // Returns ShareApplyResult, incl. the localStorage writes the renderer must perform.
   shareApply: 'share:apply',
 
+  // ---- sending your settings to another PC (docs/plans/settings-sync.md) ----
+  // The same bundle the three channels above encode, carried through the share service as
+  // CIPHERTEXT: main encrypts locally, uploads the blob alone, and shows a transfer code whose
+  // second half IS the key (src/main/share/syncCrypto.ts). The service never sees it.
+  //
+  // WHAT DOES NOT CROSS THIS BOUNDARY: the key, the decrypted payload, and any Discord webhook
+  // token inside it. A receive answers the SAME `SharePreview` the paste box renders plus a COUNT
+  // of channels; the payload itself is held in main between the preview and the apply, exactly as
+  // `character:shareLink`'s delete token is held rather than forwarded.
+  //
+  // renderer -> main: is there a sync service in this build at all? Returns boolean - false under
+  // `EQ_E2E` and in any build with no origin compiled in, which is what the card's disabled state
+  // and its "cannot sync" sentence are drawn from.
+  syncAvailable: 'sync:available',
+  // renderer -> main: encrypt this install's settings and upload them. Args:
+  // ({ ui, includeDiscord }); `includeDiscord` defaults to FALSE at the handler, because a
+  // connected channel is a credential. Returns SyncSendResult ({ok:true, code, expiresAt} |
+  // {ok:false, error}) where `error` is already user-facing prose, never a stack.
+  syncSend: 'sync:send',
+  // renderer -> main: fetch and decrypt a transfer, writing NOTHING. Args: (code, uiPrefs).
+  // Returns SyncReceiveResult ({ok:true, preview, discordChannels?} | {ok:false, error}).
+  syncReceive: 'sync:receive',
+  // renderer -> main: apply the transfer that was just previewed. Args:
+  // ({ code, ui, includeDiscord }) - the code identifies the payload main is holding, and
+  // `includeDiscord` is the RECEIVER's own answer about the channels. Returns SyncApplyResult,
+  // incl. the localStorage writes the renderer must perform.
+  syncApply: 'sync:apply',
+
   // ---- clipboard (the combat "Copy this view as text" buttons) ----
   // renderer -> main: put plain text on the OS clipboard. Arg: text. Returns boolean (written).
   // WHY THIS IS AN IPC CHANNEL AND NOT `navigator.clipboard.writeText`: the async Clipboard API
