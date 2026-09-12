@@ -12,13 +12,16 @@
 //   POST   /api/v1/shares       {envelope, card?, cardMap?}  -> 201 {id, url, deleteToken, expiresAt}
 //   PUT    /api/v1/shares/:id   same body + Bearer token     -> 200 {id, url, expiresAt}
 //   DELETE /api/v1/shares/:id   Bearer token                 -> 204
-//   GET    /p/:id               -                            -> 200 {envelope, cardMap?, createdAt, updatedAt, expiresAt}
+//   GET    /p/:id               -                            -> 200 {envelope, cardMap?, history, createdAt, updatedAt, expiresAt}
 //   GET    /c/:id.png           -                            -> the card image, PNG/JPEG/WebP (404 when absent)
 //   GET    /s/:id               -                            -> the HTML page
 //   GET    /                    -                            -> 302 https://eqzera.com/
 //   GET    /discord/start       ?state=                      -> 302 to Discord's channel picker   (discord.ts)
 //   GET    /discord/callback    ?code=&state=                -> an HTML notice page               (discord.ts)
 //   GET    /discord/claim/:st   -                            -> 200 the webhook, ONCE; 404 not-ready | not-found
+//   POST   /api/v1/sync         {blob: base64}               -> 201 {code, expiresAt}              (sync.ts)
+//   GET    /api/v1/sync/:code   -                            -> 200 {blob, expiresAt}; 404 not-found
+//   DELETE /api/v1/sync/:code   -                            -> 204 (the code IS the secret)
 //   anything else                                            -> 404 JSON
 //
 // NO CORS HEADERS ON /api, deliberately: the app calls these from its MAIN process, never from a
@@ -48,6 +51,7 @@ import {
   rateLimited,
   redirectResponse
 } from './http'
+import { pushHistory, readHistory, snapshotOf } from './history'
 import { logoPng } from './logo'
 import { renderPage } from './page'
 import {
@@ -63,6 +67,7 @@ import {
   type Accepted,
   type Refusal
 } from './store'
+import { SYNC_PREFIX, syncRoute } from './sync'
 import { SHARE_LIMITS, type ShareEnvelope } from '../../src/shared/shareSchema'
 import type { CharacterProfileShare } from '../../src/shared/characterShare'
 
@@ -254,6 +259,12 @@ function unauthorizedResponse(): Response {
  * An update carrying no card KEEPS the one already stored and rewrites it, because both keys must
  * expire together: refreshing the record while letting the image age out would leave an unfurl
  * pointing at a 404 for the last thirty days of a share's life.
+ *
+ * AND IT REMEMBERS WHAT IT REPLACED. The state going out of service becomes a snapshot on
+ * `hist:<id>` (history.ts), stamped with the moment it was published (`record.updatedAt`), so the
+ * page can say what this re-share changed. The snapshot is derived from the STORED envelope back
+ * through `acceptEnvelope` — the same belt-and-braces `readPage` does — and an envelope that no
+ * longer passes is skipped rather than remembered as a shape nothing can read.
  */
 async function updateShare(ctx: Ctx, id: string): Promise<Response> {
   if (await rateLimited(ctx.env.CREATE_LIMIT, clientIp(ctx.request))) return tooMany()
@@ -281,6 +292,8 @@ async function updateShare(ctx: Ctx, id: string): Promise<Response> {
     if (body.cardMap.length) next.cardMap = body.cardMap
     else delete next.cardMap
   }
+  const replaced = acceptEnvelope(record.envelope)
+  if (replaced.ok) await pushHistory(ctx.env, id, snapshotOf(replaced.profile, record.updatedAt))
   await writeRecord(ctx.env, id, next)
   return jsonResponse(
     { id, url: `${ctx.origin}/s/${id}`, expiresAt: expiresAt(next) },
@@ -301,7 +314,13 @@ async function removeShare(ctx: Ctx, id: string): Promise<Response> {
 
 // ------------------------------------------------------------------------------ the view routes
 
-/** The app's read: the envelope exactly as stored, so the client re-validates the same bytes. */
+/**
+ * The app's read: the envelope exactly as stored, so the client re-validates the same bytes.
+ *
+ * `history` is ALWAYS present, as an array that is usually empty: a key the app has to test for
+ * and a key that is sometimes absent are two different contracts, and the cheaper one to hold is
+ * "the list of past states, which for a share nobody has re-published is none".
+ */
 async function readProfile(ctx: Ctx, id: string): Promise<Response> {
   const record = await readRecord(ctx.env, id)
   if (!record) return notFound()
@@ -309,6 +328,7 @@ async function readProfile(ctx: Ctx, id: string): Promise<Response> {
   const reply = {
     envelope: fresh.envelope,
     ...(fresh.cardMap ? { cardMap: fresh.cardMap } : {}),
+    history: await readHistory(ctx.env, id),
     createdAt: new Date(fresh.createdAt).toISOString(),
     updatedAt: new Date(fresh.updatedAt).toISOString(),
     expiresAt: expiresAt(fresh)
@@ -350,6 +370,7 @@ async function readPage(ctx: Ctx, id: string): Promise<Response> {
     hasCard: fresh.hasCard,
     cardMap: fresh.hasCard ? (fresh.cardMap ?? []) : [],
     updatedAt: fresh.updatedAt,
+    history: await readHistory(ctx.env, id),
     nonce
   })
   return htmlResponse(html, nonce)
@@ -388,6 +409,19 @@ async function viewRoute(ctx: Ctx, path: string): Promise<Response> {
   return notFound()
 }
 
+/** `true` when `path` is a prefix itself or something beneath it. One shape for both API trees. */
+function under(path: string, prefix: string): boolean {
+  return path === prefix || path.startsWith(`${prefix}/`)
+}
+
+/**
+ * The site mark the page's top bar shows (logo.ts): static bytes, no id, no rate limit worth
+ * spending. GET and HEAD only, like every other read here.
+ */
+function logoRoute(request: Request): Response {
+  return request.method === 'GET' || request.method === 'HEAD' ? logoResponse(logoPng()) : notFound()
+}
+
 /**
  * The service. Pure: everything it can observe arrives in its arguments. `fetchImpl` is the one
  * outbound call the service makes (discord.ts's token exchange), injected so the suite can
@@ -406,10 +440,9 @@ export async function handleRequest(
   if (path.startsWith('/discord/')) {
     return (await discordRoute({ ...ctx, fetchImpl }, path)) ?? notFound()
   }
-  // The site mark the page's top bar shows: static bytes, no id, no rate limit worth spending.
-  if (path === '/logo.png') {
-    return request.method === 'GET' || request.method === 'HEAD' ? logoResponse(logoPng()) : notFound()
-  }
-  if (path === API_PREFIX || path.startsWith(`${API_PREFIX}/`)) return apiRoute(ctx, path)
+  if (path === '/logo.png') return logoRoute(request)
+  if (under(path, API_PREFIX)) return apiRoute(ctx, path)
+  // Settings sync (sync.ts): the same /api/v1 tree, its own three routes, no envelope in sight.
+  if (under(path, SYNC_PREFIX)) return syncRoute(ctx, path)
   return viewRoute(ctx, path)
 }

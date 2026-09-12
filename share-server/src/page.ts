@@ -33,6 +33,8 @@ import type {
 } from '../../src/shared/characterShare'
 import { characterBlock, characterShareText } from '../../src/shared/characterShare'
 import type { CardHotspot } from './env'
+import { snapshotOf, type Snapshot } from './history'
+import { historyPanel } from './pageHistory'
 import { STYLE } from './pageStyle'
 
 /** Everything the renderer is handed. One object because seven loose arguments is six too many. */
@@ -48,6 +50,12 @@ export interface PageInput {
   cardMap: readonly CardHotspot[]
   /** epoch millis of the last write — what the "Shared from EQ Zera · <date>" line reads */
   updatedAt: number
+  /**
+   * The states this share was published OVER, newest first (history.ts). OPTIONAL because it is
+   * additive: a caller that knows nothing about history renders exactly the page it used to, and
+   * an empty list draws no panel at all rather than an empty one.
+   */
+  history?: readonly Snapshot[]
   nonce: string
 }
 
@@ -535,6 +543,7 @@ export function renderPage(input: PageInput): string {
     scoresBlock(input.profile) +
     characterPanel(input.profile) +
     slotsBlock(input.profile) +
+    historyPanel(input.profile, snapshotOf(input.profile, input.updatedAt), input.history ?? []) +
     shareStringBlock(input.shareString) +
     `<footer><a href="https://eqzera.com/">EQ Zera</a> reads your EverQuest Legends log live. ` +
     `<a href="https://eqzera.com/#install">Install it</a> to build a profile of your own.</footer>` +

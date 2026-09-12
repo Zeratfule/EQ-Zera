@@ -38,8 +38,10 @@ import {
   type CharacterProfileShare
 } from '../../src/shared/characterShare'
 import { deflateRawBase64Url } from './codec'
+import { touchHistory } from './history'
 import {
   KEY_CARD,
+  KEY_HISTORY,
   KEY_SHARE,
   SHARE_TTL_SECONDS,
   VIEW_REFRESH_MS,
@@ -196,9 +198,10 @@ export async function writeCard(
 }
 
 /**
- * A view's effect on the clock. Rewrites BOTH keys — the record and, when there is one, the card —
- * so a share and its image never expire at different moments; returns the record as it now stands
- * so the caller reports the expiry it actually wrote.
+ * A view's effect on the clock. Rewrites ALL THREE keys — the record, the card when there is one,
+ * and the history when there is one — so a share, its image and the states it grew out of never
+ * expire at different moments; returns the record as it now stands so the caller reports the
+ * expiry it actually wrote.
  */
 export async function touch(env: Env, id: string, record: ShareRecord, at: number): Promise<ShareRecord> {
   if (at - record.lastSeenAt <= VIEW_REFRESH_MS) return record
@@ -208,6 +211,7 @@ export async function touch(env: Env, id: string, record: ShareRecord, at: numbe
     const png = await env.SHARES.get(KEY_CARD(id), 'arrayBuffer')
     if (png) await writeCard(env, id, png)
   }
+  await touchHistory(env, id)
   return refreshed
 }
 
@@ -216,7 +220,9 @@ export function expiresAt(record: ShareRecord): string {
   return new Date(record.lastSeenAt + SHARE_TTL_SECONDS * 1000).toISOString()
 }
 
+/** Revoking takes the WHOLE share: the record, the card, and the states it was published over. */
 export async function deleteShare(env: Env, id: string): Promise<void> {
   await env.SHARES.delete(KEY_SHARE(id))
   await env.SHARES.delete(KEY_CARD(id))
+  await env.SHARES.delete(KEY_HISTORY(id))
 }

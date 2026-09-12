@@ -93,6 +93,21 @@ border:1px solid var(--line);border-radius:4px;padding:2px 6px}
 .effects .k{display:inline-block;min-width:56px;color:var(--ink3);font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase}
 .muted-inline{color:var(--ink3)}
 .facts .muted{margin:0}
+.hist{list-style:none;margin:0;padding:0}
+.hist>li{padding:12px 0;border-top:1px solid var(--line)}
+.hist>li:first-child{border-top:0;padding-top:0}
+.when{margin:0 0 8px;font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--ink3)}
+.deltas{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 8px}
+.deltas li{display:flex;align-items:center;gap:8px;background:var(--ground2);border:1px solid var(--line);
+border-radius:6px;padding:5px 10px;font-size:14px}
+.deltas .k{color:var(--ink3)}
+.deltas .v{font-family:var(--mono);color:var(--ink)}
+.deltas .d{font-family:var(--mono);font-size:12px}
+.deltas .d.up{color:var(--cyan)}.deltas .d.down{color:var(--pink)}
+.changed li{display:grid;grid-template-columns:120px 1fr;gap:4px 10px;padding:3px 0;font-size:14px}
+.changed .slot{color:var(--ink3);font-size:14px;font-family:var(--mono)}
+.changed .v{color:var(--ink2)}
+@media (max-width:520px){.changed li{grid-template-columns:1fr}}
 .eqc{width:100%;font-family:var(--mono);font-size:12px;color:var(--sun);background:var(--ground2);
 border:1px solid var(--line);border-radius:6px;padding:10px;resize:vertical;word-break:break-all}
 .row{display:flex;align-items:center;gap:12px;margin:12px 0 0}

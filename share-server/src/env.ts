@@ -114,6 +114,46 @@ export const KEY_SHARE = (id: string): string => `share:${id}`
 export const KEY_CARD = (id: string): string => `card:${id}`
 
 /**
+ * The gear history (history.ts): the states this id has been RE-PUBLISHED over, newest first.
+ *
+ * A third key rather than a field on the record because it is read by exactly two callers and
+ * written by exactly one: a PUT pushes the state it replaces onto it, `touch` rewrites it beside
+ * the other two so all three expire together, and a delete removes it. Keeping it out of
+ * `share:<id>` also means the common read — the app's `/p/:id` and the page — never pays to parse
+ * thirty old states it is only sometimes going to show.
+ */
+export const KEY_HISTORY = (id: string): string => `hist:${id}`
+
+/**
+ * How many past states one share keeps. Thirty is a re-share a day for a month; past that the
+ * oldest falls off the end, because a share is a picture of a character, not an audit log, and
+ * the row is one somebody pays for.
+ */
+export const HISTORY_CAP = 30
+
+/**
+ * Settings sync (sync.ts): one CLIENT-ENCRYPTED settings bundle, parked under its code.
+ *
+ * The value is ciphertext this service cannot read — the key never leaves the two PCs
+ * (docs/plans/settings-sync.md) — so the row is opaque bytes with an expiry, nothing more.
+ */
+export const KEY_SYNC = (code: string): string => `sync:${code}`
+
+/** 24 hours: long enough to walk to the other PC, short enough that a leaked code is stale. */
+export const SYNC_TTL_SECONDS = 24 * 60 * 60
+
+/**
+ * A sync code is 10 chars of the id alphabet — 62^10 ≈ 2^59.5, the same draw as a share id. It is
+ * a BEARER SECRET (there is no second token), so the unguessability has to come from the length
+ * and from `CREATE_LIMIT`/`READ_LIMIT`: 300 reads a minute per IP against 2^59.5 codes that live
+ * one day is not a search anybody finishes.
+ */
+export const SYNC_CODE_LENGTH = 10
+
+/** Decoded ceiling for one settings bundle. The app's own settings JSON is tens of kilobytes. */
+export const MAX_SYNC_BYTES = 512 * 1024
+
+/**
  * The Discord connect flow's two rows (discord.ts), in the SAME namespace under their own prefix:
  * a second KV binding would be a second namespace to create per account for two keys that live
  * ten minutes. `pending` says "/discord/start issued a redirect for this state"; `result` is the

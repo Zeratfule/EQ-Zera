@@ -43,7 +43,7 @@ on update, and on a view when `lastSeenAt` is older than 30 days. `id` = 10 char
 | `POST /api/v1/shares` | JSON `{ envelope, card?, cardMap? }`; `cardMap` (2026-09-09) = `{ slot, x, y, w, h }[]`, one per gear cell drawn on the card, in fractions of the card image (0..1, top-left origin), `slot` an envelope cell's slot id, at most 40, honoured only alongside a `card` (entries with an unknown slot or a number outside 0..1 are dropped); the page overlays a hotspot per entry; `card` = base64 PNG, JPEG or WebP (by signature) ≤ 1 MB decoded (was PNG ≤ 400 KB until 2026-09-09; raised so a full-resolution card fits as JPEG); envelope JSON ≤ 64 KB; must pass `validateEnvelope` with `kind === 'character'` and `sanitizeCharacterShare(body) !== null` | `201 { id, url, deleteToken, expiresAt }` |
 | `PUT /api/v1/shares/:id` | same body; `Authorization: Bearer <deleteToken>` | `200 { id, url, expiresAt }` (id and URL unchanged) |
 | `DELETE /api/v1/shares/:id` | `Authorization: Bearer <deleteToken>` | `204` (both keys removed) |
-| `GET /p/:id` | — | `200 { envelope, cardMap?, createdAt, updatedAt, expiresAt }`, `Cache-Control: no-store`; refreshes TTL per ruling 2 |
+| `GET /p/:id` | — | `200 { envelope, cardMap?, history, createdAt, updatedAt, expiresAt }`, `Cache-Control: no-store`; refreshes TTL per ruling 2. `history` (2026-09-12) is the `Snapshot[]` of past states, newest first, empty until the share is re-published — see "Gear history on the share page" below |
 | `GET /c/:id.png` | — | the card bytes under the `Content-Type` their signature says (`image/png`, `image/jpeg` or `image/webp`; the `.png` path is kept for every link already out), `Cache-Control: public, max-age=3600`; `404` when absent |
 | `GET /s/:id` | — | the HTML page (below) |
 | `GET /` | — | 302 to `https://eqzera.com/` |
@@ -115,6 +115,64 @@ Main-process only (renderer performs no fetch: `connect-src 'self'`).
   `tests/e2e/character-share.e2e.mts` gains one step: with the endpoint dark (e2e runs set
   `EQ_SHARE_URL` to nothing and the compiled origin is unreachable) the Copy link button reports
   an error and the dialog stays usable.
+
+## Gear history on the share page (2026-09-12, service half BUILT)
+
+A share link is re-published under the same id every time the sharer re-shares that character
+(`PUT /api/v1/shares/:id`, "id and URL unchanged"), and until now the state it replaced was simply
+gone. The page now keeps the last thirty and says **what changed** — the one question a reader of
+someone's profile asks that the page could not answer.
+
+**The key.** A third row beside the record and the card: `hist:<id>` → `Snapshot[]`, **newest
+first, capped at 30** (`share-server/src/history.ts`; `HISTORY_CAP`, `KEY_HISTORY` in `env.ts`).
+Same `expirationTtl` of 180 days, rewritten by the same `touch` as the other two so all three
+expire together, and removed by `DELETE /api/v1/shares/:id` with them. It is a separate key, not a
+field on the record, so the common read never pays to parse thirty old states.
+
+**What writes it.** Only a PUT, and only the state it is REPLACING: the stored envelope goes back
+through `acceptEnvelope` and the resulting sanitized profile becomes one snapshot, stamped with
+`record.updatedAt` — the moment that state was *published*, not the moment it was displaced. **A
+POST writes nothing**: a share nobody has re-published costs no history row, and the page draws no
+empty panel.
+
+**One snapshot, exactly:**
+
+```jsonc
+{
+  "at": "2026-09-10T18:04:11.000Z",  // ISO-8601 of the write that published THIS state
+  "ac": 231,                          // totals.ac
+  "scores": { "tank": 70, "dps": 61, "heal": 38, "solo": 55 },  // OPTIONAL, all four or none
+  "level": 60,                        // OPTIONAL
+  "classes": ["WAR", "CLR", "SHM"],
+  "items": [{ "slot": "chest", "item": "Breastplate +3", "tier": 3 }]  // `tier` OPTIONAL
+}
+```
+
+`item` is the Name column **verbatim, ` +N` and all** — the same string the gear list renders. No
+stat blocks, no effects, no card: thirty full profiles would be a megabyte nobody reads, and
+everything the panel says is derivable from these. Read back through a sanitizer (same law as the
+envelope: KV is a place, not a type), so junk in the namespace is dropped rather than rendered.
+
+**`GET /p/:id` gains `history: Snapshot[]`** — always present, usually empty. That is the whole
+API change; `createdAt`, `updatedAt`, `expiresAt`, `envelope` and `cardMap` are untouched.
+
+**The page** (`share-server/src/pageHistory.ts`, styles in `pageStyle.ts`) grows a **History**
+panel below Worn gear when the list is non-empty. One row per snapshot, newest first, each row a
+TRANSITION against the **next-newer state** — row 0 against the profile on the page right now, row
+`i` against row `i-1`:
+
+* the date the row's state was published;
+* **AC** and the four scores, as `231 → 247` with a signed delta (`+16`) when they moved, and as
+  the bare figure when they did not — so a row reads on its own and the arrow means something;
+* the **slots whose item changed**, `Chest: Old Name +3 → New Name +5`; unchanged slots are
+  omitted, and a slot that gained or lost an item reads from or to `(empty)`. The label is the
+  current profile's screen label for that slot, falling back to the raw slot id;
+* at most **ten rows**, then a muted `N earlier snapshots`. The cap is on the rendering; `/p/:id`
+  hands the app all thirty.
+
+Every string goes through `esc()` and nothing emits a `style=` attribute — the CSP rules are
+unchanged. `tests/shareHistory.test.mts` (root suite) covers the write rules, the snapshot shape,
+the deltas, the escaping, the ten/thirty caps, the shared expiry and the delete.
 
 ## Not in this phase
 
