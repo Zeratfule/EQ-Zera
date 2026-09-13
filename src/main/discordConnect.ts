@@ -28,6 +28,7 @@ import {
   mintConnectState,
   openConnectPage,
   pollForClaim,
+  registerConnectState,
   type ConnectOutcome
 } from './share/discordConnect'
 import { channelFromClaim, CHANNELS_FULL, type DiscordClaim } from '../shared/discordChannels'
@@ -94,13 +95,26 @@ function statusFor(outcome: ConnectOutcome): DiscordConnectStatus {
 }
 
 /**
+ * How long the first poll waits when the state could NOT be pre-registered (2026-09-13).
+ *
+ * Without a registration of our own the pending row is written by the user's browser, and polling
+ * before that lands reads as `not-found` - the answer that ends the attempt. Three seconds is a
+ * browser being handed a URL; the cost of being wrong the other way is one extra wait.
+ */
+const UNREGISTERED_GRACE_MS = 3_000
+
+/**
  * Run one attempt to its end.
  *
  * `session !== mine` is the guard that makes "one at a time" true rather than hoped: a cancelled
  * or superseded attempt that finishes late drops its result on the floor instead of writing over
  * whatever the user is doing now.
  */
-async function runAttempt(mine: Session): Promise<void> {
+async function runAttempt(mine: Session, registered: boolean): Promise<void> {
+  if (!registered) {
+    await new Promise<void>((resolve) => setTimeout(resolve, UNREGISTERED_GRACE_MS))
+    if (mine.cancelled || session !== mine) return
+  }
   const outcome = await pollForClaim(
     {
       fetch: globalThis.fetch,
@@ -128,13 +142,17 @@ export async function startDiscordConnect(): Promise<DiscordConnectStart> {
   }
   cancelDiscordConnect()
   const mine: Session = { state: mintConnectState(), cancelled: false }
+  // THE STATE IS REGISTERED BEFORE THE BROWSER IS OPENED, so the first poll cannot outrun the
+  // browser's own request and read an attempt that has not started as one that is over. See
+  // `registerConnectState` for the race this closes and the log that showed it.
+  const registered = await registerConnectState({ fetch: globalThis.fetch }, mine.state)
   if (!(await openConnectPage(mine.state))) {
     status = { state: 'failed', error: CONNECT_ERR.browser }
     return { ok: false, error: CONNECT_ERR.browser }
   }
   session = mine
   status = { state: 'waiting' }
-  void runAttempt(mine).catch(() => {
+  void runAttempt(mine, registered).catch(() => {
     // A FIXED string: nothing about a claim reaches the log, because a claim carries a token.
     logError('main:discordConnect', 'the Discord connect attempt failed')
     if (session !== mine) return

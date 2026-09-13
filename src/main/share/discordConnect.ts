@@ -251,6 +251,38 @@ export async function pollForClaim(deps: ConnectPollDeps, state: string): Promis
  * Electron is imported INSIDE the function for `feedback/mail.ts`'s reason - a top-level
  * `import { shell } from 'electron'` makes this module unimportable by the node test runner.
  */
+/**
+ * Register the state with the service BEFORE the browser is asked to open it (2026-09-13).
+ *
+ * THE RACE THIS CLOSES, observed on the owner's machine and read off the service log: `/discord/
+ * start` is fetched by the USER'S BROWSER, and it is that request which writes the pending row.
+ * Main, meanwhile, starts polling `/discord/claim` the moment `openExternal` resolves - which on a
+ * cold browser is well before the browser has asked for anything. The claim route cannot tell
+ * "this state has not started yet" from "this state is finished", so it answers `not-found`, and
+ * `claimOnce` reads that as the terminal answer it is for every other caller. The user watched
+ * their authorize succeed ten seconds after the app had already given up on it.
+ *
+ * Fetching the start route here writes the row first, from a request we control, so the first poll
+ * always finds a live attempt. `redirect: 'manual'` keeps this at our own origin: the 302 is the
+ * acknowledgement, and following it would send a pointless GET to discord.com. Best effort - the
+ * browser's own hit still registers the state, so a false answer only means the caller should give
+ * that hit a moment to land (`startDiscordConnect`).
+ */
+export async function registerConnectState(deps: ShareFetch, state: string): Promise<boolean> {
+  const url = connectStartUrl(state)
+  if (url === '') return false
+  try {
+    const res = await deps.fetch(url, {
+      method: 'GET',
+      redirect: 'manual',
+      signal: AbortSignal.timeout(SHARE_TIMEOUT_MS)
+    })
+    return res.status === 302 || res.type === 'opaqueredirect'
+  } catch {
+    return false
+  }
+}
+
 export async function openConnectPage(state: string): Promise<boolean> {
   const url = connectStartUrl(state)
   if (url === '' || !url.startsWith(`${SHARE_ORIGIN}${START_PATH}?state=`)) return false

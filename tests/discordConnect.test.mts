@@ -40,6 +40,7 @@ import {
   CONNECT_WINDOW_MS,
   mintConnectState,
   pollForClaim,
+  registerConnectState,
   type ConnectPollDeps
 } from '../src/main/share/discordConnect'
 import {
@@ -368,4 +369,37 @@ test('an EQ_E2E build is DARK: no URL, the dark sentence, and the fetch is never
   assert.equal(said.claim, '', 'and no claim URL, so nothing can be asked')
   assert.deepEqual(said.res, { kind: 'failed', error: CONNECT_ERR.dark })
   assert.equal(said.calls, 0, 'and nothing was even attempted')
+})
+
+// ---------------------------------------------------------------- the pre-registration (2026-09-13)
+
+test('the state is registered at the service before the browser is opened, without following the 302', async () => {
+  const state = mintConnectState()
+  const seen: { url: string; init: RequestInit }[] = []
+  const deps = {
+    fetch: (async (url: string | URL, init?: RequestInit) => {
+      seen.push({ url: String(url), init: init ?? {} })
+      return { status: 302, type: 'default' } as unknown as Response
+    }) as unknown as typeof fetch
+  }
+  assert.equal(await registerConnectState(deps, state), true)
+  assert.equal(seen.length, 1)
+  assert.equal(seen[0]?.url, connectStartUrl(state))
+  // Manual, so the acknowledgement is the 302 itself and no GET is sent on to discord.com.
+  assert.equal(seen[0]?.init.redirect, 'manual')
+  assert.equal(seen[0]?.init.method, 'GET')
+})
+
+test('a registration the service does not acknowledge is false rather than an exception', async () => {
+  const state = mintConnectState()
+  const refused = {
+    fetch: (async () => ({ status: 500, type: 'default' }) as unknown as Response) as unknown as typeof fetch
+  }
+  assert.equal(await registerConnectState(refused, state), false)
+  const thrown = {
+    fetch: (async () => {
+      throw new Error('offline')
+    }) as unknown as typeof fetch
+  }
+  assert.equal(await registerConnectState(thrown, state), false)
 })
