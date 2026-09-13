@@ -135,6 +135,18 @@ export interface ReleaseNote {
  * still sees exactly the releases above it.
  */
 export const RELEASE_NOTES: readonly ReleaseNote[] = [
+  // The connect race the owner hit on every attempt (2026-09-13): the app polled the service
+  // before the user's browser had registered the attempt, and read the gap as an ending.
+  {
+    version: '1.25.1',
+    date: '2026-09-13',
+    entries: [
+      {
+        kind: 'fixed',
+        text: 'Connect a Discord channel works when your browser was not already open. EQ Zera used to start looking for the result before the browser had told the service an attempt was under way, then report that Discord did not complete the connection while the connection was in fact still going.'
+      }
+    ]
+  },
   // The 2026-09-12 feature program, wave 1 (owner: "I love all of those ideas, let's get them
   // implemented and roll them out"). Five app features from five executors on disjoint branches,
   // merged one at a time; the two service halves (gear history, the sync store) went live first.
