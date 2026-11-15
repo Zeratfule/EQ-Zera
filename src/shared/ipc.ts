@@ -1337,20 +1337,6 @@ export const IPC = {
   // main -> renderer: a Play started OUTSIDE the window (tray menu, desktop shortcut) finished.
   // Payload: the PlayResult, so the Overview button can say what happened.
   onLuclinPlayed: 'luclin:played',
-  // ---- the in-game UI skin (src/main/uiSkin/, docs/plans/eql-ui-skin.md) -------------------
-  // No path crosses any of these: main resolves <EQ root>/uifiles itself.
-  // renderer -> main: UiSkinView (state, last build, accepted, building).
-  uiSkinStatus: 'uiSkin:status',
-  // renderer -> main: remember the accepted use-at-your-own-risk notice. Returns UiSkinView.
-  uiSkinAccept: 'uiSkin:accept',
-  // renderer -> main: build or rebuild uifiles/EQZera; refused before acceptance.
-  // Returns UiSkinBuildResult.
-  uiSkinBuild: 'uiSkin:build',
-  // renderer -> main: delete uifiles/EQZera, and only a folder carrying EQ Zera's manifest.
-  // Returns UiSkinView.
-  uiSkinRemove: 'uiSkin:remove',
-  // main -> renderer, PUSH to the asking window during a build: UiSkinProgress.
-  onUiSkinProgress: 'uiSkin:progress',
   // ---- EverQuest Legends patch notes (src/main/patchNotes; shared/patchNotes.ts) ----
   // renderer -> main: the whole PatchNotesView (list, unread count, notice, switch state).
   patchNotesGet: 'patchNotes:get',

@@ -47,8 +47,6 @@
     // …and `awayAlerts.ts` (alerts that also go to one of those channels while you are away),
     // likewise.
     "src/preload/awayAlerts.ts",
-    // …and `uiSkin.ts` (the in-game UI skin card, docs/plans/eql-ui-skin.md), likewise.
-    "src/preload/uiSkin.ts",
     // …and `windows.ts` (the overlays + the celebration toast), for the same reason.
     "src/preload/windows.ts",
     // …and `roster.ts` (the group roster's user edits), likewise.

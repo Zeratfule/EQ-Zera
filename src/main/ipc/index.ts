@@ -70,8 +70,6 @@ import { registerSyncIpc } from './sync'
 import { registerPhoneIpc } from './phone'
 import { registerSoundsIpc } from './sounds'
 import { registerSpeechIpc } from './speech'
-// The in-game UI skin (docs/plans/eql-ui-skin.md): build, status and removal of uifiles/EQZera.
-import { registerUiSkinIpc } from './uiSkin'
 import { registerTelemetryIpc } from './telemetry'
 import { registerUiScaleIpc } from './uiScale'
 // The celebration toast's producer channel. It lives beside the window it feeds (src/main/toast.ts)
@@ -161,7 +159,6 @@ export function registerIpc(): void {
   registerResistIpc()
   registerUiScaleIpc()
   registerReleaseNotesIpc()
-  registerUiSkinIpc()
   registerPatchNotesIpc()
   // Registered in EVERY build, and a no-op in a packaged one — the refusal lives inside the
   // handler rather than around this call, so it is a decision a test can watch being made.

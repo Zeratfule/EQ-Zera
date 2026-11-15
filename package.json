@@ -27,7 +27,6 @@
     "engine:baseline": "tsx scripts/engine-baseline.mts",
     "gen:icon": "tsx scripts/gen-icon.mts",
     "gen:sounds": "tsx scripts/gen-sounds.mts",
-    "gen:eql-skin": "tsx scripts/gen-eql-skin.mts",
     "gen:spell-lines": "tsx scripts/gen-spell-lines.ts",
     "gen:data-weight": "node --expose-gc --import tsx scripts/gen-data-weight.mts",
     "gen:protocol": "tsx scripts/gen-protocol.mts",

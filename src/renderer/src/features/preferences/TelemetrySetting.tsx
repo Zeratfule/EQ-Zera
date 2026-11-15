@@ -22,9 +22,7 @@
 import { type JSX, useCallback, useEffect, useState } from 'react'
 import { Box, Button, FormControlLabel, Stack, Switch, Typography } from '@mui/material'
 import type { TelemetryPayloadView } from '@shared/telemetry'
-import PrivacyTipIcon from '@mui/icons-material/PrivacyTip'
 import { recordPref, usePrefsSeed } from './prefsHydration'
-import type { PrefSection } from './PreferencesView'
 
 /** Poll cadence while the pane is open — the buffer grows from main, which has no push channel
  *  for it (and should not gain one for a settings pane nobody watches for minutes). */
@@ -210,29 +208,4 @@ export function TelemetrySetting(): JSX.Element {
       </Stack>
     </Stack>
   )
-}
-
-/**
- * Usage analytics (docs/plans/usage-analytics.md). Its descriptor lives beside its card, the
- * PerfSetting arrangement: PreferencesView.tsx sits at the 400-code-line ceiling.
- *
- * It is a SECTION rather than a line inside another one because of what it contains: the switch
- * is one control, but the payload viewer beside it is the whole privacy claim made checkable,
- * and that does not belong tucked under "Updates".
- */
-export function analyticsSection(): PrefSection {
-  return {
-    id: 'analytics',
-    label: 'Usage analytics',
-    icon: <PrivacyTipIcon fontSize="small" />,
-    items: [
-      {
-        id: 'telemetry',
-        label: 'Anonymous usage counts',
-        keywords:
-          'telemetry analytics usage privacy tracking opt out optout data collect anonymous id rotate payload send stats metrics',
-        content: <TelemetrySetting />
-      }
-    ]
-  }
 }
