@@ -138,22 +138,6 @@ function ticks(c: Canvas): void {
   for (const s of segs) line(c, s, 1, hex(PALETTE.cyan, 0.85))
 }
 
-/** A lit stripe near the top and a shaded lower half, on the fill's own pixels only (gaps stay clear). */
-function gloss(c: Canvas): void {
-  for (let i = 0; i < c.w * c.h; i++) {
-    if ((c.px[i * 4 + 3] ?? 0) === 0) continue
-    const y = Math.floor(i / c.w)
-    const k = y === 1 ? 1.2 : y >= c.h / 2 ? 0.82 : 1
-    for (let ch = 0; ch < 3; ch++) c.px[i * 4 + ch] = Math.min(255, Math.round((c.px[i * 4 + ch] ?? 0) * k))
-  }
-}
-
-function gaugeCap(c: Canvas, dir: Dir | null): void {
-  if (dir !== 'Left' && dir !== 'Right') return
-  const x = dir === 'Left' ? 0 : c.w - 1
-  fillRoundRect(c, { x, y: 1, w: 1, h: c.h - 2 }, 0, dir === 'Left' ? MAGENTA : CYAN)
-}
-
 function grip(c: Canvas, dir: Dir): void {
   if (dir !== 'Middle') return
   if (c.w > c.h) for (let y = 0; y < c.h; y += 2) fillRoundRect(c, { x: 4, y, w: c.w - 8, h: 1 }, 0, [SHADE[0], SHADE[1], SHADE[2], 0.3])
@@ -173,12 +157,6 @@ const ORNAMENTS: { [K in Piece['kind']]?: Ornamenter<K> } = {
   },
   sliderThumb: (c, p, look) => {
     buttonOrnament(c, { state: p.state, radius: 3 }, look)
-  },
-  gaugeFill: (c, _p, look) => {
-    if (look.gloss) gloss(c)
-  },
-  gaugeTrack: (c, p, look) => {
-    if (look.gloss) gaugeCap(c, p.dir)
   },
   divider: (c, p, look) => {
     if (look.diamond && !p.vertical && c.w >= 16) diamond(c, { x: c.w / 2, y: c.h / 2, r: Math.min(3, c.h / 2) }, HI)

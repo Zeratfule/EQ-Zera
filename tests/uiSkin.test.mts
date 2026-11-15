@@ -24,10 +24,9 @@ import { SKIN_STYLES, lookFor } from '../src/main/uiSkin/look'
 import { parseAnimationFrames } from '../src/main/uiSkin/animations'
 import { classifyPiece } from '../src/main/uiSkin/pieceKinds'
 import { paintPiece } from '../src/main/uiSkin/paint'
-import { GAUGE_DEEP, mapXmlColor } from '../src/main/uiSkin/recolor'
+import { mapXmlColor } from '../src/main/uiSkin/recolor'
 import { hexToRgb, luma, type Rgb } from '../src/main/uiSkin/color'
 import { rewriteXmlColors } from '../src/main/uiSkin/xmlColors'
-import { rewriteKeepingGauges } from '../src/main/uiSkin/keepBase'
 import { buildSkin, removeSkin, skinStatus, SkinBuildError } from '../src/main/uiSkin/build'
 import { MANIFEST_FILE } from '../src/main/uiSkin/rules'
 import { PALETTE } from '../src/shared/palette'
@@ -109,7 +108,9 @@ test('the classifier names chrome and leaves art and unknown pieces alone', () =
   assert.deepEqual(classifyPiece('A_ChatCloseH'), { kind: 'glyphButton', state: 'flyby', glyph: 'x' })
   assert.deepEqual(classifyPiece('A_VSBUpNormal'), { kind: 'glyphButton', state: 'normal', glyph: 'up' })
   assert.deepEqual(classifyPiece('A_CheckBoxPressedDisabled_Double'), { kind: 'check', state: 'pressedDisabled' })
-  assert.deepEqual(classifyPiece('A_GaugeFill_transparent'), { kind: 'gaugeFill' })
+  for (const g of ['A_GaugeFill_transparent', 'A_GaugeBackground', 'A_GaugeLines', 'A_GaugeEndCapLeft', 'A_TargetGaugeFill']) {
+    assert.equal(classifyPiece(g), null, `${g}: gauges are never drawn`)
+  }
   assert.deepEqual(classifyPiece('A_InvShoulders'), { kind: 'slot', label: 'SHLDR' })
   assert.deepEqual(classifyPiece('A_HotButton7Disabled'), { kind: 'hotslot', state: 'disabled' })
   for (const art of ['A_InventoryBtnNormal', 'A_GoldCoin', 'A_DragItem', 'A_GrabNormal', 'A_EQBtnNormal']) {
@@ -155,12 +156,6 @@ test('an atlas redraws only its chrome; art and unreferenced pixels stay byte-id
 
 test('XML colours land on the palette by role', () => {
   const t = (hex: string): Rgb => hexToRgb(hex)
-  assert.deepEqual(mapXmlColor([150, 0, 0], 'gauge'), GAUGE_DEEP.red, 'HP: the deep red, never the pastel token')
-  assert.deepEqual(mapXmlColor([0, 100, 200], 'gauge'), GAUGE_DEEP.cyan, 'mana')
-  assert.deepEqual(mapXmlColor([100, 100, 0], 'gauge'), GAUGE_DEEP.amber, 'endurance')
-  // The client prints white and green numbers over the fill: both must stay readable on it.
-  for (const fill of [GAUGE_DEEP.red, GAUGE_DEEP.cyan, GAUGE_DEEP.amber]) assert.ok(contrast([255, 255, 255], fill) >= 3, 'white numbers on the fill')
-  assert.deepEqual(mapXmlColor([170, 0, 170], 'gauge'), GAUGE_DEEP.violet, 'casting')
   assert.deepEqual(mapXmlColor([240, 240, 240], 'text'), t(PALETTE.text), 'body text is the app text colour')
   assert.deepEqual(mapXmlColor([214, 178, 40], 'text'), t(PALETTE.accentHi), 'gold headings')
   assert.deepEqual(mapXmlColor([107, 215, 255], 'text'), t(PALETTE.cyan), 'blue links')
@@ -171,12 +166,14 @@ test('XML colours land on the palette by role', () => {
 
 test('the XML rewrite changes colour numbers and not one other byte', () => {
   const { text, changed } = rewriteXmlColors(TEST_WND_XML)
-  assert.equal(changed, 2, 'the white TextColor and the HP FillTint; the dark text and <Foo> stay')
+  assert.equal(changed, 1, 'the label TextColor; the gauge, the dark text and <Foo> stay')
+  const gauge = (x: string): string => /<Gauge[^]*?<\/Gauge>/.exec(x)?.[0] ?? ''
+  assert.equal(gauge(text), gauge(TEST_WND_XML), 'the gauge element is byte-identical: fill tint and its numbers colour')
   const strip = (s: string): string => s.replace(/(<[RGB]>)\s*\d+\s*(<\/[RGB]>)/g, '$1#$2')
   assert.equal(strip(text), strip(TEST_WND_XML))
   assert.equal(text.split('\r\n').length, TEST_WND_XML.split('\r\n').length, 'CRLF kept')
   assert.ok(text.includes('<Foo><R>214</R><G>178</G><B>40</B></Foo>'))
-  const [r, g, b] = GAUGE_DEEP.red
+  const [r, g, b] = hexToRgb(PALETTE.text)
   assert.ok(text.includes(`<R>${String(r)}</R>\r\n\t\t\t<G>${String(g)}</G>\r\n\t\t\t<B>${String(b)}</B>`))
   assert.ok(text.includes('<!-- c_crWhite -->'))
 })
@@ -340,58 +337,44 @@ test('the build records its style, and a different style reads as out of date', 
   }
 })
 
-const PLAYER_XML = [
-  '<XML ID="EQInterfaceDefinitionLanguage">',
-  '\t<Gauge item="Player_HP">',
-  '\t\t<FillTint><R>150</R><G>0</G><B>0</B></FillTint>',
-  '\t\t<EQType>1</EQType>',
-  '\t\t<GaugeDrawTemplate><Background>A_GoldCoin</Background><Fill>A_BtnNormal</Fill></GaugeDrawTemplate>',
-  '\t</Gauge>',
-  '\t<Gauge item="PW_ExpGauge">',
-  '\t\t<FillTint><R>220</R><G>150</G><B>0</B></FillTint>',
-  '\t\t<EQType>4</EQType>',
-  '\t\t<GaugeDrawTemplate>',
-  '\t\t\t<Fill>A_BtnNormal</Fill>',
-  '\t\t</GaugeDrawTemplate>',
-  '\t</Gauge>',
-  '\t<Gauge item="PW_AltAdvGauge">',
-  '\t\t<FillTint><R>0</R><G>100</G><B>200</B></FillTint>',
-  '\t\t<EQType>5</EQType>',
-  '\t\t<GaugeDrawTemplate><Fill>A_BtnNormal</Fill></GaugeDrawTemplate>',
-  '\t</Gauge>',
-  '</XML>'
-].join('\r\n')
-
-test('experience and AA gauges keep their base colours and are pointed at base pieces; HP is retuned', () => {
-  const r = rewriteKeepingGauges(PLAYER_XML)
-  assert.deepEqual([...r.pieces], ['A_BtnNormal'])
-  assert.equal(r.changed, 1, 'only the HP FillTint changes')
-  assert.ok(r.text.includes('<FillTint><R>220</R><G>150</G><B>0</B></FillTint>'), 'exp tint untouched')
-  assert.ok(r.text.includes('<FillTint><R>0</R><G>100</G><B>200</B></FillTint>'), 'AA tint untouched')
-  assert.ok(r.text.includes('<Fill>EQZBase_A_BtnNormal</Fill>'))
-  assert.ok(r.text.includes('<Background>A_GoldCoin</Background><Fill>A_BtnNormal</Fill>'), 'HP keeps the drawn pieces')
-  assert.equal(r.text.replace(/EQZBase_/g, '').replace(/<FillTint>[^]*?<\/FillTint>/g, ''), PLAYER_XML.replace(/<FillTint>[^]*?<\/FillTint>/g, ''))
-})
-
-test('the build copies the base texture untouched and adds the kept pieces to the skin animations', async () => {
+test('a rebuild removes files an earlier build wrote that no rule writes any more', async () => {
   const s = scratch()
   try {
-    writeFileSync(join(s.src.base, 'EQUI_PlayerWindow.xml'), PLAYER_XML, 'latin1')
-    const r = await buildSkin(s.src, s.out)
-    assert.ok(r.outputs.includes('EQZBase_window_pieces01.tga'))
-    assert.ok(readFileSync(join(s.out, 'EQZBase_window_pieces01.tga')).equals(readFileSync(join(s.src.base, 'window_pieces01.tga'))), 'byte-for-byte base copy')
-    const anim = readFileSync(join(s.out, 'EQUI_Animations.xml'), 'latin1')
-    const base = readFileSync(join(s.src.base, 'EQUI_Animations.xml'), 'latin1')
-    assert.ok(anim.includes('<TextureInfo item="EQZBase_window_pieces01.tga"><Size><CX>16</CX><CY>16</CY></Size></TextureInfo>'))
-    assert.ok(anim.includes('<Ui2DAnimation item="EQZBase_A_BtnNormal">'))
-    const added = anim.length - base.length
-    assert.ok(added > 0 && anim.replace(/\t<!-- EQ Zera:[^]*?(?=\t<Ui2DAnimation item = "A_BtnNormal")/, '') === base, 'everything else is the base file')
-    const frames = parseAnimationFrames(anim).filter((f) => f.name === 'EQZBase_A_BtnNormal')
-    assert.deepEqual(frames, [{ name: 'EQZBase_A_BtnNormal', texture: 'eqzbase_window_pieces01.tga', x: 0, y: 0, w: 8, h: 12 }])
-    assert.ok(readFileSync(join(s.out, 'EQUI_PlayerWindow.xml'), 'latin1').includes('<Fill>EQZBase_A_BtnNormal</Fill>'))
+    await buildSkin(s.src, s.out)
+    const manifestPath = join(s.out, MANIFEST_FILE)
+    const m = JSON.parse(readFileSync(manifestPath, 'utf8')) as { outputs: string[] }
+    m.outputs.push('EQZBase_window_pieces01.tga')
+    writeFileSync(manifestPath, JSON.stringify(m))
+    writeFileSync(join(s.out, 'EQZBase_window_pieces01.tga'), 'old')
+    await buildSkin(s.src, s.out)
+    assert.ok(!existsSync(join(s.out, 'EQZBase_window_pieces01.tga')))
   } finally {
     s.done()
   }
+})
+
+test('every gauge piece keeps the base pixels, in every atlas', () => {
+  const rgba = new Uint8Array(32 * 8 * 4)
+  for (let i = 0; i < 32 * 8; i++) rgba.set([200, (i * 7) & 255, 40, 255], i * 4)
+  const image = { width: 32, height: 8, rgba, encode: (p: Uint8Array) => p }
+  const cut = (name: string, x: number): string =>
+    `<Ui2DAnimation item="${name}"><Frames><Texture>a.tga</Texture><Location><X>${String(x)}</X><Y>0</Y></Location><Size><CX>8</CX><CY>8</CY></Size></Frames></Ui2DAnimation>`
+  const frames = parseAnimationFrames(cut('A_GaugeBackground', 0) + cut('A_GaugeFill', 8) + cut('A_GaugeLinesFill', 16) + cut('A_GaugeEndCapLeft', 24))
+  const { rgba: out, drawn } = drawAtlas(image, frames, 'a.tga', lookFor('synthwave'))
+  assert.deepEqual(drawn, [])
+  assert.ok(Buffer.from(out).equals(Buffer.from(rgba)))
+})
+
+test('a divider cut from a button rectangle never wins over the button', () => {
+  const rgba = new Uint8Array(30 * 14 * 4).fill(255)
+  const image = { width: 30, height: 14, rgba, encode: (p: Uint8Array) => p }
+  const cut = (name: string): string =>
+    `<Ui2DAnimation item="${name}"><Frames><Texture>a.tga</Texture><Location><X>0</X><Y>0</Y></Location><Size><CX>30</CX><CY>14</CY></Size></Frames></Ui2DAnimation>`
+  // The modern skin cuts A_DividerVertical from A_BtnDisabled's rectangle, after it in the file.
+  const frames = parseAnimationFrames(cut('A_BtnDisabled') + cut('A_DividerVertical'))
+  const { rgba: out } = drawAtlas(image, frames, 'a.tga', lookFor('ornamental'))
+  const button = paintPiece({ kind: 'button', state: 'disabled' }, { w: 30, h: 14 }, lookFor('ornamental'))
+  assert.ok(Buffer.from(out).equals(Buffer.from(button.px)), 'the disabled button, not a line on an empty box')
 })
 
 test("the owner's notice is verbatim and the card renders it twice (always, and in the first-build confirm)", () => {

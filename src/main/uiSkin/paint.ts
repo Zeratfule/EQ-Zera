@@ -170,29 +170,6 @@ function paintCheck(c: Canvas, state: State, round: boolean): void {
   }
 }
 
-function paintGauge(c: Canvas, dir: Dir | null): void {
-  const panel = dir ? virtualPanel(dir, c.w, c.h, 0) : { x: 0, y: 0, w: c.w, h: c.h }
-  fillRoundRect(c, panel, 2, STYLE.bg)
-  fillRoundRect(c, panel, 2, rgba(PALETTE.accent, 0.12))
-  strokeRoundRect(c, panel, 2, { width: 1, paint: STYLE.edgeSoft })
-}
-
-/**
- * The fill the XML tints: white, already SEGMENTED like the app's console bar (6px on, 2px clear),
- * because most gauge templates carry no lines piece to cut it. The track shows through the gaps.
- */
-function paintGaugeFill(c: Canvas): void {
-  fillRoundRect(c, { x: 0, y: 0, w: c.w, h: c.h }, 0, (x, y) => {
-    const v = 255 - Math.round((30 * y) / Math.max(1, c.h - 1))
-    return [v, v, v, x % 8 >= 6 ? 0 : 1]
-  })
-}
-
-/** The app's segmented bar: a dark 2px gap every 8px, drawn over the fill. */
-function paintGaugeLines(c: Canvas): void {
-  for (let x = 6; x < c.w; x += 8) fillRoundRect(c, { x, y: 0, w: 2, h: c.h }, 0, rgba(PALETTE.bg, 0.75))
-}
-
 function paintSlider(c: Canvas, dir: Dir | null): void {
   const h = Math.max(3, Math.round(c.h / 4))
   const y = Math.round((c.h - h) / 2)
@@ -276,15 +253,6 @@ export function paintPiece(piece: Piece, size: { w: number; h: number }, look: L
 
 function paintOther(c: Canvas, piece: Piece): void {
   switch (piece.kind) {
-    case 'gaugeTrack':
-      paintGauge(c, piece.dir)
-      break
-    case 'gaugeFill':
-      paintGaugeFill(c)
-      break
-    case 'gaugeLines':
-      paintGaugeLines(c)
-      break
     case 'sliderTrack':
       paintSlider(c, piece.dir)
       break

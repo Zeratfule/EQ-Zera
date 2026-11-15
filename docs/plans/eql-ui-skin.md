@@ -44,7 +44,7 @@ Owner asks (2026-11-15), in order:
   - `window_pieces01-07`, `09` (TGA)
   - `window_br_pieces`, `window_br_pieces01a`: window borders, title bars, the transparent
     variants
-  - `window_fg_pieces`, `window_fg_pieces_black`: inner frames, tabs, scrollbars, gauge track
+  - `window_fg_pieces`, `window_fg_pieces_black`: inner frames, tabs, scrollbars
   - `rounded_br_tooltip`: tooltip frame
   - `window_pieces11a.dds`, `11b.dds`, `12.dds`: check boxes, recessed boxes, sliders, wide gem
     holders
@@ -67,10 +67,10 @@ untouched.
 | --- | --- | --- |
 | `window_br_pieces.tga` | border frame, rounded frame, window title (all pieces) | nothing referenced |
 | `window_br_pieces01a.tga` | transparent rounded frames and titles (translucent paper) | - |
-| `window_fg_pieces.tga` | inner frames, tab frames, VSB/HSB arrow buttons and thumbs, gauge track | target / tooltip indicators |
+| `window_fg_pieces.tga` | inner frames, tab frames, VSB/HSB arrow buttons and thumbs | gauge track, target / tooltip indicators |
 | `window_fg_pieces_black.tga` | black inner frames | - |
 | `rounded_br_tooltip.tga` | tooltip frame | - |
-| `window_pieces01.tga` | close/min/max/tile/help buttons, gauge fill (white, XML-tinted), gauge lines (segment gaps), sliders, plus/minus, dividers, list headers, highlight frames, recessed box | coins, crystals, cursors, tab icons, white pixel |
+| `window_pieces01.tga` | close/min/max/tile/help buttons, sliders, plus/minus, dividers, list headers, highlight frames, recessed box | every gauge piece, coins, crystals, cursors, tab icons, white pixel |
 | `window_pieces02.tga` | inventory slot backgrounds (our labels: EAR, NECK, ... MAIN, OFF), spell gem holder/background | the pictorial menu buttons (inventory, pet, buff, spells, options...), gem highlight |
 | `window_pieces03.tga` | standard/small/big/square buttons, arrow buttons, title pieces | - |
 | `window_pieces04.tga` | zoom/pan/toolbar buttons, charm slot | compass, mail/parcel icons, pictorial menu buttons |
@@ -80,7 +80,7 @@ untouched.
 | `window_pieces11a.dds` | check boxes (all states), recessed boxes, small gem holder, slider | loot/edit/roll/question glyph buttons, drag indicator |
 | `window_pieces11b.dds` | large slider thumb and cap | difficulty icon sheet |
 | `window_pieces12.dds` | wide spell gem holder/background | - |
-| `stoneui_*` (default only) | stone frames, gauges, slots (used only when no modern skin) | coin plates |
+| `stoneui_*` (default only) | stone frames, slots (used only when no modern skin) | gauges, coin plates |
 
 Whole textures (repainted, alpha kept):
 - every `wnd_bg_*`, `wnd_dark_rock`, `wnd_fg_dark_rock` and the scrollbar gutters become black.
@@ -99,11 +99,7 @@ achievement art, the 4a.dds pictorial buttons.
   - pressed: violet-tinted face, cyan glyph.
   - disabled: ground face, faint edge.
 - **Title bars:** a slight top-down lift with the accent hairline underneath.
-- **Gauges:** the app's segmented console bar.
-  - The track is ground plus 12% accent.
-  - The fill is white and already segmented (6px on, 2px clear), tinted by the XML in the deep
-    shades (HP #dc2626, mana #0284c7, endurance #d97706).
-  - The lines piece, where a template has one, cuts the same gaps.
+- **Gauges:** not drawn. Every gauge keeps default_modern's own pieces and colours (owner, in game).
 - **Check boxes / radios:** violet fill with an ink check or dot.
 - **Slots:** ground with a soft violet edge and a dim accentHi label in a 5x7 pixel font
   (`font5x7.ts`).
@@ -119,7 +115,7 @@ different style reads as out of date). The default is **ornamental**.
 - **clean:** the flat draft above.
 - **subtle:** the title hairline runs the NEON rule. The gradient is split across the caps: the
   left cap is magenta to violet, the middle violet, the right cap violet to cyan. Also: top-lit
-  button bevel, glossy gauge stripe with magenta/cyan end caps, a diamond on dividers wide enough
+  button bevel, a diamond on dividers wide enough
   to hold one, grip lines on the scrollbar thumb.
 - **ornamental:** adds:
   - double-line frames (inner cyan) with extra bloom;
@@ -141,44 +137,33 @@ more (rounded/tooltip frames, title caps).
    texture is now black (alpha kept), with no grid or noise. The EQ Zera look lives only in the
    frames, title bars, tabs and buttons. Pinned: a background is black with its alpha intact, and
    stock chat colours clear 4.5:1 on it.
-2. **Gauges are deep and segmented.** The player window's templates name only
-   `A_GaugeBackground` + `A_GaugeFill` (no lines piece), so the segments now live in the fill
-   itself. The XML tints use the deep (600) shades of the app's tokens instead of the pastel 400s,
-   so the client's white and green numbers read on them.
+2. **Gauges are default_modern's, all of them** (owner, after trying deep segmented fills and an
+   exp/AA-only exemption: "revert the health, mana, and endurance bars too"). No gauge piece is
+   drawn in any atlas: the classifier returns nothing for any name containing `Gauge`. No colour
+   inside a `<Gauge>` element is rewritten: `xmlColors.ts` skips every gauge element whole. The
+   short-lived `EQZBase_` copies and Animations insertion were removed, since the untouched base
+   pieces already give the base look. A rebuild also deletes any file an earlier build's manifest
+   lists that no rule writes any more. Pinned: gauge pieces stay byte-identical, the gauge element
+   in XML stays byte-identical.
 3. **Borderless windows stay borderless.** A piece whose base pixels are (almost) empty, mean
    alpha under 6% (`EMPTY_ALPHA`), is a transparent template's chrome. It keeps the base pixels
    instead of getting a frame or fill. This stops the stray frames on empty boxes, around the
    character and through the buff row. Pinned in `tests/uiSkin.test.mts`.
-4. **Experience and AA experience bars stay default_modern** (owner: "keep the experience and AA
-   experience bars the same as they are in the Default modern"). Kept gauges are every `<Gauge>`
-   with `EQType` 4 (experience) or 5 (AA experience), or a name matching `ExpGauge`/`AltAdvGauge`.
-   On the real install that is:
-   - `PW_ExpGauge` and `PW_AltAdvGauge` in the player windows;
-   - `IW_ExpGauge` and `IW_AltAdvGauge` in the inventory windows;
-   - `AAW_ExpGauge` and `AAW_MercAAExpGauge`;
-   - the experience gauge in `EQUI_TrainWindow.xml`.
-
-   They share `A_GaugeFill`/`A_GaugeBackground`/... with the redrawn HP/mana/endurance gauges, so
-   `src/main/uiSkin/keepBase.ts` makes the generator's ONE structural XML edit. It is minimal and
-   additive:
-   - Inside a kept gauge's `<GaugeDrawTemplate>`, each piece `A_X` becomes `EQZBase_A_X`, and the
-     gauge's colours are not rewritten.
-   - The skin's `EQUI_Animations.xml` gains a `<TextureInfo>` per copied texture and a
-     `<Ui2DAnimation>` per piece. Each cuts the base rectangle from `EQZBase_<texture>`.
-   - `EQZBase_window_pieces01.tga` and `EQZBase_window_fg_pieces.tga` are byte-for-byte copies of
-     the base textures, made on the player's machine.
-
-   Pinned: tints untouched, templates renamed, HP still retuned, the copied texture identical to
-   the base, and the animations file equal to the base plus the inserted block.
+4. **No grid anywhere; dividers never eat buttons.** The background grid was already gone. What the
+   owner saw as a grid in the Group window was a line through each disabled button.
+   default_modern cuts `A_DividerVertical` from the same rectangle as `A_BtnDisabled`, and the
+   divider was drawn last. Dividers now draw first, so the button wins. Pinned in
+   `tests/uiSkin.test.mts`.
+5. **The two empty black boxes** (mid-left, and right of the compass) are the pet and target
+   windows with nothing to show (owner). They are left as they are.
 
 ## XML colour map
 
-Only the three numbers of a colour block change; every other byte is copied from the source
+Only the three numbers of a colour block change, and never inside a `<Gauge>` element; every other byte is copied from the source
 (`xmlColors.ts`). `EQUI_ColorPickerWnd.xml` is excluded, and the login screen is out of scope.
 
 | Role | Elements | Rule |
 | --- | --- | --- |
-| gauge | `FillTint`, `LinesFillTint` | by hue, deep (600) shades: red -> #dc2626 (HP), blue -> #0284c7 (mana), yellow/olive/orange -> #d97706 (endurance, exp), green -> #16a34a, purple -> #7c3aed, magenta -> #db2777; neutral stays |
 | text | `TextColor`, `Tab*Color`, `Mouseover/Pressed/DisabledColor` | light grey (luma >= 200) -> `text` #e5e9f5 exactly; mid grey -> text hue at its brightness; gold/yellow headings -> `accentHi`; blue links -> `cyan`; red/green keep meaning; dark text stays |
 | tint | `MiddleTint`, `BackgroundTextureTint`, `Tint1/2` | neutrals stay; saturated tints snap by hue at the original brightness |
 

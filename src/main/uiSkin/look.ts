@@ -4,7 +4,7 @@
  * only), the accent glow, the violet-to-cyan hairline and the 4.5% accent grid of the app's ground.
  *
  *   clean       flat panels and a violet edge (the first EQ Zera draft)
- *   subtle      + neon title hairline, bevelled buttons, glossy gauges, divider diamonds, a grip
+ *   subtle      + neon title hairline, bevelled buttons, divider diamonds, a grip
  *   ornamental  + double-line frames, corner rivets, chevron title caps, hot-slot corner ticks,
  *                 title scanlines
  *   synthwave   + magenta inner lines, a neon title band, the striped retro sun on title bars,
@@ -29,8 +29,6 @@ export interface Look {
   neonHairline: boolean
   /** buttons get a top-lit vertical bevel */
   bevel: boolean
-  /** gauge fills get a glossy highlight stripe; gauge end caps a neon bar */
-  gloss: boolean
   /** a small diamond in the middle of dividers wide enough to hold one */
   diamond: boolean
   /** grip lines on the scrollbar thumb */
@@ -64,7 +62,6 @@ const CLEAN: Look = {
   style: 'clean',
   neonHairline: false,
   bevel: false,
-  gloss: false,
   diamond: false,
   grip: false,
   innerLine: null,
@@ -78,7 +75,7 @@ const CLEAN: Look = {
   pressedGlow: null
 }
 
-const SUBTLE: Look = { ...CLEAN, style: 'subtle', neonHairline: true, bevel: true, gloss: true, diamond: true, grip: true }
+const SUBTLE: Look = { ...CLEAN, style: 'subtle', neonHairline: true, bevel: true, diamond: true, grip: true }
 
 const ORNAMENTAL: Look = {
   ...SUBTLE,

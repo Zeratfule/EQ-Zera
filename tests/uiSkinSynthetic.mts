@@ -6,7 +6,8 @@
 //   wnd_bg_light_rock.tga  a whole-texture rule; 8x8 uncompressed 24-bit "rock"
 //   Spells01.tga           in no rule and identical in both skins; never copied
 //   EQUI_TestWnd.xml       a window only default carries (CRLF, a comment inside a colour, a
-//                          TextColor, an HP FillTint, dark text, an unknown <Foo> colour)
+//                          label TextColor, an HP gauge that must stay as is, dark text, an
+//                          unknown <Foo> colour)
 //   EQUI_ColorPickerWnd.xml colours that ARE content; never rewritten
 //   EQLSUI_Templates.xml   login screen; out of scope
 // default_modern/ (the base the skin inherits)
@@ -46,7 +47,7 @@ const CRLF = (lines: string[]): string => lines.join('\r\n') + '\r\n'
 export const TEST_WND_XML = CRLF([
   '<?xml version="1.0" encoding="us-ascii"?>',
   '<XML ID="EQInterfaceDefinitionLanguage">',
-  '\t<Gauge item="Player_HP">',
+  '\t<Label item="Title">',
   '\t\t<Text>Hit points</Text>',
   '\t\t<TextColor>',
   '\t\t\t<!-- c_crWhite -->',
@@ -54,6 +55,9 @@ export const TEST_WND_XML = CRLF([
   '\t\t\t<G>240</G>',
   '\t\t\t<B>240</B>',
   '\t\t</TextColor>',
+  '\t</Label>',
+  '\t<Gauge item="Player_HP">',
+  '\t\t<TextColor><R>240</R><G>240</G><B>240</B></TextColor>',
   '\t\t<FillTint>',
   '\t\t\t<R>150</R>',
   '\t\t\t<G>0</G>',

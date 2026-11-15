@@ -59,6 +59,10 @@ export function meanAlpha(img: SkinImage, f: AnimFrame): number {
   return n === 0 ? 0 : sum / n / 255
 }
 
+function isDivider(name: string): boolean {
+  return /Divider|MenuSeparator/.test(name)
+}
+
 export interface AtlasResult {
   rgba: Uint8Array
   /** names of the pieces drawn */
@@ -69,11 +73,12 @@ export interface AtlasResult {
 export function drawAtlas(img: SkinImage, frames: readonly AnimFrame[], texture: string, look: Look = lookFor('clean')): AtlasResult {
   const atlas = new Canvas(img.width, img.height)
   atlas.px.set(img.rgba)
-  // Where the XML cuts two pieces from overlapping rectangles, the later one wins; a gauge's lines
-  // overlay goes last so it never paints a solid fill into its neighbour.
+  // Where the XML cuts two pieces from one rectangle, the later one wins. Dividers go FIRST: the
+  // modern skin cuts A_DividerVertical from the same rectangle as A_BtnDisabled, and a divider
+  // drawn last turned every disabled button into an empty box with a line through it.
   const mine = frames
     .filter((f) => f.texture === texture.toLowerCase())
-    .sort((a, b) => Number(a.name.endsWith('GaugeLines')) - Number(b.name.endsWith('GaugeLines')))
+    .sort((a, b) => Number(!isDivider(a.name)) - Number(!isDivider(b.name)))
   const drawn: string[] = []
   const keep: AnimFrame[] = []
   for (const f of mine) {

@@ -1,6 +1,6 @@
 /**
  * What a named UI piece IS, read from its `<Ui2DAnimation>` name: a frame edge, a title bar
- * segment, a button in some state, a gauge part, a slot... The painter (paint.ts) draws each kind
+ * segment, a button in some state, a slot... The painter (paint.ts) draws each kind
  * in the EQ Zera style. A name this table does not know is not chrome the skin draws, and the
  * builder leaves those pixels exactly as the base skin has them.
  */
@@ -36,9 +36,6 @@ export type Piece =
   | { kind: 'glyph'; glyph: Glyph }
   | { kind: 'check'; state: State }
   | { kind: 'radio'; state: State }
-  | { kind: 'gaugeTrack'; dir: Dir | null }
-  | { kind: 'gaugeFill' }
-  | { kind: 'gaugeLines' }
   | { kind: 'sliderTrack'; dir: Dir | null }
   | { kind: 'sliderThumb'; state: State }
   | { kind: 'thumb'; dir: Dir }
@@ -142,9 +139,6 @@ const RULES: Rule[] = [
   (p) => (/^(VSB|HSB)Thumb/.test(p.base) ? { kind: 'thumb', dir: trailingDir(p.base) ?? 'Middle' } : null),
   (p) => (p.base.includes('CheckBox') ? { kind: 'check', state: p.state } : null),
   (p) => (p.base.includes('RadioBtn') ? { kind: 'radio', state: p.state } : null),
-  (p) => (/Gauge(Lines)?Fill/.test(p.base) ? { kind: 'gaugeFill' } : null),
-  (p) => (p.base.endsWith('GaugeLines') ? { kind: 'gaugeLines' } : null),
-  (p) => (/Gauge(Background|EndCap(Left|Right))$/.test(p.base) ? { kind: 'gaugeTrack', dir: p.base.includes('EndCap') ? trailingDir(p.base) : null } : null),
   (p) => (p.base.includes('SliderThumb') ? { kind: 'sliderThumb', state: p.state } : null),
   (p) => (/Slider(Background|EndCap(Left|Right))$/.test(p.base) ? { kind: 'sliderTrack', dir: p.base.includes('EndCap') ? trailingDir(p.base) : null } : null),
   (p) => (/Title(Left|Middle|Right)$|TitlePiece$/.test(p.base) ? { kind: 'title', dir: trailingDir(p.base.replace(/TitlePiece$/, '').replace(/^Stretchy$/, 'Middle')) ?? 'Middle' } : null),
@@ -164,6 +158,8 @@ const RULES: Rule[] = [
 /** The kind of chrome a piece name names, or null when the skin does not draw it. */
 export function classifyPiece(name: string): Piece | null {
   const parsed = parseName(name)
+  // GAUGES ARE NEVER DRAWN (owner, in game): every gauge keeps the base skin's own pieces.
+  if (parsed.base.includes('Gauge')) return null
   for (const rule of RULES) {
     const hit = rule(parsed)
     if (hit) return hit

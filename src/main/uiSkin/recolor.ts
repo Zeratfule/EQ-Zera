@@ -1,8 +1,8 @@
 /**
  * The XML colour rules: how a colour in the base skin's window XML becomes the app's "Midnight &
- * arcane" palette. Snapped by hue to a token, with the rule chosen by the element: a gauge fill
- * gets the gauge set (HP red, mana cyan, endurance amber, in their deep shades), text gets the text set (light greys are
- * the app's text colour, gold headings accentHi, blue links cyan), and a tint keeps neutrals.
+ * arcane" palette. Snapped by hue to a token, with the rule chosen by the element: text gets the
+ * text set (light greys are the app's text colour, gold headings accentHi, blue links cyan) and a
+ * tint keeps neutrals. GAUGE colours are never rewritten (xmlColors.ts skips every <Gauge>).
  */
 import { PALETTE } from '../../shared/palette'
 import { type Rgb, hexToRgb, luma, rgbToHsl, withLuminance } from './color'
@@ -30,12 +30,10 @@ export function hueFamily(h: number): HueFamily {
   return 'magenta'
 }
 
-export type XmlColorRole = 'gauge' | 'text' | 'tint'
+export type XmlColorRole = 'text' | 'tint'
 
 /** The colour elements the generator rewrites, by role. Anything else is left byte-identical. */
 export const XML_COLOR_ROLES: Readonly<Record<string, XmlColorRole>> = {
-  FillTint: 'gauge',
-  LinesFillTint: 'gauge',
   TextColor: 'text',
   TabTextColor: 'text',
   TabTextActiveColor: 'text',
@@ -47,29 +45,6 @@ export const XML_COLOR_ROLES: Readonly<Record<string, XmlColorRole>> = {
   DisabledBackgroundTextureTint: 'tint',
   Tint1: 'tint',
   Tint2: 'tint'
-}
-
-/**
- * Gauge fills take the DEEP shade of each app token (the palette's tokens are the 400 shades of
- * their families; these are the 600s). A pastel fill swallowed the client's own white and green
- * numbers in game; a deep one carries them.
- */
-export const GAUGE_DEEP = {
-  red: hexToRgb('#dc2626'),
-  amber: hexToRgb('#d97706'),
-  green: hexToRgb('#16a34a'),
-  cyan: hexToRgb('#0284c7'),
-  violet: hexToRgb('#7c3aed'),
-  magenta: hexToRgb('#db2777')
-} as const
-
-const GAUGE_BY_FAMILY: Record<HueFamily, Rgb> = {
-  red: GAUGE_DEEP.red,
-  gold: GAUGE_DEEP.amber,
-  green: GAUGE_DEEP.green,
-  blue: GAUGE_DEEP.cyan,
-  violet: GAUGE_DEEP.violet,
-  magenta: GAUGE_DEEP.magenta
 }
 
 const TEXT_BY_FAMILY: Record<HueFamily, Rgb> = {
@@ -99,9 +74,9 @@ export function mapXmlColor(c: Rgb, role: XmlColorRole): Rgb {
     return y >= BODY_TEXT_LUMA ? P.text : withLuminance(P.text, y)
   }
   const fam = hueFamily(rgbToHsl(c).h)
-  const target = (role === 'text' ? TEXT_BY_FAMILY : GAUGE_BY_FAMILY)[fam]
+  const target = TEXT_BY_FAMILY[fam]
   if (role === 'tint') return withLuminance(target, y)
   const v = Math.max(c[0], c[1], c[2]) / 255
-  // A gauge always takes the token; text keeps a deliberately dim colour dim.
-  return role === 'gauge' || v >= 0.55 ? target : withLuminance(target, y)
+  // Text keeps a deliberately dim colour dim.
+  return v >= 0.55 ? target : withLuminance(target, y)
 }
