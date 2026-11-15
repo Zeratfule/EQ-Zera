@@ -18,7 +18,7 @@ import { parseAnimationFrames, type AnimFrame } from './animations'
 import { drawAtlas, drawBackground, readImage } from './atlas'
 import { DEFAULT_STYLE, type Look, type SkinStyle, lookFor } from './look'
 import { MANIFEST_FILE, RULES_VERSION, isChromeAtlas, isWholeTexture, isXmlSource } from './rules'
-import { rewriteXmlColors } from './xmlColors'
+import { insertIntoAnimations, keptAnimationsXml, keptTextureName, rewriteKeepingGauges } from './keepBase'
 
 /** The two skins the build reads: the one it inherits and the one the client falls back to. */
 export interface SkinSources {
@@ -143,7 +143,7 @@ function writeOut(run: BuildRun, name: string, data: Uint8Array | string): Promi
   if (!run.plan.allowed.has(name.toLowerCase()) || basename(name) !== name) throw new SkinBuildError(`refusing to write ${name}`)
   const target = resolve(run.outDir, name)
   if (relative(resolve(run.outDir), target) !== name) throw new SkinBuildError(`refusing to write ${name}`)
-  run.outputs.push(name)
+  if (!run.outputs.includes(name)) run.outputs.push(name)
   return typeof data === 'string' ? writeFile(target, data, 'latin1') : writeFile(target, data)
 }
 
@@ -154,6 +154,8 @@ interface BuildRun {
   look: Look
   outputs: string[]
   counts: { drawn: number; xml: number; inherited: number }
+  /** base pieces the experience / AA gauges keep (keepBase.ts) */
+  kept: Set<string>
 }
 
 async function sameBytes(a: string, b: string | null): Promise<boolean> {
@@ -175,8 +177,9 @@ async function transform(run: BuildRun, f: Layered): Promise<boolean> {
     return true
   }
   if (isXmlSource(f.name)) {
-    const { text, changed } = rewriteXmlColors(await readFile(f.path, 'latin1'))
-    if (changed === 0) return false
+    const { text, changed, pieces } = rewriteKeepingGauges(await readFile(f.path, 'latin1'))
+    for (const p of pieces) run.kept.add(p)
+    if (changed === 0 && pieces.size === 0) return false
     await writeOut(run, f.name, text)
     run.counts.xml++
     return true
@@ -208,6 +211,35 @@ async function stampAll(src: SkinSources, names: readonly string[]): Promise<Rec
   return out
 }
 
+/**
+ * The experience and AA gauges' own copies of the base pieces (keepBase.ts): each base texture
+ * they cut from, copied untouched as EQZBase_<name>, and the skin's EQUI_Animations.xml with a
+ * TextureInfo and a Ui2DAnimation per piece added.
+ */
+async function writeKeptPieces(run: BuildRun): Promise<void> {
+  if (run.kept.size === 0) return
+  const byLower = new Map(run.plan.files.map((f) => [f.name.toLowerCase(), f]))
+  const frames = [...run.kept].flatMap((n) => {
+    const f = run.frames.find((fr) => fr.name === n)
+    return f ? [f] : []
+  })
+  const sizes = new Map<string, { w: number; h: number; name: string }>()
+  for (const tex of new Set(frames.map((f) => f.texture))) {
+    const src = byLower.get(tex)
+    const img = src ? readImage(src.name, await readFile(src.path)) : null
+    if (!src || !img) continue
+    run.plan.allowed.add(keptTextureName(src.name).toLowerCase())
+    await writeOut(run, keptTextureName(src.name), await readFile(src.path))
+    sizes.set(tex, { w: img.width, h: img.height, name: src.name })
+  }
+  const anim = byLower.get('equi_animations.xml')
+  if (!anim) return
+  const xml = await readFile(anim.path, 'latin1')
+  const nl = xml.includes('\r\n') ? '\r\n' : '\n'
+  const usable = frames.filter((f) => sizes.has(f.texture))
+  await writeOut(run, anim.name, insertIntoAnimations(xml, keptAnimationsXml(usable, sizes, nl)))
+}
+
 /** A file the previous build wrote and this one did not (a rule changed) must not linger. */
 async function prune(run: BuildRun, previous: SkinManifest | null): Promise<void> {
   const now = new Set(run.outputs.map((o) => o.toLowerCase()))
@@ -233,7 +265,7 @@ export async function buildSkin(src: SkinSources, outDir: string, opts: BuildOpt
   const total = plan.files.length
   onProgress?.({ phase: 'reading', done: 0, total })
   const counts = { drawn: 0, xml: 0, inherited: 0 }
-  const run: BuildRun = { outDir, plan, frames: await readFrames(plan), look: lookFor(style), outputs: [], counts }
+  const run: BuildRun = { outDir, plan, frames: await readFrames(plan), look: lookFor(style), outputs: [], counts, kept: new Set() }
   await mkdir(outDir, { recursive: true })
   for (let i = 0; i < plan.files.length; i++) {
     await processFile(run, plan.files[i])
@@ -242,6 +274,7 @@ export async function buildSkin(src: SkinSources, outDir: string, opts: BuildOpt
       await yieldTurn()
     }
   }
+  await writeKeptPieces(run)
   await prune(run, previous)
   const outputs = [...run.outputs]
   const manifest: SkinManifest = {

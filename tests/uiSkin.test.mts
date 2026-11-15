@@ -27,6 +27,7 @@ import { paintPiece } from '../src/main/uiSkin/paint'
 import { GAUGE_DEEP, mapXmlColor } from '../src/main/uiSkin/recolor'
 import { hexToRgb, luma, type Rgb } from '../src/main/uiSkin/color'
 import { rewriteXmlColors } from '../src/main/uiSkin/xmlColors'
+import { rewriteKeepingGauges } from '../src/main/uiSkin/keepBase'
 import { buildSkin, removeSkin, skinStatus, SkinBuildError } from '../src/main/uiSkin/build'
 import { MANIFEST_FILE } from '../src/main/uiSkin/rules'
 import { PALETTE } from '../src/shared/palette'
@@ -334,6 +335,60 @@ test('the build records its style, and a different style reads as out of date', 
     assert.equal(manifest.style, 'subtle')
     assert.equal((await skinStatus(s.src, s.out, 'subtle')).state, 'current')
     assert.equal((await skinStatus(s.src, s.out, 'synthwave')).state, 'stale')
+  } finally {
+    s.done()
+  }
+})
+
+const PLAYER_XML = [
+  '<XML ID="EQInterfaceDefinitionLanguage">',
+  '\t<Gauge item="Player_HP">',
+  '\t\t<FillTint><R>150</R><G>0</G><B>0</B></FillTint>',
+  '\t\t<EQType>1</EQType>',
+  '\t\t<GaugeDrawTemplate><Background>A_GoldCoin</Background><Fill>A_BtnNormal</Fill></GaugeDrawTemplate>',
+  '\t</Gauge>',
+  '\t<Gauge item="PW_ExpGauge">',
+  '\t\t<FillTint><R>220</R><G>150</G><B>0</B></FillTint>',
+  '\t\t<EQType>4</EQType>',
+  '\t\t<GaugeDrawTemplate>',
+  '\t\t\t<Fill>A_BtnNormal</Fill>',
+  '\t\t</GaugeDrawTemplate>',
+  '\t</Gauge>',
+  '\t<Gauge item="PW_AltAdvGauge">',
+  '\t\t<FillTint><R>0</R><G>100</G><B>200</B></FillTint>',
+  '\t\t<EQType>5</EQType>',
+  '\t\t<GaugeDrawTemplate><Fill>A_BtnNormal</Fill></GaugeDrawTemplate>',
+  '\t</Gauge>',
+  '</XML>'
+].join('\r\n')
+
+test('experience and AA gauges keep their base colours and are pointed at base pieces; HP is retuned', () => {
+  const r = rewriteKeepingGauges(PLAYER_XML)
+  assert.deepEqual([...r.pieces], ['A_BtnNormal'])
+  assert.equal(r.changed, 1, 'only the HP FillTint changes')
+  assert.ok(r.text.includes('<FillTint><R>220</R><G>150</G><B>0</B></FillTint>'), 'exp tint untouched')
+  assert.ok(r.text.includes('<FillTint><R>0</R><G>100</G><B>200</B></FillTint>'), 'AA tint untouched')
+  assert.ok(r.text.includes('<Fill>EQZBase_A_BtnNormal</Fill>'))
+  assert.ok(r.text.includes('<Background>A_GoldCoin</Background><Fill>A_BtnNormal</Fill>'), 'HP keeps the drawn pieces')
+  assert.equal(r.text.replace(/EQZBase_/g, '').replace(/<FillTint>[^]*?<\/FillTint>/g, ''), PLAYER_XML.replace(/<FillTint>[^]*?<\/FillTint>/g, ''))
+})
+
+test('the build copies the base texture untouched and adds the kept pieces to the skin animations', async () => {
+  const s = scratch()
+  try {
+    writeFileSync(join(s.src.base, 'EQUI_PlayerWindow.xml'), PLAYER_XML, 'latin1')
+    const r = await buildSkin(s.src, s.out)
+    assert.ok(r.outputs.includes('EQZBase_window_pieces01.tga'))
+    assert.ok(readFileSync(join(s.out, 'EQZBase_window_pieces01.tga')).equals(readFileSync(join(s.src.base, 'window_pieces01.tga'))), 'byte-for-byte base copy')
+    const anim = readFileSync(join(s.out, 'EQUI_Animations.xml'), 'latin1')
+    const base = readFileSync(join(s.src.base, 'EQUI_Animations.xml'), 'latin1')
+    assert.ok(anim.includes('<TextureInfo item="EQZBase_window_pieces01.tga"><Size><CX>16</CX><CY>16</CY></Size></TextureInfo>'))
+    assert.ok(anim.includes('<Ui2DAnimation item="EQZBase_A_BtnNormal">'))
+    const added = anim.length - base.length
+    assert.ok(added > 0 && anim.replace(/\t<!-- EQ Zera:[^]*?(?=\t<Ui2DAnimation item = "A_BtnNormal")/, '') === base, 'everything else is the base file')
+    const frames = parseAnimationFrames(anim).filter((f) => f.name === 'EQZBase_A_BtnNormal')
+    assert.deepEqual(frames, [{ name: 'EQZBase_A_BtnNormal', texture: 'eqzbase_window_pieces01.tga', x: 0, y: 0, w: 8, h: 12 }])
+    assert.ok(readFileSync(join(s.out, 'EQUI_PlayerWindow.xml'), 'latin1').includes('<Fill>EQZBase_A_BtnNormal</Fill>'))
   } finally {
     s.done()
   }

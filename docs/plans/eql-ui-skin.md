@@ -149,6 +149,27 @@ more (rounded/tooltip frames, title caps).
    alpha under 6% (`EMPTY_ALPHA`), is a transparent template's chrome. It keeps the base pixels
    instead of getting a frame or fill. This stops the stray frames on empty boxes, around the
    character and through the buff row. Pinned in `tests/uiSkin.test.mts`.
+4. **Experience and AA experience bars stay default_modern** (owner: "keep the experience and AA
+   experience bars the same as they are in the Default modern"). Kept gauges are every `<Gauge>`
+   with `EQType` 4 (experience) or 5 (AA experience), or a name matching `ExpGauge`/`AltAdvGauge`.
+   On the real install that is:
+   - `PW_ExpGauge` and `PW_AltAdvGauge` in the player windows;
+   - `IW_ExpGauge` and `IW_AltAdvGauge` in the inventory windows;
+   - `AAW_ExpGauge` and `AAW_MercAAExpGauge`;
+   - the experience gauge in `EQUI_TrainWindow.xml`.
+
+   They share `A_GaugeFill`/`A_GaugeBackground`/... with the redrawn HP/mana/endurance gauges, so
+   `src/main/uiSkin/keepBase.ts` makes the generator's ONE structural XML edit. It is minimal and
+   additive:
+   - Inside a kept gauge's `<GaugeDrawTemplate>`, each piece `A_X` becomes `EQZBase_A_X`, and the
+     gauge's colours are not rewritten.
+   - The skin's `EQUI_Animations.xml` gains a `<TextureInfo>` per copied texture and a
+     `<Ui2DAnimation>` per piece. Each cuts the base rectangle from `EQZBase_<texture>`.
+   - `EQZBase_window_pieces01.tga` and `EQZBase_window_fg_pieces.tga` are byte-for-byte copies of
+     the base textures, made on the player's machine.
+
+   Pinned: tints untouched, templates renamed, HP still retuned, the copied texture identical to
+   the base, and the animations file equal to the base plus the inserted block.
 
 ## XML colour map
 
