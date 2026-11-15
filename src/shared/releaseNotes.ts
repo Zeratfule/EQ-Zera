@@ -135,6 +135,35 @@ export interface ReleaseNote {
  * still sees exactly the releases above it.
  */
 export const RELEASE_NOTES: readonly ReleaseNote[] = [
+  // The Castle Nektropos release (2026-11-15): wiki data through the Oct 22 patch, the two newer
+  // playable races on the Character tab, Luclin models + the Play button, Patch Notes, and the
+  // spells_us.txt column the Nov 8 client inserted.
+  {
+    version: '1.27.0',
+    date: '2026-11-15',
+    entries: [
+      {
+        kind: 'new',
+        text: 'Press Play on the Overview or in the tray to start EverQuest Legends from EQ Zera. Opt into the Luclin-era character models per race in Preferences, Game, and Play puts them back whenever the launcher reverts them. This changes a game file Daybreak does not support, so it is off by default and used at your own risk.'
+      },
+      {
+        kind: 'new',
+        text: 'New Patch Notes tab: the EverQuest Legends developers\' patch and hotfix notes, right in the app. They download on launch, stay readable offline, and new ones get an unread badge and a short notice. Turn off the launch check in Preferences, Patch notes.'
+      },
+      {
+        kind: 'new',
+        text: 'The Character tab can draw Kerra, with all ten skin tones, and the Half Dark Elf from the Castle Nektropos patch.'
+      },
+      {
+        kind: 'changed',
+        text: 'Item, mob, quest and spell data refreshed from the EQ Legends wiki as of November 15, with Castle Nektropos, Lake Nerius and the Nektropos Undercrofts: 170 new items, 186 new mobs and their drops, and the new zones in Zone Loot.'
+      },
+      {
+        kind: 'fixed',
+        text: 'Resist estimates read the right spell columns again. The November 8 game patch added a column to the client spell file, which shifted every resist adjustment by one and made results such as Lord Nagafen\'s magic resist read badly wrong.'
+      }
+    ]
+  },
   // The 2026-10-18 data refresh: two wiki rescrapes (2026-10-07 and 2026-10-18) covering the
   // September 15 through October 13 patches, plus the parser fixes the new wiki markup needed.
   {
