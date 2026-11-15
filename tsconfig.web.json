@@ -53,6 +53,7 @@
     "src/preload/roster.ts",
     // …and `graphics.ts` (the two graphics-compatibility switches), likewise.
     "src/preload/graphics.ts",
+    "src/preload/luclinModels.ts",
     // …and `dev.ts` (the dev-only restart button's one method, JOS-61), likewise.
     "src/preload/dev.ts",
     // …and `sounds.ts` (packs, the registry browser, the user's own imports — JOS-68), likewise.

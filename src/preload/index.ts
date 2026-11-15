@@ -87,6 +87,8 @@ import { perfBridge } from './perf'
 // The two graphics-compatibility switches (JOS-40), spread in below for the same file-size
 // reason as perfBridge. Shapes live beside their normalizer in shared/graphicsPrefs.ts.
 import { graphicsBridge } from './graphics'
+// Luclin character models + the Play button (./luclinModels.ts), same file-size reason.
+import { luclinBridge } from './luclinModels'
 // The buff externals allowlist (JOS-140), spread in below for the same file-size reason. Shape
 // and normalizer live together in shared/buffTrust.ts.
 import { buffTrustBridge } from './buffTrust'
@@ -298,6 +300,8 @@ const api = {
   ...perfBridge,
   // …and the two graphics-compatibility switches (./graphics.ts), for the same reason.
   ...graphicsBridge,
+  // …and Luclin character models + the Play button (./luclinModels.ts), likewise.
+  ...luclinBridge,
   // …and the buff externals allowlist (./buffTrust.ts), likewise.
   ...buffTrustBridge,
   ...respawnBridge,
