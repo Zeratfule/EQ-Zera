@@ -143,7 +143,7 @@ export const RELEASE_NOTES: readonly ReleaseNote[] = [
     entries: [
       {
         kind: 'new',
-        text: 'New in Preferences: an EQ Zera skin for EverQuest Legends itself. The game\'s windows, buttons, scrollbars and gauges get EQ Zera\'s retrowave look, with neon frames, glowing title bars and segmented gauges, on the layout of the game\'s Modern skin. Type /loadskin EQZera 1 in game to switch.'
+        text: 'New in Preferences: an EQ Zera skin for EverQuest Legends itself. The game\'s windows, buttons, tabs and scrollbars get EQ Zera\'s retrowave look, with neon frames and glowing title bars, on the layout of the game\'s Modern skin, with chat and combat text on black. Type /loadskin EQZera 1 in game to switch.'
       },
       {
         kind: 'new',
