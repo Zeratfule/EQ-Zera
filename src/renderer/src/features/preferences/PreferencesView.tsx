@@ -28,7 +28,8 @@
 // Sections:
 //   Game     — EverQuest install-folder discovery/override (effective path + how it
 //             resolved + a folder picker + character-log validation). Lives in
-//             ./EqFolderSetting.tsx, like Updates does — this file only names it.
+//             ./EqFolderSetting.tsx, like Updates does — this file only names it. Since the
+//             Luclin character models card joined it, the descriptor is ./GameSection.tsx.
 //   Appearance — how big things are drawn and how see-through the floating windows are (JOS-123,
 //             JOS-405, JOS-407, named and reshaped by JOS-408). TWO items: `In-app text size`, the
 //             main window's zoom as an A− / A+ over the five-stop ladder, applied on the press; and
@@ -87,7 +88,6 @@
 import { type JSX, useCallback, useDeferredValue, useMemo, useState } from 'react'
 import { Box, List, ListItemButton, ListItemText, TextField, Typography } from '@mui/material'
 import SearchIcon from '@mui/icons-material/Search'
-import SportsEsportsIcon from '@mui/icons-material/SportsEsports'
 import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt'
 import RecordVoiceOverIcon from '@mui/icons-material/RecordVoiceOver'
 import IosShareIcon from '@mui/icons-material/IosShare'
@@ -98,7 +98,8 @@ import { ExportSettingsSetting, ImportSettingsSetting } from '../profiles/Profil
 import { ClassComboSetting } from '../profiles/ClassComboPanel'
 import { UpdateSetting, VersionSetting, useUpdateStatus } from './UpdateSetting'
 import type { UpdateStatus } from '@shared/types'
-import { EqFolderSetting } from './EqFolderSetting'
+// The Game section (install folder + Luclin models) names itself beside its cards. See ./GameSection.tsx.
+import { gameSection } from './GameSection'
 // Combat: whose damage the meters show (JOS-115) + where the pet's sits. Its own file with its own
 // descriptor, same ceiling and same answer as PerfSetting and GraphicsSetting.
 import { combatSection } from './CombatSection'
@@ -327,19 +328,7 @@ interface SectionInputs {
 /** The whole settings table, in render order. Rebuilt only when its inputs change. */
 function buildSections({ version, status, onSendFeedback, onWhatsNew }: SectionInputs): PrefSection[] {
   return [
-    {
-      id: 'game',
-      label: 'Game',
-      icon: <SportsEsportsIcon fontSize="small" />,
-      items: [
-        {
-          id: 'eq-folder',
-          label: 'EverQuest install folder',
-          keywords: 'path directory logs eqlog character detect override install location',
-          content: <EqFolderSetting />
-        }
-      ]
-    },
+    gameSection(),
     // SECOND IN THE RAIL, ahead of everything about the game (JOS-123). A person who opens
     // Preferences because they can barely read the app has to find this one, and the rail is
     // itself drawn at the size they are complaining about.

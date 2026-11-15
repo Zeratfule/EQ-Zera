@@ -1322,6 +1322,22 @@ export const IPC = {
   // launch (spawn contract rule 5), so this is a fresh token, port and epoch world. Returns void.
   engineRetry: 'engine:retry',
 
+  // ---- Luclin character models + the Play button (shared/luclinModels.ts) ----
+  // renderer -> main. Prefs get/set (set re-validated through `mergeLuclinPrefs`); `check` reads
+  // GlobalLoad.txt and, with keep-applied on, re-applies a launcher revert (LuclinStatus | null);
+  // apply / revert / shortcut answer LuclinResult; play / openLauncher answer a PlayResult.
+  luclinPrefsGet: 'luclin:prefsGet',
+  luclinPrefsSet: 'luclin:prefsSet',
+  luclinCheck: 'luclin:check',
+  luclinApply: 'luclin:apply',
+  luclinRevert: 'luclin:revert',
+  luclinPlay: 'luclin:play',
+  luclinOpenLauncher: 'luclin:openLauncher',
+  luclinShortcut: 'luclin:shortcut',
+  // main -> renderer: a Play started OUTSIDE the window (tray menu, desktop shortcut) finished.
+  // Payload: the PlayResult, so the Overview button can say what happened.
+  onLuclinPlayed: 'luclin:played',
+
   // ---- misc pushes ----
   onLine: 'log:line',
   onCharacter: 'log:character',

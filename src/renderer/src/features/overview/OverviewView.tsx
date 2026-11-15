@@ -53,6 +53,7 @@ import { LevelingCard } from './LevelingCard'
 import { RecentDropsCard } from './RecentDropsCard'
 import { RecentKillsCard } from './RecentKillsCard'
 import { ZoneStrip } from './ZoneStrip'
+import { PlayBar } from './PlayBar'
 import { useCurrentMob } from './useCurrentMob'
 import { useOverviewCombat } from './useOverviewCombat'
 import { useOverviewLeveling } from './useOverviewLeveling'
@@ -136,6 +137,7 @@ export default function OverviewView({
 
   return (
     <Stack spacing={1.5} sx={{ height: '100%', minHeight: 0, overflow: 'hidden' }}>
+      <PlayBar />
       {!hydrating && <ZoneStrip />}
       <Box
         data-testid="overview-grid"

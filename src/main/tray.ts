@@ -59,6 +59,7 @@ import { E2E } from './e2e'
 import { logError } from './errorLog'
 import { getCloseToTray, setCloseToTray } from './storeCloseToTray'
 import { raiseTopmost } from './topmost'
+import { playFromOutside } from './ipc/luclinModels'
 import { WEB_PREFERENCES, getMainWindow, sendToMain } from './windows'
 import { PALETTE } from '../shared/palette'
 
@@ -171,6 +172,9 @@ function requestQuit(): void {
 function buildMenu(prefs: CloseToTrayPrefs): Menu {
   return Menu.buildFromTemplate([
     { label: 'Open EQ Zera', click: restoreMainWindow },
+    // The Overview's Play button, from the tray: Luclin models when they are on, LaunchPad if not.
+    { label: 'Play EverQuest Legends', click: () => playFromOutside('play') },
+    { type: 'separator' },
     {
       label: 'Keep running in the tray when the window closes',
       type: 'checkbox',

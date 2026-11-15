@@ -24,6 +24,7 @@ import type { ShareLinkRecord } from '../shared/shareLinks'
 import type { DiscordChannel } from '../shared/discordChannels'
 import type { CelebrationPostPrefs } from '../shared/celebrationPost'
 import type { AwayAlertsPrefs } from '../shared/awayAlerts'
+import type { LuclinPrefs } from '../shared/luclinModels'
 import type { WindowBounds } from './store'
 
 /**
@@ -426,4 +427,12 @@ export interface StoreShape {
    * every field and drops a pairing whose ids are not the shapes this app mints.
    */
   phone?: StoredPhonePrefs
+
+  /**
+   * LUCLIN CHARACTER MODELS (shared/luclinModels.ts): the card's switch, the chosen races, the
+   * keep-it-applied option, and whether the user left the edit applied (so a LaunchPad revert is
+   * recognisable). ADDITIVE + OPTIONAL: no schema bump, no migration; `mergeLuclinPrefs` defaults
+   * every field and the feature ships OFF.
+   */
+  luclinModels?: LuclinPrefs
 }
