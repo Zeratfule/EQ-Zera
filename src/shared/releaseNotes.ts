@@ -135,6 +135,21 @@ export interface ReleaseNote {
  * still sees exactly the releases above it.
  */
 export const RELEASE_NOTES: readonly ReleaseNote[] = [
+  // The Luclin model switch on the Character tab, and the patch-note day fix.
+  {
+    version: '1.29.0',
+    date: '2026-11-15',
+    entries: [
+      {
+        kind: 'new',
+        text: 'The Character tab has a Luclin model switch beside Show helmet. Turn it on to see your character as the Luclin-era model from your own game files, with its idle, faces, armour, dye and weapons. Luclin helms and robes are not drawn yet, and the card says so.'
+      },
+      {
+        kind: 'fixed',
+        text: 'Patch notes show the date in their title again. Notes posted near midnight UTC were listed a day early in US time zones, so the September 29 hotfix read as September 28.'
+      }
+    ]
+  },
   // The in-game UI skin (docs/plans/eql-ui-skin.md): EQ Zera's own drawn art on the layout of the
   // game's Modern skin, generated on the player's PC; held from 1.27.0 for the redraw.
   {
