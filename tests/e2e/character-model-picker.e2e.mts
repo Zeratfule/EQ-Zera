@@ -96,9 +96,9 @@ async function stepControls(page: Page): Promise<void> {
       disabled: el.getAttribute('aria-disabled') === 'true'
     }))
   )
-  check('the race list offers all sixteen playable races', options.length === 16, `${String(options.length)} rows`)
+  check('the race list offers all eighteen playable races', options.length === 18, `${String(options.length)} rows`)
   const drawable = options.filter((o) => !o.disabled).map((o) => o.value)
-  check('…thirteen of them have a model here: the classic twelve plus the Iksar', drawable.length === 13 && drawable.includes('IK'), drawable.join(' '))
+  check('…fifteen of them have a model here: the classic twelve, the Iksar, the Kerra and the Half Dark Elf', drawable.length === 15 && drawable.includes('IK') && drawable.includes('KE') && drawable.includes('HD'), drawable.join(' '))
   const named = options.filter((o) => o.disabled)
   check(
     '…and the other three are named honestly, not hidden',

@@ -483,3 +483,4 @@ test('a borrowed idle comes from a PLAYER actor of the same sex where the archiv
     assert.equal(donor.slice(-1), code.slice(-1), `${code} borrowed ${donor}, which is the other sex - the whole 1.19.1 bug`)
   }
 })
+

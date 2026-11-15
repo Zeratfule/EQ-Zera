@@ -20,6 +20,8 @@
 // WHAT COMES OUT is a model in the game's own frame, posed to its bind pose, with the bone each
 // vertex belongs to — so the renderer can skin and animate it (wldAnim.ts reads the clips).
 
+import { boundFace, facedTexture, skinTexture } from './skinScheme'
+export { SKIN_FACE_MAX, facesFor } from './skinScheme'
 import { WEAR_PARTS, type EqModelBone, type EqModelGroup, type EqModelMaterial, type EqModelMesh, type EqModelWear } from '../../shared/eqModel'
 
 const KEY = [0x95, 0x3a, 0xc5, 0x2a, 0x95, 0x7a, 0x95, 0x6a]
@@ -417,53 +419,36 @@ function drawnMeshes(names: readonly string[], code: string, helm: number): Set<
 }
 
 /** The body part a race texture belongs to (`bafch0001.bmp` → `ch`), and its variant/index digits. */
-function texturePart(texture: string, code: string): { part: (typeof WEAR_PARTS)[number]; index: string } | null {
-  const m = new RegExp(`^${code.toLowerCase()}(${WEAR_PARTS.join('|')})(\\d\\d)(\\d\\d)\\.bmp$`).exec(texture)
-  return m ? { part: m[1] as (typeof WEAR_PARTS)[number], index: m[3] } : null
+function texturePart(texture: string, code: string): { part: (typeof WEAR_PARTS)[number]; index: string; ext: string } | null {
+  const m = new RegExp(`^${code.toLowerCase()}(${WEAR_PARTS.join('|')})(\\d\\d)(\\d\\d)\\.(bmp|dds)$`).exec(texture)
+  if (m) return { part: m[1] as (typeof WEAR_PARTS)[number], index: m[3], ext: m[4] }
+  // THE SKIN SCHEME (Kerra, 2026-11-15): the bare part is `<code><part>sk<F><P>.dds`, and its
+  // armour is `<code><part>0<V>0<P>.dds` - the same piece, numbered the classic way.
+  const sk = skinTexture(texture, code)
+  return sk && sk.part !== 'he' ? { part: sk.part as (typeof WEAR_PARTS)[number], index: `0${sk.piece}`, ext: 'dds' } : null
 }
 
-/**
- * The face pick's own head texture: `<code>he00<F><P>.bmp` with the CHOSEN F and the SAME piece,
- * and only when the archive really has that file - HUF and DWF have no face 0, and the pieces
- * above 2 (hair, beards, ears) exist at face 0 alone, so an unguarded substitution would blank
- * them. Head textures sit on some BODY meshes too, which is why this runs over every material.
- */
-function facedTexture(texture: string, code: string, outfit: Outfit): string | null {
-  const face = outfit.wear.face
-  if (face === undefined) return null
-  const piece = new RegExp(`^${code.toLowerCase()}he00\\d(\\d)\\.bmp$`).exec(texture)?.[1]
-  if (piece === undefined) return null
-  const swapped = `${code.toLowerCase()}he00${String(face)}${piece}.bmp`
-  return outfit.has(swapped) ? swapped : null
-}
-
-/**
- * WHICH FACES AN ARCHIVE ACTUALLY HAS for an actor: the F digits with a piece-1 head texture.
- * Measured, never assumed - HUM answers [0..7] and HUF [1..7], which is why the picker is handed
- * this list rather than a range (world-model law 1).
- */
-export function facesFor(code: string, has: (file: string) => boolean): number[] {
-  return [0, 1, 2, 3, 4, 5, 6, 7].filter((f) => has(`${code.toLowerCase()}he00${String(f)}1.bmp`))
-}
-
-/** The face the head was SHIPPED wearing: the F digit of the piece-1 head texture a drawn mesh binds. */
-function boundFace(meshes: readonly EqModelMesh[], code: string): number | undefined {
-  const re = new RegExp(`^${code.toLowerCase()}he00(\\d)1\\.bmp$`)
-  const hit = meshes.flatMap((m) => m.materials).map((mt) => (mt.texture ? re.exec(mt.texture) : null)).find((m) => m !== null)
-  return hit ? Number(hit[1]) : undefined
-}
 
 /** `bafch0001.bmp` → `bafch0301.bmp` when the wear says plate and the archive has it; plus the part's dye. */
+/** The armour texture a part's wear names, when the wear asks for one and the archive has it. */
+function armourFor(texture: string, code: string, outfit: Outfit): { at: NonNullable<ReturnType<typeof texturePart>>; dressed: string | null } | null {
+  const at = texturePart(texture, code)
+  if (!at) return null
+  const variant = outfit.wear[at.part] ?? 0
+  const dressed = `${code.toLowerCase()}${at.part}0${String(variant)}${at.index}.${at.ext}`
+  return { at, dressed: variant > 0 && outfit.has(dressed) ? dressed : null }
+}
+
 function dressedMaterial(mt: EqModelMaterial, code: string, outfit: Outfit): EqModelMaterial {
   if (!mt.texture) return mt
-  const faced = facedTexture(mt.texture, code, outfit)
+  const armour = armourFor(mt.texture, code, outfit)
+  // A skin-scheme part under armour shows the armour, not the skin pick; a classic head texture
+  // never matches `texturePart`, so the classic order (face first) is unchanged.
+  const faced = armour?.dressed ? null : facedTexture(mt.texture, code, outfit)
   if (faced !== null) return { ...mt, texture: faced }
-  const at = texturePart(mt.texture, code)
-  if (!at) return mt
-  const variant = outfit.wear[at.part] ?? 0
-  const dressed = `${code.toLowerCase()}${at.part}0${String(variant)}${at.index}.bmp`
-  const texture = variant > 0 && outfit.has(dressed) ? dressed : mt.texture
-  const tint = outfit.wear.tint?.[at.part]
+  if (!armour) return mt
+  const texture = armour.dressed ?? mt.texture
+  const tint = outfit.wear.tint?.[armour.at.part]
   return tint ? { ...mt, texture, tint } : { ...mt, texture }
 }
 

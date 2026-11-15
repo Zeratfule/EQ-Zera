@@ -60,8 +60,8 @@ test('the actor code is race then sex, which is exactly what the archives are ke
 })
 
 test('the race list names every playable race, and says which ones this app has no model for', () => {
-  assert.equal(RACE_OPTIONS.length, 16)
-  assert.equal(RACE_OPTIONS.filter((r) => r.modelled).length, 13, 'the twelve classic races plus the Iksar')
+  assert.equal(RACE_OPTIONS.length, 18)
+  assert.equal(RACE_OPTIONS.filter((r) => r.modelled).length, 15, 'the twelve classic races, the Iksar, the Kerra and the Half Dark Elf')
   assert.deepEqual(
     RACE_OPTIONS.filter((r) => !r.modelled).map((r) => r.label),
     ['Vah Shir', 'Froglok', 'Drakkin'],
@@ -89,6 +89,7 @@ test('the face shown is the reader’s pick when this race still has it, and the
 test('the face asked of main is a bare digit, and anything else is no pick at all', () => {
   assert.equal(storedFace('3'), 3)
   assert.equal(storedFace('0'), 0)
+  assert.equal(storedFace('14'), 14, 'the Kerra skin scheme runs to face 14')
   assert.equal(storedFace(null), undefined)
   assert.equal(storedFace(''), undefined)
   assert.equal(storedFace('  '), undefined)

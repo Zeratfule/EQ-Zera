@@ -42,10 +42,10 @@ import {
 } from '../../shared/eqModel'
 import { effectiveEqRoot } from '../log/config'
 import { readPfs, type PfsArchive } from '../eqassets/pfs'
-import { RACE_CODES, facesFor, readCharacter, readWld, type Skeleton, type WldFile } from '../eqassets/wld'
+import { RACE_CODES, SKIN_FACE_MAX, facesFor, readCharacter, readWld, type Skeleton, type WldFile } from '../eqassets/wld'
 import { readItem } from '../eqassets/wldItem'
 import { ddsToBmp, isDds } from '../eqassets/dds'
-import { readAnimation } from '../eqassets/wldAnim'
+import { readAnimation, readAnimationOrLent } from '../eqassets/wldAnim'
 import { logError } from '../errorLog'
 
 /**
@@ -55,7 +55,15 @@ import { logError } from '../errorLog'
  * face textures at all, Froglok name theirs by a different scheme entirely
  * (globalfroglok_chr.s3d, `frmhesk<F>1.dds`), and Drakkin (drm/drf_chr.s3d) have no head mesh -
  * so the picker names them and says this app has no model for them, rather than half-drawing one.
+ *
+ * THE TWO NEWER RACES (2026-11-15) each ship one archive PER SEX, one actor apiece: Kerra
+ * (globalkem/kef_chr.s3d, July 28 2026) on the skin scheme wld.ts reads, and the Half Dark Elf
+ * (globalhdm/hdf_chr.s3d, the October 22 Castle Nektropos patch) on the classic face naming. A
+ * sex the archive lacks a clip for borrows from the other sex's file (`LENDER`).
  */
+const PER_SEX_RACES: Record<string, string> = { KE: 'globalke', HD: 'globalhd' }
+/** Which actor lends an idle across archives: HDF ships no P01 of her own. */
+const LENDER: Record<string, string> = { HDF: 'HDM', HDM: 'HDF', KEF: 'KEM', KEM: 'KEF' }
 const IKSAR = 'global4_chr.s3d'
 const CLASSIC = 'global_chr.s3d'
 const ITEM_ARCHIVES = ['gequip.s3d', 'gequip2.s3d', 'gequip3.s3d', 'gequip4.s3d', 'gequip5.s3d', 'gequip6.s3d', 'gequip8.s3d', 'gequip2026.s3d']
@@ -124,11 +132,13 @@ function itemArchive(model: string): Loaded | null {
 function raceArchive(code: string): Loaded | null {
   const race = code.slice(0, 2)
   if (race === 'IK') return archive(IKSAR)
+  const perSex = PER_SEX_RACES[race]
+  if (perSex !== undefined) return archive(`${perSex}${code.slice(2).toLowerCase()}_chr.s3d`)
   return Object.hasOwn(RACE_CODES, race) ? archive(CLASSIC) : null
 }
 
-/** The highest face digit the `he00<F><P>` naming can carry (wld.ts `facesFor` says which exist). */
-const FACE_MAX = 7
+/** The highest face pick any scheme carries: `he00<F><P>` stops at 7, the skin scheme at 14 (wld.ts `facesFor` says which exist). */
+const FACE_MAX = SKIN_FACE_MAX
 
 /**
  * The idle, or NONE. A non-classic skeleton is a shape this reader has not measured, and a still
@@ -138,6 +148,9 @@ const FACE_MAX = 7
  */
 function idleClip(wld: WldFile, code: string, skeleton: Skeleton): EqModelClip | null {
   try {
+    const lendCode = LENDER[code]
+    const lendWld = lendCode !== undefined ? raceArchive(lendCode)?.wld : undefined
+    if (lendWld && lendCode) return readAnimationOrLent({ wld, code, skeleton }, IDLE, { wld: lendWld, code: lendCode })
     return readAnimation(wld, code, skeleton, IDLE)
   } catch (err) {
     logError('main:eqModel', { message: 'no idle for ' + code, err })
@@ -166,7 +179,7 @@ function collectTextures(pfs: PfsArchive, mesh: EqModelMesh, into: Record<string
 }
 
 const variant = (v: unknown): WearVariant | undefined => (v === 0 || v === 1 || v === 2 || v === 3 ? v : undefined)
-/** A face pick as the renderer sent it: an INTEGER 0..7, and nothing else - not a `WearVariant`. */
+/** A face pick as the renderer sent it: an INTEGER 0..FACE_MAX, and nothing else - not a `WearVariant`. */
 const facePick = (v: unknown): number | undefined =>
   typeof v === 'number' && Number.isInteger(v) && v >= 0 && v <= FACE_MAX ? v : undefined
 const tint = (v: unknown): Tint | undefined =>

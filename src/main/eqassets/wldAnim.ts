@@ -135,6 +135,17 @@ export function boneShortName(bone: string, code: string): string {
   return bone.startsWith(code) ? bone.slice(code.length).replace(/_DAG$/, '') : bone.replace(/_DAG$/, '')
 }
 
+/**
+ * A rig in ANOTHER archive that may lend its clip (Half Dark Elf, 2026-11-15): the per-race
+ * archives hold one actor each, so globalhdf_chr.s3d has no P01 and no neighbour to borrow from.
+ * The lender is tried only when the actor's own WLD answers nothing, and it lends rotations only,
+ * exactly like an in-archive donor.
+ */
+export interface AnimLender {
+  wld: WldFile
+  code: string
+}
+
 /** Every frame of a 0x12 track, flattened. */
 function readTrack(body: Buffer): EqModelTrack {
   const frames = body.readUInt32LE(8)
@@ -155,27 +166,47 @@ function frameMsOf(wld: WldFile, name: string): number | null {
   return ref.body.readUInt32LE(8) & 1 ? ref.body.readUInt32LE(12) : null
 }
 
+/** Does this WLD carry `anim` for `code` (body track or the PE root track)? */
+function hasClip(wld: WldFile, code: string, anim: string): boolean {
+  return wld.byName.has(`${anim}${code}_TRACKDEF`) || wld.byName.has(`${anim}${code}PE_TRACKDEF`)
+}
+
 /**
  * The clip `anim` for a skeleton, tracks by bone index. Bones without a track hold their bind
  * pose. Returns null when neither the race nor the human fallback has the animation at all.
  */
 export function readAnimation(wld: WldFile, code: string, skeleton: Skeleton, anim: string): EqModelClip | null {
-  const own = wld.byName.has(`${anim}${code}_TRACKDEF`) || wld.byName.has(`${anim}${code}PE_TRACKDEF`)
-  const source = own ? code : bestDonor(wld, code, skeleton, anim)
-  if (source === null) return null
-  const borrowed = source !== code
+  const source = hasClip(wld, code, anim) ? code : bestDonor(wld, code, skeleton, anim)
+  return source === null ? null : clipFrom({ wld, code: source }, code, skeleton, anim)
+}
+
+/**
+ * `readAnimation`, and when the actor's own WLD has nothing at all, the LENDER's clip from another
+ * archive (rotations only, marked borrowed). See `AnimLender`.
+ */
+export function readAnimationOrLent(target: AnimLender & { skeleton: Skeleton }, anim: string, lender: AnimLender): EqModelClip | null {
+  const { code, skeleton } = target
+  const own = readAnimation(target.wld, code, skeleton, anim)
+  if (own !== null || !hasClip(lender.wld, lender.code, anim)) return own
+  return clipFrom(lender, code, skeleton, anim)
+}
+
+/** Read `anim` as `source.code` plays it in `source.wld`, onto `code`'s skeleton. */
+function clipFrom(source: AnimLender, code: string, skeleton: Skeleton, anim: string): EqModelClip | null {
+  const { wld } = source
+  const borrowed = source.code !== code
   const tracks: Record<number, EqModelTrack> = {}
   let frames = 1
   let frameMs: number | null = null
   skeleton.bones.forEach((bone, i) => {
     const short = boneShortName(bone.name, code)
-    const def = wld.byName.get(`${anim}${source}${short}_TRACKDEF`)
+    const def = wld.byName.get(`${anim}${source.code}${short}_TRACKDEF`)
     if (def?.type !== 0x12) return
     const track = readTrack(def.body)
     const count = track.q.length / 4
     tracks[i] = borrowed ? { t: bindTranslations(bone, count), q: track.q } : track
     frames = Math.max(frames, count)
-    frameMs ??= frameMsOf(wld, `${anim}${source}${short}_TRACK`)
+    frameMs ??= frameMsOf(wld, `${anim}${source.code}${short}_TRACK`)
   })
   if (Object.keys(tracks).length === 0) return null
   return { name: borrowed ? `${anim}*` : anim, frameMs: frameMs ?? DEFAULT_FRAME_MS, frames, tracks }

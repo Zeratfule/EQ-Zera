@@ -43,7 +43,8 @@ export interface RaceOption {
 
 /**
  * EVERY PLAYABLE RACE IS NAMED, and the three this app cannot draw say so instead of being absent.
- * The twelve classic races and the Iksar come out of the archives (main's `raceArchive`); Vah Shir,
+ * The twelve classic races, the Iksar, and the two EQ Legends races (Kerra, July 2026; Half Dark
+ * Elf, October 2026) come out of the archives (main's `raceArchive`); Vah Shir,
  * Froglok and Drakkin are listed disabled - see ipc/eqModel.ts for what each of them would need.
  */
 export const RACE_OPTIONS: readonly RaceOption[] = [
@@ -60,6 +61,8 @@ export const RACE_OPTIONS: readonly RaceOption[] = [
   { code: 'HO', label: 'Halfling', modelled: true },
   { code: 'GN', label: 'Gnome', modelled: true },
   { code: 'IK', label: 'Iksar', modelled: true },
+  { code: 'KE', label: 'Kerra', modelled: true },
+  { code: 'HD', label: 'Half Dark Elf', modelled: true },
   { code: 'VS', label: 'Vah Shir', modelled: false },
   { code: 'FR', label: 'Froglok', modelled: false },
   { code: 'DR', label: 'Drakkin', modelled: false }
@@ -121,5 +124,5 @@ export function readFace(stored: number | undefined, faces: readonly number[] | 
  */
 export function storedFace(raw: string | null): number | undefined {
   const n = raw === null || raw.trim() === '' ? NaN : Number(raw)
-  return Number.isInteger(n) && n >= 0 && n <= 9 ? n : undefined
+  return Number.isInteger(n) && n >= 0 && n <= 19 ? n : undefined
 }
