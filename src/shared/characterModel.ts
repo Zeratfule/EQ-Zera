@@ -14,7 +14,7 @@
 
 import { SHEET_SLOTS, type SheetCellView, type SheetItemView } from './characterSheet'
 import type { EquipSlot } from './planner/types'
-import type { EqModelHand, EqModelHands, EqModelWear, Tint, WearPart, WearVariant } from './eqModel'
+import type { EqModelHand, EqModelHands, EqModelWear, RobeMaterial, Tint, WearPart, WearVariant } from './eqModel'
 
 export type ArmorMaterial = 'plate' | 'chain' | 'leather' | 'cloth' | 'unknown'
 
@@ -164,6 +164,11 @@ function variantOf(look: SlotLook): WearVariant {
  * `variantOf`), the heavier wrist winning the forearm, the head as a helm kind unless the helmet
  * is hidden, and the item table's dye as a tint per part.
  */
+/** The item table's material code for a robe (10-16). */
+function isRobeCode(code: number | undefined): code is RobeMaterial {
+  return code !== undefined && Number.isInteger(code) && code >= 10 && code <= 16
+}
+
 export function wearFromLooks(looks: ReadonlyMap<ModelSlotId, SlotLook>): EqModelWear {
   const wear: EqModelWear = {}
   for (const [slot, look] of looks) {
@@ -172,6 +177,8 @@ export function wearFromLooks(looks: ReadonlyMap<ModelSlotId, SlotLook>): EqMode
     const v = variantOf(look)
     if (part === 'helm') wear.helm = v
     else if (v > (wear[part] ?? 0)) wear[part] = v
+    // A ROBE chest (material 10-16) also travels as itself: a Luclin figure draws the robe, a classic one ignores it.
+    if (part === 'ch' && isRobeCode(look.materialCode)) wear.robe = look.materialCode
     const tint = tintOfColor(look.color)
     if (tint) (wear.tint ??= {})[part] = tint
   }

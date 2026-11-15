@@ -35,6 +35,7 @@ import {
   type EqModelHands,
   type EqModelMesh,
   type EqModelPayload,
+  type EqModelPiece,
   type EqModelWear,
   type EqModelWeapon,
   type Tint,
@@ -42,9 +43,10 @@ import {
 } from '../../shared/eqModel'
 import { effectiveEqRoot } from '../log/config'
 import { readPfs, type PfsArchive } from '../eqassets/pfs'
-import { RACE_CODES, SKIN_FACE_MAX, facesFor, readCharacter, readWld, skeletonOf, type CharacterModel, type Skeleton, type WldFile } from '../eqassets/wld'
-import { readItem } from '../eqassets/wldItem'
+import { RACE_CODES, SKIN_FACE_MAX, facesFor, bindPose, readCharacter, readWld, skeletonOf, type CharacterModel, type Skeleton, type WldFile } from '../eqassets/wld'
+import { readItem, readWornPiece, type WearerRig } from '../eqassets/wldItem'
 import { LUCLIN_LENDER, LUCLIN_RACES, luclinFile } from '../eqassets/luclin'
+import { isRobe, luclinDress, type LuclinPiece } from '../eqassets/luclinArmour'
 import { ddsToBmp, isDds } from '../eqassets/dds'
 import { readAnimation, readAnimationOrLent, type AnimLender } from '../eqassets/wldAnim'
 import { gripCorrection, luclinIdle, type PosedRig } from '../eqassets/wldPose'
@@ -74,21 +76,17 @@ const LENDER: Record<string, string> = { HDF: 'HDM', HDM: 'HDF', KEF: 'KEM', KEM
  * as they are - one mesh with the head built in, two eyeball meshes, the skin scheme
  * (`<code><part>sk<F><P>.dds`) for the bare body and the face, and armour as
  * `<code><part>0<V>0<P>.dds`, which is the classic variant digit, so the existing wear maps onto
- * it. Luclin chests ship no plate texture on 25 of the 26 actors (BAF alone has `ch03`), so a part
- * with no texture for its variant steps down to the closest armour the actor has (plate, chain,
- * leather; wldDress.ts `armourFor`) and is bare skin only when it has none. The idle is CHOSEN to
- * stand (wldPose.ts `luclinIdle`), and held items are turned to sit as the classic figure holds
- * them (`gripLikeClassic`).
+ * it. A part with no texture for its variant steps down to the closest armour the actor has
+ * (plate, chain, leather; wldDress.ts `armourFor`) and is bare skin only when it has none. The idle
+ * is CHOSEN to stand (wldPose.ts `luclinIdle`), and held items are turned to sit as the classic
+ * figure holds them (`gripLikeClassic`).
  *
- * HELMS AND ROBES, searched for (2026-11-15), including the owner's retail install read-only:
- * no file in either install maps the lgequip_amr helm items (IT5000 up) to a race and material.
- * Resources/NewArmorTagData.txt (both installs) maps only the later attached armour sets (IDs
- * 2000+, IT14100+), and retail's extra global17..23_amr.s3d carry material sets 17-23, not plate.
- *
- * WHAT IS NOT DRAWN: the helm. A Luclin head is part of the body mesh and has no `HE01..03` helm
- * meshes; the game draws Luclin helms as item models (lgequip_amr*.s3d, `IT5000` up in blocks of
- * thirty), and which block belongs to which race is not something these files state. So the
- * Luclin figure is bare-headed whatever the helm switch says, rather than wearing a guess.
+ * HELMS, PLATE, ROBES AND HAIR ARE ITEM MODELS on a Luclin figure (eqassets/luclinArmour.ts has
+ * the numbering, from three reverse-engineerings of the RoF2 client, checked against this
+ * install's lgequip*.s3d): the plate breastplate replaces the chest's plate TEXTURE (which binds
+ * the bare skin on 25 of the 26 actors), robes swap the chest/arm/wrist textures and hang a skirt.
+ * No file in either install (the owner's retail one read-only included) states that numbering;
+ * Resources/NewArmorTagData.txt covers only the later attached sets (IT14100 up).
  *
  * The races that ship ONE model (Kerra, Half Dark Elf) have no Luclin twin: the switch does not
  * apply to them (`LUCLIN_RACES`), and the payload says which kind it is (`luclin`). Eight Luclin
@@ -145,19 +143,71 @@ function archive(name: string, scaledTracks = false): Loaded | null {
 
 /** The item archive that carries a model actor, searched in order and remembered. */
 const itemArchiveOf = new Map<string, Loaded | null>()
-function itemArchive(model: string): Loaded | null {
-  const hit = itemArchiveOf.get(model)
+function itemArchive(model: string, archives: readonly string[] = ITEM_ARCHIVES): Loaded | null {
+  const key = `${archives[0] ?? ''}|${model}`
+  const hit = itemArchiveOf.get(key)
   if (hit !== undefined) return hit
   let found: Loaded | null = null
-  for (const name of ITEM_ARCHIVES) {
+  for (const name of archives) {
     const a = archive(name)
     if (a?.wld.byName.has(`${model}_ACTORDEF`)) {
       found = a
       break
     }
   }
-  itemArchiveOf.set(model, found)
+  itemArchiveOf.set(key, found)
   return found
+}
+
+/**
+ * THE LUCLIN ARMOUR ARCHIVES: the item actors eqassets/luclinArmour.ts names (helms, breastplates,
+ * shoulders, wrists, boots, flaps, belts, robe skirts, hair) live here and nowhere else - searched
+ * apart from the weapon archives, whose `IT` numbers would otherwise answer for a hair piece.
+ */
+const ARMOUR_ARCHIVES = ['lgequip_amr.s3d', 'lgequip_amr2.s3d', 'lgequip.s3d', 'lgequip2.s3d']
+
+/** A piece's materials under its slot's dye. */
+function dyed(mesh: EqModelMesh, tint: Tint | undefined): EqModelMesh {
+  return tint ? { ...mesh, materials: mesh.materials.map((m) => ({ ...m, tint })) } : mesh
+}
+
+/**
+ * One Luclin armour piece, its textures collected and its slot's dye laid over every material: SKINNED
+ * onto the wearer when the item carries a skeleton of its own (breastplate, flap, belt, robe skirt,
+ * hair - wldItem.ts `readWornPiece`), HUNG rigid off its point bone when it does not (helm,
+ * shoulders, wrists, boots).
+ */
+function armourPiece(p: LuclinPiece, wearer: WearerRig, textures: Record<string, string>): { skinned: EqModelMesh } | { hung: EqModelPiece } | null {
+  const items = itemArchive(p.it, ARMOUR_ARCHIVES)
+  if (!items) return null
+  const worn = readWornPiece(items.wld, p.it, wearer)
+  const mesh = worn ?? readItem(items.wld, p.it)
+  if (!mesh) return null
+  collectTextures(items.pfs, mesh, textures)
+  return worn ? { skinned: dyed(worn, p.tint) } : { hung: { attach: p.attach, mesh: dyed(mesh, p.tint) } }
+}
+
+/** What a Luclin figure wears: the body wear to dress its mesh with, its skinned armour meshes, and its hung pieces. */
+interface LuclinOutfit {
+  wear: EqModelWear
+  skinned: EqModelMesh[]
+  pieces: EqModelPiece[]
+}
+
+function luclinOutfit(code: string, lu: Loaded, wear: EqModelWear, textures: Record<string, string>): LuclinOutfit | null {
+  const skeleton = skeletonOf(lu.wld, code)
+  if (!skeleton) return null
+  const wearer: WearerRig = { skeleton, code, world: bindPose(skeleton) }
+  const hasIt = (it: string): boolean => itemArchive(it, ARMOUR_ARCHIVES) !== null
+  const hasRobe = (robe: number): boolean => lu.pfs.has(`${code.toLowerCase()}ch${String(robe)}01.dds`)
+  const dress = luclinDress(code, wear, hasIt, hasRobe)
+  const out: LuclinOutfit = { wear: dress.wear, skinned: [], pieces: [] }
+  for (const p of dress.pieces) {
+    const got = armourPiece(p, wearer, textures)
+    if (got && 'skinned' in got) out.skinned.push(got.skinned)
+    else if (got) out.pieces.push(got.hung)
+  }
+  return out
 }
 
 /** The archive a race actor reads from, cached per FILE by `archive` - the `itemArchive` idiom. */
@@ -252,6 +302,15 @@ const facePick = (v: unknown): number | undefined =>
 const tint = (v: unknown): Tint | undefined =>
   Array.isArray(v) && v.length === 3 && v.every((c) => typeof c === 'number' && c >= 0 && c <= 1) ? (v as Tint) : undefined
 
+/** The helm, the face pick and the robe, as the renderer sent them. */
+function headAndRobe(rec: Record<string, unknown>, wear: EqModelWear): void {
+  const helm = variant(rec.helm)
+  if (helm !== undefined) wear.helm = helm
+  if (isRobe(rec.robe)) wear.robe = rec.robe
+  const face = facePick(rec.face)
+  if (face !== undefined) wear.face = face
+}
+
 /** The wear as the renderer sent it, admitting only known parts at variants 0..3 and unit tints. */
 export function sanitizeWear(raw: unknown): EqModelWear {
   const wear: EqModelWear = {}
@@ -261,10 +320,7 @@ export function sanitizeWear(raw: unknown): EqModelWear {
     const v = variant(rec[part])
     if (v !== undefined) wear[part] = v
   }
-  const helm = variant(rec.helm)
-  if (helm !== undefined) wear.helm = helm
-  const face = facePick(rec.face)
-  if (face !== undefined) wear.face = face
+  headAndRobe(rec, wear)
   const tints = typeof rec.tint === 'object' && rec.tint !== null ? (rec.tint as Record<string, unknown>) : {}
   for (const part of [...WEAR_PARTS, 'helm'] as const) {
     const t = tint(tints[part])
@@ -313,13 +369,22 @@ function weaponFor(hand: EqModelHand | undefined, attach: AttachPoint, textures:
  * The actor's archive and its model, Luclin first when asked for and there. A Luclin ask the race
  * or the install cannot answer is the classic figure, said so by the payload's `luclin: false`.
  */
-function readActor(code: string, wear: EqModelWear, luclin: boolean): { races: Loaded; model: CharacterModel; luclin: boolean } | null {
+function readActor(code: string, wear: EqModelWear, luclin: boolean, textures: Record<string, string>): ReadActor | null {
   const lu = luclin ? luclinArchive(code) : null
-  const luModel = lu ? readCharacter(lu.wld, code, { wear, has: lu.pfs.has }) : null
-  if (lu && luModel) return { races: lu, model: luModel, luclin: true }
+  const outfit = lu ? luclinOutfit(code, lu, wear, textures) : null
+  const luModel = lu && outfit ? readCharacter(lu.wld, code, { wear: outfit.wear, has: lu.pfs.has }) : null
+  if (lu && outfit && luModel) return { races: lu, model: { ...luModel, meshes: [...luModel.meshes, ...outfit.skinned] }, luclin: true, pieces: outfit.pieces }
   const races = raceArchive(code)
   const model = races ? readCharacter(races.wld, code, { wear, has: races.pfs.has }) : null
-  return races && model ? { races, model, luclin: false } : null
+  return races && model ? { races, model, luclin: false, pieces: [] } : null
+}
+
+interface ReadActor {
+  races: Loaded
+  model: CharacterModel
+  luclin: boolean
+  /** the Luclin armour pieces; empty for a classic figure */
+  pieces: EqModelPiece[]
 }
 
 /** What each hand draws, primary then secondary, textures collected into `textures`. */
@@ -334,20 +399,26 @@ function heldWeapons(held: EqModelHands, textures: Record<string, string>): EqMo
 
 export function loadEqModel(code: unknown, wear?: unknown, hands?: unknown, luclin?: unknown): EqModelPayload | null {
   if (typeof code !== 'string' || !/^[A-Z]{3}$/.test(code)) return null
-  const read = readActor(code, sanitizeWear(wear), luclin === true)
+  const textures: Record<string, string> = {}
+  const read = readActor(code, sanitizeWear(wear), luclin === true, textures)
   if (!read) return null
   const { races, model } = read
-  const textures: Record<string, string> = {}
   for (const mesh of model.meshes) collectTextures(races.pfs, mesh, textures)
   const idle = idleClip(races.wld, code, model.skeleton, read.luclin)
   const weapons = heldWeapons(sanitizeHands(hands), textures)
   if (read.luclin && weapons.length > 0) gripLikeClassic(code, { skeleton: model.skeleton, code, clip: idle }, weapons)
   const out: EqModelPayload = { actor: model.actor, bones: model.bones, meshes: model.meshes, clips: idle ? [idle] : [], weapons, textures }
+  if (luclin === true) out.luclin = read.luclin
+  return withExtras(out, code, read)
+}
+
+/** The payload's optional facts: faces, the bound face, the parts drawn bare, the Luclin pieces. */
+function withExtras(out: EqModelPayload, code: string, { races, model, pieces }: ReadActor): EqModelPayload {
   const faces = facesFor(code, races.pfs.has)
   if (faces.length > 0) out.faces = faces
   if (model.defaultFace !== undefined) out.defaultFace = model.defaultFace
-  if (luclin === true) out.luclin = read.luclin
   if (model.undressed) out.undressed = model.undressed
+  if (pieces.length > 0) out.pieces = pieces
   return out
 }
 

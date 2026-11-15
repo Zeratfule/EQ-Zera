@@ -3,7 +3,7 @@
 // single rigid mesh the renderer hangs off a hand bone; wld.ts owns the fragment, mesh and
 // skeleton readers this borrows.
 
-import { bindPose, fragmentAt, meshCandidates, readMesh, skeletonOf, type WldFile } from './wld'
+import { bindPose, fragmentAt, meshCandidates, readMesh, skeletonOf, type Skeleton, type WldFile, type Xform } from './wld'
 import type { EqModelMesh } from '../../shared/eqModel'
 
 /**
@@ -34,7 +34,7 @@ function readSkeletalItem(wld: WldFile, upper: string): EqModelMesh | null {
   const world = bindPose(skeleton)
   const parts: EqModelMesh[] = []
   for (const frag of meshCandidates(wld, skeleton, upper, 0)) parts.push(readMesh(wld, frag, world))
-  return parts.length > 0 ? { ...mergeMeshes(`${upper}_DMSPRITEDEF`, parts), rigged: true } : null
+  return parts.length > 0 ? { ...mergeMeshes(`${upper}_DMSPRITEDEF`, parts), rigged: true, skinIndices: [] } : null
 }
 
 /** Several posed meshes as one rigid mesh: vertices, indices and material groups re-based in turn. */
@@ -50,6 +50,47 @@ function mergeMeshes(name: string, parts: readonly EqModelMesh[]): EqModelMesh {
     for (const i of p.indices) out.indices.push(i + vertexBase)
     for (const g of p.groups) out.groups.push({ materialIndex: g.materialIndex + materialBase, start: g.start + indexBase, count: g.count })
     for (const m of p.materials) out.materials.push(m)
+    for (const b of p.skinIndices) out.skinIndices.push(b)
   }
   return out
+}
+
+/** The character a worn piece is skinned onto: its skeleton, its actor code and its bind pose. */
+export interface WearerRig {
+  skeleton: Skeleton
+  code: string
+  world: readonly Xform[]
+}
+
+/**
+ * A LUCLIN ARMOUR PIECE THAT IS SKINNED, NOT HUNG (2026-11-15): the breastplate, tunic flaps,
+ * belts, robe skirts and hair in lgequip*.s3d carry a skeleton of their OWN that repeats the
+ * wearer's bone names (`IT6360CHCHEST_DAG`, `IT4363ROBEPOINT04_DAG`, `IT1360HEHAIR1_DAG`), and the
+ * client deforms them with the wearer's bones of the same name. So each item bone is matched to the
+ * wearer's bone BY NAME (an unmatched one takes its nearest matched ancestor, then the root), the
+ * vertices are posed through the WEARER's bind pose, and the mesh comes back with the wearer's
+ * bone indices - ready to skin and animate exactly like the body. Null when the item has no
+ * skeleton (a helm, a shoulder pad: those hang rigid off a point bone).
+ */
+export function readWornPiece(wld: WldFile, code: string, wearer: WearerRig): EqModelMesh | null {
+  const upper = code.toUpperCase()
+  const skeleton = skeletonOf(wld, upper)
+  if (!skeleton) return null
+  const mine = wearer.skeleton.bones.map((b) => b.name)
+  const parent = new Array<number>(skeleton.bones.length).fill(-1)
+  skeleton.bones.forEach((b, i) => {
+    for (const c of b.children) parent[c] = i
+  })
+  const map = new Array<number>(skeleton.bones.length).fill(0)
+  skeleton.bones.forEach((b, i) => {
+    const short = b.name.startsWith(upper) ? b.name.slice(upper.length).replace(/_DAG$/, '') : ''
+    const at = mine.indexOf(`${wearer.code}${short}_DAG`)
+    map[i] = at >= 0 ? at : parent[i] >= 0 ? map[parent[i]] : 0
+  })
+  const world = map.map((j) => wearer.world[j])
+  const frags = meshCandidates(wld, skeleton, upper, 0)
+  const named = wld.byName.get(`${upper}_DMSPRITEDEF`)
+  if (named?.type === 0x36 && !frags.includes(named)) frags.push(named)
+  const parts = frags.map((f) => readMesh(wld, f, world)).map((m) => ({ ...m, skinIndices: m.skinIndices.map((i) => map[i] ?? 0) }))
+  return parts.length > 0 ? mergeMeshes(`${upper}_DMSPRITEDEF`, parts) : null
 }

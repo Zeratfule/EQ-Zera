@@ -72,7 +72,6 @@ export function luclinNote(on: boolean, race: string, raceLabel: string, shown: 
   if (!on || shown === null) return null
   if (!hasLuclinModel(race)) return `${raceLabel}: the game files carry one model for this race, so the Luclin switch does not change it.`
   if (!shown.luclin) return 'No Luclin model files for this race were found in the configured EverQuest folder, so this is the classic figure.'
-  if (shown.helm > 0) return 'Luclin helms are separate item models this app does not draw yet, so the head is shown bare.'
   return null
 }
 

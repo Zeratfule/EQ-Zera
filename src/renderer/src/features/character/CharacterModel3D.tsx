@@ -15,7 +15,8 @@ import { type JSX, useEffect, useRef, useState } from 'react'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { PALETTE } from '../../../../shared/palette'
-import type { EqModelClip, EqModelHands, EqModelMaterial, EqModelMesh, EqModelPayload, EqModelWeapon, EqModelWear, Tint } from '@shared/eqModel'
+import { attachBone, gripMount, hangPieces } from './figureMounts'
+import type { EqModelClip, EqModelHands, EqModelMaterial, EqModelMesh, EqModelPayload, EqModelWear, Tint } from '@shared/eqModel'
 
 /** A texture from a data URL, in the game's pixel look: nearest magnification, sRGB, repeating. */
 function loadTexture(loader: THREE.TextureLoader, url: string): THREE.Texture {
@@ -204,26 +205,6 @@ function buildGeometry(m: EqModelMesh, mc: MaterialCache): { geo: THREE.BufferGe
   return { geo, mats }
 }
 
-/**
- * The bone a held item hangs off, BY EXACT NAME FIRST (Luclin, 2026-11-15): a Luclin rig also
- * carries `HUMHAIR_POINT_DAG`, `HUMSHOULDR_POINT_DAG` and `HUMGAUNTR_POINT_DAG`, all of which END in
- * `R_POINT_DAG`, and the hair comes first - a suffix match hung the sword off the scalp. The suffix
- * stays as the fallback for any rig that names its points another way.
- */
-function attachBone(skeleton: THREE.Skeleton, actor: string, attach: string): THREE.Bone | undefined {
-  const exact = `${actor.replace(/_ACTORDEF$/, '')}${attach}_DAG`
-  return skeleton.bones.find((b) => b.name === exact) ?? skeleton.bones.find((b) => b.name.endsWith(`${attach}_DAG`))
-}
-
-/** Where a held item hangs: the bone itself, or a child turned by the Luclin grip correction (shared/eqModel.ts `grip`). */
-function gripMount(bone: THREE.Bone, grip: EqModelWeapon['grip']): THREE.Object3D {
-  if (!grip) return bone
-  const mount = new THREE.Group()
-  mount.quaternion.set(grip[0], grip[1], grip[2], grip[3])
-  bone.add(mount)
-  return mount
-}
-
 /** Build the figure: skinned body meshes on one skeleton, weapons on their bones, the idle playing. */
 function buildFigure(model: EqModelPayload): Built {
   const built: Built = { group: new THREE.Group(), geometries: [], materials: [], textures: [], mixer: null, flipbooks: [], turning: [] }
@@ -266,6 +247,10 @@ function buildFigure(model: EqModelPayload): Built {
     for (const m of mats) if (m instanceof THREE.MeshLambertMaterial && m.blending === THREE.AdditiveBlending) glows.push(m)
     built.turning.push({ pivot, glows })
   }
+  hangPieces(model, skeleton, (mesh) => {
+    const { geo, mats } = buildGeometry(mesh, mc)
+    return new THREE.Mesh(geo, mats)
+  })
   const idle = model.clips[0]
   if (idle && root) {
     built.mixer = new THREE.AnimationMixer(root)

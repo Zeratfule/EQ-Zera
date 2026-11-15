@@ -119,7 +119,7 @@ test('the Luclin note says only what the payload backs, and nothing while the sw
   assert.equal(luclinNote(false, 'HU', 'Human', luclinShown), null, 'switch off: no line')
   assert.equal(luclinNote(true, 'HU', 'Human', null), null, 'no payload yet: no line')
   assert.equal(luclinNote(true, 'HU', 'Human', luclinShown), null, 'the Luclin figure with a bare head: nothing to say')
-  assert.match(luclinNote(true, 'HU', 'Human', { luclin: true, helm: 3 }) ?? '', /helms/, 'a helm the Luclin figure cannot wear is named')
+  assert.equal(luclinNote(true, 'HU', 'Human', { luclin: true, helm: 3 }), null, 'a Luclin helm is drawn (an item on HEAD_POINT), so there is nothing to say about it')
   assert.match(luclinNote(true, 'HU', 'Human', { luclin: false, helm: 0 }) ?? '', /classic figure/, 'an install without the archive says it fell back')
   assert.match(luclinNote(true, 'KE', 'Kerra', { luclin: false, helm: 0 }) ?? '', /^Kerra: .*one model/, 'a one-model race says the switch does nothing')
   assert.equal(undressedNote(undefined), null)

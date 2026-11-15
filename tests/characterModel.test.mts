@@ -102,6 +102,15 @@ test('the wear the real model gets: material → variant per part, the heavier w
   assert.equal(ornamented.helm, 0, 'the crown ornament reads as no known make, so the head stays bare')
 })
 
+test('a ROBE chest (item material 10-16) also travels as itself, beside the classic variant it always had', () => {
+  const robed = views().map((c) => (c.id === 'chest' && c.item ? { ...c, item: { ...c.item, material: 13 } } : c))
+  const wear = wearFromLooks(modelLooks(robed, { showHelm: false, showOrnaments: false }))
+  assert.equal(wear.robe, 13, "Miragul's-robe material reaches main for the Luclin figure")
+  assert.ok(wear.ch === undefined || wear.ch <= 3, 'the classic chest variant stays 0..3')
+  const plain = wearFromLooks(modelLooks(views(), { showHelm: false, showOrnaments: false }))
+  assert.equal(plain.robe, undefined, 'a non-robe chest names no robe')
+})
+
 const SHOW: ModelOptions = { showHelm: true, showOrnaments: true }
 const PLAIN: ModelOptions = { showHelm: true, showOrnaments: false }
 

@@ -85,6 +85,12 @@ export interface EqModelWeapon {
   grip?: [number, number, number, number]
 }
 
+/** A Luclin armour piece: the bone it hangs off by its short name (`HEAD_POINT`), and its mesh. */
+export interface EqModelPiece {
+  attach: string
+  mesh: EqModelMesh
+}
+
 /**
  * WHAT THE FIGURE WEARS (phase 2). Classic armour is a TEXTURE VARIANT per body part - the files
  * are `<race><part><variant><index>.bmp`, variants 00 bare · 01 leather · 02 chain · 03 plate
@@ -103,7 +109,17 @@ export interface EqModelWeapon {
 export const WEAR_PARTS = ['ch', 'ua', 'fa', 'hn', 'lg', 'ft'] as const
 export type WearPart = (typeof WEAR_PARTS)[number]
 export type WearVariant = 0 | 1 | 2 | 3
-export type EqModelWear = Partial<Record<WearPart, WearVariant>> & {
+/**
+ * A ROBE (chest material 10-16, the item table's own code). Luclin only: the robe races' archives
+ * carry `<code>ch1x` textures and a skirt item per robe (eqassets/luclinArmour.ts); a classic
+ * figure ignores it. Added beside `WearVariant`, never inside it, so every 0..3 rule keeps its meaning.
+ */
+export type RobeMaterial = 10 | 11 | 12 | 13 | 14 | 15 | 16
+/** A body part's texture variant as main dresses a mesh: the classic four, or (under a Luclin robe) the robe's number. */
+export type WearMaterial = WearVariant | RobeMaterial
+export type EqModelWear = Partial<Record<WearPart, WearMaterial>> & {
+  /** the chest's robe material when the chest item is a robe (10-16); Luclin figures draw it */
+  robe?: RobeMaterial
   /** the helm mesh to draw: 0 bare head, 1..3 the helm kinds; undefined = bare */
   helm?: WearVariant
   /**
@@ -138,6 +154,12 @@ export interface EqModelPayload {
   meshes: EqModelMesh[]
   clips: EqModelClip[]
   weapons: EqModelWeapon[]
+  /**
+   * THE LUCLIN ARMOUR PIECES (helm, breastplate, shoulders, wrists, boots, tunic flap, belt, robe
+   * skirt, hair): rigid item meshes hung off the named `<CODE><attach>_DAG` bone, never turned or
+   * spun. Absent on a classic figure.
+   */
+  pieces?: EqModelPiece[]
   /** bitmap file name → data URL, for every texture a drawn mesh group references */
   textures: Record<string, string>
   /** the faces this actor's archive really has: the `F` digits with a piece-1 head texture, ascending */

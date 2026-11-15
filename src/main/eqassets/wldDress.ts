@@ -24,13 +24,19 @@ function texturePart(texture: string, code: string): { part: WearPart; index: st
  * actors ship no plate chest, and drawing the bare skin under a breastplate put topless figures on
  * the card. So the variant steps DOWN - plate, then chain, then leather - to the first the archive
  * has for this piece, keeping the worn item's dye; the bare skin is left only when the archive has
- * no armour texture for the piece at all.
+ * no armour texture for the piece at all. (A Luclin plate CHEST no longer reaches here: its
+ * breastplate is a 3D piece, eqassets/luclinArmour.ts, and the chest keeps its base look.)
+ *
+ * A ROBE (10-16, Luclin) never steps down: its number is a different garment, not a heavier one,
+ * so a robe piece the archive lacks stays the bare skin.
  */
 function armourFor(texture: string, code: string, outfit: Outfit): { at: NonNullable<ReturnType<typeof texturePart>>; dressed: string | null } | null {
   const at = texturePart(texture, code)
   if (!at) return null
-  for (let v = outfit.wear[at.part] ?? 0; v > 0; v--) {
-    const dressed = `${code.toLowerCase()}${at.part}0${String(v)}${at.index}.${at.ext}`
+  const worn = outfit.wear[at.part] ?? 0
+  const tries = worn > 3 ? [worn] : Array.from({ length: worn }, (_, i) => worn - i)
+  for (const v of tries) {
+    const dressed = `${code.toLowerCase()}${at.part}${String(v).padStart(2, '0')}${at.index}.${at.ext}`
     if (outfit.has(dressed)) return { at, dressed }
   }
   return { at, dressed: null }
