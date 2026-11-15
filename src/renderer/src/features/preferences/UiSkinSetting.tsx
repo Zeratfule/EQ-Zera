@@ -199,7 +199,7 @@ export function UiSkinSetting(): JSX.Element {
   return (
     <Stack spacing={1.25} data-testid="pref-ui-skin">
       <Typography variant="body2">
-        Recolors the game&apos;s own windows, buttons, frames and gauges in EQ Zera&apos;s colors. Icons, spell gems and item art stay as they are.
+        Redraws the game&apos;s windows, buttons, frames, scrollbars and gauges in EQ Zera&apos;s style, on the layout of the game&apos;s Modern skin. Icons, spell gems and item art stay as they are.
       </Typography>
       <Alert severity="warning" data-testid="ui-skin-disclaimer">
         {UI_SKIN_DISCLAIMER}

@@ -1,27 +1,29 @@
 /**
  * Builds, inspects and removes the EQ Zera in-game UI skin. Electron-free: the app's IPC handler
- * and `npm run gen:eql-skin` both call these with explicit directories.
+ * and `npm run gen:eql-skin` both call these with explicit folders.
  *
- * THE SOURCE IS READ-ONLY. Every write goes through `writeOut`, which refuses a path outside the
- * output folder and any file name `isAllowedOutput` does not list. An output folder that holds
- * files but no manifest is not ours (a shipped skin, or someone's own), and every operation here
- * refuses it. All file IO is async so a build never stalls the main process.
+ * LAYERS. The skin inherits `default_modern` (the base) over `default` (the fallback the client
+ * itself uses). For every file name in either: a chrome atlas is redrawn, a window background is
+ * repainted, an in-game XML gets its colours retuned, and any other file is copied only when the
+ * base carries a version that differs from the fallback. Whatever the skin does not hold, the
+ * client loads from `default`, which is exactly where it would have come from anyway.
+ *
+ * THE SOURCES ARE READ-ONLY. Every write goes through `writeOut`, which refuses a path outside the
+ * output folder and any name that is not a source file name or the manifest. An output folder that
+ * holds files but no manifest is not ours, and every operation here refuses it. File IO is async.
  */
 import { mkdir, readFile, readdir, rm, stat, writeFile } from 'node:fs/promises'
-import { basename, join, relative, resolve, isAbsolute } from 'node:path'
-import { parseAnimationFrames, paintRect, type AnimFrame } from './animations'
-import { recolorRgba } from './recolor'
-import {
-  ART_PIECES,
-  MANIFEST_FILE,
-  REGION_TEXTURES,
-  RULES_VERSION,
-  WHOLE_TEXTURES,
-  isAllowedOutput,
-  isXmlSource
-} from './rules'
-import { TgaError, decodeTga, encodeTga } from './tga'
+import { basename, isAbsolute, join, relative, resolve } from 'node:path'
+import { parseAnimationFrames, type AnimFrame } from './animations'
+import { drawAtlas, drawBackground, readImage } from './atlas'
+import { MANIFEST_FILE, RULES_VERSION, isChromeAtlas, isWholeTexture, isXmlSource } from './rules'
 import { rewriteXmlColors } from './xmlColors'
+
+/** The two skins the build reads: the one it inherits and the one the client falls back to. */
+export interface SkinSources {
+  base: string
+  fallback: string
+}
 
 export interface SourceStamp {
   size: number
@@ -32,21 +34,22 @@ export interface SkinManifest {
   generator: 'EQ Zera'
   rulesVersion: number
   builtAt: string
-  /** every default-skin file the build read, by its on-disk name */
+  /** every source file the build read, keyed `base/<name>` or `fallback/<name>` */
   sources: Record<string, SourceStamp>
   /** every file the build wrote, manifest excluded */
   outputs: string[]
 }
 
 export interface BuildProgress {
-  phase: 'reading' | 'textures' | 'xml' | 'done'
+  phase: 'reading' | 'writing' | 'done'
   done: number
   total: number
 }
 
 export interface BuildResult {
-  textures: number
+  drawn: number
   xml: number
+  inherited: number
   outputs: string[]
 }
 
@@ -72,205 +75,200 @@ async function readManifest(outDir: string): Promise<SkinManifest | null> {
   }
 }
 
-async function listDir(dir: string): Promise<string[] | null> {
+async function listFiles(dir: string): Promise<string[] | null> {
   try {
-    return await readdir(dir)
+    const entries = await readdir(dir, { withFileTypes: true })
+    return entries.filter((e) => e.isFile()).map((e) => e.name)
   } catch {
     return null
   }
 }
 
-/** Refuses an output folder that is the source, sits inside it, or holds files that are not ours. */
-async function checkOutDir(sourceDir: string, outDir: string): Promise<SkinManifest | null> {
-  const src = resolve(sourceDir)
-  const out = resolve(outDir)
-  const rel = relative(src, out)
-  if (rel === '' || (!rel.startsWith('..') && !isAbsolute(rel))) {
-    throw new SkinBuildError('the output folder must not be the default skin or inside it')
+function inside(parent: string, child: string): boolean {
+  const rel = relative(resolve(parent), resolve(child))
+  return rel === '' || (!rel.startsWith('..') && !isAbsolute(rel))
+}
+
+/** Refuses an output folder that is a source, sits inside one, or holds files that are not ours. */
+async function checkOutDir(src: SkinSources, outDir: string): Promise<SkinManifest | null> {
+  if (inside(src.base, outDir) || inside(src.fallback, outDir)) {
+    throw new SkinBuildError('the output folder must not be a shipped skin or inside one')
   }
-  const manifest = await readManifest(out)
-  const entries = await listDir(out)
-  if (!manifest && (entries?.length ?? 0) > 0) {
-    throw new SkinBuildError(`${basename(out)} already holds files EQ Zera did not write`)
+  const manifest = await readManifest(outDir)
+  if (!manifest && ((await listFiles(outDir))?.length ?? 0) > 0) {
+    throw new SkinBuildError(`${basename(outDir)} already holds files EQ Zera did not write`)
   }
   return manifest
 }
 
-function writeOut(outDir: string, name: string, data: Uint8Array | string): Promise<void> {
-  if (!isAllowedOutput(name) || basename(name) !== name) {
-    throw new SkinBuildError(`refusing to write ${name}`)
+/** One source file as the layered view sees it. */
+interface Layered {
+  name: string
+  path: string
+  /** the fallback's file of the same name, when the winning file is the base's */
+  fallbackPath: string | null
+  /** the winning file is the base skin's */
+  fromBase: boolean
+}
+
+interface Plan {
+  files: Layered[]
+  /** lower-cased names the build may write */
+  allowed: Set<string>
+  stampNames: string[]
+}
+
+async function planSources(src: SkinSources): Promise<Plan | null> {
+  const fallback = await listFiles(src.fallback)
+  if (!fallback) return null
+  const base = (await listFiles(src.base)) ?? []
+  const byLower = new Map<string, Layered>()
+  for (const n of fallback) byLower.set(n.toLowerCase(), { name: n, path: join(src.fallback, n), fallbackPath: null, fromBase: false })
+  for (const n of base) {
+    const under = byLower.get(n.toLowerCase())
+    byLower.set(n.toLowerCase(), { name: n, path: join(src.base, n), fallbackPath: under?.path ?? null, fromBase: true })
   }
-  const target = resolve(outDir, name)
-  if (relative(resolve(outDir), target) !== name) throw new SkinBuildError(`refusing to write ${name}`)
+  const files = [...byLower.values()].sort((a, b) => a.name.localeCompare(b.name))
+  return {
+    files,
+    allowed: new Set([...byLower.keys(), MANIFEST_FILE]),
+    stampNames: [...base.map((n) => `base/${n}`), ...fallback.map((n) => `fallback/${n}`)]
+  }
+}
+
+function writeOut(run: BuildRun, name: string, data: Uint8Array | string): Promise<void> {
+  if (!run.plan.allowed.has(name.toLowerCase()) || basename(name) !== name) throw new SkinBuildError(`refusing to write ${name}`)
+  const target = resolve(run.outDir, name)
+  if (relative(resolve(run.outDir), target) !== name) throw new SkinBuildError(`refusing to write ${name}`)
+  run.outputs.push(name)
   return typeof data === 'string' ? writeFile(target, data, 'latin1') : writeFile(target, data)
 }
 
-interface SourceSet {
-  /** lower-cased name -> on-disk name */
-  byLower: Map<string, string>
-  xml: string[]
-  textures: { name: string; mode: 'whole' | 'regions' }[]
+interface BuildRun {
+  outDir: string
+  plan: Plan
+  frames: AnimFrame[]
+  outputs: string[]
+  counts: { drawn: number; xml: number; inherited: number }
 }
 
-function planSources(entries: string[]): SourceSet {
-  const byLower = new Map(entries.map((e) => [e.toLowerCase(), e]))
-  const textures: SourceSet['textures'] = []
-  for (const t of WHOLE_TEXTURES) {
-    const name = byLower.get(t.toLowerCase())
-    if (name) textures.push({ name, mode: 'whole' })
+async function sameBytes(a: string, b: string | null): Promise<boolean> {
+  if (!b) return false
+  const [sa, sb] = await Promise.all([stat(a), stat(b)])
+  if (sa.size !== sb.size) return false
+  const [ba, bb] = await Promise.all([readFile(a), readFile(b)])
+  return ba.equals(bb)
+}
+
+/** Draws, repaints or retunes one file; returns false when the file is not one the skin redraws. */
+async function transform(run: BuildRun, f: Layered): Promise<boolean> {
+  if (isChromeAtlas(f.name) || isWholeTexture(f.name)) {
+    const img = readImage(f.name, await readFile(f.path))
+    if (!img) return false
+    const rgba = isWholeTexture(f.name) ? drawBackground(img, f.name) : drawAtlas(img, run.frames, f.name).rgba
+    await writeOut(run, f.name, img.encode(rgba))
+    run.counts.drawn++
+    return true
   }
-  for (const t of REGION_TEXTURES) {
-    const name = byLower.get(t.toLowerCase())
-    if (name) textures.push({ name, mode: 'regions' })
+  if (isXmlSource(f.name)) {
+    const { text, changed } = rewriteXmlColors(await readFile(f.path, 'latin1'))
+    if (changed === 0) return false
+    await writeOut(run, f.name, text)
+    run.counts.xml++
+    return true
   }
-  return { byLower, xml: entries.filter(isXmlSource).sort(), textures }
+  return false
 }
 
-/** Chrome rectangles minus art rectangles, for one atlas. */
-function regionMask(frames: readonly AnimFrame[], texture: string, w: number, h: number): Uint8Array {
-  const mask = new Uint8Array(w * h)
-  const mine = frames.filter((f) => f.texture === texture.toLowerCase())
-  for (const f of mine) if (!ART_PIECES.test(f.name)) paintRect(mask, w, f, 1)
-  for (const f of mine) if (ART_PIECES.test(f.name)) paintRect(mask, w, f, 0)
-  return mask
+async function processFile(run: BuildRun, f: Layered): Promise<void> {
+  if (await transform(run, f)) return
+  // Inherit the base skin's own version of a file the client would otherwise take from default.
+  if (!f.fromBase || (await sameBytes(f.path, f.fallbackPath))) return
+  await writeOut(run, f.name, await readFile(f.path))
+  run.counts.inherited++
 }
 
-/** The recoloured texture, or null when it is not a TGA this codec reads or nothing changed. */
-export function recolorTexture(buf: Uint8Array, mode: 'whole' | 'regions', frames: readonly AnimFrame[], name: string): Uint8Array | null {
-  let img
-  try {
-    img = decodeTga(buf)
-  } catch (e) {
-    if (e instanceof TgaError) return null
-    throw e
-  }
-  const mask = mode === 'whole' ? null : regionMask(frames, name, img.width, img.height)
-  const rgba = new Uint8Array(img.rgba)
-  if (recolorRgba(rgba, mask) === 0) return null
-  return encodeTga({ ...img, rgba })
+async function readFrames(plan: Plan): Promise<AnimFrame[]> {
+  const frames: AnimFrame[] = []
+  for (const f of plan.files) if (/^EQUI.*\.xml$/i.test(f.name)) frames.push(...parseAnimationFrames(await readFile(f.path, 'latin1')))
+  return frames
 }
 
-async function stampAll(dir: string, names: readonly string[]): Promise<Record<string, SourceStamp>> {
+async function stampAll(src: SkinSources, names: readonly string[]): Promise<Record<string, SourceStamp>> {
   const out: Record<string, SourceStamp> = {}
-  for (const n of names) {
-    const s = await stat(join(dir, n))
-    out[n] = { size: s.size, mtimeMs: Math.round(s.mtimeMs) }
+  for (const key of names) {
+    const [layer, ...rest] = key.split('/')
+    const s = await stat(join(layer === 'base' ? src.base : src.fallback, rest.join('/')))
+    out[key] = { size: s.size, mtimeMs: Math.round(s.mtimeMs) }
   }
   return out
 }
 
-/** One build's running state: where it reads and writes, what it wrote, how far it got. */
-interface BuildRun {
-  sourceDir: string
-  outDir: string
-  outputs: string[]
-  done: number
-  tick: (phase: BuildProgress['phase']) => void
-}
-
-async function readXml(run: BuildRun, plan: SourceSet): Promise<{ texts: Map<string, string>; frames: AnimFrame[] }> {
-  const texts = new Map<string, string>()
-  const frames: AnimFrame[] = []
-  for (const x of plan.xml) {
-    const text = await readFile(join(run.sourceDir, x), 'latin1')
-    texts.set(x, text)
-    frames.push(...parseAnimationFrames(text))
-  }
-  return { texts, frames }
-}
-
-async function writeTextures(run: BuildRun, plan: SourceSet, frames: readonly AnimFrame[]): Promise<void> {
-  for (const t of plan.textures) {
-    const recoloured = recolorTexture(await readFile(join(run.sourceDir, t.name)), t.mode, frames, t.name)
-    if (recoloured) {
-      await writeOut(run.outDir, t.name, recoloured)
-      run.outputs.push(t.name)
-    }
-    run.done++
-    run.tick('textures')
-    await yieldTurn()
-  }
-}
-
-async function writeXml(run: BuildRun, texts: ReadonlyMap<string, string>): Promise<void> {
-  for (const [x, text] of texts) {
-    const { text: next, changed } = rewriteXmlColors(text)
-    if (changed > 0) {
-      await writeOut(run.outDir, x, next)
-      run.outputs.push(x)
-    }
-    run.done++
-    run.tick('xml')
-    if (run.done % 16 === 0) await yieldTurn()
-  }
-}
-
 /** A file the previous build wrote and this one did not (a rule changed) must not linger. */
 async function prune(run: BuildRun, previous: SkinManifest | null): Promise<void> {
+  const now = new Set(run.outputs.map((o) => o.toLowerCase()))
   for (const old of previous?.outputs ?? []) {
-    if (!run.outputs.includes(old) && isAllowedOutput(old) && basename(old) === old) {
+    if (!now.has(old.toLowerCase()) && run.plan.allowed.has(old.toLowerCase()) && basename(old) === old) {
       await rm(join(run.outDir, old), { force: true })
     }
   }
 }
 
 export async function buildSkin(
-  sourceDir: string,
+  src: SkinSources,
   outDir: string,
   onProgress?: (p: BuildProgress) => void
 ): Promise<BuildResult> {
-  const entries = await listDir(sourceDir)
-  if (!entries) throw new SkinBuildError('the default skin folder was not found')
-  const previous = await checkOutDir(sourceDir, outDir)
-  const plan = planSources(entries)
-  const total = plan.xml.length + plan.textures.length
-  const run: BuildRun = { sourceDir, outDir, outputs: [], done: 0, tick: () => undefined }
-  run.tick = (phase) => onProgress?.({ phase, done: run.done, total })
-  run.tick('reading')
-
-  const { texts, frames } = await readXml(run, plan)
+  const plan = await planSources(src)
+  if (!plan) throw new SkinBuildError('the default skin folder was not found')
+  const previous = await checkOutDir(src, outDir)
+  const total = plan.files.length
+  onProgress?.({ phase: 'reading', done: 0, total })
+  const counts = { drawn: 0, xml: 0, inherited: 0 }
+  const run: BuildRun = { outDir, plan, frames: await readFrames(plan), outputs: [], counts }
   await mkdir(outDir, { recursive: true })
-  await writeTextures(run, plan, frames)
-  const textureCount = run.outputs.length
-  await writeXml(run, texts)
+  for (let i = 0; i < plan.files.length; i++) {
+    await processFile(run, plan.files[i])
+    if (i % 16 === 15) {
+      onProgress?.({ phase: 'writing', done: i + 1, total })
+      await yieldTurn()
+    }
+  }
   await prune(run, previous)
+  const outputs = [...run.outputs]
   const manifest: SkinManifest = {
     generator: 'EQ Zera',
     rulesVersion: RULES_VERSION,
     builtAt: new Date().toISOString(),
-    sources: await stampAll(sourceDir, [...plan.xml, ...plan.textures.map((t) => t.name)]),
-    outputs: run.outputs
+    sources: await stampAll(src, plan.stampNames),
+    outputs
   }
-  await writeOut(outDir, MANIFEST_FILE, JSON.stringify(manifest, null, 2))
-  run.tick('done')
-  return { textures: textureCount, xml: run.outputs.length - textureCount, outputs: run.outputs }
-}
-
-/** Is the skin there, ours, and built from the default skin as it is on disk right now? */
-export async function skinStatus(sourceDir: string, outDir: string): Promise<SkinStatus> {
-  const entries = await listDir(sourceDir)
-  if (!entries) return { state: 'noSource' }
-  const manifest = await readManifest(outDir)
-  if (!manifest) {
-    const out = await listDir(outDir)
-    return { state: (out?.length ?? 0) > 0 ? 'foreign' : 'missing' }
-  }
-  const base = { builtAt: manifest.builtAt, fileCount: manifest.outputs.length }
-  const fresh = manifest.rulesVersion === RULES_VERSION && (await sourcesUnchanged(sourceDir, entries, manifest))
-  return { state: fresh ? 'current' : 'stale', ...base }
+  await writeOut(run, MANIFEST_FILE, JSON.stringify(manifest, null, 2))
+  onProgress?.({ phase: 'done', done: total, total })
+  return { ...counts, outputs }
 }
 
 /** Every file the build read is still there with the same size and mtime, and no new one appeared. */
-async function sourcesUnchanged(sourceDir: string, entries: string[], manifest: SkinManifest): Promise<boolean> {
-  const plan = planSources(entries)
-  const names = [...plan.xml, ...plan.textures.map((t) => t.name)]
-  if (names.length !== Object.keys(manifest.sources).length) return false
-  for (const n of names) {
-    const was = manifest.sources[n]
-    const s = await stat(join(sourceDir, n)).catch(() => null)
+async function sourcesUnchanged(src: SkinSources, plan: Plan, manifest: SkinManifest): Promise<boolean> {
+  if (plan.stampNames.length !== Object.keys(manifest.sources).length) return false
+  for (const key of plan.stampNames) {
+    const was = manifest.sources[key]
+    const [layer, ...rest] = key.split('/')
+    const s = await stat(join(layer === 'base' ? src.base : src.fallback, rest.join('/'))).catch(() => null)
     if (!was || s?.size !== was.size || Math.round(s.mtimeMs) !== was.mtimeMs) return false
   }
   return true
+}
+
+/** Is the skin there, ours, and built from the skins as they are on disk right now? */
+export async function skinStatus(src: SkinSources, outDir: string): Promise<SkinStatus> {
+  const plan = await planSources(src)
+  if (!plan) return { state: 'noSource' }
+  const manifest = await readManifest(outDir)
+  if (!manifest) return { state: ((await listFiles(outDir))?.length ?? 0) > 0 ? 'foreign' : 'missing' }
+  const base = { builtAt: manifest.builtAt, fileCount: manifest.outputs.length }
+  const fresh = manifest.rulesVersion === RULES_VERSION && (await sourcesUnchanged(src, plan, manifest))
+  return { state: fresh ? 'current' : 'stale', ...base }
 }
 
 /** Deletes the skin folder, and only a folder carrying EQ Zera's manifest. */
