@@ -24,14 +24,19 @@ export function luclinFile(code: string): string {
  * animated Luclin rigs, and tests/eqAssetsLuclin.test.mts re-ranks it and fails if this table
  * drifts: the Erudite male on the human male (tied with BAM and GNM on every rung), every other
  * male on the wood elf male, every female on the wood elf female.
+ *
+ * A LIST, tried in order: the human of the same sex is the second lender. Each lent clip must also
+ * pass wldPose.ts `standsIdle` on the borrower's own rig (arms down, upright) to be used at all,
+ * which every first lender does today (DAF on ELF: arms 13 / 11 degrees off down); if none passed,
+ * the figure would stand in its bind pose rather than in a broken one.
  */
-export const LUCLIN_LENDER: Readonly<Record<string, string>> = {
-  ERM: 'HUM',
-  ERF: 'ELF',
-  HIM: 'ELM',
-  HIF: 'ELF',
-  DAM: 'ELM',
-  DAF: 'ELF',
-  HAM: 'ELM',
-  HAF: 'ELF'
+export const LUCLIN_LENDER: Readonly<Record<string, readonly string[]>> = {
+  ERM: ['HUM', 'ELM'],
+  ERF: ['ELF', 'HUF'],
+  HIM: ['ELM', 'HUM'],
+  HIF: ['ELF', 'HUF'],
+  DAM: ['ELM', 'HUM'],
+  DAF: ['ELF', 'HUF'],
+  HAM: ['ELM', 'HUM'],
+  HAF: ['ELF', 'HUF']
 }

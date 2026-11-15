@@ -15,7 +15,7 @@ import { type JSX, useEffect, useRef, useState } from 'react'
 import * as THREE from 'three'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 import { PALETTE } from '../../../../shared/palette'
-import type { EqModelClip, EqModelHands, EqModelMaterial, EqModelMesh, EqModelPayload, EqModelWear, Tint } from '@shared/eqModel'
+import type { EqModelClip, EqModelHands, EqModelMaterial, EqModelMesh, EqModelPayload, EqModelWeapon, EqModelWear, Tint } from '@shared/eqModel'
 
 /** A texture from a data URL, in the game's pixel look: nearest magnification, sRGB, repeating. */
 function loadTexture(loader: THREE.TextureLoader, url: string): THREE.Texture {
@@ -215,6 +215,15 @@ function attachBone(skeleton: THREE.Skeleton, actor: string, attach: string): TH
   return skeleton.bones.find((b) => b.name === exact) ?? skeleton.bones.find((b) => b.name.endsWith(`${attach}_DAG`))
 }
 
+/** Where a held item hangs: the bone itself, or a child turned by the Luclin grip correction (shared/eqModel.ts `grip`). */
+function gripMount(bone: THREE.Bone, grip: EqModelWeapon['grip']): THREE.Object3D {
+  if (!grip) return bone
+  const mount = new THREE.Group()
+  mount.quaternion.set(grip[0], grip[1], grip[2], grip[3])
+  bone.add(mount)
+  return mount
+}
+
 /** Build the figure: skinned body meshes on one skeleton, weapons on their bones, the idle playing. */
 function buildFigure(model: EqModelPayload): Built {
   const built: Built = { group: new THREE.Group(), geometries: [], materials: [], textures: [], mixer: null, flipbooks: [], turning: [] }
@@ -240,8 +249,9 @@ function buildFigure(model: EqModelPayload): Built {
   built.group.updateMatrixWorld(true)
   for (const mesh of skinned) mesh.bind(skeleton)
   for (const w of model.weapons) {
-    const bone = attachBone(skeleton, model.actor, w.attach)
-    if (!bone) continue
+    const found = attachBone(skeleton, model.actor, w.attach)
+    if (!found) continue
+    const bone = gripMount(found, w.grip)
     const { geo, mats } = buildGeometry(w.mesh, mc)
     const held = new THREE.Mesh(geo, mats)
     if (!w.mesh.rigged) {

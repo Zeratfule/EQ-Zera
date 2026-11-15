@@ -42,11 +42,12 @@ import {
 } from '../../shared/eqModel'
 import { effectiveEqRoot } from '../log/config'
 import { readPfs, type PfsArchive } from '../eqassets/pfs'
-import { RACE_CODES, SKIN_FACE_MAX, facesFor, readCharacter, readWld, type CharacterModel, type Skeleton, type WldFile } from '../eqassets/wld'
+import { RACE_CODES, SKIN_FACE_MAX, facesFor, readCharacter, readWld, skeletonOf, type CharacterModel, type Skeleton, type WldFile } from '../eqassets/wld'
 import { readItem } from '../eqassets/wldItem'
 import { LUCLIN_LENDER, LUCLIN_RACES, luclinFile } from '../eqassets/luclin'
 import { ddsToBmp, isDds } from '../eqassets/dds'
-import { readAnimation, readAnimationOrLent } from '../eqassets/wldAnim'
+import { readAnimation, readAnimationOrLent, type AnimLender } from '../eqassets/wldAnim'
+import { gripCorrection, luclinIdle, type PosedRig } from '../eqassets/wldPose'
 import { logError } from '../errorLog'
 
 /**
@@ -73,9 +74,16 @@ const LENDER: Record<string, string> = { HDF: 'HDM', HDM: 'HDF', KEF: 'KEM', KEM
  * as they are - one mesh with the head built in, two eyeball meshes, the skin scheme
  * (`<code><part>sk<F><P>.dds`) for the bare body and the face, and armour as
  * `<code><part>0<V>0<P>.dds`, which is the classic variant digit, so the existing wear maps onto
- * it. The archive guard (`has`) is what keeps that honest: Luclin chests ship no plate texture on
- * 25 of the 26 actors (BAF alone has `ch03`), and a part with no texture for its variant stays the
- * bare skin rather than borrowing a wrong one.
+ * it. Luclin chests ship no plate texture on 25 of the 26 actors (BAF alone has `ch03`), so a part
+ * with no texture for its variant steps down to the closest armour the actor has (plate, chain,
+ * leather; wldDress.ts `armourFor`) and is bare skin only when it has none. The idle is CHOSEN to
+ * stand (wldPose.ts `luclinIdle`), and held items are turned to sit as the classic figure holds
+ * them (`gripLikeClassic`).
+ *
+ * HELMS AND ROBES, searched for (2026-11-15), including the owner's retail install read-only:
+ * no file in either install maps the lgequip_amr helm items (IT5000 up) to a race and material.
+ * Resources/NewArmorTagData.txt (both installs) maps only the later attached armour sets (IDs
+ * 2000+, IT14100+), and retail's extra global17..23_amr.s3d carry material sets 17-23, not plate.
  *
  * WHAT IS NOT DRAWN: the helm. A Luclin head is part of the body mesh and has no `HE01..03` helm
  * meshes; the game draws Luclin helms as item models (lgequip_amr*.s3d, `IT5000` up in blocks of
@@ -177,14 +185,44 @@ const FACE_MAX = SKIN_FACE_MAX
  */
 function idleClip(wld: WldFile, code: string, skeleton: Skeleton, luclin = false): EqModelClip | null {
   try {
-    const lendCode = luclin ? LUCLIN_LENDER[code] : LENDER[code]
-    const lendWld = lendCode !== undefined ? (luclin ? luclinArchive(lendCode) : raceArchive(lendCode))?.wld : undefined
+    if (luclin) return luclinIdle({ wld, code, skeleton }, luclinLenders(code))
+    const lendCode = LENDER[code]
+    const lendWld = lendCode !== undefined ? raceArchive(lendCode)?.wld : undefined
     if (lendWld && lendCode) return readAnimationOrLent({ wld, code, skeleton }, IDLE, { wld: lendWld, code: lendCode })
     return readAnimation(wld, code, skeleton, IDLE)
   } catch (err) {
     logError('main:eqModel', { message: 'no idle for ' + code, err })
     return null
   }
+}
+
+/**
+ * Turn each held item on a Luclin figure so it sits in the hand as the classic figure of the same
+ * actor holds it (wldPose.ts `gripCorrection`). No classic twin, no correction: the item hangs as is.
+ */
+function gripLikeClassic(code: string, luclin: PosedRig, weapons: EqModelWeapon[]): void {
+  try {
+    const classic = raceArchive(code)
+    const skeleton = classic ? skeletonOf(classic.wld, code) : null
+    if (!classic || !skeleton) return
+    const rig: PosedRig = { skeleton, code, clip: idleClip(classic.wld, code, skeleton) }
+    for (const w of weapons) {
+      const grip = gripCorrection(luclin, rig, w.attach)
+      if (grip) w.grip = grip
+    }
+  } catch (err) {
+    logError('main:eqModel', { message: 'no grip for ' + code, err })
+  }
+}
+
+/** The Luclin archives that may lend `code` an idle, in order, skipping any this install lacks. */
+function luclinLenders(code: string): AnimLender[] {
+  const out: AnimLender[] = []
+  for (const lender of LUCLIN_LENDER[code] ?? []) {
+    const wld = luclinArchive(lender)?.wld
+    if (wld) out.push({ wld, code: lender })
+  }
+  return out
 }
 
 /** A bitmap as the renderer can show it: a BMP as is, a DDS decoded to one (the later item archives). */
@@ -284,6 +322,16 @@ function readActor(code: string, wear: EqModelWear, luclin: boolean): { races: L
   return races && model ? { races, model, luclin: false } : null
 }
 
+/** What each hand draws, primary then secondary, textures collected into `textures`. */
+function heldWeapons(held: EqModelHands, textures: Record<string, string>): EqModelWeapon[] {
+  const weapons: EqModelWeapon[] = []
+  const primary = weaponFor(held.primary, 'R_POINT', textures)
+  const secondary = weaponFor(held.secondary, 'L_POINT', textures)
+  if (primary) weapons.push(primary)
+  if (secondary) weapons.push(secondary)
+  return weapons
+}
+
 export function loadEqModel(code: unknown, wear?: unknown, hands?: unknown, luclin?: unknown): EqModelPayload | null {
   if (typeof code !== 'string' || !/^[A-Z]{3}$/.test(code)) return null
   const read = readActor(code, sanitizeWear(wear), luclin === true)
@@ -292,12 +340,8 @@ export function loadEqModel(code: unknown, wear?: unknown, hands?: unknown, lucl
   const textures: Record<string, string> = {}
   for (const mesh of model.meshes) collectTextures(races.pfs, mesh, textures)
   const idle = idleClip(races.wld, code, model.skeleton, read.luclin)
-  const held = sanitizeHands(hands)
-  const weapons: EqModelWeapon[] = []
-  const primary = weaponFor(held.primary, 'R_POINT', textures)
-  const secondary = weaponFor(held.secondary, 'L_POINT', textures)
-  if (primary) weapons.push(primary)
-  if (secondary) weapons.push(secondary)
+  const weapons = heldWeapons(sanitizeHands(hands), textures)
+  if (read.luclin && weapons.length > 0) gripLikeClassic(code, { skeleton: model.skeleton, code, clip: idle }, weapons)
   const out: EqModelPayload = { actor: model.actor, bones: model.bones, meshes: model.meshes, clips: idle ? [idle] : [], weapons, textures }
   const faces = facesFor(code, races.pfs.has)
   if (faces.length > 0) out.faces = faces

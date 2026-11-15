@@ -78,6 +78,11 @@ export type AttachPoint = 'R_POINT' | 'L_POINT' | 'SHIELD_POINT'
 export interface EqModelWeapon {
   attach: AttachPoint
   mesh: EqModelMesh
+  /**
+   * A rotation (quaternion xyzw) applied to the item on its bone: the Luclin rigs orient their
+   * attach points differently, so a Luclin figure's item is turned to sit as the classic one does.
+   */
+  grip?: [number, number, number, number]
 }
 
 /**
@@ -146,8 +151,8 @@ export interface EqModelPayload {
    */
   luclin?: boolean
   /**
-   * Worn parts drawn BARE because the archive has no texture for their variant (the Luclin plate
-   * chest, which 25 of the 26 Luclin actors lack). Absent when everything worn was drawn.
+   * Worn parts drawn BARE because the archive has no armour texture for them at or below their
+   * variant (a Luclin plate chest steps down to chain instead). Absent when everything worn was drawn.
    */
   undressed?: WearPart[]
 }

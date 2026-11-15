@@ -18,13 +18,22 @@ function texturePart(texture: string, code: string): { part: WearPart; index: st
   return sk && sk.part !== 'he' ? { part: sk.part as WearPart, index: `0${sk.piece}`, ext: 'dds' } : null
 }
 
-/** `bafch0001.bmp` → `bafch0301.bmp`: the armour texture a part's wear names, when the wear asks for one and the archive has it. */
+/**
+ * `bafch0001.bmp` → `bafch0301.bmp`: the armour texture a part's wear names, when the wear asks for
+ * one. THE CLOSEST REAL ARMOUR WHEN THAT ONE IS NOT THERE (owner, 2026-11-15): 25 of the 26 Luclin
+ * actors ship no plate chest, and drawing the bare skin under a breastplate put topless figures on
+ * the card. So the variant steps DOWN - plate, then chain, then leather - to the first the archive
+ * has for this piece, keeping the worn item's dye; the bare skin is left only when the archive has
+ * no armour texture for the piece at all.
+ */
 function armourFor(texture: string, code: string, outfit: Outfit): { at: NonNullable<ReturnType<typeof texturePart>>; dressed: string | null } | null {
   const at = texturePart(texture, code)
   if (!at) return null
-  const variant = outfit.wear[at.part] ?? 0
-  const dressed = `${code.toLowerCase()}${at.part}0${String(variant)}${at.index}.${at.ext}`
-  return { at, dressed: variant > 0 && outfit.has(dressed) ? dressed : null }
+  for (let v = outfit.wear[at.part] ?? 0; v > 0; v--) {
+    const dressed = `${code.toLowerCase()}${at.part}0${String(v)}${at.index}.${at.ext}`
+    if (outfit.has(dressed)) return { at, dressed }
+  }
+  return { at, dressed: null }
 }
 
 /** True when the wear asked this texture's part for armour the archive does not have. */
@@ -50,7 +59,7 @@ function dressedMaterial(mt: EqModelMaterial, code: string, outfit: Outfit): EqM
 
 /**
  * The worn parts the archive has NO texture for at their variant, in WEAR_PARTS order: drawn bare,
- * and named so the card can say so (a Luclin plate chest, which 25 of the 26 Luclin actors lack).
+ * and named so the card can say so (the classic Iksar female's legs, for one).
  */
 export function undressedParts(meshes: readonly EqModelMesh[], code: string, outfit: Outfit): WearPart[] {
   const out = new Set<WearPart>()

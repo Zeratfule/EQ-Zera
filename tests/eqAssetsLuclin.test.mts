@@ -8,7 +8,8 @@ import { existsSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { readPfs, type PfsArchive } from '../src/main/eqassets/pfs'
 import { facesFor, readCharacter, readWld, skeletonOf, type CharacterModel, type WldFile } from '../src/main/eqassets/wld'
-import { lenderRank, rankBeats, readAnimation, readAnimationOrLent } from '../src/main/eqassets/wldAnim'
+import { lenderRank, rankBeats, readAnimation } from '../src/main/eqassets/wldAnim'
+import { gripCorrection, luclinIdle, standsIdle } from '../src/main/eqassets/wldPose'
 import { LUCLIN_LENDER, LUCLIN_RACES, luclinFile } from '../src/main/eqassets/luclin'
 
 const EQ = 'C:/Users/Public/Daybreak Game Company/Installed Games/EverQuest Legends'
@@ -80,50 +81,62 @@ test('every Luclin actor offers eight faces, and a pick re-skins the head only w
   }
 })
 
-test('every Luclin actor stands in an idle: its own P01, or a lent one where the archive carries none', { skip: SKIP }, () => {
+test('every Luclin actor stands in an idle that STANDS: arms down, thighs under it, spine upright, own or borrowed', { skip: SKIP }, () => {
+  const chosen: string[] = []
   for (const code of ACTORS) {
     const { pfs, wld } = luclin(code)
     const m = readCharacter(wld, code, { wear: {}, has: pfs.has })!
-    const lender = LUCLIN_LENDER[code]
-    const own = readAnimation(wld, code, m.skeleton, 'P01')
-    if (lender === undefined) {
-      assert.ok(own, `${code}: carries its own idle`)
-      assert.equal(own.name, 'P01')
-      assert.equal(own.frames, 21, `${code}: the Luclin idle is 21 frames`)
-      assert.ok(Object.keys(own.tracks).length >= m.bones.length * 0.9, `${code}: a track for (nearly) every bone`)
-      continue
-    }
-    assert.equal(own, null, `${code}: the archive ships no animation (luclindefaults.txt says 0)`)
-    const lent = readAnimationOrLent({ wld, code, skeleton: m.skeleton }, 'P01', { wld: luclin(lender).wld, code: lender })
-    assert.ok(lent && lent.name === 'P01*', `${code}: ${lender} lends its idle, marked borrowed`)
-    assert.ok(Object.keys(lent.tracks).length >= m.bones.length * 0.9, `${code}: the lent idle covers the rig`)
-    for (const track of Object.values(lent.tracks)) assert.equal(track.t.length / 3, track.q.length / 4, 'rotations with the target’s own bind offsets')
+    const lenders = (LUCLIN_LENDER[code] ?? []).map((l) => ({ wld: luclin(l).wld, code: l }))
+    if (lenders.length > 0) assert.equal(readAnimation(wld, code, m.skeleton, 'P01'), null, `${code}: the archive ships no animation (luclindefaults.txt says 0)`)
+    const idle = luclinIdle({ wld, code, skeleton: m.skeleton }, lenders)
+    assert.ok(idle, `${code}: some candidate clip stands`)
+    assert.ok(standsIdle(m.skeleton, code, idle), `${code}: and it passes the arms-down / upright check on every frame`)
+    assert.equal(idle.name.endsWith('*'), lenders.length > 0, `${code}: borrowed exactly when the archive has no clips of its own`)
+    assert.ok(Object.keys(idle.tracks).length >= m.bones.length * 0.9, `${code}: a track for (nearly) every bone`)
+    for (const track of Object.values(idle.tracks)) assert.equal(track.t.length / 3, track.q.length / 4)
+    chosen.push(`${code}:${idle.name}`)
   }
+  // The measured choices: P01 stands for most; the Iksar (crouch, one arm out) and BAF (one arm out) take a clean stand.
+  for (const pick of ['IKF:P08A', 'IKM:P08A', 'BAF:P01B', 'HUM:P01A', 'DAF:P01A*', 'ERM:P01A*']) assert.ok(chosen.includes(pick), `${pick} (got ${chosen.join(' ')})`)
 })
 
-test('the Luclin lender table is what the donor ranking picks, not a hand-written guess', { skip: SKIP }, () => {
+test('the Iksar female’s P01 is the crouch the owner saw, which is why it is not her idle', { skip: SKIP }, () => {
+  const { wld } = luclin('IKF')
+  const sk = skeletonOf(wld, 'IKF')!
+  assert.equal(standsIdle(sk, 'IKF', readAnimation(wld, 'IKF', sk, 'P01A')!), false)
+  assert.equal(standsIdle(sk, 'IKF', readAnimation(wld, 'IKF', sk, 'P01B')!), false)
+})
+
+test('the Luclin lender table leads with what the donor ranking picks, not a hand-written guess', { skip: SKIP }, () => {
   const animated = ACTORS.filter((c) => LUCLIN_LENDER[c] === undefined)
-  for (const [code, lender] of Object.entries(LUCLIN_LENDER)) {
+  for (const [code, lenders] of Object.entries(LUCLIN_LENDER)) {
+    const lender = lenders[0]
     const target = skeletonOf(luclin(code).wld, code)!
-    const chosen = lenderRank(target, code, skeletonOf(luclin(lender).wld, lender)!, lender)
-    assert.ok(chosen, `${code}: ${lender} can lend at all`)
+    const first = lenderRank(target, code, skeletonOf(luclin(lender).wld, lender)!, lender)
+    assert.ok(first, `${code}: ${lender} can lend at all`)
     for (const other of animated) {
       const rank = lenderRank(target, code, skeletonOf(luclin(other).wld, other)!, other)
-      assert.ok(!rank || !rankBeats(rank, chosen), `${code}: ${other} outranks the table's ${lender}`)
+      assert.ok(!rank || !rankBeats(rank, first), `${code}: ${other} outranks the table's ${lender}`)
     }
+    assert.ok(lenders.every((l) => l.slice(2) === code.slice(2)), `${code}: every lender is the same sex`)
   }
 })
 
-/** One drawn texture of a worn part: the worn variant, or the bare skin only where the archive has no such piece. */
+/** One drawn texture of a worn part: the worn variant or the closest lower one the archive has, or the bare skin only where it has none. */
 function checkWorn(pfs: PfsArchive, code: string, [part, v]: readonly [string, number], t: string): void {
   const lc = code.toLowerCase()
-  const armour = new RegExp(`^${lc}${part}0${String(v)}\\d\\d\\.dds$`).test(t)
-  const bare = new RegExp(`^${lc}${part}sk\\d+\\.dds$`).test(t)
-  assert.ok(armour || bare, `${code}: ${t} is the worn variant or the bare skin, never another variant`)
-  if (bare) assert.ok(!pfs.has(t.replace(/sk0(\d)\.dds$/, `0${String(v)}0$1.dds`)), `${code}: ${t} is bare only because the archive has no ${part} variant ${String(v)} piece`)
+  const got = new RegExp(`^${lc}${part}0(\\d)(\\d\\d)\\.dds$`).exec(t)
+  const bare = new RegExp(`^${lc}${part}sk0(\\d)\\.dds$`).exec(t)
+  assert.ok(got || bare, `${code}: ${t} is armour or the bare skin`)
+  if (got) {
+    const drawnV = Number(got[1])
+    assert.ok(drawnV >= 1 && drawnV <= v, `${code}: ${t} is the worn variant or a lower one`)
+    for (let higher = drawnV + 1; higher <= v; higher++) assert.ok(!pfs.has(`${lc}${part}0${String(higher)}${got[2]}.dds`), `${code}: ${t} stepped down only past variants the archive lacks`)
+  }
+  if (bare) for (let k = 1; k <= v; k++) assert.ok(!pfs.has(`${lc}${part}0${String(k)}0${bare[1]}.dds`), `${code}: ${t} is bare only because no armour of variant 1..${String(v)} exists for it`)
 }
 
-test('Luclin wear: the classic variant digit maps onto the Luclin armour files, and a part with no file stays bare', { skip: SKIP }, () => {
+test('Luclin wear: the variant digit maps onto the Luclin armour files, stepping down to the closest armour the actor has', { skip: SKIP }, () => {
   for (const code of ACTORS) {
     const { pfs, wld } = luclin(code)
     const lc = code.toLowerCase()
@@ -135,15 +148,44 @@ test('Luclin wear: the classic variant digit maps onto the Luclin armour files, 
       for (const t of mine) checkWorn(pfs, code, [part, v], t)
     }
     const expectBare = (['ch', 'lg', 'ua', 'fa', 'hn', 'ft'] as const).filter((p) => textures.some((t) => new RegExp(`^${lc}${p}sk\\d+\\.dds$`).test(t)))
-    assert.deepEqual(dressed.undressed ?? [], expectBare, `${code}: the parts left bare are named for the card's note`)
+    assert.deepEqual(dressed.undressed ?? [], expectBare, `${code}: only the parts genuinely left bare are named for the card's note`)
+    const chest = dressed.meshes.flatMap((m) => m.groups.map((g) => m.materials[g.materialIndex])).filter((mt) => mt?.texture?.startsWith(`${lc}ch`))
+    assert.ok(chest.length > 0 && chest.every((mt) => !mt.texture!.startsWith(`${lc}chsk`)), `${code}: no bare skin under a breastplate`)
+    assert.ok(chest.every((mt) => mt.tint?.[1] === 1), `${code}: the stepped-down chest keeps the plate's dye`)
     const legs = dressed.meshes.flatMap((m) => m.materials).filter((mt) => mt.texture?.startsWith(`${lc}lg02`))
     assert.ok(legs.length > 0 && legs.every((mt) => mt.tint?.[0] === 1), `${code}: chain legs are drawn, and take the dye`)
-    const bareChest = dressed.meshes.flatMap((m) => m.materials).filter((mt) => mt.texture?.startsWith(`${lc}chsk`))
-    assert.ok(bareChest.every((mt) => mt.tint === undefined), `${code}: a chest left bare for want of a plate texture does not wear the plate's dye`)
   }
-  // Plate chests: twenty-five of the twenty-six actors ship none, so the chest stays the bare skin.
+  // Every Luclin actor in every armour variant: the chest is never bare skin.
+  for (const code of ACTORS) {
+    const { pfs, wld } = luclin(code)
+    for (const v of [1, 2, 3] as const) {
+      const m = readCharacter(wld, code, { wear: { ch: v }, has: pfs.has })!
+      assert.ok(!drawn(m).some((t) => t.startsWith(`${code.toLowerCase()}chsk`)), `${code}: chest variant ${String(v)} is never drawn as bare skin`)
+    }
+  }
   const plateChests = ACTORS.filter((c) => luclin(c).pfs.has(`${c.toLowerCase()}ch0301.dds`))
-  assert.deepEqual(plateChests, ['BAF'], 'only the Barbarian female ships a Luclin plate chest')
+  assert.deepEqual(plateChests, ['BAF'], 'only the Barbarian female ships a Luclin plate chest; the rest step down to chain')
+})
+
+test('every Luclin figure gets a grip that holds the weapon as its classic twin does', { skip: SKIP }, () => {
+  const classicOf = (file: string): WldFile => {
+    const pfs = readPfs(readFileSync(join(EQ, file)))
+    return readWld(pfs.read(pfs.entries.find((e) => e.name.endsWith('.wld'))!.name)!)
+  }
+  const classic = classicOf('global_chr.s3d')
+  const iksar = classicOf('global4_chr.s3d')
+  for (const code of ACTORS) {
+    const { wld } = luclin(code)
+    const sk = skeletonOf(wld, code)!
+    const idle = luclinIdle({ wld, code, skeleton: sk }, (LUCLIN_LENDER[code] ?? []).map((l) => ({ wld: luclin(l).wld, code: l })))
+    const cw = code.startsWith('IK') ? iksar : classic
+    const csk = skeletonOf(cw, code)!
+    for (const attach of ['R_POINT', 'L_POINT']) {
+      const grip = gripCorrection({ skeleton: sk, code, clip: idle }, { skeleton: csk, code, clip: readAnimation(cw, code, csk, 'P01') }, attach)
+      assert.ok(grip, `${code}: a ${attach} grip`)
+      assert.ok(Math.abs(Math.hypot(...grip) - 1) < 1e-6, `${code}: the ${attach} grip is a unit rotation`)
+    }
+  }
 })
 
 test('a helm asks for a Luclin head mesh that does not exist, so the head stays the body mesh’s own', { skip: SKIP }, () => {

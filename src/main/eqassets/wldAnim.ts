@@ -195,8 +195,9 @@ function trackName(naming: TrackNaming, anim: string, code: string, short: strin
 /** Which naming this WLD uses for `anim` on `code`, or null when it carries the clip under neither. */
 function namingOf(wld: WldFile, code: string, anim: string): TrackNaming | null {
   if (wld.byName.has(`${anim}${code}_TRACKDEF`) || wld.byName.has(`${anim}${code}PE_TRACKDEF`)) return { scheme: 'classic' }
-  for (const v of LUCLIN_VARIANTS) {
-    const prefix = `${anim}${v}`
+  // A four-letter ask (`P01B`) names one Luclin variant exactly; a three-letter one takes A, then B.
+  const prefixes = anim.length === 4 ? [anim] : LUCLIN_VARIANTS.map((v) => `${anim}${v}`)
+  for (const prefix of prefixes) {
     if (wld.byName.has(`${prefix}${code}${prefix}_${code}_TRACKDEF`) || wld.byName.has(`${prefix}${code}PEBIP01_TRACKDEF`)) return { scheme: 'luclin', prefix }
   }
   return null
