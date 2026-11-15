@@ -146,17 +146,23 @@ export interface AnimLender {
   code: string
 }
 
-/** Every frame of a 0x12 track, flattened. */
-function readTrack(body: Buffer): EqModelTrack {
+/**
+ * Every frame of a 0x12 track, flattened. A scaled read (Luclin) ALWAYS carries the per-frame
+ * scale, 1s included: a frame at 1 on a bone whose bind scale is not 1 is a real change the
+ * renderer must play, and leaving `s` off would hold the bind scale instead.
+ */
+function readTrack(body: Buffer, scaled: boolean): EqModelTrack {
   const frames = body.readUInt32LE(8)
   const t: number[] = []
   const q: number[] = []
+  const s: number[] = []
   for (let f = 0; f < frames; f++) {
-    const x = trackFrameAt(body, TRACK_FRAMES_AT + f * TRACK_FRAME_BYTES)
+    const x = trackFrameAt(body, TRACK_FRAMES_AT + f * TRACK_FRAME_BYTES, scaled)
     t.push(...x.t)
     q.push(...x.q)
+    s.push(x.s ?? 1)
   }
-  return { t, q }
+  return scaled ? { t, q, s } : { t, q }
 }
 
 /** The frame delay a 0x13 reference states, when it states one. */
@@ -166,9 +172,53 @@ function frameMsOf(wld: WldFile, name: string): number | null {
   return ref.body.readUInt32LE(8) & 1 ? ref.body.readUInt32LE(12) : null
 }
 
-/** Does this WLD carry `anim` for `code` (body track or the PE root track)? */
+/**
+ * THE LUCLIN NAMING (2026-11-15). The per-actor Luclin archives (global<code>_chr.s3d) name a clip's
+ * tracks `<ANIM><V><CODE><BONE>_TRACKDEF` - one more letter than the classic scheme, `V` the
+ * clip's variant (`P01A`, `P01B`) - and the ROOT track is `<ANIM><V><CODE><ANIM><V>_<CODE>_TRACKDEF`
+ * (`P01AIKMP01A_IKM_TRACKDEF`) rather than the classic `P01BAF_TRACKDEF`. Measured on all 26
+ * classic-race actors: every animated one carries both P01A and P01B, 21 frames at 100 ms, one
+ * track per bone; the idle read here is the `A` variant, `B` when an archive ever lacks it.
+ */
+const LUCLIN_VARIANTS = ['A', 'B'] as const
+
+/** How a clip's tracks are named in one WLD: the classic scheme, or Luclin's with its variant letter. */
+type TrackNaming = { scheme: 'classic' } | { scheme: 'luclin'; prefix: string }
+
+/** The 0x12 name a bone's track carries under `naming` (`short` '' is the root). */
+function trackName(naming: TrackNaming, anim: string, code: string, short: string): string {
+  if (naming.scheme === 'classic') return `${anim}${code}${short}_TRACKDEF`
+  const p = naming.prefix
+  return short === '' ? `${p}${code}${p}_${code}_TRACKDEF` : `${p}${code}${short}_TRACKDEF`
+}
+
+/** Which naming this WLD uses for `anim` on `code`, or null when it carries the clip under neither. */
+function namingOf(wld: WldFile, code: string, anim: string): TrackNaming | null {
+  if (wld.byName.has(`${anim}${code}_TRACKDEF`) || wld.byName.has(`${anim}${code}PE_TRACKDEF`)) return { scheme: 'classic' }
+  for (const v of LUCLIN_VARIANTS) {
+    const prefix = `${anim}${v}`
+    if (wld.byName.has(`${prefix}${code}${prefix}_${code}_TRACKDEF`) || wld.byName.has(`${prefix}${code}PEBIP01_TRACKDEF`)) return { scheme: 'luclin', prefix }
+  }
+  return null
+}
+
+/** Does this WLD carry `anim` for `code`, under either naming? */
 function hasClip(wld: WldFile, code: string, anim: string): boolean {
-  return wld.byName.has(`${anim}${code}_TRACKDEF`) || wld.byName.has(`${anim}${code}PE_TRACKDEF`)
+  return namingOf(wld, code, anim) !== null
+}
+
+/**
+ * HOW GOOD `donor` IS AT LENDING ITS CLIPS TO `target`, on the same ranking `bestDonor` uses inside
+ * one archive (see the header). Exported so the Luclin lender table in ipc/eqModel.ts is pinned
+ * against the ranking by a test rather than by hand; null when the donor covers too little.
+ */
+export function lenderRank(target: Skeleton, code: string, donor: Skeleton, actor: string): number[] | null {
+  return donorRank(target, code, donor, actor)
+}
+
+/** True when rank `a` beats rank `b` (tuples compared left to right). */
+export function rankBeats(a: readonly number[], b: readonly number[]): boolean {
+  return outranks(a, b)
 }
 
 /**
@@ -194,19 +244,24 @@ export function readAnimationOrLent(target: AnimLender & { skeleton: Skeleton },
 /** Read `anim` as `source.code` plays it in `source.wld`, onto `code`'s skeleton. */
 function clipFrom(source: AnimLender, code: string, skeleton: Skeleton, anim: string): EqModelClip | null {
   const { wld } = source
+  const naming = namingOf(wld, source.code, anim)
+  if (naming === null) return null
   const borrowed = source.code !== code
   const tracks: Record<number, EqModelTrack> = {}
   let frames = 1
   let frameMs: number | null = null
   skeleton.bones.forEach((bone, i) => {
     const short = boneShortName(bone.name, code)
-    const def = wld.byName.get(`${anim}${source.code}${short}_TRACKDEF`)
+    const name = trackName(naming, anim, source.code, short)
+    const def = wld.byName.get(name)
     if (def?.type !== 0x12) return
-    const track = readTrack(def.body)
+    const track = readTrack(def.body, wld.scaledTracks === true)
     const count = track.q.length / 4
+    // A borrowed track is rotations only: the target keeps its own bind offsets AND its own bind
+    // scale (no `s`, so the renderer holds what the skeleton states).
     tracks[i] = borrowed ? { t: bindTranslations(bone, count), q: track.q } : track
     frames = Math.max(frames, count)
-    frameMs ??= frameMsOf(wld, `${anim}${source.code}${short}_TRACK`)
+    frameMs ??= frameMsOf(wld, name.replace(/DEF$/, ''))
   })
   if (Object.keys(tracks).length === 0) return null
   return { name: borrowed ? `${anim}*` : anim, frameMs: frameMs ?? DEFAULT_FRAME_MS, frames, tracks }

@@ -7,6 +7,7 @@
 import { type JSX, useMemo, useState } from 'react'
 import { Box, FormControlLabel, Paper, Stack, Switch, Tooltip, Typography } from '@mui/material'
 import type { SheetCellView } from '@shared/characterSheet'
+import type { EqModelPayload } from '@shared/eqModel'
 import {
   MATERIAL_COLOR,
   MATERIAL_LABEL,
@@ -23,7 +24,7 @@ import { PALETTE, withAlpha } from '../../../../shared/palette'
 import { itemIconUrl } from '../../lib/ItemWindow'
 import { CharacterModel3D, useEqModel } from './CharacterModel3D'
 import { ModelPickers, useModelPrefs } from './ModelPickers'
-import { actorCode } from './modelPrefs'
+import { LUCLIN_KEY, RACE_OPTIONS, actorCode, hasLuclinModel, luclinNote, undressedNote } from './modelPrefs'
 
 const HELM_KEY = 'eq.character.showHelm'
 const ORNAMENT_KEY = 'eq.character.ornaments'
@@ -157,22 +158,39 @@ function Figure({ looks, previewSlot }: { looks: Map<ModelSlotId, SlotLook>; pre
  * it. Changing race or sex changes the actor and re-frames the figure, which is the right answer
  * for a different body.
  */
-function ModelOrDoll({ looks, previewSlot, spin }: { looks: Map<ModelSlotId, SlotLook>; previewSlot?: ModelSlotId; spin: boolean }): JSX.Element {
-  const prefs = useModelPrefs()
+function ModelOrDoll({ looks, previewSlot, spin, luclin }: { looks: Map<ModelSlotId, SlotLook>; previewSlot?: ModelSlotId; spin: boolean; luclin: boolean }): JSX.Element {
+  const prefs = useModelPrefs(luclin)
   const worn = useMemo(() => wearFromLooks(looks), [looks])
   const wear = useMemo(() => (prefs.face === undefined ? worn : { ...worn, face: prefs.face }), [worn, prefs.face])
   const hands = useMemo(() => handsFromLooks(looks), [looks])
-  const { model, ready } = useEqModel(actorCode(prefs.race, prefs.sex), wear, hands)
+  // A race with no Luclin twin is asked for its one model, so the switch cannot change its cache key either.
+  const askLuclin = luclin && hasLuclinModel(prefs.race)
+  const { model, ready } = useEqModel(actorCode(prefs.race, prefs.sex), wear, hands, askLuclin)
+  const lNote = luclinLine(luclin, prefs.race, model, wear.helm)
   return (
     <>
       {model ? <CharacterModel3D model={model} spin={spin} /> : ready ? <Figure looks={looks} previewSlot={previewSlot} /> : <Box sx={{ height: 340 }} />}
       <ModelPickers prefs={prefs} faces={model?.faces} defaultFace={model?.defaultFace} />
-      {ready && !model && (
-        <Typography variant="caption" color="text.disabled" sx={{ display: 'block', mt: 0.5 }}>
-          The game's model files were not found under the configured EverQuest folder, so this is the stylised figure.
-        </Typography>
-      )}
+      {ready && !model && <Note text="The game's model files were not found under the configured EverQuest folder, so this is the stylised figure." />}
+      <Note text={lNote} testid="character-model-luclin-note" />
+      <Note text={undressedNote(model?.undressed)} testid="character-model-undressed-note" />
     </>
+  )
+}
+
+/** `luclinNote` fed from this card's payload and wear. */
+function luclinLine(on: boolean, race: string, model: EqModelPayload | null, helm: number | undefined): string | null {
+  const raceLabel = RACE_OPTIONS.find((r) => r.code === race)?.label ?? race
+  return luclinNote(on, race, raceLabel, model ? { luclin: model.luclin === true, helm: helm ?? 0 } : null)
+}
+
+/** One honest line under the figure; nothing at all when there is nothing to say. */
+function Note({ text, testid }: { text: string | null; testid?: string }): JSX.Element | null {
+  if (text === null) return null
+  return (
+    <Typography variant="caption" color="text.disabled" sx={{ display: 'block', mt: 0.5 }} data-testid={testid}>
+      {text}
+    </Typography>
   )
 }
 
@@ -192,6 +210,7 @@ export default function CharacterModel({
   const [showHelm, setShowHelm] = useState(() => readFlag(HELM_KEY, true))
   const [showOrnaments, setShowOrnaments] = useState(() => readFlag(ORNAMENT_KEY, true))
   const [rotate, setRotate] = useState(() => readFlag(ROTATE_KEY, true))
+  const [luclin, setLuclin] = useState(() => readFlag(LUCLIN_KEY, false))
   const opts: ModelOptions = useMemo(() => ({ showHelm, showOrnaments }), [showHelm, showOrnaments])
   const shown = useMemo(() => applyPreview(cells, preview), [cells, preview])
   const looks = useMemo(() => modelLooks(shown, opts), [shown, opts])
@@ -208,11 +227,15 @@ export default function CharacterModel({
       <Typography variant="caption" className="eq-display-label eq-card-rule" sx={{ display: 'block', color: 'text.secondary', pb: 0.5, mb: 0.75 }}>
         Your character
       </Typography>
-      <ModelOrDoll looks={looks} previewSlot={preview?.slot} spin={rotate} />
+      <ModelOrDoll looks={looks} previewSlot={preview?.slot} spin={rotate} luclin={luclin} />
       <Stack spacing={0} sx={{ mt: 0.5 }}>
         <FormControlLabel
           control={<Switch size="small" checked={showHelm} onChange={(e) => { setShowHelm(e.target.checked); writeFlag(HELM_KEY, e.target.checked) }} data-testid="character-model-helm" />}
           label={<Typography variant="caption">Show helmet</Typography>}
+        />
+        <FormControlLabel
+          control={<Switch size="small" checked={luclin} onChange={(e) => { setLuclin(e.target.checked); writeFlag(LUCLIN_KEY, e.target.checked) }} data-testid="character-model-luclin" />}
+          label={<Typography variant="caption">Luclin model</Typography>}
         />
         <FormControlLabel
           control={<Switch size="small" checked={showOrnaments} onChange={(e) => { setShowOrnaments(e.target.checked); writeFlag(ORNAMENT_KEY, e.target.checked) }} data-testid="character-model-ornaments" />}

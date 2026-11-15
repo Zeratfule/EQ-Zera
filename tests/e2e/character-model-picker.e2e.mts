@@ -173,6 +173,49 @@ async function stepRotate(page: Page): Promise<void> {
   check('turning it back on is remembered too', back === '1', `stored ${String(back)}`)
 }
 
+// ── the Luclin switch ──────────────────────────────────────────────────────────────────────
+//
+// "It should just be a toggle similar to how we have the helmet on or off option" (owner,
+// 2026-11-15). OFF by default, remembered like the helmet, and flipping it must not crash the card
+// on either path: with the game's files it swaps the figure for the Luclin actor (measured against
+// the real archives in tests/eqAssetsLuclin.test.mts), and without them - this harness - the card
+// stays the stylised doll and says nothing it cannot back.
+
+const LUCLIN = '[data-testid="character-model-luclin"] input'
+const LUCLIN_KEY = 'eq.character.luclinModel'
+const LUCLIN_NOTE = '[data-testid="character-model-luclin-note"]'
+const DOLL = '[data-testid="character-region-chest"]'
+
+async function stepLuclin(page: Page): Promise<void> {
+  if (!check('the model card has a Luclin model switch, beside Show helmet', (await countOf(page, LUCLIN)) === 1)) return
+  check('…and it is OFF for a reader who has never touched it', (await page.isChecked(LUCLIN)) === false)
+  check('…with nothing written until they do', (await stored(page, LUCLIN_KEY)) === null)
+
+  await page.click(LUCLIN, { timeout: 15_000 })
+  const on = await settle(() => stored(page, LUCLIN_KEY), (v) => v === '1', { timeoutMs: 8_000 })
+  check('turning it on is remembered', on === '1', `stored ${String(on)}`)
+  check('…and the card still draws a figure after the flip', (await countOf(page, MODEL_3D)) + (await countOf(page, DOLL)) > 0)
+  if ((await countOf(page, MODEL_3D)) === 0) {
+    note('no EverQuest model files under the staged install, so the Luclin flip is measured here only as "the doll survives it" - the Luclin figure itself is measured in tests/eqAssetsLuclin.test.mts')
+    check('…and with no payload the card makes no Luclin claim', (await countOf(page, LUCLIN_NOTE)) === 0)
+  }
+
+  // A race with ONE model: the switch is still there and changes nothing, and with a payload the card says so.
+  await pickRace(page, 'KE')
+  check('the switch stays on screen for a race with no Luclin twin', (await countOf(page, LUCLIN)) === 1)
+
+  // AWAY AND BACK, then off again: the stored answer is what the switch shows.
+  await page.click(TAB_GEAR_SEL, { timeout: 15_000 })
+  await page.waitForSelector('[data-testid="gear-view"]', { timeout: 30_000 })
+  await page.click(TAB_CHARACTER, { timeout: 15_000 })
+  await page.waitForSelector(MODEL, { timeout: 30_000 })
+  check('…and it is still on after the tab has unmounted and come back', await page.isChecked(LUCLIN))
+  await pickRace(page, 'DW')
+  await page.click(LUCLIN, { timeout: 15_000 })
+  const off = await settle(() => stored(page, LUCLIN_KEY), (v) => v === '0', { timeoutMs: 8_000 })
+  check('turning it back off is remembered too', off === '0', `stored ${String(off)}`)
+}
+
 async function main(): Promise<void> {
   buildIfStale()
 
@@ -196,6 +239,7 @@ async function main(): Promise<void> {
       await stepPicks(page)
       await stepFaces(page)
       await stepRotate(page)
+      await stepLuclin(page)
     } else {
       note('the model card never mounted - every claim below it is unmeasured, not passing')
     }

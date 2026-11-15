@@ -21,6 +21,7 @@ import {
   RACE_OPTIONS,
   SEX_KEY,
   actorCode,
+  faceActor,
   faceKey,
   readFace,
   readPick,
@@ -56,13 +57,15 @@ export interface ModelPrefs extends ModelPick {
   setFace: (face: number) => void
 }
 
-export function useModelPrefs(): ModelPrefs {
+export function useModelPrefs(luclin = false): ModelPrefs {
   const [pick, setPick] = useState<ModelPick>(() => readPick(read(RACE_KEY), read(SEX_KEY)))
   // Faces are remembered PER ACTOR, so the map is the state and storage is only its seed: picking
-  // a face, switching to a dwarf and coming back must show the face that was picked.
+  // a face, switching to a dwarf and coming back must show the face that was picked. The Luclin
+  // figure is its own "actor" here (`faceActor`), so its faces never overwrite the classic pick.
   const [faces, setFaces] = useState<Record<string, number | undefined>>({})
   const actor = actorCode(pick.race, pick.sex)
-  const face = useMemo(() => (actor in faces ? faces[actor] : storedFace(read(faceKey(actor)))), [actor, faces])
+  const faceOwner = faceActor(actor, luclin)
+  const face = useMemo(() => (faceOwner in faces ? faces[faceOwner] : storedFace(read(faceKey(faceOwner)))), [faceOwner, faces])
   return {
     ...pick,
     actor,
@@ -76,8 +79,8 @@ export function useModelPrefs(): ModelPrefs {
       write(SEX_KEY, sex)
     },
     setFace: (next: number): void => {
-      setFaces((f) => ({ ...f, [actor]: next }))
-      write(faceKey(actor), String(next))
+      setFaces((f) => ({ ...f, [faceOwner]: next }))
+      write(faceKey(faceOwner), String(next))
     }
   }
 }

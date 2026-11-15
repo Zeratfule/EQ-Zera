@@ -107,6 +107,8 @@ function buildSkeleton(model: EqModelPayload): THREE.Skeleton {
     bone.name = b.name
     bone.position.set(b.t[0], b.t[1], b.t[2])
     bone.quaternion.set(b.q[0], b.q[1], b.q[2], b.q[3])
+    // A Luclin rig states per-bone scales (a folded-away buttock, bulked deltoids); classic never does.
+    if (b.s !== undefined) bone.scale.setScalar(b.s)
     return bone
   })
   model.bones.forEach((b, i) => {
@@ -131,6 +133,7 @@ function buildClip(clip: EqModelClip, skeleton: THREE.Skeleton): THREE.Animation
     }
     tracks.push(new THREE.VectorKeyframeTrack(`${bone.name}.position`, times, pad(track.t, 3)))
     tracks.push(new THREE.QuaternionKeyframeTrack(`${bone.name}.quaternion`, times, pad(track.q, 4)))
+    if (track.s) tracks.push(new THREE.VectorKeyframeTrack(`${bone.name}.scale`, times, pad(track.s.flatMap((v) => [v, v, v]), 3)))
   }
   return new THREE.AnimationClip(clip.name, (clip.frames * clip.frameMs) / 1000, tracks)
 }
@@ -201,6 +204,17 @@ function buildGeometry(m: EqModelMesh, mc: MaterialCache): { geo: THREE.BufferGe
   return { geo, mats }
 }
 
+/**
+ * The bone a held item hangs off, BY EXACT NAME FIRST (Luclin, 2026-11-15): a Luclin rig also
+ * carries `HUMHAIR_POINT_DAG`, `HUMSHOULDR_POINT_DAG` and `HUMGAUNTR_POINT_DAG`, all of which END in
+ * `R_POINT_DAG`, and the hair comes first - a suffix match hung the sword off the scalp. The suffix
+ * stays as the fallback for any rig that names its points another way.
+ */
+function attachBone(skeleton: THREE.Skeleton, actor: string, attach: string): THREE.Bone | undefined {
+  const exact = `${actor.replace(/_ACTORDEF$/, '')}${attach}_DAG`
+  return skeleton.bones.find((b) => b.name === exact) ?? skeleton.bones.find((b) => b.name.endsWith(`${attach}_DAG`))
+}
+
 /** Build the figure: skinned body meshes on one skeleton, weapons on their bones, the idle playing. */
 function buildFigure(model: EqModelPayload): Built {
   const built: Built = { group: new THREE.Group(), geometries: [], materials: [], textures: [], mixer: null, flipbooks: [], turning: [] }
@@ -226,7 +240,7 @@ function buildFigure(model: EqModelPayload): Built {
   built.group.updateMatrixWorld(true)
   for (const mesh of skinned) mesh.bind(skeleton)
   for (const w of model.weapons) {
-    const bone = skeleton.bones.find((b) => b.name.endsWith(`${w.attach}_DAG`))
+    const bone = attachBone(skeleton, model.actor, w.attach)
     if (!bone) continue
     const { geo, mats } = buildGeometry(w.mesh, mc)
     const held = new THREE.Mesh(geo, mats)
@@ -262,6 +276,11 @@ interface CameraView {
   actor: string
   pos: THREE.Vector3
   target: THREE.Vector3
+}
+
+/** The body a camera view belongs to: the actor, and which of its two models (a Luclin figure is a different body and is framed afresh). */
+function viewKey(model: EqModelPayload): string {
+  return model.luclin === true ? `${model.actor}:luclin` : model.actor
 }
 
 export function CharacterModel3D({ model, spin }: { model: EqModelPayload; spin: boolean }): JSX.Element {
@@ -347,7 +366,7 @@ export function CharacterModel3D({ model, spin }: { model: EqModelPayload; spin:
     // …unless this is the same character wearing something different, in which case the reader's
     // own orbit is restored over the freshly framed default.
     const kept = lastView.current
-    if (kept?.actor === model.actor) {
+    if (kept?.actor === viewKey(model)) {
       camera.position.copy(kept.pos)
       controls.target.copy(kept.target)
     }
@@ -378,7 +397,7 @@ export function CharacterModel3D({ model, spin }: { model: EqModelPayload; spin:
     return () => {
       alive = false
       // FIRST, before anything is disposed: where the reader was looking from.
-      lastView.current = { actor: model.actor, pos: camera.position.clone(), target: controls.target.clone() }
+      lastView.current = { actor: viewKey(model), pos: camera.position.clone(), target: controls.target.clone() }
       cancelAnimationFrame(raf)
       controls.dispose()
       renderer.dispose()
@@ -500,9 +519,10 @@ function remember(key: string, model: EqModelPayload | null): void {
 }
 
 /** Fetch the model for a race code, dressed and armed; null while loading or when the game is not installed. */
-export function useEqModel(code: string, wear: EqModelWear, hands: EqModelHands): { model: EqModelPayload | null; ready: boolean } {
-  // Compared by VALUE: a fresh object per render must not refetch a five-megabyte parse.
-  const argsKey = JSON.stringify([wear, hands])
+export function useEqModel(code: string, wear: EqModelWear, hands: EqModelHands, luclin = false): { model: EqModelPayload | null; ready: boolean } {
+  // Compared by VALUE: a fresh object per render must not refetch a five-megabyte parse. The Luclin
+  // switch is part of the key, so flipping it back is a cache hit and not a second parse.
+  const argsKey = JSON.stringify([wear, hands, luclin])
   const key = `${code}|${argsKey}`
   const [state, setState] = useState<{ model: EqModelPayload | null; ready: boolean }>(() =>
     PAYLOADS.has(key) ? { model: PAYLOADS.get(key) ?? null, ready: true } : { model: null, ready: false }
@@ -517,9 +537,9 @@ export function useEqModel(code: string, wear: EqModelWear, hands: EqModelHands)
     }
     let alive = true
     setState((s) => ({ ...s, ready: false }))
-    const [w, h] = JSON.parse(argsKey) as [EqModelWear, EqModelHands]
+    const [w, h, lu] = JSON.parse(argsKey) as [EqModelWear, EqModelHands, boolean]
     void window.eq
-      .eqModel(code, w, h)
+      .eqModel(code, w, h, lu)
       .then((model) => {
         remember(key, model)
         if (alive) setState({ model, ready: true })
