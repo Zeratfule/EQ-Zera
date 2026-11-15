@@ -1,7 +1,8 @@
 /**
  * Headless Electron integration test for the EQ ZERA IN-GAME UI SKIN card (docs/plans/eql-ui-skin.md).
  *
- * The staged EQ install gets a SYNTHETIC `uifiles/default` (tests/uiSkinSynthetic.mts; nothing of
+ * The staged EQ install gets SYNTHETIC `uifiles/default` and `uifiles/default_modern`
+ * (tests/uiSkinSynthetic.mts; nothing of
  * Daybreak's is committed), then the spec drives the card the way a player would and checks the
  * DISK, not only the DOM:
  *   1. the card renders the owner's notice verbatim, and says Not installed;
@@ -18,7 +19,7 @@ import type { Page } from 'playwright-core'
 import { buildIfStale, check, countOf, dumpArtifacts, failures, reportRun, settle, settleGone } from './appHarness.mjs'
 import { mainWindow } from './appWindow.mjs'
 import { launchOnFixture, stageFixture } from './logFixture.mjs'
-import { writeSyntheticDefaultSkin } from '../uiSkinSynthetic.mjs'
+import { EXPECTED_OUTPUTS, writeSyntheticSkins } from '../uiSkinSynthetic.mjs'
 import { UI_SKIN_DISCLAIMER } from '../../src/shared/uiSkinDisclaimer'
 import { UI_SKIN_COMMAND } from '../../src/shared/uiSkin'
 
@@ -61,8 +62,8 @@ async function stepBuild(page: Page, skinDir: string): Promise<void> {
   check('accepting builds the skin and the card says so', state.startsWith('Installed and up to date.'), state)
   const files = existsSync(skinDir) ? readdirSync(skinDir).sort() : []
   check(
-    'uifiles/EQZera holds the recoloured chrome, the rewritten window and the manifest, nothing else',
-    files.join(',') === ['EQUI_TestWnd.xml', 'eqzera-skin.json', 'window_pieces01.tga', 'wnd_bg_dark_rock.tga'].sort().join(','),
+    'uifiles/EQZera holds the drawn chrome, the retuned window, the inherited modern files and the manifest, nothing else',
+    files.join(',') === [...EXPECTED_OUTPUTS, 'eqzera-skin.json'].sort().join(','),
     files.join(', ')
   )
   const accepted = await page.evaluate(() =>
@@ -80,14 +81,14 @@ async function stepRemove(page: Page, skinDir: string, uifiles: string): Promise
   await page.click('[data-testid="ui-skin-remove-confirm-yes"]')
   const state = await stateIs(page, 'Not installed.')
   check('removing deletes uifiles/EQZera', !existsSync(skinDir) && state.startsWith('Not installed.'), state)
-  check('…and only that', readdirSync(uifiles).join(',') === 'default', readdirSync(uifiles).join(','))
+  check('…and only that', readdirSync(uifiles).sort().join(',') === 'default,default_modern', readdirSync(uifiles).join(','))
 }
 
 async function main(): Promise<void> {
   buildIfStale()
   const log = stageFixture('e2e-telemetry.log')
   const uifiles = join(log.installDir, 'uifiles')
-  writeSyntheticDefaultSkin(join(uifiles, 'default'))
+  writeSyntheticSkins(uifiles)
   const skinDir = join(uifiles, 'EQZera')
   const app = await launchOnFixture(log, { waitForEngine: false })
   const consoleErrors: string[] = []

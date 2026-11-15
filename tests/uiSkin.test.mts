@@ -1,31 +1,37 @@
 // THE IN-GAME UI SKIN GENERATOR (src/main/uiSkin/, docs/plans/eql-ui-skin.md).
 //
-// Every input here is SYNTHETIC (tests/uiSkinSynthetic.mts): the real default skin is Daybreak's
-// and never enters the repo. What is pinned:
-//   1. the TGA codec round-trips both encodings the default skin uses (type 2 and type 10 RLE,
-//      24 and 32 bit, either origin), and decodes a hand-written RLE stream byte for byte;
-//   2. the recolour keeps alpha exactly, leaves masked-out pixels alone, and lands known colours
-//      on the palette (gauges HP red / mana cyan / endurance amber; gold text -> accentHi);
-//   3. the XML rewrite changes the three numbers of a colour and not one other byte;
-//   4. the builder writes only allowed files, only under the output folder, never touches the
-//      source, keeps art regions byte-identical, reports staleness, and refuses folders it did not
-//      write.
+// Every input here is SYNTHETIC (tests/uiSkinSynthetic.mts): the real skins are Daybreak's and
+// never enter the repo. What is pinned:
+//   1. the TGA and DDS codecs round-trip what the skins use, and refuse what they do not read;
+//   2. the piece classifier names the chrome, and the painter draws each piece at exactly the
+//      size the XML cuts, in the app's colours, from nothing (no source pixels);
+//   3. an atlas keeps art and unreferenced pixels byte-identical and redraws only chrome;
+//   4. the XML rewrite changes colour numbers and not one other byte, onto the palette;
+//   5. the builder layers default_modern over default, writes only source names under the out
+//      folder, inherits only files the base changes, never touches a source, reports staleness,
+//      and refuses folders it did not write.
 
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { createHash } from 'node:crypto'
-import { mkdtempSync, readFileSync, readdirSync, rmSync, utimesSync, writeFileSync, mkdirSync, existsSync } from 'node:fs'
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, utimesSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { decodeTga, encodeTga, type TgaImage } from '../src/main/uiSkin/tga'
-import { mapXmlColor, recolorPixel, recolorRgba } from '../src/main/uiSkin/recolor'
-import { hexToRgb, luma, rgbToHsl, type Rgb } from '../src/main/uiSkin/color'
+import { decodeDds } from '../src/main/uiSkin/dds'
+import { drawAtlas, drawBackground, readImage } from '../src/main/uiSkin/atlas'
+import { SKIN_STYLES, lookFor } from '../src/main/uiSkin/look'
+import { parseAnimationFrames } from '../src/main/uiSkin/animations'
+import { classifyPiece } from '../src/main/uiSkin/pieceKinds'
+import { paintPiece } from '../src/main/uiSkin/paint'
+import { mapXmlColor } from '../src/main/uiSkin/recolor'
+import { hexToRgb, luma, type Rgb } from '../src/main/uiSkin/color'
 import { rewriteXmlColors } from '../src/main/uiSkin/xmlColors'
 import { buildSkin, removeSkin, skinStatus, SkinBuildError } from '../src/main/uiSkin/build'
-import { MANIFEST_FILE, isAllowedOutput } from '../src/main/uiSkin/rules'
+import { MANIFEST_FILE } from '../src/main/uiSkin/rules'
 import { PALETTE } from '../src/shared/palette'
 import { UI_SKIN_DISCLAIMER } from '../src/shared/uiSkinDisclaimer'
-import { COIN, GOLD, TEST_WND_XML, syntheticAtlas, writeSyntheticDefaultSkin } from './uiSkinSynthetic.mjs'
+import { COIN, EXPECTED_OUTPUTS, TEST_WND_XML, syntheticAtlas, syntheticDds, writeSyntheticSkins } from './uiSkinSynthetic.mjs'
 
 function sample(w: number, h: number): Uint8Array {
   const px = new Uint8Array(w * h * 4)
@@ -43,7 +49,7 @@ function img(imageType: 2 | 10, bpp: 24 | 32, descriptor: number): TgaImage {
   return { width: 13, height: 9, rgba, format: { imageType, bitsPerPixel: bpp, descriptor, id: new Uint8Array([1, 2, 3]) } }
 }
 
-test('TGA round-trips every encoding the default skin uses', () => {
+test('TGA round-trips every encoding the skins use', () => {
   for (const [type, bpp, desc] of [
     [2, 24, 0x00],
     [2, 32, 0x08],
@@ -54,12 +60,8 @@ test('TGA round-trips every encoding the default skin uses', () => {
   ] as const) {
     const a = img(type, bpp, desc)
     const bytes = encodeTga(a)
-    assert.equal(bytes[2], type)
-    assert.equal(bytes[16], bpp)
-    assert.equal(bytes[17], desc)
+    assert.deepEqual([bytes[2], bytes[16], bytes[17]], [type, bpp, desc])
     const b = decodeTga(bytes)
-    assert.equal(b.width, a.width)
-    assert.equal(b.height, a.height)
     assert.deepEqual(Buffer.from(b.rgba), Buffer.from(a.rgba), `type ${String(type)} ${String(bpp)}bpp desc ${String(desc)}`)
     assert.deepEqual(b.format, a.format)
   }
@@ -72,95 +74,108 @@ test('RLE is really compressed, and a hand-written RLE stream decodes to the sta
     rgba: new Uint8Array(200 * 2 * 4).fill(9),
     format: { imageType: 10, bitsPerPixel: 32, descriptor: 0x28, id: new Uint8Array(0) }
   }
-  // 200 identical pixels a row = a 128 run + a 72 run: 2 packets x 5 bytes x 2 rows.
   assert.equal(encodeTga(flat).length, 18 + 20)
-  // Top-left origin, 3x1, 24-bit: a run of 2 (BGR 1,2,3) then a raw packet of 1 (BGR 4,5,6).
   const hdr = new Uint8Array(18)
   hdr[2] = 10
   hdr[12] = 3
   hdr[14] = 1
   hdr[16] = 24
   hdr[17] = 0x20
-  const body = [0x81, 1, 2, 3, 0x00, 4, 5, 6]
-  const d = decodeTga(new Uint8Array([...hdr, ...body]))
+  const d = decodeTga(new Uint8Array([...hdr, 0x81, 1, 2, 3, 0x00, 4, 5, 6]))
   assert.deepEqual([...d.rgba], [3, 2, 1, 255, 3, 2, 1, 255, 6, 5, 4, 255])
 })
 
-test('the codec refuses what it does not read rather than guessing', () => {
-  const hdr = new Uint8Array(18)
-  hdr[2] = 1
-  hdr[12] = 1
-  hdr[14] = 1
-  hdr[16] = 8
-  assert.throws(() => decodeTga(hdr))
+test('the uncompressed DDS codec round-trips and refuses compressed files', () => {
+  const rgba = sample(5, 3)
+  const bytes = syntheticDds(5, 3, rgba)
+  assert.equal(bytes.length, 128 + 5 * 3 * 4)
+  const back = decodeDds(bytes)
+  assert.deepEqual(Buffer.from(back.rgba), Buffer.from(rgba))
+  const dxt = new Uint8Array(bytes)
+  new DataView(dxt.buffer).setUint32(80, 0x4, true)
+  assert.throws(() => decodeDds(dxt))
+  assert.equal(readImage('x.dds', dxt), null)
   assert.throws(() => decodeTga(new Uint8Array(5)))
 })
 
-test('the recolour keeps alpha exactly and leaves masked-out pixels alone', () => {
-  const rgba = syntheticAtlas()
-  const before = new Uint8Array(rgba)
-  const mask = new Uint8Array(16 * 16)
-  for (let y = 0; y < 16; y++) mask.fill(1, y * 16, y * 16 + 8)
-  const changed = recolorRgba(rgba, mask)
-  assert.ok(changed > 0)
-  for (let i = 0; i < 256; i++) {
-    assert.equal(rgba[i * 4 + 3], before[i * 4 + 3], `alpha at ${String(i)}`)
-    if (mask[i] === 0 || before[i * 4 + 3] === 0) {
-      assert.deepEqual([...rgba.subarray(i * 4, i * 4 + 4)], [...before.subarray(i * 4, i * 4 + 4)])
-    }
+test('the classifier names chrome and leaves art and unknown pieces alone', () => {
+  assert.deepEqual(classifyPiece('A_BorderFrameTopLeft'), { kind: 'frame', dir: 'TopLeft', variant: 'solid' })
+  assert.deepEqual(classifyPiece('A_RoundedFrameLeftTrans'), { kind: 'frame', dir: 'Left', variant: 'trans' })
+  assert.deepEqual(classifyPiece('A_InnerFrameTopBlack'), { kind: 'frame', dir: 'Top', variant: 'black' })
+  assert.deepEqual(classifyPiece('A_WindowTitleMiddle'), { kind: 'title', dir: 'Middle' })
+  assert.deepEqual(classifyPiece('A_BtnPressedFlyby'), { kind: 'button', state: 'pressedFlyby' })
+  assert.deepEqual(classifyPiece('A_CloseBtnFlyby'), { kind: 'glyphButton', state: 'flyby', glyph: 'x' })
+  assert.deepEqual(classifyPiece('A_ChatCloseH'), { kind: 'glyphButton', state: 'flyby', glyph: 'x' })
+  assert.deepEqual(classifyPiece('A_VSBUpNormal'), { kind: 'glyphButton', state: 'normal', glyph: 'up' })
+  assert.deepEqual(classifyPiece('A_CheckBoxPressedDisabled_Double'), { kind: 'check', state: 'pressedDisabled' })
+  assert.deepEqual(classifyPiece('A_GaugeFill_transparent'), { kind: 'gaugeFill' })
+  assert.deepEqual(classifyPiece('A_InvShoulders'), { kind: 'slot', label: 'SHLDR' })
+  assert.deepEqual(classifyPiece('A_HotButton7Disabled'), { kind: 'hotslot', state: 'disabled' })
+  for (const art of ['A_InventoryBtnNormal', 'A_GoldCoin', 'A_DragItem', 'A_GrabNormal', 'A_EQBtnNormal']) {
+    assert.equal(classifyPiece(art), null, art)
   }
 })
 
-function hueDist(a: number, b: number): number {
-  const d = Math.abs(a - b) % 360
-  return d > 180 ? 360 - d : d
-}
+test('a painted piece is exactly the cut size, drawn in the palette from nothing', () => {
+  const accent = hexToRgb(PALETTE.accent)
+  const paper = hexToRgb(PALETTE.paper)
+  const c = paintPiece({ kind: 'button', state: 'normal' }, { w: 30, h: 14 })
+  assert.deepEqual([c.w, c.h], [30, 14])
+  const at = (x: number, y: number): number[] => [...c.px.subarray((y * 30 + x) * 4, (y * 30 + x) * 4 + 4)]
+  assert.deepEqual(at(15, 7).slice(0, 3), [...paper], 'the face is the app paper')
+  assert.ok(at(15, 1)[2]! > paper[2] && at(15, 1)[3]! > 0, 'the edge carries the accent')
+  assert.equal(at(0, 0)[3], 0, 'outside the rounded corner is transparent')
+  const frame = paintPiece({ kind: 'frame', dir: 'Top', variant: 'solid' }, { w: 4, h: 7 })
+  const edge = [...frame.px.subarray((2 * 4 + 1) * 4, (2 * 4 + 1) * 4 + 3)]
+  assert.ok(Math.abs(edge[0]! - accent[0]) < 90 && edge[2]! > 150, `a window top edge is accent violet: ${edge.join(',')}`)
+})
 
-test('chrome pixels move hue and keep their luminance: gold -> violet, grey -> navy, red gems stay', () => {
-  const violet = rgbToHsl(hexToRgb(PALETTE.accent)).h
-  const navy = rgbToHsl(hexToRgb(PALETTE.paper)).h
-  const cyan = rgbToHsl(hexToRgb(PALETTE.cyan)).h
-  const gold = recolorPixel(GOLD)
-  assert.ok(hueDist(rgbToHsl(gold).h, violet) < 8, `gold went to hue ${String(rgbToHsl(gold).h)}`)
-  assert.ok(Math.abs(luma(gold) - luma(GOLD)) < 2.5)
-  const grey: Rgb = [60, 60, 60]
-  const g2 = recolorPixel(grey)
-  assert.ok(hueDist(rgbToHsl(g2).h, navy) < 10)
-  assert.ok(Math.abs(luma(g2) - luma(grey)) < 2.5)
-  const blue: Rgb = [40, 80, 200]
-  assert.ok(hueDist(rgbToHsl(recolorPixel(blue)).h, cyan) < 8)
-  assert.deepEqual(recolorPixel([200, 20, 20]), [200, 20, 20])
+test('an atlas redraws only its chrome; art and unreferenced pixels stay byte-identical', () => {
+  const src = syntheticAtlas()
+  src.set([1, 2, 3, 4], (15 * 16 + 0) * 4)
+  const image = { width: 16, height: 16, rgba: src, encode: (p: Uint8Array) => p }
+  const frames = parseAnimationFrames(
+    '<Ui2DAnimation item="A_BtnNormal"><Frames><Texture>a.tga</Texture><Location><X>0</X><Y>0</Y></Location><Size><CX>8</CX><CY>12</CY></Size></Frames></Ui2DAnimation>' +
+      '<Ui2DAnimation item="A_GoldCoin"><Frames><Texture>a.tga</Texture><Location><X>8</X><Y>0</Y></Location><Size><CX>8</CX><CY>16</CY></Size></Frames></Ui2DAnimation>'
+  )
+  const { rgba, drawn } = drawAtlas(image, frames, 'a.tga')
+  assert.deepEqual(drawn, ['A_BtnNormal'])
+  let moved = 0
+  for (let i = 0; i < 256; i++) {
+    const x = i % 16
+    const y = Math.floor(i / 16)
+    const same = Buffer.compare(Buffer.from(rgba.subarray(i * 4, i * 4 + 4)), Buffer.from(src.subarray(i * 4, i * 4 + 4))) === 0
+    if (x >= 8 || y >= 12) assert.ok(same, `pixel ${String(x)},${String(y)} outside the button must be untouched`)
+    else if (!same) moved++
+  }
+  assert.ok(moved > 80, `button pixels redrawn: ${String(moved)}`)
+  assert.deepEqual([...rgba.subarray((0 * 16 + 12) * 4, (0 * 16 + 12) * 4 + 3)], COIN)
 })
 
 test('XML colours land on the palette by role', () => {
   const t = (hex: string): Rgb => hexToRgb(hex)
   assert.deepEqual(mapXmlColor([150, 0, 0], 'gauge'), t(PALETTE.red), 'HP')
-  assert.deepEqual(mapXmlColor([220, 0, 0], 'gauge'), t(PALETTE.red), 'group HP')
   assert.deepEqual(mapXmlColor([0, 100, 200], 'gauge'), t(PALETTE.cyan), 'mana')
   assert.deepEqual(mapXmlColor([100, 100, 0], 'gauge'), t(PALETTE.amber), 'endurance')
-  assert.deepEqual(mapXmlColor([240, 240, 0], 'gauge'), t(PALETTE.amber), 'group endurance')
   assert.deepEqual(mapXmlColor([170, 0, 170], 'gauge'), t(PALETTE.accent), 'casting')
-  assert.deepEqual(mapXmlColor([214, 178, 40], 'text'), t(PALETTE.accentHi), 'gold title text')
-  assert.deepEqual(mapXmlColor([255, 255, 0], 'text'), t(PALETTE.accentHi), 'active tab text')
-  assert.deepEqual(mapXmlColor([16, 16, 16], 'text'), [16, 16, 16], 'dark text on light buttons stays')
+  assert.deepEqual(mapXmlColor([240, 240, 240], 'text'), t(PALETTE.text), 'body text is the app text colour')
+  assert.deepEqual(mapXmlColor([214, 178, 40], 'text'), t(PALETTE.accentHi), 'gold headings')
+  assert.deepEqual(mapXmlColor([107, 215, 255], 'text'), t(PALETTE.cyan), 'blue links')
+  assert.deepEqual(mapXmlColor([16, 16, 16], 'text'), [16, 16, 16], 'dark text stays')
   assert.deepEqual(mapXmlColor([128, 128, 128], 'tint'), [128, 128, 128], 'a neutral tint stays')
-  const white = mapXmlColor([240, 240, 240], 'text')
-  assert.ok(Math.abs(luma(white) - 240) < 2.5 && white[2] > white[0], 'light text cools toward the app text colour')
+  assert.ok(Math.abs(luma(mapXmlColor([120, 120, 120], 'text')) - 120) < 2.5, 'disabled grey keeps its brightness')
 })
 
 test('the XML rewrite changes colour numbers and not one other byte', () => {
   const { text, changed } = rewriteXmlColors(TEST_WND_XML)
   assert.equal(changed, 2, 'the white TextColor and the HP FillTint; the dark text and <Foo> stay')
-  const strip = (s: string): string =>
-    s.replace(/(<[RGB]>)\s*\d+\s*(<\/[RGB]>)/g, '$1#$2')
+  const strip = (s: string): string => s.replace(/(<[RGB]>)\s*\d+\s*(<\/[RGB]>)/g, '$1#$2')
   assert.equal(strip(text), strip(TEST_WND_XML))
   assert.equal(text.split('\r\n').length, TEST_WND_XML.split('\r\n').length, 'CRLF kept')
   assert.ok(text.includes('<Foo><R>214</R><G>178</G><B>40</B></Foo>'))
-  assert.ok(text.includes('<TextColor><R>16</R><G>16</G><B>16</B></TextColor>'))
   const [r, g, b] = hexToRgb(PALETTE.red)
   assert.ok(text.includes(`<R>${String(r)}</R>\r\n\t\t\t<G>${String(g)}</G>\r\n\t\t\t<B>${String(b)}</B>`))
   assert.ok(text.includes('<!-- c_crWhite -->'))
-  assert.equal(rewriteXmlColors('<X><Text>no colours</Text></X>').text, '<X><Text>no colours</Text></X>')
 })
 
 function hashTree(dir: string): Record<string, string> {
@@ -169,56 +184,50 @@ function hashTree(dir: string): Record<string, string> {
   return out
 }
 
-function scratch(): { root: string; source: string; out: string; done: () => void } {
+function scratch(): { root: string; src: { base: string; fallback: string }; out: string; done: () => void } {
   const root = mkdtempSync(join(tmpdir(), 'eqzera-skin-test-'))
-  const source = writeSyntheticDefaultSkin(join(root, 'uifiles', 'default'))
-  return { root, source, out: join(root, 'uifiles', 'EQZera'), done: () => rmSync(root, { recursive: true, force: true }) }
+  const src = writeSyntheticSkins(join(root, 'uifiles'))
+  return { root, src, out: join(root, 'uifiles', 'EQZera'), done: () => rmSync(root, { recursive: true, force: true }) }
 }
 
-test('the builder writes only allowed files under the out dir and never touches the source', async () => {
+test('the builder layers modern over default, writes only what it must, and never touches a source', async () => {
   const s = scratch()
   try {
-    const before = hashTree(s.source)
-    const progress: number[] = []
-    const r = await buildSkin(s.source, s.out, (p) => progress.push(p.done))
-    assert.deepEqual(hashTree(s.source), before, 'source unchanged')
-    const written = readdirSync(s.out).sort()
-    assert.deepEqual(written, ['EQUI_TestWnd.xml', MANIFEST_FILE, 'window_pieces01.tga', 'wnd_bg_dark_rock.tga'].sort())
-    for (const f of written) assert.ok(isAllowedOutput(f), f)
-    assert.deepEqual(readdirSync(join(s.root, 'uifiles')).sort(), ['EQZera', 'default'], 'nothing written beside it')
-    assert.equal(r.textures, 2)
-    assert.equal(r.xml, 1)
-    assert.ok(progress.length > 0)
-
-    // The coin half of the atlas is art: byte-identical pixels. The chrome half moved, alpha kept.
-    const src = decodeTga(readFileSync(join(s.source, 'window_pieces01.tga')))
-    const out = decodeTga(readFileSync(join(s.out, 'window_pieces01.tga')))
-    assert.deepEqual(out.format, src.format, 'same encoding as the source')
-    let chromeMoved = 0
-    for (let i = 0; i < 256; i++) {
-      const o = i * 4
-      assert.equal(out.rgba[o + 3], src.rgba[o + 3])
-      if (i % 16 >= 8) assert.deepEqual([...out.rgba.subarray(o, o + 3)], COIN)
-      else if (out.rgba[o] !== src.rgba[o] || out.rgba[o + 2] !== src.rgba[o + 2]) chromeMoved++
-    }
-    assert.ok(chromeMoved > 64, `chrome pixels recoloured: ${String(chromeMoved)}`)
-    assert.equal((await skinStatus(s.source, s.out)).state, 'current')
+    const before = [hashTree(s.src.base), hashTree(s.src.fallback)]
+    const progress: string[] = []
+    const r = await buildSkin(s.src, s.out, { onProgress: (p) => progress.push(p.phase) })
+    assert.deepEqual([hashTree(s.src.base), hashTree(s.src.fallback)], before, 'sources unchanged')
+    assert.deepEqual(readdirSync(s.out).sort(), [...EXPECTED_OUTPUTS, MANIFEST_FILE].sort())
+    assert.deepEqual(readdirSync(join(s.root, 'uifiles')).sort(), ['EQZera', 'default', 'default_modern'])
+    assert.deepEqual({ drawn: r.drawn, xml: r.xml, inherited: r.inherited }, { drawn: 3, xml: 1, inherited: 3 })
+    assert.ok(progress.includes('done'))
+    assert.equal(readFileSync(join(s.out, 'arrow.cur'), 'utf8'), 'modern cursor', 'the base version is inherited')
+    const atlas = decodeTga(readFileSync(join(s.out, 'window_pieces01.tga')))
+    assert.deepEqual(atlas.format, decodeTga(readFileSync(join(s.src.base, 'window_pieces01.tga'))).format, 'same encoding')
+    assert.deepEqual([...atlas.rgba.subarray((5 * 16 + 12) * 4, (5 * 16 + 12) * 4 + 3)], COIN, 'the coin is untouched')
+    const bg = decodeTga(readFileSync(join(s.out, 'wnd_bg_light_rock.tga')))
+    const paper = hexToRgb(PALETTE.paper)
+    const off = (5 * 8 + 5) * 4
+    assert.ok(Math.abs(bg.rgba[off]! - paper[0]) <= 2 && Math.abs(bg.rgba[off + 2]! - paper[2]) <= 2, 'the background is paper off the grid lines')
+    const box = decodeDds(readFileSync(join(s.out, 'window_pieces11a.dds'))).rgba
+    assert.deepEqual([...box.subarray((8 * 16 + 8) * 4, (8 * 16 + 8) * 4 + 3)], [...hexToRgb(PALETTE.bg)], 'the DDS checkbox face is drawn')
+    assert.equal((await skinStatus(s.src, s.out)).state, 'current')
   } finally {
     s.done()
   }
 })
 
-test('a game patch to the default skin makes the skin stale, and a rebuild makes it current', async () => {
+test('a game patch to either skin makes the skin stale, and a rebuild makes it current', async () => {
   const s = scratch()
   try {
-    await buildSkin(s.source, s.out)
+    await buildSkin(s.src, s.out)
     const later = new Date(Date.now() + 60_000)
-    utimesSync(join(s.source, 'EQUI_TestWnd.xml'), later, later)
-    assert.equal((await skinStatus(s.source, s.out)).state, 'stale')
-    await buildSkin(s.source, s.out)
-    assert.equal((await skinStatus(s.source, s.out)).state, 'current')
-    writeFileSync(join(s.source, 'EQUI_NewWnd.xml'), '<XML></XML>')
-    assert.equal((await skinStatus(s.source, s.out)).state, 'stale', 'a new window file is a patch too')
+    utimesSync(join(s.src.fallback, 'EQUI_TestWnd.xml'), later, later)
+    assert.equal((await skinStatus(s.src, s.out)).state, 'stale')
+    await buildSkin(s.src, s.out)
+    assert.equal((await skinStatus(s.src, s.out)).state, 'current')
+    writeFileSync(join(s.src.base, 'EQUI_NewWnd.xml'), '<XML></XML>')
+    assert.equal((await skinStatus(s.src, s.out)).state, 'stale', 'a new window file is a patch too')
   } finally {
     s.done()
   }
@@ -227,25 +236,88 @@ test('a game patch to the default skin makes the skin stale, and a rebuild makes
 test('the builder and the remover refuse folders EQ Zera did not write', async () => {
   const s = scratch()
   try {
-    // A shipped skin next door: files, no manifest.
     const shipped = join(s.root, 'uifiles', 'default_light')
     mkdirSync(shipped)
     writeFileSync(join(shipped, 'EQUI.xml'), 'theirs')
-    await assert.rejects(buildSkin(s.source, shipped), SkinBuildError)
+    await assert.rejects(buildSkin(s.src, shipped), SkinBuildError)
     assert.equal(readFileSync(join(shipped, 'EQUI.xml'), 'utf8'), 'theirs')
-    assert.equal((await skinStatus(s.source, shipped)).state, 'foreign')
+    assert.equal((await skinStatus(s.src, shipped)).state, 'foreign')
     assert.equal(await removeSkin(shipped), false)
-    assert.ok(existsSync(join(shipped, 'EQUI.xml')))
-    // The source itself, or a folder inside it.
-    await assert.rejects(buildSkin(s.source, s.source), SkinBuildError)
-    await assert.rejects(buildSkin(s.source, join(s.source, 'EQZera')), SkinBuildError)
-    // Our own folder: removed whole.
-    await buildSkin(s.source, s.out)
+    await assert.rejects(buildSkin(s.src, s.src.base), SkinBuildError)
+    await assert.rejects(buildSkin(s.src, join(s.src.fallback, 'EQZera')), SkinBuildError)
+    await buildSkin(s.src, s.out)
     assert.equal(await removeSkin(s.out), true)
     assert.ok(!existsSync(s.out))
-    assert.ok(existsSync(join(s.source, 'window_pieces01.tga')))
-    assert.equal((await skinStatus(s.source, s.out)).state, 'missing')
-    assert.equal((await skinStatus(join(s.root, 'nope'), s.out)).state, 'noSource')
+    assert.ok(existsSync(join(s.src.base, 'window_pieces01.tga')))
+    assert.equal((await skinStatus(s.src, s.out)).state, 'missing')
+    assert.equal((await skinStatus({ base: join(s.root, 'a'), fallback: join(s.root, 'b') }, s.out)).state, 'noSource')
+  } finally {
+    s.done()
+  }
+})
+
+test('without default_modern the skin still builds over default alone', async () => {
+  const s = scratch()
+  try {
+    rmSync(s.src.base, { recursive: true })
+    const r = await buildSkin(s.src, s.out)
+    assert.equal(r.inherited, 0)
+    assert.deepEqual(readdirSync(s.out).sort(), ['EQUI_TestWnd.xml', MANIFEST_FILE, 'wnd_bg_light_rock.tga'].sort())
+  } finally {
+    s.done()
+  }
+})
+
+/** WCAG relative luminance and contrast ratio. */
+function relLum(c: readonly number[]): number {
+  const ch = (v: number): number => {
+    const s = v / 255
+    return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4
+  }
+  return 0.2126 * ch(c[0]!) + 0.7152 * ch(c[1]!) + 0.0722 * ch(c[2]!)
+}
+const contrast = (a: readonly number[], b: readonly number[]): number => {
+  const [hi, lo] = [relLum(a), relLum(b)].sort((x, y) => y - x) as [number, number]
+  return (hi + 0.05) / (lo + 0.05)
+}
+
+test('every ornament step keeps body text at 7:1 or better over every window-background pixel', () => {
+  const text = hexToRgb(PALETTE.text)
+  for (const style of SKIN_STYLES) {
+    for (const name of ['wnd_bg_light_rock.tga', 'wnd_bg_dark_rock.tga']) {
+      const src = { width: 64, height: 64, rgba: new Uint8Array(64 * 64 * 4).fill(128), encode: (p: Uint8Array) => p }
+      const px = drawBackground(src, name, lookFor(style))
+      let worst = Infinity
+      for (let i = 0; i < 64 * 64; i++) worst = Math.min(worst, contrast(text, [px[i * 4]!, px[i * 4 + 1]!, px[i * 4 + 2]!]))
+      assert.ok(worst >= 7, `${style} ${name}: worst contrast ${worst.toFixed(2)}`)
+    }
+  }
+})
+
+test('the ornament steps are distinct drawings of the same pieces, at the same sizes', () => {
+  const pieces = [
+    classifyPiece('A_WindowTitleLeft')!,
+    classifyPiece('A_BtnPressed')!,
+    classifyPiece('A_HotButton1Normal')!,
+    classifyPiece('A_RoundedFrameTopLeft')!
+  ]
+  for (const p of pieces) {
+    const drawn = SKIN_STYLES.map((s) => paintPiece(p, { w: 14, h: 16 }, lookFor(s)))
+    for (const c of drawn) assert.deepEqual([c.w, c.h], [14, 16])
+    const clean = Buffer.from(drawn[0]!.px)
+    const synth = Buffer.from(drawn[3]!.px)
+    assert.notDeepEqual(clean, synth, `${p.kind} looks different at the synthwave step`)
+  }
+})
+
+test('the build records its style, and a different style reads as out of date', async () => {
+  const s = scratch()
+  try {
+    await buildSkin(s.src, s.out, { style: 'subtle' })
+    const manifest = JSON.parse(readFileSync(join(s.out, MANIFEST_FILE), 'utf8')) as { style: string }
+    assert.equal(manifest.style, 'subtle')
+    assert.equal((await skinStatus(s.src, s.out, 'subtle')).state, 'current')
+    assert.equal((await skinStatus(s.src, s.out, 'synthwave')).state, 'stale')
   } finally {
     s.done()
   }
@@ -258,7 +330,6 @@ test("the owner's notice is verbatim and the card renders it twice (always, and 
   )
   const card = readFileSync(new URL('../src/renderer/src/features/preferences/UiSkinSetting.tsx', import.meta.url), 'utf8')
   assert.equal(card.match(/\{UI_SKIN_DISCLAIMER\}/g)?.length, 2)
-  // Main refuses a build before acceptance, so the confirm is not the only gate.
   const ipc = readFileSync(new URL('../src/main/ipc/uiSkin.ts', import.meta.url), 'utf8')
   assert.match(ipc, /if \(!getUiSkinAccepted\(\)\) return \{ ok: false/)
 })

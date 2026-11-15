@@ -1,93 +1,171 @@
 # EQ Zera in-game UI skin
 
-Owner ask (2026-11-15): "build a custom EQL UI theme for in the game, in the same style and color
-theme as the app." Owner ruling the same day: it ships, behind a use-at-your-own-risk notice
-(`src/shared/uiSkinDisclaimer.ts`) shown on the card and confirmed once, in page, before the first
-build.
+Owner asks (2026-11-15), in order:
+
+1. "Build a custom EQL UI theme for in the game, in the same style and color theme as the app."
+2. After the first preview (a recolour of Daybreak's stone/gold art): "I want the assets to look
+   like the EQ Zera app. So it'll be a completely custom UI." The recolour is out.
+3. "If anything, I'd like it more based on the Default Modern skin but I still want custom assets
+   to look like EQ Zera."
+4. Ruling: it ships behind a use-at-your-own-risk notice (`src/shared/uiSkinDisclaimer.ts`), shown
+   on the card and confirmed once, in page, before the first build.
 
 ## Shape
 
-- **Generated on the player's machine, never shipped.** The repo carries the generator
-  (`src/main/uiSkin/`), these rules, and tests over SYNTHETIC fixtures
-  (`tests/uiSkinSynthetic.mts`). No Daybreak texture or XML is committed or redistributed.
-- **Source:** `<EQ root>/uifiles/default` (read-only, always via `effectiveEqRoot()`).
-  **Output:** `<EQ root>/uifiles/EQZera/`, holding ONLY the files it overrides; the client falls
-  back to `default` for everything else. Shipped skins are never written: the builder refuses any
-  output folder that has files and no `eqzera-skin.json`, and any path inside the source.
-- **Switch in game:** `/loadskin EQZera 1` (or the Options window's UI skin picker). Building while
-  the game runs is safe (a separate folder); the client sees changes on the next skin load.
-- **Out of date:** `eqzera-skin.json` records size + mtime of every default-skin file the build read
-  and `RULES_VERSION`. A game patch that touches any of them (or adds a window XML) reads `stale`.
+- **Base skin: `default_modern`, over `default`.** The skin inherits the modern skin's XML
+  layouts, window structure and atlas geometry. The client falls back to `default` (never to
+  `default_modern`), so every file `default_modern` carries that differs from `default` is copied
+  into the skin. Files the two share byte for byte are left to the client's fallback. Without a
+  `default_modern` folder the skin builds over `default` alone.
+- **Our chrome, drawn.** Every chrome piece is DRAWN by `src/main/uiSkin/paint.ts`, in the app's
+  language (`src/shared/palette.ts`, `src/renderer/src/theme/theme.ts`). It is drawn at exactly
+  the rectangle the XML cuts, into an atlas of exactly the base texture's size and format, so the
+  stock XML slices our art correctly. Window backgrounds are flat paper with a faint noise.
+- **Nothing of Daybreak's is committed.** The repo carries the codecs, classifier, painter, rules
+  and synthetic test fixtures. Art the skin does not draw (icons, coins, cursors, logos, gems,
+  pictorial menu buttons) and the inherited XML are copied from the player's own files when the
+  skin is generated, on their machine.
+- **Output:** `<EQ root>/uifiles/EQZera/` (always via `effectiveEqRoot()`). Shipped skins are never
+  written. The builder refuses any output folder inside a source skin, and any folder holding
+  files without `eqzera-skin.json`.
+- **Switch in game:** `/loadskin EQZera 1`. Building while the game runs is safe (a separate
+  folder). The client sees changes on the next skin load.
+- **Out of date:** `eqzera-skin.json` records size + mtime of every file in both source skins and
+  `RULES_VERSION`. A game patch touching either reads `stale`.
 - **Entry points:** the Preferences card (Preferences -> In-game UI) through `uiSkin:*` IPC, and
-  `npm run gen:eql-skin [-- --root <EQ root>] [--out <dir>] [--preview]`.
+  `npm run gen:eql-skin [-- --root <EQ root>] [--out <dir>] [--preview]`. `--preview` renders the
+  mockups described below.
 
-## What the default skin is made of (measured 2026-11-15, EQ Legends client)
+## What the skins are made of (measured 2026-11-15)
 
-- 1020 files, 305 `.tga`, 228 `.xml`, 456 `.dds` (drag-item art and guild banners), loose `.jpg`,
-  `.cur`, `.ini`.
-- TGA encodings in use: type 2 uncompressed 24-bit (52), type 2 32-bit (222, both origins), type 10
-  RLE 32-bit (30). One file (`FemaleRaceDisabled.tga`) is not a TGA at all; the codec refuses it.
-  `src/main/uiSkin/tga.ts` reads and writes exactly these, keeping each file's own encoding.
-- Chrome lives in atlases cut by `<Ui2DAnimation>` frames (texture + Location + Size) in
-  `EQUI_Animations.xml` and per-window XML. 1308 named animations.
-- Colours live in XML as `<Tag><R/><G/><B/></Tag>` blocks: `TextColor` (723), `FillTint` (281),
-  `TabTextActiveColor` (129), `MiddleTint` (84, scrollbar gutters), `BackgroundTextureTint` (79),
-  `DisabledColor`/`PressedColor`/`MouseoverColor` (~40 each), `LinesFillTint` (29),
-  `TabTextColor`, `Tint1/2`.
+- `default`: 1020 files. `default_modern`: 985 files, 257 XML. 302 of its files differ from
+  default's (211 XML, plus its own chrome atlases, cursors, a few spell/gem sheets).
+- Chrome atlases in `default_modern`:
+  - `window_pieces01-07`, `09` (TGA)
+  - `window_br_pieces`, `window_br_pieces01a`: window borders, title bars, the transparent
+    variants
+  - `window_fg_pieces`, `window_fg_pieces_black`: inner frames, tabs, scrollbars, gauge track
+  - `rounded_br_tooltip`: tooltip frame
+  - `window_pieces11a.dds`, `11b.dds`, `12.dds`: check boxes, recessed boxes, sliders, wide gem
+    holders
+- TGA encodings: type 2 and type 10 RLE, 24/32-bit, both origins. DDS: uncompressed A8R8G8B8, one
+  mip.
+  - `tga.ts` and `dds.ts` read and write exactly these, and each file keeps its own encoding.
+  - Compressed (DXT) DDS such as the drag-item art is refused and never drawn.
+- Pieces are `<Ui2DAnimation>` frames (texture + Location + Size).
+  - `WDT_Def` in the modern skin is `A_BorderFrame*` (2-3 px) + `A_WindowTitle*` (16 px) +
+    `wnd_bg_light_rock.tga`.
 
-## Texture map (file -> what it is -> what it becomes)
+## Drawn vs copied, per atlas
 
-Recolour rule for every chrome pixel (`recolor.ts`): luminance is kept exactly, alpha is never
-written. Neutral stone/steel -> navy (`paper` hue) in the shadows drifting to soft violet in the
-highlights; gold/bronze -> accent violet (bright gold lands on `accentHi`); blue -> cyan; any other
-hue (red gems, green lights) is left as drawn. Low-chroma pixels blend between the two treatments
-so anti-aliased trim does not seam.
+`pieceKinds.ts` decides from the piece NAME what it is. Anything it does not recognise, plus
+`ART_PIECES` (`rules.ts`), keeps the base skin's pixels, and those rectangles are restored after
+drawing even where a chrome rectangle overlaps them. Pixels outside every piece are the base's
+untouched.
 
-Whole texture (every pixel):
-
-| File | What it is | Becomes |
+| Atlas | Drawn (ours) | Copied from the base |
 | --- | --- | --- |
-| `wnd_bg_dark_rock.tga` | default window background (`WDT_Inner`, chat, most windows) | navy rock |
-| `wnd_bg_light_rock.tga`, `wnd_bg_mid_rock.tga` | lighter window backgrounds | navy/violet rock |
-| `wnd_bg_fade.tga` | fade strip | (all black today, so no output) |
-| `scrollbar_gutter.tga`, `scrollbar_Hgutter.tga` | scrollbar tracks (tinted by `MiddleTint`) | navy |
+| `window_br_pieces.tga` | border frame, rounded frame, window title (all pieces) | nothing referenced |
+| `window_br_pieces01a.tga` | transparent rounded frames and titles (translucent paper) | - |
+| `window_fg_pieces.tga` | inner frames, tab frames, VSB/HSB arrow buttons and thumbs, gauge track | target / tooltip indicators |
+| `window_fg_pieces_black.tga` | black inner frames | - |
+| `rounded_br_tooltip.tga` | tooltip frame | - |
+| `window_pieces01.tga` | close/min/max/tile/help buttons, gauge fill (white, XML-tinted), gauge lines (segment gaps), sliders, plus/minus, dividers, list headers, highlight frames, recessed box | coins, crystals, cursors, tab icons, white pixel |
+| `window_pieces02.tga` | inventory slot backgrounds (our labels: EAR, NECK, ... MAIN, OFF), spell gem holder/background | the pictorial menu buttons (inventory, pet, buff, spells, options...), gem highlight |
+| `window_pieces03.tga` | standard/small/big/square buttons, arrow buttons, title pieces | - |
+| `window_pieces04.tga` | zoom/pan/toolbar buttons, charm slot | compass, mail/parcel icons, pictorial menu buttons |
+| `window_pieces05.tga` | chat frames, chat title, chat min/max/close, filigree frames, power-source slot | EQ menu button (the game's logo) |
+| `window_pieces06/07.tga` | hot-button slots 1-12, all states | buff/debuff icon backgrounds, player-state icons |
+| `window_pieces09.tga` | radio buttons, rotate buttons | coin types, upconvert pieces, marketplace button |
+| `window_pieces11a.dds` | check boxes (all states), recessed boxes, small gem holder, slider | loot/edit/roll/question glyph buttons, drag indicator |
+| `window_pieces11b.dds` | large slider thumb and cap | difficulty icon sheet |
+| `window_pieces12.dds` | wide spell gem holder/background | - |
+| `stoneui_*` (default only) | stone frames, gauges, slots (used only when no modern skin) | coin plates |
 
-Regions only (chrome rectangles minus art rectangles, from the animation frames):
+Whole textures (repainted, alpha kept):
+- `wnd_bg_light_rock`, `wnd_bg_light_rock_inner` and `wnd_bg_mid_rock` become paper.
+- `wnd_bg_dark_rock`, `wnd_dark_rock`, `wnd_fg_dark_rock` and the scrollbar gutters become the page
+  ground (`bg`).
 
-| File | Chrome recoloured | Left untouched (art) |
-| --- | --- | --- |
-| `window_pieces01.tga` | window frames, title bars, close/min/max/help buttons, scrollbar arrows and thumbs, list headers, sliders, +/- buttons, rounded/filigree frames, dividers, recessed boxes, tabs | cursors, coins, crystals, tab icons, `A_WhitePixel` |
-| `window_pieces02.tga` | inventory/pet/hotbox/buff/actions/spell/friends/help/options round buttons, inventory slot backgrounds (`A_Inv*`), spell gem holder/background | spell gem highlight |
-| `window_pieces03.tga` | standard, small, big, square and arrow buttons (normal/hover/pressed/disabled), title pieces, vertical divider | nothing |
-| `window_pieces04.tga` | song/guild/map/journal/LFG/mercenary buttons, map zoom/pan/toolbar buttons, charm slot | compass strip and overlay, mail/parcel icons |
-| `window_pieces05.tga` | chat window title, borders, inner frames, chat buttons, filigree frames 1-3 | the EQ menu button (`A_EQBtn*`, the game's logo, defined in `EQUI_EQMainWnd*.xml`) |
-| `window_pieces06.tga`, `window_pieces07.tga` | hot buttons 1-12 frames | buff/debuff icon backgrounds, player-state icons (`A_PWCS*`), upconvert pieces |
-| `window_pieces09.tga` | radio buttons, rotate buttons, marketplace button | coin types, upconvert/invigorate pieces |
-| `window_pieces11a.tga` | check boxes, small recessed boxes, small gem holder, grab/check/edit/stop/cancel/roll/question buttons | tooltip indicator |
-| `stoneui_br_pieces_01.tga` | the newer stone frames: inner, transparent, tiny, inset, rounded, tab frames, title bars | nothing |
-| `stoneui_pieces01.tga` | spellbook and target gauge backgrounds and end caps, spellbook page buttons, name plate | gauge fills (white, tinted by XML) |
-| `stoneui_pieces03.tga` | gauge background/end caps/lines, slider, stone inventory slots, large recessed box | gauge fills, the four coin plates |
+Not touched: the login screen (`EQLSUI*`, `eqls_*`), character-select pieces, spell/gem/item art,
+achievement art, the 4a.dds pictorial buttons.
 
-Deliberately not touched: spell icons (`Spells*.tga`, `gemicons*.tga`), class/race/achievement
-art, item art (`dragitem*.dds`), maps, portraits, the login screen (`EQLSUI*`, `eqls_*`), the
-character-select pieces (`window_pieces08/10/11`, `window_pieces11b`), `window_pieces11c.dds`
-(DDS, loot buttons; the codec reads TGA only), `TargetBox.tga`, and `white.tga`.
+## The look (from the app)
+
+- **Panels:** `paper` #131a2b on `bg` #0b0f1a.
+- **Window edges:** a 1px accent-violet line (#a78bfa at 55%) with a soft outer glow where the
+  piece has room. Radius 4 (2 on thin pieces).
+- **Buttons:** radius 2.
+  - normal: paper face with a violet edge.
+  - hover: lifted face, accentHi edge and glow.
+  - pressed: violet-tinted face, cyan glyph.
+  - disabled: ground face, faint edge.
+- **Title bars:** a slight top-down lift with the accent hairline underneath.
+- **Gauges:** the app's segmented console bar.
+  - The track is ground plus 12% accent.
+  - The fill is white, tinted by the XML (HP red, mana cyan, endurance amber).
+  - The lines piece cuts a 2px gap every 8px.
+- **Check boxes / radios:** violet fill with an ink check or dot.
+- **Slots:** ground with a soft violet edge and a dim accentHi label in a 5x7 pixel font
+  (`font5x7.ts`).
+- **Dividers:** the neon hairline (violet to cyan).
+
+## Retrowave ornament steps (owner, 2026-11-15: "more ornamental", "retrowave design details")
+
+The layout and every rule above are unchanged. One switch, `SkinStyle` in
+`src/main/uiSkin/look.ts`, adds ornament drawn by `ornament.ts` over the clean pieces. It is the
+`style` option of `buildSkin` and `--style` on the script, and is recorded in the manifest (a
+different style reads as out of date). The default is **ornamental**.
+
+- **clean:** the flat draft above.
+- **subtle:** the title hairline runs the NEON rule. The gradient is split across the caps: the
+  left cap is magenta to violet, the middle violet, the right cap violet to cyan. Also: top-lit
+  button bevel, glossy gauge stripe with magenta/cyan end caps, a diamond on dividers wide enough
+  to hold one, grip lines on the scrollbar thumb.
+- **ornamental:** adds:
+  - double-line frames (inner cyan) with extra bloom;
+  - diamond rivets on corners with room;
+  - chevron title caps, a blooming 2px hairline and a lit top edge on title bars;
+  - title scanlines;
+  - cyan corner ticks on hot-button slots;
+  - a violet inner glow on pressed buttons;
+  - the app's own accent grid (32px, 5%) on window backgrounds.
+- **synthwave:** adds a magenta inner line, a neon band across the title bar, the striped retro
+  sun on the title's left cap, a 9% grid with background scanlines, stronger bloom and a magenta
+  pressed glow.
+
+**Limits.** Window backgrounds are TILED textures, so a perspective horizon grid that fades toward
+the bottom cannot be drawn: the grid is flat. The modern window border is 2-3px, so corner rivets
+only show where a frame has 5px or more (rounded/tooltip frames, title caps). Body text over every
+background pixel is at least 7:1 at every step (pinned in `tests/uiSkin.test.mts`).
 
 ## XML colour map
 
-Only the three numbers of a colour block change; every other byte (structure, comments, CRLF) is
-copied from the source (`xmlColors.ts`). Only window files whose colours actually change are
-written (98 of the in-game `EQUI*.xml` today); `EQUI_ColorPickerWnd.xml` is excluded (its colours
-are the content), and the login screen (`EQLSUI*`) is out of scope.
+Only the three numbers of a colour block change; every other byte is copied from the source
+(`xmlColors.ts`). `EQUI_ColorPickerWnd.xml` is excluded, and the login screen is out of scope.
 
 | Role | Elements | Rule |
 | --- | --- | --- |
-| gauge | `FillTint`, `LinesFillTint` | snapped by hue: red -> `red` (HP), blue -> `cyan` (mana), yellow/olive/orange -> `amber` (endurance, experience), green -> `green` (pet HP), purple -> `accent` (casting), magenta -> `magenta`; neutral stays |
-| text | `TextColor`, `TabTextColor`, `TabTextActiveColor`, `MouseoverColor`, `PressedColor`, `DisabledColor` | light greys -> `text` at the original brightness; gold/yellow -> `accentHi`; blue -> `cyan`; red -> `red`; green -> `green`; dark text (on light buttons) stays; a dim colour stays dim |
-| tint | `MiddleTint`, `BackgroundTextureTint`, `DisabledBackgroundTextureTint`, `Tint1/2` | neutrals stay (the texture already moved); saturated tints snap to the palette by hue at the original brightness |
+| gauge | `FillTint`, `LinesFillTint` | by hue: red -> `red` (HP), blue -> `cyan` (mana), yellow/olive/orange -> `amber` (endurance, exp), green -> `green`, purple -> `accent`, magenta -> `magenta`; neutral stays |
+| text | `TextColor`, `Tab*Color`, `Mouseover/Pressed/DisabledColor` | light grey (luma >= 200) -> `text` #e5e9f5 exactly; mid grey -> text hue at its brightness; gold/yellow headings -> `accentHi`; blue links -> `cyan`; red/green keep meaning; dark text stays |
+| tint | `MiddleTint`, `BackgroundTextureTint`, `Tint1/2` | neutrals stay; saturated tints snap by hue at the original brightness |
+
+**Fonts:** EQ's XML picks fonts by number (`<Font>N</Font>`) from the client's own fixed set, which
+is sizes of one face. A skin cannot name a typeface, so fonts are left as the base has them.
+
+## Preview
+
+`npm run gen:eql-skin -- --preview` writes `%TEMP%\eqzera-skin-mockup-1x.png` and `-2x.png`:
+- an inventory, a player window with HP/mana/endurance gauges, a target window, a hotbar and a
+  chat window with a scrollbar, check boxes and radios;
+- composed from the XML's named pieces (approximate layout);
+- `default_modern` on the left, EQ Zera on the right.
 
 ## Not verifiable outside the game
 
-Whether the client accepts every rewritten texture and XML (structure is unchanged by
-construction), how the recoloured chrome reads at in-game scale, and whether any window draws
-gold/blue chrome from a texture not in the tables above. The owner checks in game.
+- Whether the client accepts every drawn texture. Sizes and formats are identical by
+  construction.
+- How the art reads at in-game scale and UI scaling.
+- Whether any window draws chrome from a piece the classifier does not know, which would keep the
+  modern skin's look there.
+- Whether the client stretches or tiles each piece the way the mockup assumes.

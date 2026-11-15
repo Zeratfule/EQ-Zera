@@ -1,8 +1,7 @@
 /**
- * Colour arithmetic for the in-game skin generator. Pure, 0..255 channels throughout.
- *
- * "Luminance" here is Rec. 709 luma over the stored (gamma-encoded) values: the recolour keeps
- * each pixel as bright as the original artist drew it and only moves its hue and saturation.
+ * Colour arithmetic for the in-game skin generator (the XML colour rules and the painter). Pure,
+ * 0..255 channels throughout. "Luminance" is Rec. 709 luma over the stored (gamma-encoded)
+ * values: a retuned colour keeps the brightness the base skin gave it.
  */
 
 export type Rgb = readonly [number, number, number]
@@ -42,16 +41,6 @@ export function rgbToHsl(c: Rgb): Hsl {
   return { h, s, l }
 }
 
-export function hslToRgb({ h, s, l }: Hsl): Rgb {
-  const c = (1 - Math.abs(2 * l - 1)) * s
-  const hp = (((h % 360) + 360) % 360) / 60
-  const x = c * (1 - Math.abs((hp % 2) - 1))
-  const m = l - c / 2
-  const [r, g, b] =
-    hp < 1 ? [c, x, 0] : hp < 2 ? [x, c, 0] : hp < 3 ? [0, c, x] : hp < 4 ? [0, x, c] : hp < 5 ? [x, 0, c] : [c, 0, x]
-  return [clamp((r + m) * 255), clamp((g + m) * 255), clamp((b + m) * 255)]
-}
-
 export function clamp(v: number): number {
   return v < 0 ? 0 : v > 255 ? 255 : Math.round(v)
 }
@@ -74,14 +63,4 @@ export function withLuminance(c: Rgb, y: number): Rgb {
   const fy = luma(full)
   const t = (y - fy) / (255 - fy)
   return [clamp(full[0] + (255 - full[0]) * t), clamp(full[1] + (255 - full[1]) * t), clamp(full[2] + (255 - full[2]) * t)]
-}
-
-/** Smooth 0..1 ramp between `a` and `b`. */
-export function smoothstep(a: number, b: number, v: number): number {
-  const t = Math.min(1, Math.max(0, (v - a) / (b - a)))
-  return t * t * (3 - 2 * t)
-}
-
-export function mix(a: Rgb, b: Rgb, t: number): Rgb {
-  return [clamp(a[0] + (b[0] - a[0]) * t), clamp(a[1] + (b[1] - a[1]) * t), clamp(a[2] + (b[2] - a[2]) * t)]
 }
