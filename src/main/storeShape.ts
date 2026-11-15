@@ -441,4 +441,13 @@ export interface StoreShape {
    * "not yet", which is exactly what every store written before this key existed means.
    */
   uiSkinAccepted?: boolean
+  /**
+   * EVERQUEST LEGENDS PATCH NOTES (src/main/patchNotes.ts): whether a launch asks
+   * www.everquestlegends.com for new notes. `{ enabled }`.
+   *
+   * ADDITIVE + OPTIONAL => no schema bump, no migration (the `overlaySnap` carve-out). Absent reads
+   * as ON, the shipped default; an older build ignores the key. The notes are a cache file of their
+   * own, not settings.
+   */
+  patchNotes?: { enabled: boolean }
 }

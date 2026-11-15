@@ -36,6 +36,10 @@ export type View =
   | 'crafting'
   | 'buffs'
   | 'timers'
+  // THE PATCH NOTES TAB (EQ Zera): the EverQuest Legends developers' own patch and hotfix notes,
+  // fetched by main from www.everquestlegends.com on launch and cached on disk. It reads nothing
+  // from the game log, so it renders with no characters at all, like Preferences.
+  | 'patchnotes'
   | 'preferences'
   // OWNER-ONLY view (src/renderer/src/features/triage/**). It stays in the union
   // unconditionally because a union member is a TYPE and types are erased — nothing of it
@@ -110,6 +114,7 @@ export const VIEW_LABELS: Record<View, string> = {
   crafting: 'Crafting',
   buffs: 'Buffs',
   timers: 'Timers',
+  patchnotes: 'Patch Notes',
   preferences: 'Preferences',
   triage: 'Triage',
   character: 'Character',
@@ -140,6 +145,7 @@ const KNOWN_VIEWS: View[] = [
   'crafting',
   'buffs',
   'timers',
+  'patchnotes',
   'preferences',
   // JOS-327: `character` used to be spliced in behind `UNRELEASED` right here, beside the
   // owner-tools splice below. It is a plain member now — every build draws it.

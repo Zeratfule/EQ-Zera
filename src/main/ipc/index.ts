@@ -56,6 +56,8 @@ import { registerPresenceIpc } from './presence'
 import { registerQuestPinsIpc } from './questPins'
 import { registerCraftIpc } from './craft'
 import { registerReleaseNotesIpc } from './releaseNotes'
+// EverQuest Legends patch notes: the developer's posted notes, fetched by main and cached on disk.
+import { registerPatchNotesIpc } from './patchNotes'
 import { registerRosterIpc } from './roster'
 import { registerShareIpc } from './share'
 // …and the same bundle carried to the user's OTHER PC as ciphertext (docs/plans/settings-sync.md).
@@ -160,6 +162,7 @@ export function registerIpc(): void {
   registerUiScaleIpc()
   registerReleaseNotesIpc()
   registerUiSkinIpc()
+  registerPatchNotesIpc()
   // Registered in EVERY build, and a no-op in a packaged one — the refusal lives inside the
   // handler rather than around this call, so it is a decision a test can watch being made.
   // See ./dev.ts.

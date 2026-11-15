@@ -93,6 +93,17 @@ export function ZoneLootMark(p: SvgIconProps): JSX.Element {
   )
 }
 
+/** Patch Notes - a pinned notice: a sheet with a pin at its head and three lines of text. */
+export function PatchNotesMark(p: SvgIconProps): JSX.Element {
+  return (
+    <Mark {...p}>
+      <path d="M6 4.5h12v15.5H6z" />
+      <circle cx="12" cy="4.5" r="1.4" fill="currentColor" stroke="none" />
+      <path d="M9 10h6M9 13h6M9 16h4" />
+    </Mark>
+  )
+}
+
 /** Gear — a breastplate. */
 export function GearMark(p: SvgIconProps): JSX.Element {
   return (

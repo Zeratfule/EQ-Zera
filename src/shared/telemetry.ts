@@ -139,6 +139,8 @@ export const TELEMETRY_VIEWS = [
   // fork, so the closed-enum deploy order does not bite, and the value is listed because
   // tests/telemetryContract.test.mts pins this list to the View union.
   'crafting',
+  // The EverQuest Legends patch notes tab (EQ Zera) - same note as `crafting` above.
+  'patchnotes',
   'preferences',
   'triage'
 ] as const

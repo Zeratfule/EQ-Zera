@@ -85,7 +85,11 @@ export const EXTERNAL_LINK_ALLOWLIST: readonly ExternalLinkRule[] = [
   // the ONLY route a browser is meant to open — the JSON reads (`/p`), the card (`/c`) and the
   // whole `/api` surface are main's business and stay shut, which is the narrowest scope that
   // serves the link (owner ruling, JOS-263).
-  { host: 'share.eqzera.com', pathPrefix: '/s' }
+  { host: 'share.eqzera.com', pathPrefix: '/s' },
+  // The EverQuest Legends patch notes tab's "Open on everquestlegends.com" link, and any link in a
+  // note's body that points at another note (src/main/patchNotes.ts). Only the patch-notes subtree:
+  // the rest of the developer's site is not something this app links to.
+  { host: 'www.everquestlegends.com', pathPrefix: '/patch-notes' }
 ]
 
 /**

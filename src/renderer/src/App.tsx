@@ -19,6 +19,10 @@ import AppCelebrations from './components/AppCelebrations'
 // element and no state. Main guarantees it can ask at most once per candidate log per app session.
 import LogSwitchNudge from './components/LogSwitchNudge'
 import NoLogsEmptyState from './components/NoLogsEmptyState'
+// THE EVERQUEST LEGENDS PATCH NOTES: the tab, and the one launch notice when a new note arrived.
+// Both read main's own view (src/main/patchNotes), so the shell holds no state for them.
+import PatchNotesView from './features/patchnotes/PatchNotesView'
+import { PatchNotesNotice } from './features/patchnotes/PatchNotesNotice'
 import { VIEW_KEY, loadView, rememberGearTab, type View } from './appViews'
 // The app's navigation MODEL — the deep-link routers and their nonce contract. See appRouting.ts.
 import { useAppRouting, usePrefsRouting, type AppRouting, type PrefsRouting } from './appRouting'
@@ -250,6 +254,8 @@ function ViewContent({
   // no-characters gate on purpose: the triage tab reads the cloud backlog, not the game log, so
   // a machine with no EverQuest install must still reach it.
   if (OWNER_TOOLS && view === 'triage') return <DevTriageView />
+  // The developers' patch notes read nothing from the game log, so a fresh machine sees them too.
+  if (view === 'patchnotes') return <PatchNotesView />
   if (!hasCharacters) return <NoLogsEmptyState onOpenPreferences={onOpenPreferences} />
   // EVERY SPELL NAME BELOW THIS LINE IS A LINK (JOS-508) — one provider rather than a prop threaded
   // through AlertsView, BuffsView and LevelingView to the five places a name is drawn.
@@ -582,6 +588,7 @@ export default function App(): JSX.Element {
   // `ViewContentMemo` three fresh functions on every shell re-render and it would never bail out
   // once — the boundary would cost a comparison and buy nothing.
   const onOpenPreferences = useCallback(() => selectView('preferences'), [selectView])
+  const onOpenPatchNotes = useCallback(() => selectView('patchnotes'), [selectView])
   const onOpenLeveling = useCallback(() => openLeveling(), [openLeveling])
   const hasCharacters = characters.length > 0
 
@@ -628,6 +635,7 @@ export default function App(): JSX.Element {
       <AppCelebrations />
 
       <LogSwitchNudge />
+      <PatchNotesNotice onOpen={onOpenPatchNotes} />
 
       {/* Feedback is a DIALOG, not a view (appViews.ts is untouched), so it is hosted here and
           opened from the nav footer, from Preferences, and by the ErrorBoundary's "Report this"

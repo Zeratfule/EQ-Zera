@@ -15,6 +15,7 @@ import {
   MapsMark,
   MobsMark,
   OverviewMark,
+  PatchNotesMark,
   PoskyMark,
   PreferencesMark,
   QuestsMark,
@@ -23,6 +24,9 @@ import {
   ZoneLootMark
 } from './railIcons'
 import UpdateChip from './UpdateChip'
+// The Patch Notes row's unread count: a component of its own, so a push re-renders the badge and
+// not the drawer.
+import { PatchNotesBadge } from '../features/patchnotes/PatchNotesNotice'
 import { OWNER_TOOLS } from '../devFlags'
 import type { PrefsRouting } from '../appRouting'
 import { GEAR_AREA_VIEWS, VIEW_LABELS, loadGearTab, type View } from '../appViews'
@@ -166,7 +170,8 @@ const ROWS: NavRow[] = [
   { view: 'buffs', icon: <BuffsMark /> },
   // Respawn clocks (JOS-194) sit beside Buffs because both tabs are the same shape of answer —
   // a list of things counting down — and a player checking one is usually checking the other.
-  { view: 'timers', icon: <TimersMark /> }
+  { view: 'timers', icon: <TimersMark /> },
+  { view: 'patchnotes', icon: <PatchNotesMark />, badge: <PatchNotesBadge /> }
 ]
 
 /** Bottom-aligned, outside ROWS — it is not a feature view and never moves. */

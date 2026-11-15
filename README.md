@@ -31,7 +31,9 @@ guide is [`AGENTS.md`](AGENTS.md) and is still the best map of the code.
 - **Telemetry and feedback are dark.** No endpoint is compiled in
   (`src/main/telemetry/net.ts`, `src/main/feedback/net.ts`). Nothing leaves your machine
   except the same third-party lookups upstream made: eqlwiki.com (items/mobs/images),
-  the community sound-pack registry, and the on-demand Kokoro voice model download.
+  the community sound-pack registry, and the on-demand Kokoro voice model download. The
+  Patch Notes tab also reads the public patch notes on www.everquestlegends.com once per launch
+  (a plain GET carrying nothing about you; Preferences turns it off).
 - Upstream CI workflows are parked in `.github/workflows-upstream-disabled/`; the fork's own
   are `.github/workflows/ci.yml` and `release.yml` (tag-driven, signed builds).
 - Settings still live in `%AppData%\everquest-companion\` so an existing install's data is

@@ -129,6 +129,17 @@ test('the share-link entry buys the HTML page and nothing else on that host', ()
   assert.equal(allowedExternalUrl('https://evil.com/s/abc'), null)
 })
 
+test('the patch-notes entry opens the developer notes and nothing else on that host', () => {
+  const note = 'https://www.everquestlegends.com/patch-notes/eql-update-notes-11-10-2026'
+  assert.equal(allowedExternalUrl(note), note)
+  assert.equal(allowedExternalUrl('https://www.everquestlegends.com/patch-notes'), 'https://www.everquestlegends.com/patch-notes')
+  assert.equal(allowedExternalUrl('http://www.everquestlegends.com/patch-notes/x'), null)
+  assert.equal(allowedExternalUrl('https://www.everquestlegends.com/store'), null)
+  assert.equal(allowedExternalUrl('https://www.everquestlegends.com/patch-notes-evil/x'), null)
+  assert.equal(allowedExternalUrl('https://everquestlegends.com/patch-notes/x'), null)
+  assert.equal(allowedExternalUrl('https://www.everquestlegends.com.evil.com/patch-notes/x'), null)
+})
+
 test('the prefilled ISSUE link the feedback dialog builds actually opens', () => {
   // The dark-build ways-out row hands `githubIssueUrl`'s output to an `<a target="_blank">`, which
   // main turns into `shell.openExternal` THROUGH this function. Two ways that silently fails: a

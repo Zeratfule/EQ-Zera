@@ -139,6 +139,8 @@ import { whatsNewSection } from '../whatsnew/WhatsNewPanel'
 // Same arrangement again (JOS-198): the credit for the bundled wiki art names its own section
 // beside the card that renders it. See ./ThanksSetting.tsx for why it is a section at all.
 import { thanksSection } from './ThanksSetting'
+// Same arrangement again: the EverQuest Legends patch notes launch switch. See ./PatchNotesSetting.tsx.
+import { patchNotesSection } from './PatchNotesSetting'
 // Same arrangement again (owner, 2026-09-10): where your character card gets posted - today one
 // Discord channel webhook - names its own section beside the card that renders it.
 import { sharingSection } from './SharingSetting'
@@ -392,6 +394,8 @@ function buildSections({ version, status, onSendFeedback, onWhatsNew }: SectionI
     // Directly under Updates, which is where a person who just read the version number is
     // standing when they wonder what it changed (JOS-73).
     whatsNewSection(),
+    // …and the game's own notes, which are the other thing "what changed" can mean.
+    patchNotesSection(),
     analyticsSection(),
     perfSection(),
     {
@@ -424,11 +428,7 @@ function sectionKeys(sections: PrefSection[]): Record<string, string> {
   return m
 }
 
-function filterSections(
-  sections: PrefSection[],
-  keys: Record<string, string>,
-  q: string
-): PrefSection[] {
+function filterSections(sections: PrefSection[], keys: Record<string, string>, q: string): PrefSection[] {
   if (!q) return sections
   return sections
     .map((s) => {
