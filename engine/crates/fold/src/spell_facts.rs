@@ -443,12 +443,16 @@ mod tests {
             vec![
                 // 486 -> 487 on the 2026-10-07 rescrape: the wiki added six beneficial spells (Summon
                 // Familiar: Murderbee, Summon Drogmor, Summon Horse, ...) and merged a duplicate Greater Healing row.
-                ("Buff", 487),
-                ("CrowdControl", 90),
-                ("Debuff", 123),
+                // 487/90/123/3 -> 491/91/125/4 on the 2026-11-15 rescrape (the Oct 22 Castle
+                // Nektropos patch): new buffs (Pet Illusion / Summon Familiar lines, Mana
+                // Preservation III), Greater Immobilize as crowd control, two new debuffs, and the
+                // Familiar: Gelatinous Cube stub whose page states no effects yet.
+                ("Buff", 491),
+                ("CrowdControl", 91),
+                ("Debuff", 125),
                 ("DotHot", 193),
                 ("ProcBuff", 1),
-                ("Unstated", 3),
+                ("Unstated", 4),
             ]
         );
         // The reported spell: its page lists a curse counter and no damage line, so the catalog
