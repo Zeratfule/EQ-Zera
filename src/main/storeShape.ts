@@ -436,6 +436,12 @@ export interface StoreShape {
    */
   luclinModels?: LuclinPrefs
   /**
+   * THE IN-GAME UI SKIN's one remembered answer (src/main/storeUiSkin.ts): the player accepted the
+   * use-at-your-own-risk notice before their first build. ADDITIVE + OPTIONAL: absent reads as
+   * "not yet", which is exactly what every store written before this key existed means.
+   */
+  uiSkinAccepted?: boolean
+  /**
    * EVERQUEST LEGENDS PATCH NOTES (src/main/patchNotes.ts): whether a launch asks
    * www.everquestlegends.com for new notes. `{ enabled }`.
    *

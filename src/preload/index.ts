@@ -113,6 +113,8 @@ import { patchNotesBridge } from './patchNotesApi'
 // PREFERENCES ONLY: the messages are sent by main off the one function every celebration card
 // already passes through, so there is no door here a renderer could post through.
 import { celebrationPostBridge } from './celebrationPost'
+// The in-game UI skin card's four calls and its progress push (./uiSkin.ts).
+import { uiSkinBridge } from './uiSkin'
 // The DEV-ONLY triage surface (see the banner above its methods, below). Types only — the
 // contract lives in src/shared so main, preload and the renderer name one definition.
 import type {
@@ -321,6 +323,8 @@ const api = {
   ...patchNotesBridge,
   // …and the celebration-post preferences (./celebrationPost.ts), likewise.
   ...celebrationPostBridge,
+  // …and the in-game UI skin (./uiSkin.ts), likewise.
+  ...uiSkinBridge,
 
   /**
    * Is this the headless integration-test channel (`EQ_E2E=1`, src/main/e2e.ts)?

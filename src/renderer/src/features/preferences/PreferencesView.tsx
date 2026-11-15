@@ -92,7 +92,6 @@ import SystemUpdateAltIcon from '@mui/icons-material/SystemUpdateAlt'
 import RecordVoiceOverIcon from '@mui/icons-material/RecordVoiceOver'
 import IosShareIcon from '@mui/icons-material/IosShare'
 import FeedbackIcon from '@mui/icons-material/Feedback'
-import PrivacyTipIcon from '@mui/icons-material/PrivacyTip'
 import LayersIcon from '@mui/icons-material/Layers'
 import { ExportSettingsSetting, ImportSettingsSetting } from '../profiles/ProfileSharing'
 import { ClassComboSetting } from '../profiles/ClassComboPanel'
@@ -117,7 +116,7 @@ import { AlertBannerSetting } from './AlertBannerSetting'
 import { ConCardSetting } from './ConCardSetting'
 // Cursor ring: another descriptor that lives beside its own card, same ceiling, same answer.
 import { cursorRingSection } from './CursorRingSetting'
-import { TelemetrySetting } from './TelemetrySetting'
+import { analyticsSection } from './TelemetrySetting'
 // Performance is the one section whose DESCRIPTOR lives with its card rather than here: this
 // file sits at the 400-code-line factoring ceiling, and the section's own file is the honest
 // place for the label, icon and search keywords that name it. See ./PerfSetting.tsx.
@@ -152,6 +151,9 @@ import { syncSection } from './SyncSetting'
 // Same arrangement again: which alerts ALSO reach a connected Discord channel while nobody is at
 // the keyboard names its own section beside its card. See ./AwayAlertsSetting.tsx.
 import { awayAlertsSection } from './AwayAlertsSetting'
+// Same arrangement again (docs/plans/eql-ui-skin.md): the EQ Zera in-game UI skin names its own
+// section beside its card. See ./UiSkinSetting.tsx.
+import { uiSkinSection } from './UiSkinSetting'
 // The section CARD and the arrival pulse live together in their own file — same ceiling, same
 // answer as PerfSetting's descriptor: split, don't widen the threshold.
 import PrefSectionBlock, { FILL_COLUMN_SX, FILL_ROOT_SX, FILL_ROW_SX, paneFills, useLandedSection } from './PrefSectionBlock'
@@ -290,31 +292,6 @@ function overlaysSection(): PrefSection {
   }
 }
 
-/**
- * Usage analytics (docs/plans/usage-analytics.md). Its own factory for the same reason the two
- * above are — `buildSections` sits against the 100-code-line ceiling.
- *
- * It is a SECTION rather than a line inside another one because of what it contains: the switch
- * is one control, but the payload viewer beside it is the whole privacy claim made checkable,
- * and that does not belong tucked under "Updates".
- */
-function analyticsSection(): PrefSection {
-  return {
-    id: 'analytics',
-    label: 'Usage analytics',
-    icon: <PrivacyTipIcon fontSize="small" />,
-    items: [
-      {
-        id: 'telemetry',
-        label: 'Anonymous usage counts',
-        keywords:
-          'telemetry analytics usage privacy tracking opt out optout data collect anonymous id rotate payload send stats metrics',
-        content: <TelemetrySetting />
-      }
-    ]
-  }
-}
-
 /** What `buildSections` needs from the view. An OBJECT rather than four positional parameters:
  *  the repo's `max-params` ceiling is 4 and the fourth argument was the one that would have hit
  *  it, but the real reason is that "version" and "the way to the release notes" are two halves of
@@ -335,6 +312,9 @@ function buildSections({ version, status, onSendFeedback, onWhatsNew }: SectionI
     // Preferences because they can barely read the app has to find this one, and the rail is
     // itself drawn at the size they are complaining about.
     appearanceSection(),
+    // The in-game UI skin: the game's own windows, so it sits with Game and Appearance (Appearance
+    // keeps second place, above).
+    uiSkinSection(),
     combatSection(),
     overlaysSection(),
     // Right after the overlays, because the promise this switch makes is about them: closing the
