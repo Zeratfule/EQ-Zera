@@ -26,6 +26,7 @@
       <a href="#quests">Quest tracker</a>
       <a href="#loot">Loot, upgrades and farming</a>
       <a href="#share">Sharing your setup</a>
+      <a href="#game">Playing through EQ Zera</a>
       <a href="#updates">Updates and versions</a>
       <a href="#troubleshooting">Troubleshooting</a>
     </div>
@@ -122,6 +123,39 @@
     <p>Your phone can be a live second screen. In <b>Preferences, Sharing</b>, switch on <b>Send live data to my phone</b>, click <b>Pair a phone</b> and scan the QR code with your phone's camera. The page that opens shows your fight meter, the run tracker, respawn and buff timers, recent events and your character, and your browser's <i>Add to Home Screen</i> installs it like an app. Everything is encrypted on your PC before it is sent; the key lives only in the code you scanned, so the relay cannot read it, and other players' chat is never sent. <b>Unpair all phones</b> kills every link at once.</p>
     <h3>Sharing a fight</h3>
     <p>The Combat tab's <b>Share</b> button on the fight header opens a card of the selected fight: every combatant with damage, DPS and share. <b>Post to Discord</b> sends it to a connected channel, <b>Copy image</b> and <b>Save image…</b> keep it, and <b>Copy text</b> gives a plain summary for chat. The fight and zone meter overlays carry the same button.</p>
+  </div>
+</section>
+
+<section class="eqz-section eqz-guide" id="game">
+  <div class="eqz-wrap eqz-narrow">
+    <h2>Playing through EQ Zera</h2>
+    <p>EQ Zera can start the game for you, switch on the game's Luclin-era character models, and give the game's own windows the EQ Zera look. The last two change files in your EverQuest Legends folder in ways Daybreak does not support, so each is off until you switch it on, asks you to accept a warning the first time, and is used at your own risk. EQ Zera and its developer are not responsible for any bans, account actions or other consequences.</p>
+    <figure class="eqz-shot">
+      <img src="https://eqzera.com/wp-content/uploads/2026/11/guide-play-bar.png" alt="EQ Zera Overview tab with the Play EverQuest Legends button and Patch with the launcher at the top" width="1920" height="536" loading="lazy">
+      <figcaption>The Play bar at the top of the Overview tab. Patch with the launcher opens the game launcher for updates.</figcaption>
+    </figure>
+    <h3>The Play button</h3>
+    <p>The <b>Overview</b> tab has a <b>Play EverQuest Legends</b> bar at the top, and the tray menu has the same item. With Luclin models off, Play opens the normal launcher. With them on, Play checks the game's load list, puts the models back if the launcher removed them, and starts the game directly. While the game is running the button says so instead.</p>
+    <h3>Luclin character models</h3>
+    <p>EverQuest Legends ships the newer Luclin-era player models but does not load them. Open <b>Preferences → Game → Luclin character models</b>, pick the races you want (all are ticked by default; untick one to keep its classic look), and press <b>Apply</b>. EQ Zera adds those races to the game's load list, <code>Resources\GlobalLoad.txt</code>, and keeps a copy of the original so <b>Revert</b> puts it back exactly.</p>
+    <p>The game's launcher rewrites that file every time it patches. You still need the launcher for patches; press <b>Patch with the launcher</b>, and the next time you press Play, EQ Zera puts the models back. Switch on <b>Keep it applied</b> to have that happen as soon as EQ Zera notices. <b>Create desktop shortcut</b> makes a shortcut that does the same thing from your desktop.</p>
+    <figure class="eqz-shot">
+      <img src="https://eqzera.com/wp-content/uploads/2026/11/guide-luclin-models.png" alt="The Luclin character models card in EQ Zera Preferences, Game: the switch, thirteen race checkboxes, Apply, Revert, Play with Luclin models, Create desktop shortcut, Keep it applied, and the use at your own risk notice" width="1920" height="506" loading="lazy">
+      <figcaption>Preferences, Game: pick the races, Apply, and Play keeps them on after a patch.</figcaption>
+    </figure>
+    <h3>The EQ Zera skin for the game</h3>
+    <p>Open <b>Preferences → In-game UI</b> and press <b>Build skin</b>. EQ Zera draws its own frames, title bars, buttons, tabs and scrollbars in the app's neon style, on the layout of the game's Modern skin, and writes them to a new folder, <code>uifiles\EQZera</code>. Chat and combat text sit on black so every chat colour stays readable, and the health, mana and experience bars are the game's own. Nothing in the game's own skins is changed.</p>
+    <p>In game, type <code>/loadskin EQZera 1</code> to switch to it, or <code>/loadskin default_modern 1</code> to go back. After a game patch the card says the skin is out of date; press <b>Update skin</b> and load it again.</p>
+    <figure class="eqz-shot">
+      <img src="https://eqzera.com/wp-content/uploads/2026/11/guide-ingame-skin.jpg" alt="EverQuest Legends with the EQ Zera skin loaded: the inventory window and player window drawn with neon violet frames, glowing title bars and black content areas" width="1920" height="1336" loading="lazy">
+      <figcaption>The EQ Zera skin in game, on the Modern layout. Frames and title bars are EQ Zera; text sits on black and the bars are the game's own.</figcaption>
+    </figure>
+    <h3>Patch notes</h3>
+    <p>The <b>Patch Notes</b> tab shows the EverQuest Legends developers' patch and hotfix notes. EQ Zera fetches them from everquestlegends.com each time it starts and keeps them, so they read offline. New notes get an unread badge and a short notice. Turn off the launch check in <b>Preferences → Patch notes</b> if you would rather it made no request.</p>
+    <figure class="eqz-shot">
+      <img src="https://eqzera.com/wp-content/uploads/2026/11/guide-patch-notes.png" alt="The EQ Zera Patch Notes tab: a list of EverQuest Legends patch and hotfix notes on the left and the November 10, 2026 notes open on the right" width="1920" height="1032" loading="lazy">
+      <figcaption>The Patch Notes tab: patch and hotfix notes from everquestlegends.com, readable offline.</figcaption>
+    </figure>
   </div>
 </section>
 
