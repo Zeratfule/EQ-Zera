@@ -158,3 +158,14 @@ test('the view: rows newest first, read and downloaded flags, links to the real 
   assert.equal(v.unread, 1)
   assert.equal(v.lastOkAt, T0)
 })
+
+test('a note shows the day its title states, in every time zone (the Sep 29 note read as Sep 28)', async () => {
+  const { noteDay } = await import('../src/shared/patchNotes')
+  const opts: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' }
+  const show = (title: string, epochSec: number): string => new Date(noteDay(title, epochSec * 1000)).toLocaleDateString('en-US', opts)
+  // start_date_epoch 1790643600 is 2026-09-29 01:00 UTC: Sep 28 in every US time zone.
+  assert.equal(show('Hotfix Patch Notes - September 29, 2026', 1790643600), 'Sep 29, 2026')
+  assert.equal(show('Patch Notes - November 10, 2026', 1794337200), 'Nov 10, 2026')
+  // No date in the title: the epoch's own UTC day.
+  assert.equal(show('EQL Patch Notes', 1790643600), 'Sep 29, 2026')
+})

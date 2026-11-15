@@ -246,3 +246,21 @@ export function noticeFor(arrived: readonly PatchNoteSummary[]): PatchNoteNotice
   const newest = arrived[0]
   return newest === undefined ? null : { pageName: newest.pageName, title: newest.title, count: arrived.length }
 }
+
+const MONTHS = ['january', 'february', 'march', 'april', 'may', 'june', 'july', 'august', 'september', 'october', 'november', 'december']
+const TITLE_DATE_RE = /([A-Za-z]+)\s+(\d{1,2}),\s*(\d{4})\s*$/
+
+/**
+ * THE DAY A NOTE IS FOR, as a timestamp to format (2026-11-15). The index's `start_date_epoch`
+ * is a moment near midnight UTC, so formatting it in a US time zone printed the day BEFORE
+ * ("Hotfix Patch Notes - September 29, 2026" showed Sep 28). Every title states the developers'
+ * own date, so that wins; noon UTC keeps it on the same calendar day in every time zone. A title
+ * without a date falls back to the epoch, also pinned to its UTC day.
+ */
+export function noteDay(title: string, postedAt: number): number {
+  const m = TITLE_DATE_RE.exec(title.trim())
+  const month = m ? MONTHS.indexOf(m[1].toLowerCase()) : -1
+  if (m && month >= 0) return Date.UTC(Number(m[3]), month, Number(m[2]), 12)
+  const d = new Date(postedAt)
+  return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate(), 12)
+}

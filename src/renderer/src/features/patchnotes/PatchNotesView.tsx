@@ -8,14 +8,15 @@
 import { type JSX, useEffect, useState } from 'react'
 import { Alert, Box, Button, Chip, Link, List, ListItemButton, Paper, Stack, Typography } from '@mui/material'
 import OpenInNewIcon from '@mui/icons-material/OpenInNew'
-import type { PatchNoteRow, PatchNotesView as View } from '@shared/patchNotes'
+import { noteDay, type PatchNoteRow, type PatchNotesView as View } from '@shared/patchNotes'
 import type { PatchNoteArticle } from '@shared/patchNotesParse'
 import { formatAge, formatDate } from '../../lib/formatDate'
 import PatchNoteBody from './PatchNoteBody'
 import { loadSelectedNote, rememberSelectedNote, usePatchNotes } from './usePatchNotes'
 
 const LIST_WIDTH = 300
-const DATE_OPTS: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'short', day: 'numeric' }
+// A calendar day pinned to noon UTC by `noteDay`, read back in UTC so no time zone moves it.
+const DATE_OPTS: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'UTC' }
 
 function KindChip({ row }: { row: PatchNoteRow }): JSX.Element {
   const hotfix = row.kind === 'hotfix'
@@ -58,7 +59,7 @@ function NoteRow({ row, selected, onPick }: { row: PatchNoteRow; selected: boole
         <Stack direction="row" spacing={1} alignItems="center">
           <KindChip row={row} />
           <Typography variant="caption" color="text.secondary">
-            {formatDate(row.postedAt, DATE_OPTS)}
+            {formatDate(noteDay(row.title, row.postedAt), DATE_OPTS)}
           </Typography>
         </Stack>
       </Stack>
@@ -107,7 +108,7 @@ function NoteDetail({ row }: { row: PatchNoteRow }): JSX.Element {
         <Stack direction="row" spacing={1} alignItems="center">
           <KindChip row={row} />
           <Typography variant="body2" color="text.secondary">
-            {formatDate(row.postedAt, DATE_OPTS)}
+            {formatDate(noteDay(row.title, row.postedAt), DATE_OPTS)}
           </Typography>
           <OpenOnSite row={row} />
         </Stack>
