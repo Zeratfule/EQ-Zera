@@ -305,3 +305,18 @@ test('a malformed row is skipped rather than half-read', () => {
   const table = parseSpellsUs(['not^a^row', '', TASHANI].join('\n'))
   assert.deepEqual(Object.keys(table), ['tashani'])
 })
+
+test('the November 2026 client (174 fields: one column inserted before 77) reads the same as the 173-field layout', () => {
+  // Measured 2026-11-15 on the patched client: Smiting Strike's -250 moved 78 -> 79, a rain's
+  // aemaxtargets 143 -> 144 and the effect slots 172 -> 173; fields 0..52 did not move.
+  const old = row({ id: 74037, name: 'Smiting Strike', resistType: 5, targetType: 5, resistAdj: -250, classes: { 2: 10 }, slots: '1|0|-82|0|104|157' })
+  const f = old.split('^')
+  const patched = [...f.slice(0, 77), '7', ...f.slice(77)].join('^')
+  assert.equal(patched.split('^').length, 174)
+  const a = parseSpellsUs(old)['smiting strike']
+  const b = parseSpellsUs(patched)['smiting strike']
+  assert.equal(b?.resistAdj, -250, 'resist adjust is read from its new column')
+  assert.deepEqual(b, a, 'every field the parser reads agrees across the two layouts')
+  const odd = [...f, '0', '0'].join('^')
+  assert.equal(parseSpellsUs(odd)['smiting strike'], undefined, 'a layout never measured is skipped, not misread')
+})

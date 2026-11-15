@@ -289,6 +289,26 @@ function prefer(existing: { info: SpellResistInfo; playable: boolean }, playable
 }
 
 /**
+ * THE NOVEMBER 2026 LAYOUT (EQ Zera, 2026-11-15). The client patched on 2026-11-08 writes 174
+ * fields per row where the field map above was measured on 173: ONE column was inserted between
+ * 53 and 77, so resist adjust moved 78 -> 79, aemaxtargets 143 -> 144 and the effect slots
+ * 172 -> 173, while 0..52 (id, name, cast, recast, duration, mana, resist type, target type and
+ * the sixteen class levels) did not move. Measured on Smiting Strike (-250 now at 79), a rain
+ * (4 targets now at 144) and Lightning Bolt (slots now last). Dropping field 77 puts every field
+ * this parser reads back where the map says, on either layout; a length it has never measured
+ * is skipped rather than read at the wrong offsets.
+ */
+const LAYOUT_2026_08 = F_SLOTS + 1
+const LAYOUT_2026_11 = F_SLOTS + 2
+const INSERTED_BEFORE = 77
+
+export function realign(f: string[]): string[] | null {
+  if (f.length === LAYOUT_2026_08 || f.length === F_SLOTS) return f
+  if (f.length === LAYOUT_2026_11) return [...f.slice(0, INSERTED_BEFORE), ...f.slice(INSERTED_BEFORE + 1)]
+  return null
+}
+
+/**
  * Parse the whole file. ~74k rows; measured around 350 ms on the owner's machine, which is
  * exactly why the caller runs it on a worker thread (JOS-371: no synchronous multi-MB work on the
  * thread that tails the log).
@@ -298,8 +318,8 @@ export function parseSpellsUs(text: string): SpellResistTable {
   const seen = new Map<string, { info: SpellResistInfo; playable: boolean }>()
   for (const line of text.split('\n')) {
     if (!line) continue
-    const f = line.split('^')
-    if (f.length < F_SLOTS) continue
+    const f = realign(line.split('^'))
+    if (f === null) continue
     const name = f[F_NAME]
     if (!name || !Number.isFinite(Number(f[F_ID]))) continue
     const key = spellCanonKey(name)
