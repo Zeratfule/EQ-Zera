@@ -426,4 +426,11 @@ export interface StoreShape {
    * every field and drops a pairing whose ids are not the shapes this app mints.
    */
   phone?: StoredPhonePrefs
+
+  /**
+   * THE IN-GAME UI SKIN's one remembered answer (src/main/storeUiSkin.ts): the player accepted the
+   * use-at-your-own-risk notice before their first build. ADDITIVE + OPTIONAL: absent reads as
+   * "not yet", which is exactly what every store written before this key existed means.
+   */
+  uiSkinAccepted?: boolean
 }
