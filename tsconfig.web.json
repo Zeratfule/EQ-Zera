@@ -81,6 +81,8 @@
     // …and `engine.ts` (the data server's brokered byte channel, JOS-484), likewise.
     "src/preload/engine.ts",
     // …and `celebrationPost.ts` (the celebration-post preferences), likewise.
-    "src/preload/celebrationPost.ts"
+    "src/preload/celebrationPost.ts",
+    // …and `patchNotesApi.ts` (the EverQuest Legends patch notes), likewise.
+    "src/preload/patchNotesApi.ts"
   ]
 }

@@ -55,6 +55,8 @@ import { initAwayAlerts, stopAwayAlerts } from './awayAlerts'
 // The phone link (docs/plans/phone-link.md). Arms NOTHING unless the switch is already on, and
 // never under EQ_E2E - the origin is dark there, so a headless run cannot open a socket at all.
 import { initPhone, stopPhone } from './phone'
+// EverQuest Legends patch notes: one launch check of www.everquestlegends.com, after the window is up.
+import { initPatchNotes } from './patchNotes'
 import { provisionDefaultPacks } from './provisionPacks'
 import { removedPackIds } from './storeSoundPacks'
 import { startTailing, stopSession } from './session'
@@ -424,6 +426,11 @@ if (!gotSingleInstanceLock) {
     // …and the phone link, on the same terms: one store read when it is off, which is the default
     // install, and no timer, no socket and no room until somebody switches it on.
     initPhone()
+
+    // …and the EverQuest Legends patch notes: a few seconds after this, one GET of the index and at
+    // most five article pages, one at a time, unless the Preferences switch is off. Dark under
+    // EQ_E2E unless the harness names a loopback stub (src/main/patchNotes/net.ts).
+    initPatchNotes()
 
     // The performance HUD (docs/plans/perf-profiling.md P1). Costs one store read when it is
     // off — which is the default install: with `perfHud.enabled` false no timer is created at

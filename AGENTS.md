@@ -1886,13 +1886,21 @@ plumbing proven). Reuses the tier-2 lifecycle via
   (the card WARNS there rather than explaining). The access violation is
   unidentified: this is a workaround to re-measure when Wine or Electron moves.
 
-## Cloud — two deliberate outbound origins, nothing else (2026-09-08, updated 2026-09-19)
+## Cloud — three deliberate outbound origins, nothing else (2026-09-08, updated 2026-11-15)
 
 Since 2026-09-09 the app speaks to exactly two hosts of its own choosing, each behind a compiled
 origin, POST from main only, 15 s timeout, dark under `EQ_E2E`: `share.eqzera.com` (the share-link
 service, `src/main/share/net.ts`, Cloudflare Worker in `share-server/`) and `discord.com` (a
 user-pasted channel webhook, `src/main/share/discord.ts`; the URL is stored main-side, masked in
 the UI, never logged). Everything below about feedback and telemetry still holds.
+
+**A THIRD, READ-ONLY ORIGIN: `www.everquestlegends.com` (2026-11-15, the Patch Notes tab).** GET only,
+from main only (`src/main/patchNotes/net.ts`), 15 s per request, a plain browser User-Agent and no
+cookie, id, version or character in any request. One launch check (Preferences switch, default ON)
+fetches the `/patch-notes` index and at most five article pages, ONE AT A TIME, backing off after a
+failure; the bodies are reduced to a closed node tree (`shared/patchNotesHtml.ts`) and never reach
+the DOM as markup. Dark under `EQ_E2E` unless the harness names a numeric-loopback stub in
+`EQ_E2E_PATCH_NOTES_ORIGIN`. Its link-out is a `/patch-notes`-scoped `EXTERNAL_LINK_ALLOWLIST` entry.
 
 **THE THIRD USE OF THE FIRST ORIGIN IS A SOCKET (2026-09-19, docs/plans/phone-link.md).** Share
 links, settings sync and now the PHONE LINK all speak to `share.eqzera.com`; the phone link adds a
