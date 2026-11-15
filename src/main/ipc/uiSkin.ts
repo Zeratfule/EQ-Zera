@@ -34,8 +34,10 @@ async function build(sender: Electron.WebContents): Promise<UiSkinBuildResult> {
   building = true
   try {
     const { src, out } = dirs()
-    await buildSkin(src, out, (p) => {
-      if (!sender.isDestroyed()) sender.send(IPC.onUiSkinProgress, { done: p.done, total: p.total })
+    await buildSkin(src, out, {
+      onProgress: (p) => {
+        if (!sender.isDestroyed()) sender.send(IPC.onUiSkinProgress, { done: p.done, total: p.total })
+      }
     })
     building = false
     return { ok: true, view: await view() }

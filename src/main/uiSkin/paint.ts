@@ -9,6 +9,8 @@ import { PALETTE } from '../../shared/palette'
 import { type Rgb, hexToRgb } from './color'
 import { drawText, GLYPH_H, textWidth } from './font5x7'
 import type { Dir, FrameVariant, Glyph, Piece, State } from './pieceKinds'
+import { type Look, lookFor } from './look'
+import { buttonOrnament, frameOrnament, pieceOrnament } from './ornament'
 import { Canvas, type Rect, type Rgba, fillPolygon, fillRoundRect, glowRoundRect, line, strokeRoundRect } from './raster'
 
 const rgba = (hex: string, a = 1): Rgba => {
@@ -68,16 +70,18 @@ const FRAME_LOOK: Record<FrameVariant, { fill: Rgba | null; edge: Rgba; glow: bo
   highlight: { fill: null, edge: STYLE.edgeHi, glow: false }
 }
 
-function paintFrame(c: Canvas, dir: Dir, variant: FrameVariant): void {
+function paintFrame(c: Canvas, at: { dir: Dir; variant: FrameVariant }, look: Look): void {
+  const { dir, variant } = at
   const e = edgesOf(dir)
   const thick = Math.min(e.left || e.right ? c.w : FAR, e.top || e.bottom ? c.h : FAR)
-  const look = FRAME_LOOK[variant]
-  const margin = look.glow && thick >= 5 ? 2 : 0
+  const frame = FRAME_LOOK[variant]
+  const margin = frame.glow && thick >= 5 ? 2 : 0
   const panel = virtualPanel(dir, c.w, c.h, margin)
   const radius = thick >= 5 ? 4 : 2
   if (margin) glowRoundRect(c, panel, radius, { spread: margin + 1, color: STYLE.glow })
-  if (look.fill) fillRoundRect(c, panel, radius, look.fill)
-  strokeRoundRect(c, panel, radius, { width: 1, paint: look.edge })
+  if (frame.fill) fillRoundRect(c, panel, radius, frame.fill)
+  strokeRoundRect(c, panel, radius, { width: 1, paint: frame.edge })
+  frameOrnament(c, { dir, variant, panel, radius }, look)
 }
 
 function paintTitle(c: Canvas): void {
@@ -232,21 +236,26 @@ function paintHeader(c: Canvas, dir: Dir): void {
 }
 
 /** Draws `piece` into a fresh transparent canvas of exactly w x h. */
-export function paintPiece(piece: Piece, w: number, h: number): Canvas {
+export function paintPiece(piece: Piece, size: { w: number; h: number }, look: Look = lookFor('clean')): Canvas {
+  const { w, h } = size
   const c = new Canvas(w, h)
   switch (piece.kind) {
     case 'frame':
-      paintFrame(c, piece.dir, piece.variant)
+      paintFrame(c, piece, look)
       break
     case 'title':
       paintTitle(c)
       break
     case 'button':
       paintButton(c, piece.state)
+      buttonOrnament(c, { state: piece.state, radius: 2 }, look)
       break
-    case 'glyphButton':
-      paintGlyph(c, piece.glyph, paintButton(c, piece.state).ink)
+    case 'glyphButton': {
+      const ink = paintButton(c, piece.state).ink
+      buttonOrnament(c, { state: piece.state, radius: 2 }, look)
+      paintGlyph(c, piece.glyph, ink)
       break
+    }
     case 'glyph':
       paintGlyph(c, piece.glyph, STYLE.text)
       break
@@ -257,6 +266,7 @@ export function paintPiece(piece: Piece, w: number, h: number): Canvas {
     default:
       paintOther(c, piece)
   }
+  pieceOrnament(c, piece, look)
   return c
 }
 

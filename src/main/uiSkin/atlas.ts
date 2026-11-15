@@ -5,6 +5,8 @@
  */
 import { type AnimFrame } from './animations'
 import { decodeDds, encodeDds, DdsError } from './dds'
+import { type Look, lookFor } from './look'
+import { backgroundOrnament } from './ornament'
 import { paintPiece, STYLE } from './paint'
 import { classifyPiece } from './pieceKinds'
 import { Canvas, noise } from './raster'
@@ -49,7 +51,7 @@ export interface AtlasResult {
 }
 
 /** Every recognised piece drawn at its rectangle; art and unknown pieces restored from the base. */
-export function drawAtlas(img: SkinImage, frames: readonly AnimFrame[], texture: string): AtlasResult {
+export function drawAtlas(img: SkinImage, frames: readonly AnimFrame[], texture: string, look: Look = lookFor('clean')): AtlasResult {
   const atlas = new Canvas(img.width, img.height)
   atlas.px.set(img.rgba)
   // Where the XML cuts two pieces from overlapping rectangles, the later one wins; a gauge's lines
@@ -67,7 +69,7 @@ export function drawAtlas(img: SkinImage, frames: readonly AnimFrame[], texture:
       if (f.w * f.h < (img.width * img.height) / 4) keep.push(f)
       continue
     }
-    atlas.put(paintPiece(piece, f.w, f.h), f.x, f.y)
+    atlas.put(paintPiece(piece, f, look), f.x, f.y)
     drawn.push(f.name)
   }
   for (const f of keep) copyRect(atlas.px, img.rgba, img.width, f)
@@ -75,7 +77,7 @@ export function drawAtlas(img: SkinImage, frames: readonly AnimFrame[], texture:
 }
 
 /** A window background: the app's flat paper (or page ground), a whisper of noise, alpha kept. */
-export function drawBackground(img: SkinImage, name: string): Uint8Array {
+export function drawBackground(img: SkinImage, name: string, look: Look = lookFor('clean')): Uint8Array {
   const base = isDarkBackground(name) ? STYLE.bg : STYLE.paper
   const out = new Uint8Array(img.rgba)
   for (let i = 0; i < img.width * img.height; i++) {
@@ -84,5 +86,6 @@ export function drawBackground(img: SkinImage, name: string): Uint8Array {
     out[i * 4 + 1] = Math.max(0, Math.min(255, Math.round(base[1]) + n))
     out[i * 4 + 2] = Math.max(0, Math.min(255, Math.round(base[2]) + n))
   }
+  backgroundOrnament(out, { w: img.width, h: img.height }, look)
   return out
 }

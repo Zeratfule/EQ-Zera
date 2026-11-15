@@ -110,6 +110,35 @@ achievement art, the 4a.dds pictorial buttons.
   (`font5x7.ts`).
 - **Dividers:** the neon hairline (violet to cyan).
 
+## Retrowave ornament steps (owner, 2026-11-15: "more ornamental", "retrowave design details")
+
+The layout and every rule above are unchanged. One switch, `SkinStyle` in
+`src/main/uiSkin/look.ts`, adds ornament drawn by `ornament.ts` over the clean pieces. It is the
+`style` option of `buildSkin` and `--style` on the script, and is recorded in the manifest (a
+different style reads as out of date). The default is **ornamental**.
+
+- **clean:** the flat draft above.
+- **subtle:** the title hairline runs the NEON rule. The gradient is split across the caps: the
+  left cap is magenta to violet, the middle violet, the right cap violet to cyan. Also: top-lit
+  button bevel, glossy gauge stripe with magenta/cyan end caps, a diamond on dividers wide enough
+  to hold one, grip lines on the scrollbar thumb.
+- **ornamental:** adds:
+  - double-line frames (inner cyan) with extra bloom;
+  - diamond rivets on corners with room;
+  - chevron title caps, a blooming 2px hairline and a lit top edge on title bars;
+  - title scanlines;
+  - cyan corner ticks on hot-button slots;
+  - a violet inner glow on pressed buttons;
+  - the app's own accent grid (32px, 5%) on window backgrounds.
+- **synthwave:** adds a magenta inner line, a neon band across the title bar, the striped retro
+  sun on the title's left cap, a 9% grid with background scanlines, stronger bloom and a magenta
+  pressed glow.
+
+**Limits.** Window backgrounds are TILED textures, so a perspective horizon grid that fades toward
+the bottom cannot be drawn: the grid is flat. The modern window border is 2-3px, so corner rivets
+only show where a frame has 5px or more (rounded/tooltip frames, title caps). Body text over every
+background pixel is at least 7:1 at every step (pinned in `tests/uiSkin.test.mts`).
+
 ## XML colour map
 
 Only the three numbers of a colour block change; every other byte is copied from the source

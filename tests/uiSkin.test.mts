@@ -19,7 +19,8 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { decodeTga, encodeTga, type TgaImage } from '../src/main/uiSkin/tga'
 import { decodeDds } from '../src/main/uiSkin/dds'
-import { drawAtlas, readImage } from '../src/main/uiSkin/atlas'
+import { drawAtlas, drawBackground, readImage } from '../src/main/uiSkin/atlas'
+import { SKIN_STYLES, lookFor } from '../src/main/uiSkin/look'
 import { parseAnimationFrames } from '../src/main/uiSkin/animations'
 import { classifyPiece } from '../src/main/uiSkin/pieceKinds'
 import { paintPiece } from '../src/main/uiSkin/paint'
@@ -118,13 +119,13 @@ test('the classifier names chrome and leaves art and unknown pieces alone', () =
 test('a painted piece is exactly the cut size, drawn in the palette from nothing', () => {
   const accent = hexToRgb(PALETTE.accent)
   const paper = hexToRgb(PALETTE.paper)
-  const c = paintPiece({ kind: 'button', state: 'normal' }, 30, 14)
+  const c = paintPiece({ kind: 'button', state: 'normal' }, { w: 30, h: 14 })
   assert.deepEqual([c.w, c.h], [30, 14])
   const at = (x: number, y: number): number[] => [...c.px.subarray((y * 30 + x) * 4, (y * 30 + x) * 4 + 4)]
   assert.deepEqual(at(15, 7).slice(0, 3), [...paper], 'the face is the app paper')
   assert.ok(at(15, 1)[2]! > paper[2] && at(15, 1)[3]! > 0, 'the edge carries the accent')
   assert.equal(at(0, 0)[3], 0, 'outside the rounded corner is transparent')
-  const frame = paintPiece({ kind: 'frame', dir: 'Top', variant: 'solid' }, 4, 7)
+  const frame = paintPiece({ kind: 'frame', dir: 'Top', variant: 'solid' }, { w: 4, h: 7 })
   const edge = [...frame.px.subarray((2 * 4 + 1) * 4, (2 * 4 + 1) * 4 + 3)]
   assert.ok(Math.abs(edge[0]! - accent[0]) < 90 && edge[2]! > 150, `a window top edge is accent violet: ${edge.join(',')}`)
 })
@@ -194,7 +195,7 @@ test('the builder layers modern over default, writes only what it must, and neve
   try {
     const before = [hashTree(s.src.base), hashTree(s.src.fallback)]
     const progress: string[] = []
-    const r = await buildSkin(s.src, s.out, (p) => progress.push(p.phase))
+    const r = await buildSkin(s.src, s.out, { onProgress: (p) => progress.push(p.phase) })
     assert.deepEqual([hashTree(s.src.base), hashTree(s.src.fallback)], before, 'sources unchanged')
     assert.deepEqual(readdirSync(s.out).sort(), [...EXPECTED_OUTPUTS, MANIFEST_FILE].sort())
     assert.deepEqual(readdirSync(join(s.root, 'uifiles')).sort(), ['EQZera', 'default', 'default_modern'])
@@ -206,7 +207,8 @@ test('the builder layers modern over default, writes only what it must, and neve
     assert.deepEqual([...atlas.rgba.subarray((5 * 16 + 12) * 4, (5 * 16 + 12) * 4 + 3)], COIN, 'the coin is untouched')
     const bg = decodeTga(readFileSync(join(s.out, 'wnd_bg_light_rock.tga')))
     const paper = hexToRgb(PALETTE.paper)
-    assert.ok(Math.abs(bg.rgba[0]! - paper[0]) <= 2 && Math.abs(bg.rgba[2]! - paper[2]) <= 2, 'the background is flat paper')
+    const off = (5 * 8 + 5) * 4
+    assert.ok(Math.abs(bg.rgba[off]! - paper[0]) <= 2 && Math.abs(bg.rgba[off + 2]! - paper[2]) <= 2, 'the background is paper off the grid lines')
     const box = decodeDds(readFileSync(join(s.out, 'window_pieces11a.dds'))).rgba
     assert.deepEqual([...box.subarray((8 * 16 + 8) * 4, (8 * 16 + 8) * 4 + 3)], [...hexToRgb(PALETTE.bg)], 'the DDS checkbox face is drawn')
     assert.equal((await skinStatus(s.src, s.out)).state, 'current')
@@ -261,6 +263,61 @@ test('without default_modern the skin still builds over default alone', async ()
     const r = await buildSkin(s.src, s.out)
     assert.equal(r.inherited, 0)
     assert.deepEqual(readdirSync(s.out).sort(), ['EQUI_TestWnd.xml', MANIFEST_FILE, 'wnd_bg_light_rock.tga'].sort())
+  } finally {
+    s.done()
+  }
+})
+
+/** WCAG relative luminance and contrast ratio. */
+function relLum(c: readonly number[]): number {
+  const ch = (v: number): number => {
+    const s = v / 255
+    return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4
+  }
+  return 0.2126 * ch(c[0]!) + 0.7152 * ch(c[1]!) + 0.0722 * ch(c[2]!)
+}
+const contrast = (a: readonly number[], b: readonly number[]): number => {
+  const [hi, lo] = [relLum(a), relLum(b)].sort((x, y) => y - x) as [number, number]
+  return (hi + 0.05) / (lo + 0.05)
+}
+
+test('every ornament step keeps body text at 7:1 or better over every window-background pixel', () => {
+  const text = hexToRgb(PALETTE.text)
+  for (const style of SKIN_STYLES) {
+    for (const name of ['wnd_bg_light_rock.tga', 'wnd_bg_dark_rock.tga']) {
+      const src = { width: 64, height: 64, rgba: new Uint8Array(64 * 64 * 4).fill(128), encode: (p: Uint8Array) => p }
+      const px = drawBackground(src, name, lookFor(style))
+      let worst = Infinity
+      for (let i = 0; i < 64 * 64; i++) worst = Math.min(worst, contrast(text, [px[i * 4]!, px[i * 4 + 1]!, px[i * 4 + 2]!]))
+      assert.ok(worst >= 7, `${style} ${name}: worst contrast ${worst.toFixed(2)}`)
+    }
+  }
+})
+
+test('the ornament steps are distinct drawings of the same pieces, at the same sizes', () => {
+  const pieces = [
+    classifyPiece('A_WindowTitleLeft')!,
+    classifyPiece('A_BtnPressed')!,
+    classifyPiece('A_HotButton1Normal')!,
+    classifyPiece('A_RoundedFrameTopLeft')!
+  ]
+  for (const p of pieces) {
+    const drawn = SKIN_STYLES.map((s) => paintPiece(p, { w: 14, h: 16 }, lookFor(s)))
+    for (const c of drawn) assert.deepEqual([c.w, c.h], [14, 16])
+    const clean = Buffer.from(drawn[0]!.px)
+    const synth = Buffer.from(drawn[3]!.px)
+    assert.notDeepEqual(clean, synth, `${p.kind} looks different at the synthwave step`)
+  }
+})
+
+test('the build records its style, and a different style reads as out of date', async () => {
+  const s = scratch()
+  try {
+    await buildSkin(s.src, s.out, { style: 'subtle' })
+    const manifest = JSON.parse(readFileSync(join(s.out, MANIFEST_FILE), 'utf8')) as { style: string }
+    assert.equal(manifest.style, 'subtle')
+    assert.equal((await skinStatus(s.src, s.out, 'subtle')).state, 'current')
+    assert.equal((await skinStatus(s.src, s.out, 'synthwave')).state, 'stale')
   } finally {
     s.done()
   }

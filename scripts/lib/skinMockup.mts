@@ -119,7 +119,7 @@ function windowFrame(c: Canvas, v: SkinView, win: Win, ink: Rgb3): number {
   piece(c, v, 'A_WindowTitleLeft', { x: x + bw, y: y + th })
   piece(c, v, 'A_WindowTitleMiddle', { x: x + bw + 13, y: y + th, w: w - bw * 2 - 26 })
   piece(c, v, 'A_WindowTitleRight', { x: x + w - bw - 13, y: y + th })
-  drawText(c, win.title, { x: x + bw + 8, y: y + th + 5 }, rgb(ink))
+  drawText(c, win.title, { x: x + bw + 15, y: y + th + 5 }, rgb(ink))
   piece(c, v, 'A_BorderFrameTop', { x, y, w, h: th })
   piece(c, v, 'A_BorderFrameBottom', { x, y: y + h - th, w, h: th })
   piece(c, v, 'A_BorderFrameLeft', { x, y, w: bw, h })
@@ -213,6 +213,29 @@ function scaled(c: Canvas, k: number): Canvas {
     }
   }
   return out
+}
+
+async function writeScales(sheet: Canvas, outPrefix: string): Promise<string[]> {
+  const paths: string[] = []
+  for (const k of [1, 2]) {
+    const img = k === 1 ? sheet : scaled(sheet, k)
+    const path = k === 1 ? `${outPrefix}-1x.png` : `${outPrefix}.png`
+    await writeFile(path, encodePng(img.w, img.h, img.px))
+    paths.push(path)
+  }
+  return paths
+}
+
+/** One labelled band per skin, stacked top to bottom; written at 2x (`<prefix>.png`) and 1x. */
+export async function writeBands(bands: readonly { label: string; view: SkinView }[], outPrefix: string): Promise<string[]> {
+  const bandH = MOCK_H + 22
+  const sheet = new Canvas(MOCK_W, bandH * bands.length)
+  for (let i = 0; i < sheet.w * sheet.h; i++) sheet.px.set([11, 15, 26, 255], i * 4)
+  bands.forEach((b, i) => {
+    drawText(sheet, b.label, { x: 10, y: i * bandH + 8 }, i === 0 ? [229, 233, 245, 1] : [196, 181, 253, 1])
+    sheet.put(mockup(b.view), 0, i * bandH + 22)
+  })
+  return writeScales(sheet, outPrefix)
 }
 
 /** Base mockup on the left, EQ Zera on the right, captioned; written at 1x and 2x. */

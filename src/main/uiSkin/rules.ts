@@ -25,7 +25,7 @@ export const FALLBACK_SKIN = 'default'
 export const MANIFEST_FILE = 'eqzera-skin.json'
 
 /** Bump when a rule below changes, so an installed skin reports itself out of date. */
-export const RULES_VERSION = 2
+export const RULES_VERSION = 3
 
 /** The command a player types in game. */
 export const LOADSKIN_COMMAND = UI_SKIN_COMMAND

@@ -16,6 +16,7 @@ import { mkdir, readFile, readdir, rm, stat, writeFile } from 'node:fs/promises'
 import { basename, isAbsolute, join, relative, resolve } from 'node:path'
 import { parseAnimationFrames, type AnimFrame } from './animations'
 import { drawAtlas, drawBackground, readImage } from './atlas'
+import { DEFAULT_STYLE, type Look, type SkinStyle, lookFor } from './look'
 import { MANIFEST_FILE, RULES_VERSION, isChromeAtlas, isWholeTexture, isXmlSource } from './rules'
 import { rewriteXmlColors } from './xmlColors'
 
@@ -33,6 +34,8 @@ export interface SourceStamp {
 export interface SkinManifest {
   generator: 'EQ Zera'
   rulesVersion: number
+  /** the ornament step the skin was drawn at (look.ts) */
+  style?: SkinStyle
   builtAt: string
   /** every source file the build read, keyed `base/<name>` or `fallback/<name>` */
   sources: Record<string, SourceStamp>
@@ -148,6 +151,7 @@ interface BuildRun {
   outDir: string
   plan: Plan
   frames: AnimFrame[]
+  look: Look
   outputs: string[]
   counts: { drawn: number; xml: number; inherited: number }
 }
@@ -165,7 +169,7 @@ async function transform(run: BuildRun, f: Layered): Promise<boolean> {
   if (isChromeAtlas(f.name) || isWholeTexture(f.name)) {
     const img = readImage(f.name, await readFile(f.path))
     if (!img) return false
-    const rgba = isWholeTexture(f.name) ? drawBackground(img, f.name) : drawAtlas(img, run.frames, f.name).rgba
+    const rgba = isWholeTexture(f.name) ? drawBackground(img, f.name, run.look) : drawAtlas(img, run.frames, f.name, run.look).rgba
     await writeOut(run, f.name, img.encode(rgba))
     run.counts.drawn++
     return true
@@ -214,18 +218,22 @@ async function prune(run: BuildRun, previous: SkinManifest | null): Promise<void
   }
 }
 
-export async function buildSkin(
-  src: SkinSources,
-  outDir: string,
+export interface BuildOptions {
   onProgress?: (p: BuildProgress) => void
-): Promise<BuildResult> {
+  /** the ornament step (look.ts); DEFAULT_STYLE when absent */
+  style?: SkinStyle
+}
+
+export async function buildSkin(src: SkinSources, outDir: string, opts: BuildOptions = {}): Promise<BuildResult> {
+  const { onProgress } = opts
+  const style = opts.style ?? DEFAULT_STYLE
   const plan = await planSources(src)
   if (!plan) throw new SkinBuildError('the default skin folder was not found')
   const previous = await checkOutDir(src, outDir)
   const total = plan.files.length
   onProgress?.({ phase: 'reading', done: 0, total })
   const counts = { drawn: 0, xml: 0, inherited: 0 }
-  const run: BuildRun = { outDir, plan, frames: await readFrames(plan), outputs: [], counts }
+  const run: BuildRun = { outDir, plan, frames: await readFrames(plan), look: lookFor(style), outputs: [], counts }
   await mkdir(outDir, { recursive: true })
   for (let i = 0; i < plan.files.length; i++) {
     await processFile(run, plan.files[i])
@@ -239,6 +247,7 @@ export async function buildSkin(
   const manifest: SkinManifest = {
     generator: 'EQ Zera',
     rulesVersion: RULES_VERSION,
+    style,
     builtAt: new Date().toISOString(),
     sources: await stampAll(src, plan.stampNames),
     outputs
@@ -261,13 +270,14 @@ async function sourcesUnchanged(src: SkinSources, plan: Plan, manifest: SkinMani
 }
 
 /** Is the skin there, ours, and built from the skins as they are on disk right now? */
-export async function skinStatus(src: SkinSources, outDir: string): Promise<SkinStatus> {
+export async function skinStatus(src: SkinSources, outDir: string, style: SkinStyle = DEFAULT_STYLE): Promise<SkinStatus> {
   const plan = await planSources(src)
   if (!plan) return { state: 'noSource' }
   const manifest = await readManifest(outDir)
   if (!manifest) return { state: ((await listFiles(outDir))?.length ?? 0) > 0 ? 'foreign' : 'missing' }
   const base = { builtAt: manifest.builtAt, fileCount: manifest.outputs.length }
-  const fresh = manifest.rulesVersion === RULES_VERSION && (await sourcesUnchanged(src, plan, manifest))
+  const fresh =
+    manifest.rulesVersion === RULES_VERSION && manifest.style === style && (await sourcesUnchanged(src, plan, manifest))
   return { state: fresh ? 'current' : 'stale', ...base }
 }
 
