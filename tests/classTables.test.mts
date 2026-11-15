@@ -231,10 +231,13 @@ test('the per-class counts reproduce the design measurement, per spell entry', (
   // and its description now says "This spell doesn't exist in EQL for classes to scribe". Every
   // EXCLUSIVE count holds, because a five-class spell was exclusive to none of them. The scrape's
   // six new pages (Healing Water, Summon Horse, …) parse to no class and reach no row here.
+  // CLR 206 -> 207 and NEC 192/86 -> 196/89 (2026-11-15 rescrape, the Oct 22 Castle Nektropos
+  // patch), PAL 91 -> 92, SHM 209 -> 210, WIZ 234/193 -> 235/194: the new Necromancer pages (Night Fire, Soul Orb, Funeral Pyre of Kelador, ...),
+  // a Cleric and a Paladin spell (The Unbreakable Word line), each stated on its own wiki page.
   const expected: Record<string, [number, number]> = {
-    BRD: [90, 90], BST: [77, 27], CLR: [206, 82], DRU: [268, 152],
-    ENC: [238, 184], MAG: [201, 161], NEC: [192, 86], PAL: [91, 17],
-    RNG: [92, 20], SHD: [91, 23], SHM: [209, 102], WIZ: [234, 193]
+    BRD: [90, 90], BST: [77, 27], CLR: [207, 82], DRU: [268, 152],
+    ENC: [238, 184], MAG: [201, 161], NEC: [196, 89], PAL: [92, 17],
+    RNG: [92, 20], SHD: [91, 23], SHM: [210, 102], WIZ: [235, 194]
   }
   for (const [abbr, [total, excl]] of Object.entries(expected)) {
     assert.deepEqual([RAW.get(abbr)?.total, RAW.get(abbr)?.excl], [total, excl], `${abbr} drifted`)
@@ -281,7 +284,9 @@ test('the SHIPPED index is keyed by canon key, so rank variants collapse', () =>
   // union that made one key out of two spellings gains and loses nobody. The RAW tallies above are
   // untouched for the usual reason — they measure the pristine scrape, which still carries both
   // pages.
-  assert.equal(spellClassIndex().size, 1412)
+  // 1412 -> 1417 on the 2026-11-15 rescrape (the Oct 22 Castle Nektropos patch): five new class spells (Greater Immobilize, Night Fire, Soul
+  // Orb, Funeral Pyre of Kelador, Mana Preservation III and their rank variants fold by canon key).
+  assert.equal(spellClassIndex().size, 1417)
   assert.equal(CANON.get('ENC')?.excl, 176)
   assert.equal(RAW.get('ENC')?.excl, 184)
   assert.deepEqual(classesForSpell('Clarity II'), classesForSpell('Clarity'))

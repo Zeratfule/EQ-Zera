@@ -330,7 +330,9 @@ test('the instrument table is exactly what the committed corpus states, both way
 
   assert.deepEqual([...filed.keys()].sort(), [...derived.keys()].sort(), 'the filed table and the corpus disagree about WHICH items are instruments')
   for (const [key, fam] of derived) assert.equal(filed.get(key), fam, `${key}: filed family disagrees with the page`)
-  assert.ok(filed.size >= 47, `only ${filed.size} instrument entries`)
+  // 47 -> 46 on the 2026-11-15 rescrape (the Oct 22 Castle Nektropos patch): the wiki rewrote Unfinished Lute Neck as an all-class quest
+  // part with no "Stringed Instrument" line, so its curated entry was retired with it.
+  assert.ok(filed.size >= 46, `only ${filed.size} instrument entries`)
 
   // Every value is one of the five families, and every family the game has is represented —
   // a mapping bug that folded everything into one bucket would still pass a size floor.

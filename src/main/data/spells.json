@@ -1,8 +1,8 @@
 {
-  "scrapedAt": "2026-10-08T03:43:00.164Z",
+  "scrapedAt": "2026-11-15T20:20:44.744Z",
   "schema": 3,
-  "count": 2013,
-  "withEffects": 2010,
+  "count": 2025,
+  "withEffects": 2021,
   "spells": [
     {
       "name": "Aanya's Animation",
@@ -10959,6 +10959,18 @@
       ]
     },
     {
+      "name": "Familiar: Gelatinous Cube",
+      "durationText": "6:00:00 (6:54:00) 1",
+      "durationMs": 21600000,
+      "castTimeMs": 14000,
+      "recastMs": 1500,
+      "targetType": "Self",
+      "msgCastOnYou": "Your familiar joins you.",
+      "msgCastOnOther": "Someone is joined by a familiar.",
+      "msgWearsOff": "Your familiar rolls away.",
+      "illusion": false
+    },
+    {
       "name": "Fangol's Breath",
       "durationText": "Instant",
       "durationMs": null,
@@ -12938,6 +12950,24 @@
       "instrumentEnhanced": "Yes"
     },
     {
+      "name": "Funeral Pyre of Kelador",
+      "durationText": "0:48",
+      "durationMs": 48000,
+      "castTimeMs": 3000,
+      "recastMs": 1000,
+      "targetType": "Single",
+      "spellType": "Detrimental",
+      "classes": "* Necromancer - Level 60",
+      "msgCastOnYou": "Your skin burns as you are caught in a funeral pyre.",
+      "msgCastOnOther": "Soandso is enveloped in a funeral pyre.",
+      "msgWearsOff": "The funeral pyre ends.",
+      "illusion": false,
+      "mana": 470,
+      "effects": [
+        "Decreases health by 290 per tick"
+      ]
+    },
+    {
       "name": "Fungal Regrowth",
       "durationText": "1.2 minutes @L1 to 5 minutes @L20",
       "durationMs": 300000,
@@ -13762,6 +13792,24 @@
       "mana": 115,
       "effects": [
         "Increase Hitpoints by 280 (L20) to 350 (L30)"
+      ]
+    },
+    {
+      "name": "Greater Immobilize",
+      "durationText": "1:00",
+      "durationMs": 60000,
+      "castTimeMs": 1750,
+      "recastMs": 1000,
+      "targetType": "Single",
+      "spellType": "Detrimental",
+      "classes": "* Paladin - Level 61 * Cleric - Level 62 * Shaman - Level 62 * Necromancer - Level 63",
+      "msgCastOnYou": "Your feet adhere to the ground.",
+      "msgCastOnOther": "Soandso adheres to the ground.",
+      "msgWearsOff": "Your feet come free.",
+      "illusion": false,
+      "mana": 150,
+      "effects": [
+        "Root"
       ]
     },
     {
@@ -15587,6 +15635,17 @@
       "mana": 10,
       "effects": [
         "Illusion: Froglok"
+      ]
+    },
+    {
+      "name": "Illusion: Half Dark Elf",
+      "durationText": "?",
+      "durationMs": null,
+      "targetType": "?",
+      "classes": "* Class - Level ?",
+      "illusion": true,
+      "effects": [
+        "Spell effect"
       ]
     },
     {
@@ -19349,6 +19408,21 @@
       ]
     },
     {
+      "name": "Mana Preservation III",
+      "durationText": "2:18:00 (3:27:00)",
+      "durationMs": 8280000,
+      "targetType": "Self",
+      "spellType": "Beneficial",
+      "classes": "No eligible class",
+      "illusion": false,
+      "effects": [
+        "Decrease Spell Mana Cost by 1% to 10%",
+        "Limit Max Level: 60 (lose 5% per level after)",
+        "Limit Spell: Exclude Promised Renewal",
+        "Limit Type: Exclude Combat Skills"
+      ]
+    },
+    {
       "name": "mana shroud",
       "durationText": "3 ticks",
       "durationMs": 18000,
@@ -21133,6 +21207,24 @@
       ]
     },
     {
+      "name": "Night Fire",
+      "durationText": "0:54",
+      "durationMs": 54000,
+      "castTimeMs": 3000,
+      "recastMs": 1000,
+      "targetType": "Single",
+      "spellType": "Detrimental",
+      "classes": "* Necromancer - Level 65",
+      "msgCastOnYou": "Your blood burns with the pain of darkness.",
+      "msgCastOnOther": "Soandso's blood boils through their skin.",
+      "msgWearsOff": "Your blood grows cold.",
+      "illusion": false,
+      "mana": 572,
+      "effects": [
+        "Decreases health by 335 per tick"
+      ]
+    },
+    {
       "name": "Nillipus' March of the Wee",
       "durationText": "3 ticks",
       "durationMs": 18000,
@@ -21925,6 +22017,34 @@
       "illusion": false,
       "effects": [
         "Increases the power of percussion instrument based bard songs by up to 160%"
+      ]
+    },
+    {
+      "name": "Pet Illusion: Mummy",
+      "durationText": "1:00:00",
+      "durationMs": 3600000,
+      "castTimeMs": 0,
+      "targetType": "Summoned Pet",
+      "spellType": "Beneficial",
+      "classes": "NPC Only Spell",
+      "msgCastOnYou": "You alter your pet.",
+      "illusion": true,
+      "effects": [
+        "Pet Illusion: Mummy"
+      ]
+    },
+    {
+      "name": "Pet Illusion: Werewolf",
+      "durationText": "16:40:00",
+      "durationMs": 60000000,
+      "castTimeMs": 0,
+      "targetType": "Summoned Pet",
+      "spellType": "Beneficial",
+      "classes": "NPC Only Spell",
+      "msgCastOnYou": "You alter your pet.",
+      "illusion": true,
+      "effects": [
+        "Pet Illusion: Werewolf"
       ]
     },
     {
@@ -27972,6 +28092,23 @@
       ]
     },
     {
+      "name": "Soul Orb",
+      "durationText": "Instant",
+      "durationMs": null,
+      "castTimeMs": 4000,
+      "recastMs": 1000,
+      "targetType": "Single",
+      "spellType": "Detrimental",
+      "classes": "* Necromancer - Level 61",
+      "msgCastOnYou": "Your soul shivers in pain.",
+      "msgCastOnOther": "Soandso's soul shivers in pain.",
+      "illusion": false,
+      "mana": 450,
+      "effects": [
+        "Decreases Health by 850."
+      ]
+    },
+    {
       "name": "soul well",
       "durationText": "1 ticks @L1 to 1 minute @L17",
       "durationMs": 60000,
@@ -30115,6 +30252,23 @@
       ]
     },
     {
+      "name": "Summon Familiar: Mummy",
+      "durationText": "6:00:00",
+      "durationMs": 21600000,
+      "castTimeMs": 14000,
+      "recastMs": 1000,
+      "targetType": "Self",
+      "spellType": "Beneficial",
+      "classes": "NPC Only Spell",
+      "msgCastOnYou": "You summon forth a small mummy.",
+      "msgCastOnOther": "Soandso summons forth a small mummy.",
+      "msgWearsOff": "Your small mummy departs.",
+      "illusion": false,
+      "effects": [
+        "Summon Familiar: Mummy"
+      ]
+    },
+    {
       "name": "Summon Familiar: Murderbee",
       "durationText": "6:00:00",
       "durationMs": 21600000,
@@ -30129,6 +30283,23 @@
       "illusion": false,
       "effects": [
         "Summon Familiar: Murderbee"
+      ]
+    },
+    {
+      "name": "Summon Familiar: Werewolf",
+      "durationText": "6:00:00",
+      "durationMs": 21600000,
+      "castTimeMs": 14000,
+      "recastMs": 1000,
+      "targetType": "Self",
+      "spellType": "Beneficial",
+      "classes": "NPC Only Spell",
+      "msgCastOnYou": "You summon forth a small werewolf.",
+      "msgCastOnOther": "Soandso summons forth a small werewolf.",
+      "msgWearsOff": "Your small werewolf departs.",
+      "illusion": false,
+      "effects": [
+        "Summon Familiar: Werewolf"
       ]
     },
     {
@@ -31777,6 +31948,23 @@
         "Limit Min Duration: 24s",
         "Limit Effect: Exclude Assist Radius",
         "Limit Type: Exclude Combat Skills"
+      ]
+    },
+    {
+      "name": "Tears of Arlyxir",
+      "durationText": "Instant",
+      "durationMs": null,
+      "castTimeMs": 5000,
+      "recastMs": 12000,
+      "targetType": "Targeted AE",
+      "spellType": "Detrimental",
+      "classes": "* Wizard - Level 64",
+      "msgCastOnYou": "Your skin blisters as the tears of Arlyxir rain down on you.",
+      "msgCastOnOther": "Soandso's skin blisters as the tears of Arlyxir rain upon them.",
+      "illusion": false,
+      "mana": 420,
+      "effects": [
+        "Decrease Health by 645"
       ]
     },
     {

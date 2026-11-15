@@ -1,5 +1,5 @@
 {
-  "scrapedAt": "2026-10-18T15:56:03.861Z",
+  "scrapedAt": "2026-11-15T19:46:55.948Z",
   "source": "eqlwiki.com — Category:NPCs/Named Mobs/Merchants/Raid Encounters ∪ embeddedin Template:Namedmobpage/MerchantPage, filtered to pages opening a mob template",
   "mobs": [
     {
@@ -604,7 +604,8 @@
       "name": "a black bat",
       "level": "1",
       "zones": [
-        "Paineel"
+        "Paineel",
+        "Lake Nerius"
       ],
       "drops": [
         "Bat Wing",
@@ -727,6 +728,42 @@
         {
           "ns": 331,
           "ew": 3
+        }
+      ]
+    },
+    {
+      "page": "A bleeder pupa",
+      "name": "a bleeder pupa",
+      "level": "1",
+      "zones": [
+        "Rathe Mountains"
+      ],
+      "drops": [
+        "Airborne Spores",
+        "Chunk of Meat"
+      ],
+      "loc": [
+        {
+          "ns": -1674,
+          "ew": 669
+        },
+        {
+          "ns": -1522,
+          "ew": 1210
+        }
+      ]
+    },
+    {
+      "page": "A blighted cook",
+      "name": "a blighted cook",
+      "level": "47",
+      "zones": [
+        "Nektropos Castle"
+      ],
+      "loc": [
+        {
+          "ns": 504,
+          "ew": 123
         }
       ]
     },
@@ -1391,6 +1428,20 @@
       ]
     },
     {
+      "page": "A brown asp",
+      "name": "a brown asp",
+      "level": "8",
+      "zones": [
+        "Northern Desert of Ro"
+      ],
+      "loc": [
+        {
+          "ns": -38,
+          "ew": 270
+        }
+      ]
+    },
+    {
       "page": "A Brown Bear",
       "name": "a Brown Bear",
       "level": "3-8",
@@ -1562,8 +1613,11 @@
       ],
       "drops": [
         "Alligator Skin",
-        "An Alligator Tooth",
-        "Gator Meat"
+        "Gator Meat",
+        "Alligator Tooth",
+        "Bull Alligator Tooth",
+        "Chunk of Meat",
+        "Pristine Bull Alligator Hide"
       ],
       "loc": [
         {
@@ -1803,7 +1857,10 @@
         "New Sebilis Expedition"
       ],
       "drops": [
+        "Bone Chips",
         "Cracked Femur",
+        "Iksar Targ Shield",
+        "Rusty Sheer Blade",
         "Tarnished Sheer Blade"
       ]
     },
@@ -2176,6 +2233,23 @@
       ]
     },
     {
+      "page": "A cellar rat",
+      "name": "a cellar rat",
+      "level": "55",
+      "zones": [
+        "Nektropos Castle"
+      ],
+      "drops": [
+        "Crystallized Sulfur"
+      ],
+      "loc": [
+        {
+          "ns": 450,
+          "ew": 47
+        }
+      ]
+    },
+    {
       "page": "A cerulean guardian",
       "name": "a cerulean guardian",
       "level": "60",
@@ -2388,6 +2462,20 @@
           "ns": 441,
           "ew": -401,
           "pct": 100
+        }
+      ]
+    },
+    {
+      "page": "A chapter of misery",
+      "name": "a chapter of misery",
+      "level": "52",
+      "zones": [
+        "Nektropos Castle"
+      ],
+      "loc": [
+        {
+          "ns": 30,
+          "ew": -198
         }
       ]
     },
@@ -4683,6 +4771,34 @@
       "zones": [
         "Northern Desert of Ro",
         "Southern Desert of Ro"
+      ],
+      "drops": [
+        "Blackrock Lichen",
+        "Chunk of Meat"
+      ]
+    },
+    {
+      "page": "A crab spiderling",
+      "name": "a crab spiderling",
+      "level": "1",
+      "zones": [
+        "Rathe Mountains"
+      ],
+      "drops": [
+        "Crab Spider's Carapace",
+        "Crab Spiderling Eye",
+        "Cracked Crab Spider Leg",
+        "Spiderling Eye",
+        "Spiderling Flesh",
+        "Spiderling Legs",
+        "Spiderling Meat",
+        "Spiderling Silk"
+      ],
+      "loc": [
+        {
+          "ns": -1791,
+          "ew": 1003
+        }
       ]
     },
     {
@@ -4690,22 +4806,17 @@
       "name": "a cracked skeleton",
       "level": "5",
       "drops": [
+        "Ale",
+        "Backpack",
+        "Bandages",
+        "Bottle of Kalish",
         "Bone Chips",
-        "Rusty Short Sword",
-        "Rusty Axe",
-        "Rusty Broad Sword",
-        "Rusty Long Sword",
-        "Rusty Battle Axe",
-        "Rusty Scimitar",
-        "Rusty Bastard Sword",
-        "Rusty Two Handed Sword",
-        "Rusty Mace",
-        "Rusty Warhammer",
-        "Rusty Morning Star",
-        "Rusty Dagger",
-        "Rusty Rapier",
-        "Rusty Spear",
-        "Rusty Shortened Spear"
+        "Buckler",
+        "Iron Ration",
+        "Large Bag",
+        "Parrying Dagger",
+        "Small Box",
+        "Wooden Shield"
       ]
     },
     {
@@ -4935,13 +5046,11 @@
         "Southern Desert of Ro"
       ],
       "drops": [
+        "Embalming Dust",
         "Raw-hide Gorget",
-        "Rusty Mace",
-        "Rusty Scythe",
         "Round Shield",
-        "Wooden Shield",
         "Star Rose Quartz",
-        "Embalming Dust"
+        "Wooden Shield"
       ]
     },
     {
@@ -6296,6 +6405,46 @@
       ]
     },
     {
+      "page": "A Deathfist Templar",
+      "name": "a Deathfist templar",
+      "level": "8-9",
+      "zones": [
+        "Nektulos Forest"
+      ],
+      "drops": [
+        "Jasper",
+        "Large Cloth Shirt"
+      ],
+      "loc": [
+        {
+          "ns": -73,
+          "ew": -1
+        },
+        {
+          "ns": -538,
+          "ew": 746
+        }
+      ]
+    },
+    {
+      "page": "A Deathfist warrior",
+      "name": "a Deathfist warrior",
+      "level": "8-9",
+      "zones": [
+        "Northern Desert of Ro"
+      ],
+      "drops": [
+        "Rusty Short Sword",
+        "Rusty Spear"
+      ],
+      "loc": [
+        {
+          "ns": -672,
+          "ew": 421
+        }
+      ]
+    },
+    {
       "page": "A Deathly Harbinger",
       "name": "a deathly harbinger",
       "level": "35",
@@ -6415,6 +6564,27 @@
       "drops": [
         "Bone Chips",
         "Brittle Iksar Skull"
+      ]
+    },
+    {
+      "page": "A decomposing servant",
+      "name": "a decomposing servant",
+      "level": "49",
+      "zones": [
+        "Nektropos Castle"
+      ],
+      "drops": [
+        "Crystallized Sulfur"
+      ],
+      "loc": [
+        {
+          "ns": 528,
+          "ew": -247
+        },
+        {
+          "ns": 611,
+          "ew": -185
+        }
       ]
     },
     {
@@ -6544,6 +6714,24 @@
       ]
     },
     {
+      "page": "A desecrated clerk",
+      "name": "a desecrated clerk",
+      "level": "46",
+      "zones": [
+        "Nektropos Castle"
+      ],
+      "drops": [
+        "Black Sapphire",
+        "Crystallized Sulfur"
+      ],
+      "loc": [
+        {
+          "ns": 441,
+          "ew": -140
+        }
+      ]
+    },
+    {
       "page": "A Desert Madman",
       "name": "a desert madman",
       "level": "9-11",
@@ -6552,7 +6740,27 @@
         "Oasis of Marr"
       ],
       "drops": [
-        "Water Flask"
+        "Water Flask",
+        "Loaf of Bread"
+      ]
+    },
+    {
+      "page": "A desert spiderling",
+      "name": "a desert spiderling",
+      "level": "1-3",
+      "zones": [
+        "Northern Desert of Ro"
+      ],
+      "drops": [
+        "Spiderling Eye",
+        "Spiderling Legs",
+        "Spiderling Silk"
+      ],
+      "loc": [
+        {
+          "ns": 3589,
+          "ew": 181
+        }
       ]
     },
     {
@@ -7158,7 +7366,8 @@
         "Shiverback-hide Leggings",
         "Thorny Vine Greaves",
         "Valorium Greaves",
-        "Vermiculated Leggings"
+        "Vermiculated Leggings",
+        "Cryosilk Choker"
       ],
       "loc": [
         {
@@ -7340,6 +7549,23 @@
       ]
     },
     {
+      "page": "A domesticated bleeder",
+      "name": "a domesticated bleeder",
+      "level": "1",
+      "zones": [
+        "Rathe Mountains"
+      ],
+      "drops": [
+        "Small Mosquito Wing"
+      ],
+      "loc": [
+        {
+          "ns": -2250,
+          "ew": 952
+        }
+      ]
+    },
+    {
       "page": "A domesticated direwolf",
       "name": "a domesticated direwolf",
       "level": "29-33",
@@ -7364,6 +7590,25 @@
         {
           "ns": -412,
           "ew": 2795
+        }
+      ]
+    },
+    {
+      "page": "A domesticated hatchling",
+      "name": "a domesticated hatchling",
+      "level": "1",
+      "zones": [
+        "Rathe Mountains"
+      ],
+      "drops": [
+        "Spiderling Eye",
+        "Spiderling Legs",
+        "Spiderling Silk"
+      ],
+      "loc": [
+        {
+          "ns": -1604,
+          "ew": 211
         }
       ]
     },
@@ -8412,6 +8657,25 @@
       ]
     },
     {
+      "page": "A dune spiderling",
+      "name": "a dune spiderling",
+      "level": "4-6",
+      "zones": [
+        "Northern Desert of Ro"
+      ],
+      "drops": [
+        "Spiderling Eye",
+        "Spiderling Legs",
+        "Spiderling Silk"
+      ],
+      "loc": [
+        {
+          "ns": 3520,
+          "ew": 808
+        }
+      ]
+    },
+    {
       "page": "A Dune Tarantula",
       "name": "a dune tarantula",
       "level": "11-13",
@@ -8563,6 +8827,21 @@
         {
           "ns": -6150,
           "ew": -2295
+        }
+      ]
+    },
+    {
+      "page": "A faceless throatcutter",
+      "name": "A faceless throatcutter",
+      "level": "?",
+      "zones": [
+        "Nektropos Castle"
+      ],
+      "loc": [
+        {
+          "ns": 581.91,
+          "ew": -285.05,
+          "z": 17.6
         }
       ]
     },
@@ -9011,6 +9290,10 @@
       "name": "a failed experiment",
       "zones": [
         "New Sebilis Expedition"
+      ],
+      "drops": [
+        "Charcoal",
+        "Iron Oxide"
       ]
     },
     {
@@ -9056,6 +9339,22 @@
       ],
       "drops": [
         "Bone Chips"
+      ]
+    },
+    {
+      "page": "A fallen froglok",
+      "name": "a fallen froglok",
+      "zones": [
+        "Innothule Swamp"
+      ],
+      "drops": [
+        "None"
+      ],
+      "loc": [
+        {
+          "ns": -1960,
+          "ew": 1022
+        }
       ]
     },
     {
@@ -9207,8 +9506,7 @@
       ],
       "drops": [
         "Alligator Skin",
-        "Ogre Arm",
-        "An Alligator Tooth"
+        "Ogre Arm"
       ],
       "loc": [
         {
@@ -9317,6 +9615,27 @@
         {
           "ns": 3145,
           "ew": -2314
+        }
+      ]
+    },
+    {
+      "page": "A feral bleeder",
+      "name": "a feral bleeder",
+      "level": "1",
+      "zones": [
+        "Rathe Mountains"
+      ],
+      "drops": [
+        "Small Mosquito Wing"
+      ],
+      "loc": [
+        {
+          "ns": -1324,
+          "ew": 1368
+        },
+        {
+          "ns": -1246,
+          "ew": 1106
         }
       ]
     },
@@ -9768,6 +10087,7 @@
         "Pearl",
         "Pearl Ring",
         "Russet Oxide",
+        "Saltpeter",
         "Star Rose Quartz",
         "Words of Eradication"
       ],
@@ -10676,23 +10996,12 @@
         "Innothule Swamp"
       ],
       "drops": [
-        "Netted Cap",
-        "Netted Mask",
-        "Netted Choker",
-        "Netted Shirt",
-        "Netted Mantle",
-        "Netted Cape",
-        "Netted Girth",
-        "Netted Sleeves",
-        "Netted Wristband",
-        "Netted Gloves",
-        "Netted Pants",
-        "Rusty Shortened Spear",
         "Ale",
-        "Froglok Meat",
-        "Undead Froglok Tongue",
+        "Backpack",
         "Froglok Blood",
-        "Backpack"
+        "Froglok Meat",
+        "Splintering Club",
+        "Undead Froglok Tongue"
       ]
     },
     {
@@ -10938,21 +11247,15 @@
         "Innothule Swamp"
       ],
       "drops": [
-        "Netted Cap",
-        "Netted Mask",
-        "Netted Choker",
-        "Netted Shirt",
-        "Netted Mantle",
-        "Netted Cape",
-        "Netted Girth",
-        "Netted Sleeves",
-        "Netted Wristband",
-        "Netted Gloves",
-        "Netted Pants",
-        "Splintering Club",
-        "Froglok Meat",
+        "Ale",
         "Froglok Blood",
-        "Large Bag"
+        "Froglok Meat",
+        "Iron Ration",
+        "Large Bag",
+        "Short Beer",
+        "Small Box",
+        "Splintering Club",
+        "Water Flask"
       ]
     },
     {
@@ -10963,18 +11266,20 @@
         "Innothule Swamp"
       ],
       "drops": [
+        "Froglok Blood",
+        "Froglok Meat",
+        "Froglok Poison Gland",
         "Woven Cap",
-        "Woven Collar",
-        "Woven Tunic",
-        "Woven Mantle",
         "Woven Cape",
+        "Woven Collar",
         "Woven Girth",
-        "Woven Sleeves",
-        "Woven Wristbands",
         "Woven Gloves",
         "Woven Leggings",
-        "Froglok Meat",
-        "Froglok Blood"
+        "Woven Mantle",
+        "Woven Mask",
+        "Woven Sleeves",
+        "Woven Tunic",
+        "Woven Wristbands"
       ]
     },
     {
@@ -11128,6 +11433,26 @@
         "Rusty Warhammer",
         "Froglok Meat",
         "Froglok Blood"
+      ],
+      "loc": [
+        {
+          "ns": 500,
+          "ew": 165
+        }
+      ]
+    },
+    {
+      "page": "A froglok guardsman",
+      "name": "a froglok guardsman",
+      "level": "10-11",
+      "zones": [
+        "Rathe Mountains"
+      ],
+      "loc": [
+        {
+          "ns": -1771,
+          "ew": -186
+        }
       ]
     },
     {
@@ -11448,7 +11773,7 @@
     {
       "page": "A froglok outlander",
       "name": "a froglok outlander",
-      "level": "18",
+      "level": "18-20",
       "zones": [
         "Swamp of No Hope",
         "Innothule Swamp",
@@ -11471,6 +11796,10 @@
           "ns": 817,
           "ew": -2889,
           "pct": 30
+        },
+        {
+          "ns": 224,
+          "ew": -416
         }
       ]
     },
@@ -13389,7 +13718,25 @@
         "Innothule Swamp"
       ],
       "drops": [
-        "A Spore Mushroom"
+        "A Spore Mushroom",
+        "Sarcoscypha Fungus"
+      ]
+    },
+    {
+      "page": "A fungus sporeling",
+      "name": "a fungus sporeling",
+      "level": "1",
+      "zones": [
+        "Rathe Mountains"
+      ],
+      "drops": [
+        "Spore Fungus"
+      ],
+      "loc": [
+        {
+          "ns": -1649,
+          "ew": 1394
+        }
       ]
     },
     {
@@ -14205,6 +14552,24 @@
       ]
     },
     {
+      "page": "A ghost gill",
+      "name": "a ghost gill",
+      "level": "5-15",
+      "zones": [
+        "Lake Nerius"
+      ],
+      "drops": [
+        "Defiled Fish Scales",
+        "Fish Scales"
+      ],
+      "loc": [
+        {
+          "ns": 2512,
+          "ew": 1351
+        }
+      ]
+    },
+    {
       "page": "A Ghostly Ancille",
       "name": "a ghostly ancille",
       "level": "34",
@@ -14847,6 +15212,7 @@
         "A Piece of Rat Fur",
         "Giant Rat Ear",
         "Giant Rat Pelt",
+        "Giant Rat Whiskers",
         "Rat Meat"
       ]
     },
@@ -14856,6 +15222,9 @@
       "level": "8",
       "zones": [
         "South Ro"
+      ],
+      "drops": [
+        "Snake Meat"
       ]
     },
     {
@@ -15222,7 +15591,9 @@
         "Nektulos Forest"
       ],
       "drops": [
-        "Spider Silk"
+        "Spider Legs",
+        "Spider Silk",
+        "Spider Venom Sac"
       ]
     },
     {
@@ -15286,6 +15657,37 @@
         {
           "ns": -1300,
           "ew": -3150
+        }
+      ]
+    },
+    {
+      "page": "A gila monster",
+      "name": "a gila monster",
+      "level": "9",
+      "zones": [
+        "Northern Desert of Ro"
+      ],
+      "drops": [
+        "Chunk of Meat"
+      ],
+      "loc": [
+        {
+          "ns": -1258,
+          "ew": -472
+        }
+      ]
+    },
+    {
+      "page": "A gila monster hatchling",
+      "name": "a gila monster hatchling",
+      "level": "4-5",
+      "zones": [
+        "Northern Desert of Ro"
+      ],
+      "loc": [
+        {
+          "ns": 2918,
+          "ew": 518
         }
       ]
     },
@@ -17185,6 +17587,21 @@
       ]
     },
     {
+      "page": "A goblin janitor",
+      "name": "A goblin janitor",
+      "level": "7",
+      "zones": [
+        "Runnyeye"
+      ],
+      "loc": [
+        {
+          "ns": -169,
+          "ew": 14,
+          "z": -128
+        }
+      ]
+    },
+    {
       "page": "A Goblin Knight",
       "name": "a goblin knight",
       "level": "22",
@@ -19016,7 +19433,8 @@
         "Nektulos Forest",
         "Field of Bone",
         "Kurn's Tower",
-        "Lake of Ill Omen."
+        "Lake of Ill Omen",
+        "Lake Nerius"
       ],
       "drops": [
         "Bone Chips",
@@ -19827,6 +20245,24 @@
       ]
     },
     {
+      "page": "A haunted coffer",
+      "name": "a haunted coffer",
+      "level": "50",
+      "zones": [
+        "Nektropos Castle"
+      ],
+      "drops": [
+        "Crystallized Sulfur"
+      ],
+      "loc": [
+        {
+          "ns": -225,
+          "ew": 313.53,
+          "z": -7.7
+        }
+      ]
+    },
+    {
       "page": "A Haunted Seachest",
       "name": "a haunted seachest",
       "level": "40",
@@ -20359,6 +20795,9 @@
       "level": "28 - 30",
       "zones": [
         "Stonebrunt Mountains"
+      ],
+      "drops": [
+        "Damaged Gorilla Hide"
       ]
     },
     {
@@ -20948,6 +21387,20 @@
       ],
       "drops": [
         "Clump of Gorilla Hair"
+      ]
+    },
+    {
+      "page": "A human ghost",
+      "name": "a human ghost",
+      "level": "10-11",
+      "zones": [
+        "Lake Nerius"
+      ],
+      "loc": [
+        {
+          "ns": -1050,
+          "ew": 880
+        }
       ]
     },
     {
@@ -22242,6 +22695,46 @@
       ]
     },
     {
+      "page": "A kobold (Rathe Mountains)",
+      "name": "a kobold",
+      "level": "2-4",
+      "zones": [
+        "Rathe Mountains"
+      ],
+      "drops": [
+        "Bead Necklace",
+        "Copper Band",
+        "Kobold Scalp",
+        "Kobold Talisman",
+        "Kobold Talon",
+        "Lapis Lazuli",
+        "Malachite",
+        "Rusty Knuckles",
+        "Woven Cap",
+        "Woven Cape",
+        "Woven Collar",
+        "Woven Girth",
+        "Woven Gloves",
+        "Woven Leggings",
+        "Woven Mask",
+        "Woven Sleeves"
+      ],
+      "loc": [
+        {
+          "ns": -1236,
+          "ew": 1035
+        },
+        {
+          "ns": -1131,
+          "ew": 1717
+        },
+        {
+          "ns": -1264,
+          "ew": 1563
+        }
+      ]
+    },
+    {
       "page": "A kobold (Warrens)",
       "name": "a kobold (Warrens)",
       "level": "7 - 9",
@@ -22401,7 +22894,9 @@
         "Innothule Swamp"
       ],
       "drops": [
-        "Ale"
+        "Ale",
+        "Copper Band",
+        "Woven Cap"
       ],
       "loc": [
         {
@@ -23419,7 +23914,8 @@
         "Rat Whiskers",
         "Rat Ears",
         "Rat Meat",
-        "Rat Foot"
+        "Rat Foot",
+        "Rat Eye"
       ]
     },
     {
@@ -23430,9 +23926,11 @@
         "West Commonlands"
       ],
       "drops": [
-        "Snake Egg",
+        "Large Rattlesnake Skin",
         "Large Snake Rattle",
-        "Large Rattlesnake Skin"
+        "Snake Egg",
+        "Snake Fang",
+        "Snake Rattle Pieces"
       ],
       "loc": [
         {
@@ -23682,6 +24180,26 @@
       "drops": [
         "Large Yellowjacket Tarsus",
         "Giant Wasp Eye"
+      ]
+    },
+    {
+      "page": "A larval bleeder",
+      "name": "a larval bleeder",
+      "level": "2-4",
+      "zones": [
+        "Rathe Mountains"
+      ],
+      "drops": [
+        "Chunk of Digested Earth",
+        "Chunk of Meat",
+        "Lightstone",
+        "Small Brick of Ore"
+      ],
+      "loc": [
+        {
+          "ns": -1346,
+          "ew": 1529
+        }
       ]
     },
     {
@@ -24086,6 +24604,13 @@
       "level": "2",
       "zones": [
         "Innothule Swamp"
+      ],
+      "drops": [
+        "Bandages",
+        "Belt Pouch",
+        "Large Bag",
+        "Short Beer",
+        "Small Box"
       ]
     },
     {
@@ -24470,7 +24995,291 @@
       ]
     },
     {
-      "page": "A lizard man scout",
+      "page": "A lizard man warrior",
+      "name": "a lizard man warrior",
+      "level": "8-12",
+      "zones": [
+        "Rathe Mountains"
+      ],
+      "drops": [
+        "Lizard Tail",
+        "Lizard Meat",
+        "Pristine Lizard Scale"
+      ]
+    },
+    {
+      "page": "A lizard page",
+      "name": "A Lizard Page",
+      "level": "23-25",
+      "zones": [
+        "Cazic Thule"
+      ],
+      "drops": [
+        "Ogreskin Chamois",
+        "Words of Allure"
+      ]
+    },
+    {
+      "page": "A lizard probationer",
+      "name": "a lizard probationer",
+      "level": "20-22",
+      "zones": [
+        "Cazic Thule"
+      ]
+    },
+    {
+      "page": "A lizard proselyte",
+      "name": "a lizard proselyte",
+      "level": "14-16",
+      "zones": [
+        "Cazic Thule"
+      ]
+    },
+    {
+      "page": "A lizard protector",
+      "name": "a lizard protector",
+      "level": "27-29",
+      "zones": [
+        "Cazic Thule"
+      ]
+    },
+    {
+      "page": "A lizard ritualist",
+      "name": "A Lizard Ritualist",
+      "level": "30-31",
+      "zones": [
+        "Cazic Thule"
+      ],
+      "drops": [
+        "Rubicite Boots",
+        "Rubicite Bracers",
+        "Rubicite Helm",
+        "Rubicite Gauntlets",
+        "Rubicite Vambraces",
+        "Grimy Lance"
+      ],
+      "loc": [
+        {
+          "ns": -65,
+          "ew": -492,
+          "z": 16
+        }
+      ]
+    },
+    {
+      "page": "A lizard sentinel",
+      "name": "a lizard warrior",
+      "level": "24-26",
+      "zones": [
+        "Cazic Thule"
+      ]
+    },
+    {
+      "page": "A lizard spiritualist",
+      "name": "a lizard spiritualist",
+      "level": "?"
+    },
+    {
+      "page": "A lizard warder",
+      "name": "a lizard warder",
+      "level": "18-20",
+      "zones": [
+        "Cazic Thule"
+      ],
+      "drops": [
+        "Lizard Tail",
+        "Lizard Meat"
+      ]
+    },
+    {
+      "page": "A lizard zealot",
+      "name": "a lizard zealot",
+      "level": "32-34",
+      "zones": [
+        "Cazic Thule"
+      ],
+      "drops": [
+        "Mudwater Rune"
+      ],
+      "loc": [
+        {
+          "ns": 1100,
+          "ew": -100
+        }
+      ]
+    },
+    {
+      "page": "A lizardman broodling",
+      "name": "a lizardman broodling",
+      "level": "1",
+      "zones": [
+        "The Feerrott"
+      ],
+      "drops": [
+        "Black Lizard Scale",
+        "Black Lizard Talon",
+        "Broken Lizard Talon",
+        "Brown Lizard Scale",
+        "Brown Lizard Talon",
+        "Cloth Cape",
+        "Cloth Cord",
+        "Cloth Sandals",
+        "Cloth Shawl",
+        "Cloth Sleeves",
+        "Cloth Veil",
+        "Dark Colored Fungus",
+        "Green Lizard Scale",
+        "Green Lizard Talon",
+        "Large Cloth Cap",
+        "Large Cloth Pants",
+        "Large Cloth Shirt",
+        "Light Colored Fungus",
+        "Lizard Meat",
+        "Long Lizard Tail",
+        "Multi-Colored Fungus",
+        "Orange Lizard Scale",
+        "Pristine Lizard Scale",
+        "Pristine Lizard Talon",
+        "Rusty Battle Axe",
+        "Rusty Knuckles",
+        "Rusty Mace",
+        "Rusty Rapier",
+        "Rusty Scythe",
+        "Rusty Shortened Spear",
+        "Rusty Spear",
+        "Rusty Two Handed Sword",
+        "Rusty Warhammer",
+        "Short Lizard Tail",
+        "White Lizard Scale",
+        "Yellow Lizard Scale"
+      ],
+      "loc": [
+        {
+          "ns": 565,
+          "ew": 258
+        },
+        {
+          "ns": 667,
+          "ew": 134
+        },
+        {
+          "ns": 1020,
+          "ew": -2514
+        }
+      ]
+    },
+    {
+      "page": "A lizardman forager",
+      "name": "a lizardman forager",
+      "level": "4",
+      "zones": [
+        "The Feerrott"
+      ],
+      "drops": [
+        "Large Cloth Veil",
+        "Large Cloth Shirt",
+        "Large Cloth Shawl",
+        "Large Cloth Cape",
+        "Large Cloth Cord",
+        "Large Cloth Sleeves",
+        "Large Cloth Wristband",
+        "Large Cloth Gloves",
+        "Large Cloth Pants",
+        "Rusty Scythe",
+        "Rusty Long Sword",
+        "Rusty Two Handed Sword",
+        "Rusty Mace",
+        "Worn Great Staff",
+        "Cracked Staff",
+        "Rusty Rapier",
+        "Rusty Spear",
+        "Rusty Shortened Spear",
+        "Worn Weighted Gloves",
+        "Lizard Meat"
+      ],
+      "loc": [
+        {
+          "ns": 367,
+          "ew": 443,
+          "pct": 50
+        },
+        {
+          "ns": 873,
+          "ew": -869,
+          "pct": 50
+        },
+        {
+          "ns": -842,
+          "ew": -1300,
+          "pct": 50
+        },
+        {
+          "ns": 894,
+          "ew": -872,
+          "pct": 50
+        },
+        {
+          "ns": 899,
+          "ew": -854,
+          "pct": 50
+        },
+        {
+          "ns": -380,
+          "ew": -644,
+          "pct": 50
+        },
+        {
+          "ns": 44,
+          "ew": -2593,
+          "pct": 50
+        }
+      ]
+    },
+    {
+      "page": "A lizardman healer",
+      "name": "a lizardman healer",
+      "level": "16",
+      "zones": [
+        "Rathe Mountains"
+      ],
+      "drops": [
+        "Mystic Doll"
+      ],
+      "loc": [
+        {
+          "ns": -55,
+          "ew": -713
+        }
+      ]
+    },
+    {
+      "page": "A Lizardman Robber",
+      "name": "a lizardman robber",
+      "level": "17",
+      "zones": [
+        "Rathe Mountains"
+      ],
+      "loc": [
+        {
+          "ns": -47,
+          "ew": -716
+        },
+        {
+          "ns": -400,
+          "ew": -664
+        },
+        {
+          "ns": 67,
+          "ew": -1009
+        },
+        {
+          "ns": -508,
+          "ew": -789
+        }
+      ]
+    },
+    {
+      "page": "A lizardman scout",
       "name": "a lizardman scout",
       "level": "3",
       "zones": [
@@ -24479,28 +25288,6 @@
       "drops": [
         "Lizardman Scout Fife",
         "Pristine Lizard Scale",
-        "Large Cloth Cap",
-        "Large Cloth Veil",
-        "Large Cloth Choker",
-        "Large Cloth Shirt",
-        "Large Cloth Shawl",
-        "Large Cloth Cord",
-        "Large Cloth Sleeves",
-        "Large Cloth Wristband",
-        "Large Cloth Gloves",
-        "Large Cloth Pants",
-        "Large Cloth Sandals",
-        "Rusty Scythe",
-        "Rusty Long Sword",
-        "Rusty Battle Axe",
-        "Rusty Two Handed Sword",
-        "Rusty Mace",
-        "Worn Great Staff",
-        "Rusty Warhammer",
-        "Cracked Staff",
-        "Rusty Rapier",
-        "Rusty Spear",
-        "Rusty Shortened Spear",
         "Rusty Knuckles",
         "Worn Weighted Gloves",
         "Lizard Meat"
@@ -24629,221 +25416,6 @@
       ]
     },
     {
-      "page": "A lizard man warrior",
-      "name": "a lizard man warrior",
-      "level": "8-12",
-      "zones": [
-        "Rathe Mountains"
-      ],
-      "drops": [
-        "Lizard Tail",
-        "Lizard Meat",
-        "Pristine Lizard Scale"
-      ]
-    },
-    {
-      "page": "A lizard page",
-      "name": "A Lizard Page",
-      "level": "23-25",
-      "zones": [
-        "Cazic Thule"
-      ],
-      "drops": [
-        "Ogreskin Chamois",
-        "Words of Allure"
-      ]
-    },
-    {
-      "page": "A lizard probationer",
-      "name": "a lizard probationer",
-      "level": "20-22",
-      "zones": [
-        "Cazic Thule"
-      ]
-    },
-    {
-      "page": "A lizard proselyte",
-      "name": "a lizard proselyte",
-      "level": "14-16",
-      "zones": [
-        "Cazic Thule"
-      ]
-    },
-    {
-      "page": "A lizard protector",
-      "name": "a lizard protector",
-      "level": "27-29",
-      "zones": [
-        "Cazic Thule"
-      ]
-    },
-    {
-      "page": "A lizard ritualist",
-      "name": "A Lizard Ritualist",
-      "level": "30-31",
-      "zones": [
-        "Cazic Thule"
-      ],
-      "drops": [
-        "Rubicite Boots",
-        "Rubicite Bracers",
-        "Rubicite Helm",
-        "Rubicite Gauntlets",
-        "Rubicite Vambraces",
-        "Grimy Lance"
-      ],
-      "loc": [
-        {
-          "ns": -65,
-          "ew": -492,
-          "z": 16
-        }
-      ]
-    },
-    {
-      "page": "A lizard sentinel",
-      "name": "a lizard warrior",
-      "level": "24-26",
-      "zones": [
-        "Cazic Thule"
-      ]
-    },
-    {
-      "page": "A lizard spiritualist",
-      "name": "a lizard spiritualist",
-      "level": "?"
-    },
-    {
-      "page": "A lizard warder",
-      "name": "a lizard warder",
-      "level": "18-20",
-      "zones": [
-        "Cazic Thule"
-      ],
-      "drops": [
-        "Lizard Tail",
-        "Lizard Meat"
-      ]
-    },
-    {
-      "page": "A lizard zealot",
-      "name": "a lizard zealot",
-      "level": "32-34",
-      "zones": [
-        "Cazic Thule"
-      ],
-      "drops": [
-        "Mudwater Rune"
-      ],
-      "loc": [
-        {
-          "ns": 1100,
-          "ew": -100
-        }
-      ]
-    },
-    {
-      "page": "A lizardman forager",
-      "name": "a lizardman forager",
-      "level": "4",
-      "zones": [
-        "The Feerrott"
-      ],
-      "drops": [
-        "Large Cloth Veil",
-        "Large Cloth Shirt",
-        "Large Cloth Shawl",
-        "Large Cloth Cape",
-        "Large Cloth Cord",
-        "Large Cloth Sleeves",
-        "Large Cloth Wristband",
-        "Large Cloth Gloves",
-        "Large Cloth Pants",
-        "Rusty Scythe",
-        "Rusty Long Sword",
-        "Rusty Two Handed Sword",
-        "Rusty Mace",
-        "Worn Great Staff",
-        "Cracked Staff",
-        "Rusty Rapier",
-        "Rusty Spear",
-        "Rusty Shortened Spear",
-        "Worn Weighted Gloves",
-        "Lizard Meat"
-      ],
-      "loc": [
-        {
-          "ns": 367,
-          "ew": 443,
-          "pct": 50
-        },
-        {
-          "ns": 873,
-          "ew": -869,
-          "pct": 50
-        },
-        {
-          "ns": -842,
-          "ew": -1300,
-          "pct": 50
-        },
-        {
-          "ns": 894,
-          "ew": -872,
-          "pct": 50
-        },
-        {
-          "ns": 899,
-          "ew": -854,
-          "pct": 50
-        },
-        {
-          "ns": -380,
-          "ew": -644,
-          "pct": 50
-        },
-        {
-          "ns": 44,
-          "ew": -2593,
-          "pct": 50
-        }
-      ]
-    },
-    {
-      "page": "A Lizardman Robber",
-      "name": "a lizardman robber",
-      "level": "17",
-      "zones": [
-        "Rathe Mountains"
-      ],
-      "loc": [
-        {
-          "ns": -47,
-          "ew": -716
-        },
-        {
-          "ns": -400,
-          "ew": -664
-        },
-        {
-          "ns": 67,
-          "ew": -1009
-        }
-      ]
-    },
-    {
-      "page": "A lizardman scout",
-      "name": "a lizardman scout",
-      "level": "3",
-      "zones": [
-        "The Feerrott"
-      ],
-      "drops": [
-        "Lizard Meat",
-        "Lizardman Scout Fife"
-      ]
-    },
-    {
       "page": "A lizardman watcher",
       "name": "a lizardman watcher",
       "level": "5",
@@ -24912,7 +25484,25 @@
         "Midnight Clad Wristbands",
         "Umbral Platemail Bracer",
         "Wand of Conflagration",
-        "Woven Shadow Bracer"
+        "Woven Shadow Bracer",
+        "Wand of Souls"
+      ]
+    },
+    {
+      "page": "A lobotomized courtier",
+      "name": "a lobotomized courtier",
+      "level": "50",
+      "zones": [
+        "Nektropos Castle"
+      ],
+      "drops": [
+        "Crystallized Sulfur"
+      ],
+      "loc": [
+        {
+          "ns": -130,
+          "ew": -178
+        }
       ]
     },
     {
@@ -25159,6 +25749,7 @@
         "Northern Desert of Ro"
       ],
       "drops": [
+        "Splintering Club",
         "Raw-hide Skullcap",
         "Raw-hide Mask",
         "Raw-hide Gorget",
@@ -26208,7 +26799,7 @@
         "Kithicor Forest",
         "Misty Thicket",
         "Southern Desert of Ro",
-        "Toxxulia Forest"
+        "Toxxulia Forest Lake Nerius"
       ],
       "drops": [
         "Snake Fang",
@@ -26599,6 +27190,23 @@
       ]
     },
     {
+      "page": "A mutilated attendant",
+      "name": "a mutilated attendant",
+      "level": "39-52",
+      "zones": [
+        "Nektropos Castle"
+      ],
+      "drops": [
+        "Crystallized Sulfur"
+      ],
+      "loc": [
+        {
+          "ns": 403,
+          "ew": 160
+        }
+      ]
+    },
+    {
       "page": "A necro acolyte",
       "name": "a necro acolyte",
       "level": "13 (Human) / 14 (Gnome) / 15 (Dark Elf)",
@@ -26765,6 +27373,39 @@
       ]
     },
     {
+      "page": "A Nektulos spiderling",
+      "name": "a Nektulos spiderling",
+      "level": "4",
+      "zones": [
+        "Lake Nerius"
+      ],
+      "drops": [
+        "Spider Legs",
+        "Spiderling Eye",
+        "Spiderling Legs",
+        "Spiderling Silk"
+      ]
+    },
+    {
+      "page": "A Nektulos widow",
+      "name": "a Nektulos widow",
+      "level": "7-8",
+      "zones": [
+        "Lake Nerius"
+      ],
+      "drops": [
+        "Spider Legs",
+        "Spider Silk",
+        "Spider Venom Sac"
+      ],
+      "loc": [
+        {
+          "ns": 868,
+          "ew": 884
+        }
+      ]
+    },
+    {
       "page": "A Neriad Maiden",
       "name": "a neriad maiden",
       "level": "50?-53",
@@ -26874,6 +27515,12 @@
         "Giant Rat Ear",
         "Piece of Rat Fur",
         "Rat Meat"
+      ],
+      "loc": [
+        {
+          "ns": 355,
+          "ew": 333
+        }
       ]
     },
     {
@@ -27334,6 +27981,20 @@
       "drops": [
         "Rusty Long Sword",
         "Zombie Skin"
+      ]
+    },
+    {
+      "page": "A passage of flame",
+      "name": "a passage of flame",
+      "level": "50",
+      "zones": [
+        "Nektropos Castle"
+      ],
+      "loc": [
+        {
+          "ns": -84,
+          "ew": -188
+        }
       ]
     },
     {
@@ -27843,7 +28504,10 @@
       ],
       "drops": [
         "Cat Skull Cap",
-        "Blackened Iron Gloves"
+        "Blackened Iron Gloves",
+        "Gossamer Collar",
+        "Gossamer Sash",
+        "Gossamer Veil"
       ]
     },
     {
@@ -29485,9 +30149,11 @@
         "South Ro"
       ],
       "drops": [
+        "Dry Eye Weed",
         "Snake Egg",
         "Snake Fang",
-        "Rattlesnake Skin"
+        "Rattlesnake Skin",
+        "Snake Rattle Pieces"
       ],
       "loc": [
         {
@@ -29569,11 +30235,50 @@
       ]
     },
     {
+      "page": "A reanimated castle guard",
+      "name": "a reanimated castle guard",
+      "level": "47-50",
+      "zones": [
+        "Nektropos Castle"
+      ],
+      "drops": [
+        "Crystallized Sulfur",
+        "Sapphire Necklace",
+        "Star Ruby Earring"
+      ],
+      "loc": [
+        {
+          "ns": 164,
+          "ew": 142
+        },
+        {
+          "ns": 239,
+          "ew": 139
+        },
+        {
+          "ns": 107,
+          "ew": 139
+        },
+        {
+          "ns": 528,
+          "ew": -247
+        }
+      ]
+    },
+    {
       "page": "A Reanimated Champion",
       "name": "a Reanimated Champion",
       "level": "50-52",
       "zones": [
         "Chardok"
+      ]
+    },
+    {
+      "page": "A reanimated chaplain",
+      "name": "a reanimated chaplain",
+      "level": "48-49",
+      "zones": [
+        "Nektropos Castle"
       ]
     },
     {
@@ -29649,6 +30354,42 @@
         "Burnished Wooden Stave",
         "Star Ruby",
         "Sapphire"
+      ]
+    },
+    {
+      "page": "A reanimated scholar",
+      "name": "a reanimated scholar",
+      "level": "37-49",
+      "zones": [
+        "Nektropos Castle"
+      ]
+    },
+    {
+      "page": "A reanimated servant",
+      "name": "a reanimated servant",
+      "level": "25-49",
+      "zones": [
+        "Nektropos Castle"
+      ],
+      "loc": [
+        {
+          "ns": 36,
+          "ew": 349
+        }
+      ]
+    },
+    {
+      "page": "A reconstructed justiciar",
+      "name": "a reconstructed justiciar",
+      "level": "52",
+      "zones": [
+        "Nektropos Castle"
+      ],
+      "loc": [
+        {
+          "ns": 359,
+          "ew": -287
+        }
       ]
     },
     {
@@ -30159,6 +30900,27 @@
         {
           "ns": 327,
           "ew": -49
+        }
+      ]
+    },
+    {
+      "page": "A rotting servant",
+      "name": "a rotting servant",
+      "level": "50",
+      "zones": [
+        "Nektropos Castle"
+      ],
+      "drops": [
+        "Fire Emerald Ring"
+      ],
+      "loc": [
+        {
+          "ns": 611,
+          "ew": -185
+        },
+        {
+          "ns": 588,
+          "ew": -183
         }
       ]
     },
@@ -30920,8 +31682,10 @@
         "Oasis of Marr"
       ],
       "drops": [
+        "Cracked Giant Scarab Carapace",
         "Giant Scarab Egg Sac",
         "Giant Scarab Eye",
+        "Giant Scarab Legs",
         "Pristine Giant Scarab Carapace",
         "Scarab Carapace"
       ]
@@ -32604,6 +33368,24 @@
       ]
     },
     {
+      "page": "A scout from zanivar",
+      "name": "a scout from zanivar",
+      "level": "11-13",
+      "zones": [
+        "The Feerrott"
+      ],
+      "loc": [
+        {
+          "ns": -1227,
+          "ew": 27
+        },
+        {
+          "ns": -791,
+          "ew": 173
+        }
+      ]
+    },
+    {
       "page": "A scouting kobold",
       "name": "a scouting kobold",
       "level": "13-15",
@@ -34106,7 +34888,7 @@
     {
       "page": "A shady mercenary",
       "name": "a shady mercenary",
-      "level": "5-7",
+      "level": "4-7",
       "zones": [
         "Qeynos Aqueducts"
       ],
@@ -36566,6 +37348,20 @@
       ]
     },
     {
+      "page": "A Spectral Handmaiden",
+      "name": "A Spectral Handmaiden",
+      "level": "55",
+      "zones": [
+        "Nektropos Castle"
+      ],
+      "drops": [
+        "Handmaiden's Earring",
+        "Handmaiden's Handwrap",
+        "Handmaiden's Ring",
+        "Handmaiden's Wristwrap"
+      ]
+    },
+    {
       "page": "A spectral shimmer",
       "name": "a spectral shimmer",
       "level": "1",
@@ -38084,6 +38880,20 @@
       ]
     },
     {
+      "page": "A tale of woe",
+      "name": "a tale of woe",
+      "level": "53",
+      "zones": [
+        "Nektropos Castle"
+      ],
+      "loc": [
+        {
+          "ns": 15,
+          "ew": -185
+        }
+      ]
+    },
+    {
       "page": "A Tar Goo",
       "name": "a tar goo",
       "level": "40-44",
@@ -38158,6 +38968,23 @@
           "ns": -2615,
           "ew": 65,
           "pct": 50
+        }
+      ]
+    },
+    {
+      "page": "A tarnished steward",
+      "name": "a tarnished steward",
+      "level": "47-48",
+      "zones": [
+        "Nektropos Castle"
+      ],
+      "drops": [
+        "Crystallized Sulfur"
+      ],
+      "loc": [
+        {
+          "ns": 494,
+          "ew": 107
         }
       ]
     },
@@ -38401,7 +39228,8 @@
         "Fine Steel Rapier",
         "Split Paw Tooth Necklace",
         "Preserved Split Paw Eye",
-        "Rain Water"
+        "Rain Water",
+        "Split Paw"
       ]
     },
     {
@@ -39660,6 +40488,23 @@
       ]
     },
     {
+      "page": "A tomb spiderling",
+      "name": "a tomb spiderling",
+      "level": "6",
+      "zones": [
+        "New Sebilis Expedition"
+      ],
+      "drops": [
+        "Spiderling Silk"
+      ],
+      "loc": [
+        {
+          "ns": -304,
+          "ew": -162
+        }
+      ]
+    },
+    {
       "page": "A tormented tradesman",
       "name": "A tormented tradesman",
       "level": "26",
@@ -39943,6 +40788,20 @@
       ]
     },
     {
+      "page": "A troll raider",
+      "name": "a troll raider",
+      "level": "14",
+      "zones": [
+        "Innothule Swamp"
+      ],
+      "loc": [
+        {
+          "ns": 314,
+          "ew": -390
+        }
+      ]
+    },
+    {
       "page": "A Troll Slayer",
       "name": "a troll slayer",
       "level": "7-11",
@@ -39952,6 +40811,7 @@
       "drops": [
         "Bronze Short Sword",
         "Frog Eye Necklace",
+        "Malachite",
         "Troll Parts"
       ],
       "loc": [
@@ -40772,6 +41632,24 @@
       ]
     },
     {
+      "page": "A vivisected centurion",
+      "name": "a vivisected centurion",
+      "level": "51-52",
+      "zones": [
+        "Nektropos Castle"
+      ],
+      "drops": [
+        "Crystallized Sulfur",
+        "Diamond"
+      ],
+      "loc": [
+        {
+          "ns": -128,
+          "ew": -177
+        }
+      ]
+    },
+    {
       "page": "A Voracious Brute",
       "name": "a voracious brute",
       "level": "36-40",
@@ -40871,6 +41749,24 @@
         "Imbued Granite Spauldors",
         "Withered Leather Sleeves",
         "Withered Leather Shoulderpads"
+      ]
+    },
+    {
+      "page": "A wandering rodent",
+      "name": "a wandering rodent",
+      "level": "55",
+      "zones": [
+        "Nektropos Castle"
+      ],
+      "drops": [
+        "Crystallized Sulfur",
+        "Ruby Crown"
+      ],
+      "loc": [
+        {
+          "ns": 486,
+          "ew": 131
+        }
       ]
     },
     {
@@ -41059,7 +41955,13 @@
       "name": "a water moccasin",
       "level": "6",
       "zones": [
-        "Innothule Swamp"
+        "Innothule Swamp",
+        "Rathe Mountains"
+      ],
+      "drops": [
+        "Moccasin Eggs",
+        "Snake Egg",
+        "Snake Fang"
       ]
     },
     {
@@ -41404,6 +42306,19 @@
         "Lightning Rod",
         "Nebulous Emerald",
         "Replica of the Wyrm Queen"
+      ]
+    },
+    {
+      "page": "A withering skeleton",
+      "name": "a withering skeleton",
+      "level": "5",
+      "zones": [
+        "New Sebilis Expedition"
+      ],
+      "drops": [
+        "Bone Chips",
+        "Rusty Sheer Blade",
+        "Tarnished Shan`Tok"
       ]
     },
     {
@@ -41818,6 +42733,23 @@
       ]
     },
     {
+      "page": "A young gila monster",
+      "name": "a young gila monster",
+      "level": "7",
+      "zones": [
+        "Northern Desert of Ro"
+      ],
+      "drops": [
+        "Chunk of Meat"
+      ],
+      "loc": [
+        {
+          "ns": 1884,
+          "ew": -325
+        }
+      ]
+    },
+    {
       "page": "A young gorilla",
       "name": "a young gorilla",
       "level": "21",
@@ -42039,6 +42971,26 @@
           "ns": -415,
           "ew": -3386,
           "pct": 100
+        }
+      ]
+    },
+    {
+      "page": "A young puma",
+      "name": "a young puma",
+      "level": "4-5",
+      "zones": [
+        "Northern Desert of Ro"
+      ],
+      "drops": [
+        "Chunk of Meat",
+        "Low Quality Cat Pelt",
+        "Medium Quality Cat Pelt",
+        "Ruined Cat Pelt"
+      ],
+      "loc": [
+        {
+          "ns": 3525,
+          "ew": 694
         }
       ]
     },
@@ -44504,6 +45456,42 @@
       ]
     },
     {
+      "page": "Alexa Everling",
+      "name": "Alexa Everling",
+      "level": "61",
+      "zones": [
+        "Nektropos Castle"
+      ],
+      "drops": [
+        "Doll's Fang",
+        "Alexa's Robe",
+        "Ring of the Eldest",
+        "Nektropos Private Chamber Key",
+        "Pyrosilk Robe"
+      ],
+      "loc": [
+        {
+          "ns": 26,
+          "ew": 150,
+          "z": 15
+        }
+      ]
+    },
+    {
+      "page": "Alexa`s Handmaiden",
+      "name": "Alexa`s Handmaiden",
+      "level": "55",
+      "zones": [
+        "Nektropos Castle"
+      ],
+      "loc": [
+        {
+          "ns": 172,
+          "ew": -178
+        }
+      ]
+    },
+    {
       "page": "Alga Bruntbuckler",
       "name": "Alga Bruntbuckler",
       "level": "41",
@@ -44786,6 +45774,20 @@
       ]
     },
     {
+      "page": "Alysia",
+      "name": "Alysia",
+      "level": "35",
+      "zones": [
+        "Lake Nerius"
+      ],
+      "loc": [
+        {
+          "ns": -1,
+          "ew": 52
+        }
+      ]
+    },
+    {
       "page": "Alzekar Kerda",
       "name": "Alzekar Kerda",
       "level": "25",
@@ -44992,6 +45994,23 @@
         "Midnight Clad Straps",
         "Umbral Platemail Breastplate",
         "Woven Shadow Chestplate"
+      ]
+    },
+    {
+      "page": "An aberrant pugilist",
+      "name": "an aberrant pugilist",
+      "level": "50-52",
+      "zones": [
+        "Nektropos Castle"
+      ],
+      "drops": [
+        "Crystallized Sulfur"
+      ],
+      "loc": [
+        {
+          "ns": -127,
+          "ew": -244
+        }
       ]
     },
     {
@@ -45231,7 +46250,7 @@
     {
       "page": "An ancient cyclops (Ocean of Tears)",
       "name": "an ancient cyclops",
-      "level": "41",
+      "level": "40-41",
       "zones": [
         "Ocean of Tears"
       ],
@@ -45243,6 +46262,10 @@
           "ns": 1008,
           "ew": -8022,
           "pct": 3
+        },
+        {
+          "ns": 1000,
+          "ew": -6000
         }
       ]
     },
@@ -45553,7 +46576,7 @@
         "Mistmoore Castle"
       ],
       "drops": [
-        "A Dark Cauldron"
+        "Dark Cauldron"
       ],
       "loc": [
         {
@@ -45921,6 +46944,70 @@
       ]
     },
     {
+      "page": "An arcane elementalist",
+      "name": "an arcane elementalist",
+      "level": "5-7",
+      "zones": [
+        "Nektulos Forest"
+      ],
+      "drops": [
+        "Cloth Shirt"
+      ],
+      "loc": [
+        {
+          "ns": 679,
+          "ew": -671
+        },
+        {
+          "ns": 459,
+          "ew": -991
+        }
+      ]
+    },
+    {
+      "page": "An arcane incantator",
+      "name": "an arcane incantator",
+      "level": "2-4",
+      "zones": [
+        "Nektulos Forest"
+      ],
+      "drops": [
+        "Cloth Choker",
+        "Cloth Sandals"
+      ],
+      "loc": [
+        {
+          "ns": 658,
+          "ew": -911
+        },
+        {
+          "ns": 591,
+          "ew": -526
+        }
+      ]
+    },
+    {
+      "page": "An arcane shapeshifter",
+      "name": "an arcane shapeshifter",
+      "level": "5-10",
+      "zones": [
+        "Nektulos Forest"
+      ],
+      "drops": [
+        "Cloth Shawl"
+      ],
+      "loc": [
+        {
+          "ns": 412,
+          "ew": -508
+        },
+        {
+          "ns": 277,
+          "ew": -930
+        }
+      ]
+    },
+    {
       "page": "An arena spectator",
       "name": "an arena spectator",
       "level": "46-53",
@@ -45943,6 +47030,7 @@
         "Oggok"
       ],
       "drops": [
+        "Armadillo Meat",
         "Chunk of Meat",
         "Armadillo Husk"
       ],
@@ -47197,6 +48285,20 @@
           "ns": -4012,
           "ew": -6404,
           "pct": 100
+        }
+      ]
+    },
+    {
+      "page": "An embalmed vicar",
+      "name": "an embalmed vicar",
+      "level": "51",
+      "zones": [
+        "Nektropos Castle"
+      ],
+      "loc": [
+        {
+          "ns": -129,
+          "ew": -178
         }
       ]
     },
@@ -49312,6 +50414,20 @@
       ]
     },
     {
+      "page": "An iksar ghost",
+      "name": "an iksar ghost",
+      "level": "11-13",
+      "zones": [
+        "New Sebilis Expedition"
+      ],
+      "loc": [
+        {
+          "ns": -753,
+          "ew": -187
+        }
+      ]
+    },
+    {
       "page": "An iksar hermit",
       "name": "an Iksar hermit",
       "level": "61",
@@ -49862,7 +50978,7 @@
     {
       "page": "An injured rat",
       "name": "an injured rat",
-      "level": "3",
+      "level": "2-3",
       "zones": [
         "Qeynos Aqueducts"
       ],
@@ -50202,6 +51318,19 @@
           "ew": -8551,
           "pct": 33
         }
+      ]
+    },
+    {
+      "page": "An obsidian drake",
+      "name": "an obsidian drake",
+      "level": "8-10",
+      "zones": [
+        "Rathe Mountains"
+      ],
+      "drops": [
+        "Golden Earring",
+        "Obsidian Drake Wing",
+        "Star Rose Quartz"
       ]
     },
     {
@@ -51731,7 +52860,7 @@
     {
       "page": "An undead knight (Qeynos Aqueducts)",
       "name": "An Undead Knight (Qeynos Aqueducts)",
-      "level": "4",
+      "level": "3-4",
       "zones": [
         "Qeynos Aqueducts"
       ],
@@ -51929,6 +53058,28 @@
       ]
     },
     {
+      "page": "An undead servant",
+      "name": "an undead servant",
+      "level": "10",
+      "zones": [
+        "Rathe Mountains"
+      ],
+      "loc": [
+        {
+          "ns": -1922,
+          "ew": 1988
+        },
+        {
+          "ns": -1955,
+          "ew": 1927
+        },
+        {
+          "ns": -1959,
+          "ew": 1876
+        }
+      ]
+    },
+    {
       "page": "An Undead Steward",
       "name": "An Undead Steward",
       "level": "10",
@@ -51996,6 +53147,23 @@
       "level": "6-8",
       "zones": [
         "Chardok"
+      ]
+    },
+    {
+      "page": "An unstable arcanist",
+      "name": "an unstable arcanist",
+      "level": "52",
+      "zones": [
+        "Nektropos Castle"
+      ],
+      "drops": [
+        "Crystallized Sulfur"
+      ],
+      "loc": [
+        {
+          "ns": -141,
+          "ew": -258
+        }
       ]
     },
     {
@@ -52519,6 +53687,9 @@
       "level": "25",
       "zones": [
         "The Feerrott"
+      ],
+      "drops": [
+        "Ruined Robe"
       ],
       "loc": [
         {
@@ -53291,6 +54462,21 @@
       ]
     },
     {
+      "page": "Asher",
+      "name": "Asher",
+      "level": "50",
+      "zones": [
+        "Nektropos Undercrofts"
+      ],
+      "loc": [
+        {
+          "ns": -149,
+          "ew": 111,
+          "z": 4
+        }
+      ]
+    },
+    {
       "page": "Ashley",
       "name": "Ashley",
       "level": "55",
@@ -53843,6 +55029,21 @@
           "ns": 798,
           "ew": -1088,
           "pct": 100
+        }
+      ]
+    },
+    {
+      "page": "Aynmara Stolovich",
+      "name": "Aynmara Stolovich",
+      "level": "50",
+      "zones": [
+        "Nektropos Undercrofts"
+      ],
+      "loc": [
+        {
+          "ns": 12,
+          "ew": 115,
+          "z": 4
         }
       ]
     },
@@ -54932,6 +56133,24 @@
           "ns": 602,
           "ew": -491,
           "pct": 100
+        }
+      ]
+    },
+    {
+      "page": "Basher Dreg",
+      "name": "Basher Dreg",
+      "level": "50",
+      "zones": [
+        "Innothule Swamp"
+      ],
+      "drops": [
+        "Intestine Necklace",
+        "Round Shield"
+      ],
+      "loc": [
+        {
+          "ns": -2615,
+          "ew": -501
         }
       ]
     },
@@ -56775,6 +57994,20 @@
       ]
     },
     {
+      "page": "Blargraah",
+      "name": "Blargraah",
+      "level": "50",
+      "zones": [
+        "Lake Nerius"
+      ],
+      "loc": [
+        {
+          "ns": -248,
+          "ew": 281
+        }
+      ]
+    },
+    {
       "page": "Blazing Elemental",
       "name": "blazing elemental",
       "level": "25",
@@ -56883,6 +58116,20 @@
         {
           "ns": 414,
           "ew": -429
+        }
+      ]
+    },
+    {
+      "page": "Blergagh",
+      "name": "Blergagh",
+      "level": "50",
+      "zones": [
+        "Lake Nerius"
+      ],
+      "loc": [
+        {
+          "ns": -260,
+          "ew": 282
         }
       ]
     },
@@ -57463,6 +58710,20 @@
         {
           "ns": -259,
           "ew": -517
+        }
+      ]
+    },
+    {
+      "page": "Bok Master Thragnog",
+      "name": "Bok Master Thragnog",
+      "level": "70",
+      "zones": [
+        "Rathe Mountains"
+      ],
+      "loc": [
+        {
+          "ns": -1750,
+          "ew": 2146
         }
       ]
     },
@@ -60658,6 +61919,25 @@
       ]
     },
     {
+      "page": "C`rate",
+      "name": "C`rate",
+      "level": "59",
+      "zones": [
+        "Nektropos Castle"
+      ],
+      "drops": [
+        "Corroded Spiked Club",
+        "Distressed Mithril Shortbow",
+        "Worn Great Blade"
+      ],
+      "loc": [
+        {
+          "ns": 740,
+          "ew": -345
+        }
+      ]
+    },
+    {
       "page": "Cain Darkmoore",
       "name": "Cain Darkmoore",
       "level": "61",
@@ -63196,7 +64476,8 @@
         "Pouch of Red Dust",
         "Bottle of Kalish",
         "Small Brick of High Quality Ore",
-        "Large Brick of High Quality Ore"
+        "Large Brick of High Quality Ore",
+        "Loaf of Bread"
       ]
     },
     {
@@ -63412,7 +64693,8 @@
         "North Kaladim"
       ],
       "drops": [
-        "Scrap Metal"
+        "Scrap Metal",
+        "Bozinite Pestle"
       ],
       "loc": [
         {
@@ -65839,6 +67121,25 @@
       ]
     },
     {
+      "page": "Corrupted Kedgespawn",
+      "name": "Corrupted Kedgespawn",
+      "level": "55",
+      "zones": [
+        "Lake Nerius"
+      ],
+      "drops": [
+        "Ancient Signet Ring of House Everling",
+        "Angler's Finery"
+      ],
+      "loc": [
+        {
+          "ns": 2640,
+          "ew": 1226,
+          "z": -120
+        }
+      ]
+    },
+    {
       "page": "Corrupted seafury cyclops",
       "name": "corrupted seafury cyclops",
       "level": "52",
@@ -66639,6 +67940,20 @@
       ]
     },
     {
+      "page": "Crusader Graez",
+      "name": "Crusader Graez",
+      "level": "50",
+      "zones": [
+        "New Sebilis Expedition"
+      ],
+      "loc": [
+        {
+          "ns": 164,
+          "ew": 17
+        }
+      ]
+    },
+    {
       "page": "Crusader Hitol",
       "name": "Crusader Hitol",
       "level": "50",
@@ -66924,6 +68239,24 @@
       ]
     },
     {
+      "page": "Crypt Guardian",
+      "name": "Crypt Guardian",
+      "zones": [
+        "Nektropos Castle"
+      ],
+      "drops": [
+        "Ancient Warsword",
+        "Cryptguard"
+      ],
+      "loc": [
+        {
+          "ns": 135.66,
+          "ew": -109.42,
+          "z": -111.28
+        }
+      ]
+    },
+    {
       "page": "Crypt mummy",
       "name": "crypt mummy",
       "level": "13",
@@ -66957,6 +68290,26 @@
           "ns": 417,
           "ew": -44,
           "pct": 100
+        }
+      ]
+    },
+    {
+      "page": "Crysta Everling",
+      "name": "Crysta Everling",
+      "level": "58",
+      "zones": [
+        "Nektropos Castle"
+      ],
+      "drops": [
+        "Crysta's Robe",
+        "Pyrosilk Amice",
+        "Pyrosilk Leggings"
+      ],
+      "loc": [
+        {
+          "ns": 859,
+          "ew": 311,
+          "z": 18
         }
       ]
     },
@@ -67470,6 +68823,7 @@
         "Cloth Gloves",
         "Cloth Pants",
         "Cloth Sandals",
+        "Crystallized Sulfur",
         "Bronze Short Sword",
         "Bronze Bastard Sword",
         "Bronze Axe",
@@ -67903,6 +69257,21 @@
       ]
     },
     {
+      "page": "Dandalek Swillslammer",
+      "name": "Dandalek Swillslammer",
+      "level": "40",
+      "zones": [
+        "Butcherblock Mountains"
+      ],
+      "loc": [
+        {
+          "ns": 2957,
+          "ew": -203,
+          "z": 0
+        }
+      ]
+    },
+    {
       "page": "Danilla Delucic",
       "name": "Danilla Delucic",
       "level": "35",
@@ -67997,6 +69366,48 @@
         "Dragon Horn Ykesha",
         "Undead Froglok Spine",
         "Words of Dissolution"
+      ]
+    },
+    {
+      "page": "Dar Guard Broktl",
+      "name": "Dar Guard Broktl",
+      "level": "9-11",
+      "zones": [
+        "Rathe Mountains"
+      ],
+      "loc": [
+        {
+          "ns": -1399,
+          "ew": 786
+        }
+      ]
+    },
+    {
+      "page": "Dar Guard Fnabble",
+      "name": "Dar Guard Fnabble",
+      "level": "9-10",
+      "zones": [
+        "Rathe Mountains"
+      ],
+      "loc": [
+        {
+          "ns": -1063,
+          "ew": 472
+        }
+      ]
+    },
+    {
+      "page": "Dar Guard Gflabbiel",
+      "name": "Dar Guard Gflabbiel",
+      "level": "9-11",
+      "zones": [
+        "Rathe Mountains"
+      ],
+      "loc": [
+        {
+          "ns": -1042,
+          "ew": 404
+        }
       ]
     },
     {
@@ -68274,6 +69685,24 @@
           "ns": -77,
           "ew": -308,
           "pct": 100
+        }
+      ]
+    },
+    {
+      "page": "Daruth Pilaka",
+      "name": "Daruth Pilaka",
+      "level": "70",
+      "zones": [
+        "Nektropos Undercrofts"
+      ],
+      "drops": [
+        "None"
+      ],
+      "loc": [
+        {
+          "ns": 39,
+          "ew": 119,
+          "z": 4
         }
       ]
     },
@@ -68875,6 +70304,26 @@
           "ew": -601.06,
           "z": 55.66,
           "pct": 100
+        }
+      ]
+    },
+    {
+      "page": "Deirdre Everling",
+      "name": "Deirdre Everling",
+      "level": "58",
+      "zones": [
+        "Nektropos Castle"
+      ],
+      "drops": [
+        "Deirdre's Robe",
+        "Pyrosilk Sleeves",
+        "Pyrosilk Choker"
+      ],
+      "loc": [
+        {
+          "ns": -188,
+          "ew": -138,
+          "z": 15
         }
       ]
     },
@@ -70429,6 +71878,25 @@
       ]
     },
     {
+      "page": "Direbear",
+      "name": "Direbear",
+      "level": "15",
+      "zones": [
+        "Lake Nerius"
+      ],
+      "drops": [
+        "Well Worn Boots"
+      ],
+      "loc": [
+        {
+          "ns": 513,
+          "ew": -1752,
+          "z": 6,
+          "pct": 100
+        }
+      ]
+    },
+    {
       "page": "Direlee Furme",
       "name": "Direlee Furme",
       "level": "45",
@@ -70462,6 +71930,23 @@
       "level": "60",
       "zones": [
         "Plane of Sky"
+      ]
+    },
+    {
+      "page": "Discarded Experiment",
+      "name": "Discarded Experiment",
+      "level": "15",
+      "zones": [
+        "Lake Nerius"
+      ],
+      "drops": [
+        "Earring of Experimentation"
+      ],
+      "loc": [
+        {
+          "ns": -1005,
+          "ew": 824
+        }
       ]
     },
     {
@@ -71152,6 +72637,20 @@
         {
           "ns": -3866,
           "ew": 1641
+        }
+      ]
+    },
+    {
+      "page": "Dorian G`Wyn",
+      "name": "Dorian G`Wyn",
+      "level": "50",
+      "zones": [
+        "Lake Nerius"
+      ],
+      "loc": [
+        {
+          "ns": -110,
+          "ew": 65
         }
       ]
     },
@@ -72062,6 +73561,20 @@
         {
           "ns": -455,
           "ew": 30
+        }
+      ]
+    },
+    {
+      "page": "Drip Drop",
+      "name": "Drip Drop",
+      "level": "50",
+      "zones": [
+        "Lake Nerius"
+      ],
+      "loc": [
+        {
+          "ns": -310,
+          "ew": 136
         }
       ]
     },
@@ -73787,6 +75300,9 @@
       "zones": [
         "The Feerrott"
       ],
+      "drops": [
+        "Ruined Robe"
+      ],
       "loc": [
         {
           "ns": -1461,
@@ -73929,6 +75445,26 @@
       ]
     },
     {
+      "page": "Elise Everling",
+      "name": "Elise Everling",
+      "level": "57",
+      "zones": [
+        "Nektropos Castle"
+      ],
+      "drops": [
+        "Elise's Robe",
+        "Pyrosilk Bracelet",
+        "Pyrosilk Lined Shoes"
+      ],
+      "loc": [
+        {
+          "ns": -157,
+          "ew": 321,
+          "z": 17
+        }
+      ]
+    },
+    {
       "page": "Elisi Nasin",
       "name": "Elisi Nasin",
       "level": "61",
@@ -73942,6 +75478,23 @@
         {
           "ns": -336,
           "ew": -862
+        }
+      ]
+    },
+    {
+      "page": "Elite Guard",
+      "name": "Elite Guard",
+      "level": "60",
+      "zones": [
+        "Nektropos Castle"
+      ],
+      "drops": [
+        "Long Sword"
+      ],
+      "loc": [
+        {
+          "ns": 286,
+          "ew": -67
         }
       ]
     },
@@ -75975,6 +77528,21 @@
       ]
     },
     {
+      "page": "Fava Zolhic",
+      "name": "Fava Zolhic",
+      "level": "50",
+      "zones": [
+        "Nektropos Undercrofts"
+      ],
+      "loc": [
+        {
+          "ns": -126,
+          "ew": 72,
+          "z": 4
+        }
+      ]
+    },
+    {
       "page": "Faydedar",
       "name": "Faydedar",
       "level": "55",
@@ -77341,12 +78909,10 @@
         "Innothule Swamp"
       ],
       "drops": [
-        "Netted Mantle",
-        "Netted Mask",
         "Cracked Staff",
         "Froglok Blood",
         "Froglok Meat",
-        "Rusty Spear"
+        "Undead Froglok Tongue"
       ],
       "loc": [
         {
@@ -77761,6 +79327,20 @@
         {
           "ns": -636,
           "ew": -358
+        }
+      ]
+    },
+    {
+      "page": "Frip Frooply",
+      "name": "Frip Frooply",
+      "level": "30",
+      "zones": [
+        "Rathe Mountains"
+      ],
+      "loc": [
+        {
+          "ns": -2235,
+          "ew": 627
         }
       ]
     },
@@ -79523,7 +81103,10 @@
         "Innothule Swamp"
       ],
       "drops": [
-        "Sarcoscypha Fungus"
+        "Copper Band",
+        "Innothule Mushroom",
+        "Sarcoscypha Fungus",
+        "Splintering Club"
       ]
     },
     {
@@ -79799,6 +81382,21 @@
         {
           "ns": 326,
           "ew": 274
+        }
+      ]
+    },
+    {
+      "page": "Galoxia Rumbad",
+      "name": "Galoxia Rumbad",
+      "level": "50",
+      "zones": [
+        "Nektropos Undercrofts"
+      ],
+      "loc": [
+        {
+          "ns": -112,
+          "ew": 125,
+          "z": 4
         }
       ]
     },
@@ -80378,6 +81976,20 @@
         {
           "ns": -1576,
           "ew": -255
+        }
+      ]
+    },
+    {
+      "page": "Gaz Master Shargnol",
+      "name": "Gaz Master Shargnol",
+      "level": "70",
+      "zones": [
+        "Rathe Mountains"
+      ],
+      "loc": [
+        {
+          "ns": -1748,
+          "ew": 2103
         }
       ]
     },
@@ -81202,7 +82814,10 @@
       ],
       "drops": [
         "Giant Snake Fang",
-        "A Snake Venom Sac"
+        "A Snake Venom Sac",
+        "Snake Egg",
+        "Giant Snake Rattle",
+        "Snake Meat"
       ],
       "loc": [
         {
@@ -83723,6 +85338,7 @@
         "Nagafen's Lair"
       ],
       "drops": [
+        "Box of Abu-Kar",
         "Bronze Helm",
         "Bronze Mask",
         "Bronze Collar",
@@ -84215,6 +85831,10 @@
           "ns": 625,
           "ew": 90,
           "pct": 100
+        },
+        {
+          "ns": 665,
+          "ew": 83
         }
       ]
     },
@@ -85254,6 +86874,23 @@
       ]
     },
     {
+      "page": "Guard B`Ynak",
+      "name": "Guard B`Ynak",
+      "level": "50",
+      "zones": [
+        "Lake Nerius"
+      ],
+      "drops": [
+        "Long Sword"
+      ],
+      "loc": [
+        {
+          "ns": -659,
+          "ew": -447
+        }
+      ]
+    },
+    {
       "page": "Guard Bach",
       "name": "Guard Bach",
       "level": "24-26",
@@ -85775,6 +87412,25 @@
       ]
     },
     {
+      "page": "Guard Captain Ga`Vin",
+      "name": "Guard Captain Ga`Vin",
+      "level": "63",
+      "zones": [
+        "Nektropos Castle"
+      ],
+      "drops": [
+        "Burning Fighters Blade",
+        "Helical Band of the Unyielding"
+      ],
+      "loc": [
+        {
+          "ns": 548,
+          "ew": 121,
+          "z": 18
+        }
+      ]
+    },
+    {
       "page": "Guard Captain Latorl",
       "name": "Guard Captain Latorl",
       "level": "40",
@@ -86114,6 +87770,23 @@
         {
           "ns": 741,
           "ew": -1196
+        }
+      ]
+    },
+    {
+      "page": "Guard D`Drash",
+      "name": "Guard D`Drash",
+      "level": "50",
+      "zones": [
+        "Lake Nerius"
+      ],
+      "drops": [
+        "Long Sword"
+      ],
+      "loc": [
+        {
+          "ns": -525,
+          "ew": -1180
         }
       ]
     },
@@ -87054,6 +88727,23 @@
       ]
     },
     {
+      "page": "Guard F`Waff",
+      "name": "Guard F`Waff",
+      "level": "50",
+      "zones": [
+        "Lake Nerius"
+      ],
+      "drops": [
+        "Long Sword"
+      ],
+      "loc": [
+        {
+          "ns": -356,
+          "ew": 169
+        }
+      ]
+    },
+    {
       "page": "Guard Falldrryn",
       "name": "Guard Falldrryn",
       "level": "46",
@@ -87850,6 +89540,23 @@
           "ns": 623,
           "ew": 1272,
           "pct": 9
+        }
+      ]
+    },
+    {
+      "page": "Guard H`Rar",
+      "name": "Guard H`Rar",
+      "level": "50",
+      "zones": [
+        "Lake Nerius"
+      ],
+      "drops": [
+        "Long Sword"
+      ],
+      "loc": [
+        {
+          "ns": -356,
+          "ew": 219
         }
       ]
     },
@@ -88675,6 +90382,20 @@
       ]
     },
     {
+      "page": "Guard K`Biet",
+      "name": "Guard K`Biet",
+      "level": "50",
+      "zones": [
+        "Lake Nerius"
+      ],
+      "loc": [
+        {
+          "ns": -48,
+          "ew": -11
+        }
+      ]
+    },
+    {
       "page": "Guard K`Jartan",
       "name": "Guard K`Jartan",
       "level": "40",
@@ -89208,6 +90929,23 @@
         {
           "ns": -37,
           "ew": -850
+        }
+      ]
+    },
+    {
+      "page": "Guard L`Jer",
+      "name": "Guard L`Jer",
+      "level": "50",
+      "zones": [
+        "Lake Nerius"
+      ],
+      "drops": [
+        "Long Sword"
+      ],
+      "loc": [
+        {
+          "ns": -399,
+          "ew": -1077
         }
       ]
     },
@@ -91342,6 +93080,23 @@
       ]
     },
     {
+      "page": "Guard Ru`Ryt",
+      "name": "Guard Ru`Ryt",
+      "level": "50",
+      "zones": [
+        "Lake Nerius"
+      ],
+      "drops": [
+        "Long Sword"
+      ],
+      "loc": [
+        {
+          "ns": -140,
+          "ew": 218
+        }
+      ]
+    },
+    {
       "page": "Guard Rundul",
       "name": "Guard Rundul",
       "level": "45",
@@ -91445,6 +93200,27 @@
         {
           "ns": -19,
           "ew": -905
+        }
+      ]
+    },
+    {
+      "page": "Guard S`Tal",
+      "name": "Guard S`Tal",
+      "level": "50",
+      "zones": [
+        "Lake Nerius"
+      ],
+      "drops": [
+        "Long Sword"
+      ],
+      "loc": [
+        {
+          "ns": 1838,
+          "ew": 145
+        },
+        {
+          "ns": 1709,
+          "ew": 48
         }
       ]
     },
@@ -92242,6 +94018,23 @@
       ]
     },
     {
+      "page": "Guard Ta`Dalk",
+      "name": "Guard Ta`Dalk",
+      "level": "50",
+      "zones": [
+        "Lake Nerius"
+      ],
+      "drops": [
+        "Long Sword"
+      ],
+      "loc": [
+        {
+          "ns": 2454,
+          "ew": -124
+        }
+      ]
+    },
+    {
       "page": "Guard Taalen",
       "name": "Guard Taalen",
       "level": "45",
@@ -92847,6 +94640,23 @@
       ]
     },
     {
+      "page": "Guard V`Shur",
+      "name": "Guard V`Shur",
+      "level": "50",
+      "zones": [
+        "Lake Nerius"
+      ],
+      "drops": [
+        "Long Sword"
+      ],
+      "loc": [
+        {
+          "ns": -118,
+          "ew": 205
+        }
+      ]
+    },
+    {
       "page": "Guard Valewatcher",
       "name": "Guard Valewatcher",
       "level": "40-41",
@@ -92944,6 +94754,23 @@
           "ns": 757,
           "ew": 1540,
           "pct": 20
+        }
+      ]
+    },
+    {
+      "page": "Guard W`Syft",
+      "name": "Guard W`Syft",
+      "level": "50",
+      "zones": [
+        "Lake Nerius"
+      ],
+      "drops": [
+        "Long Sword"
+      ],
+      "loc": [
+        {
+          "ns": 845,
+          "ew": 306
         }
       ]
     },
@@ -93105,6 +94932,20 @@
           "ns": -144,
           "ew": -705,
           "pct": 100
+        }
+      ]
+    },
+    {
+      "page": "Guard X`Chanal",
+      "name": "Guard X`Chanal",
+      "level": "39-50",
+      "zones": [
+        "Lake Nerius"
+      ],
+      "loc": [
+        {
+          "ns": -354,
+          "ew": 174
         }
       ]
     },
@@ -95017,6 +96858,25 @@
       ]
     },
     {
+      "page": "Head Chef Vy`zen",
+      "name": "NPC_Name",
+      "level": "52",
+      "zones": [
+        "Nektropos Castle"
+      ],
+      "drops": [
+        "Worn Corpse Chopper",
+        "Chef's Surprise"
+      ],
+      "loc": [
+        {
+          "ns": 497,
+          "ew": 83,
+          "z": -7
+        }
+      ]
+    },
+    {
       "page": "Headara Ponido",
       "name": "Headara Ponido",
       "level": "45",
@@ -95616,6 +97476,58 @@
       ]
     },
     {
+      "page": "High Chief Deroslan",
+      "name": "High Chief Deroslan",
+      "level": "12",
+      "zones": [
+        "Nektulos Forest"
+      ],
+      "drops": [
+        "Chief Deroslan's Prayer Beads"
+      ],
+      "loc": [
+        {
+          "ns": -476,
+          "ew": 756
+        }
+      ]
+    },
+    {
+      "page": "High Chief Ferilsars",
+      "name": "High Chief Ferilsars",
+      "level": "12",
+      "zones": [
+        "Nektulos Forest"
+      ],
+      "drops": [
+        "Chief Ferilsars' Prayer Beads",
+        "Rusty Warhammer"
+      ],
+      "loc": [
+        {
+          "ns": -167,
+          "ew": -471
+        }
+      ]
+    },
+    {
+      "page": "High Chief Wasolors",
+      "name": "High Chief Wasolors",
+      "level": "12",
+      "zones": [
+        "Nektulos Forest"
+      ],
+      "drops": [
+        "Chief Wasolors' Prayer Beads"
+      ],
+      "loc": [
+        {
+          "ns": -1782,
+          "ew": 1216
+        }
+      ]
+    },
+    {
       "page": "High Priest M`kari",
       "name": "High Priest M`kari",
       "level": "58",
@@ -95687,6 +97599,20 @@
       ]
     },
     {
+      "page": "High Priestess of Ulkorruuk",
+      "name": "High Priestess of Ulkorruuk",
+      "level": "65",
+      "zones": [
+        "Plane of Hate"
+      ],
+      "loc": [
+        {
+          "ns": -103,
+          "ew": 294
+        }
+      ]
+    },
+    {
       "page": "High Scale Kirn",
       "name": "High Scale Kirn",
       "level": "53",
@@ -95700,6 +97626,20 @@
         {
           "ns": 266,
           "ew": -246
+        }
+      ]
+    },
+    {
+      "page": "High Seer Flogk",
+      "name": "High Seer Flogk",
+      "level": "70",
+      "zones": [
+        "Rathe Mountains"
+      ],
+      "loc": [
+        {
+          "ns": -1146,
+          "ew": 218
         }
       ]
     },
@@ -97423,6 +99363,20 @@
       ]
     },
     {
+      "page": "Ilisiv Gantrau",
+      "name": "Ilisiv Gantrau",
+      "level": "65",
+      "zones": [
+        "Toxxulia Forest"
+      ],
+      "loc": [
+        {
+          "ns": 1150,
+          "ew": -296
+        }
+      ]
+    },
+    {
       "page": "Illie Roln",
       "name": "Illie Roln",
       "level": "35",
@@ -98769,6 +100723,24 @@
       ]
     },
     {
+      "page": "Inquisitor of Ulkorruuk",
+      "name": "Inquisitor of Ulkorruuk",
+      "zones": [
+        "Nektropos Castle"
+      ],
+      "drops": [
+        "Cloak of Treason",
+        "Bloodsoaked Gauntlets"
+      ],
+      "loc": [
+        {
+          "ns": -32,
+          "ew": -167,
+          "z": -7
+        }
+      ]
+    },
+    {
       "page": "Inte Akera",
       "name": "Inte Akera",
       "level": "55",
@@ -99021,6 +100993,24 @@
       "drops": [
         "Withered Leather Wristbands",
         "Withered Leather Belt"
+      ]
+    },
+    {
+      "page": "Irum Halazaloski",
+      "name": "Irum_Halazaloski",
+      "level": "70",
+      "zones": [
+        "Nektropos Undercrofts"
+      ],
+      "drops": [
+        "None"
+      ],
+      "loc": [
+        {
+          "ns": 34,
+          "ew": 152,
+          "z": 4
+        }
       ]
     },
     {
@@ -99931,6 +101921,8 @@
         "Innothule Swamp"
       ],
       "drops": [
+        "High Elf Flesh",
+        "Tattered Parchment",
         "A Noble's Crest"
       ],
       "loc": [
@@ -100096,6 +102088,20 @@
         {
           "ns": 563,
           "ew": 193
+        }
+      ]
+    },
+    {
+      "page": "Jeim",
+      "name": "Jeim",
+      "level": "50",
+      "zones": [
+        "Rathe Mountains"
+      ],
+      "loc": [
+        {
+          "ns": 1662,
+          "ew": -834
         }
       ]
     },
@@ -100337,6 +102343,26 @@
         {
           "ns": -166,
           "ew": -171
+        }
+      ]
+    },
+    {
+      "page": "Jenni Everling",
+      "name": "Jenni Everling",
+      "level": "56",
+      "zones": [
+        "Nektropos Castle"
+      ],
+      "drops": [
+        "Jenni's Robe",
+        "Pyrosilk Veil",
+        "Pyroweave Band"
+      ],
+      "loc": [
+        {
+          "ns": 342,
+          "ew": -423,
+          "z": 17
         }
       ]
     },
@@ -101407,7 +103433,8 @@
       ],
       "drops": [
         "High Elf Parts",
-        "High Elf Flesh"
+        "High Elf Flesh",
+        "Tattered Parchment"
       ],
       "loc": [
         {
@@ -101499,6 +103526,20 @@
         {
           "ns": -1738,
           "ew": 1484
+        }
+      ]
+    },
+    {
+      "page": "Kaelin K`Toz",
+      "name": "Kaelin K`Toz",
+      "level": "50",
+      "zones": [
+        "Lake Nerius"
+      ],
+      "loc": [
+        {
+          "ns": -202,
+          "ew": 258
         }
       ]
     },
@@ -102007,6 +104048,21 @@
       ]
     },
     {
+      "page": "Karanak Poliska",
+      "name": "Karanak Poliska",
+      "level": "50",
+      "zones": [
+        "Nektropos Undercrofts"
+      ],
+      "loc": [
+        {
+          "ns": -137,
+          "ew": 56,
+          "z": 4
+        }
+      ]
+    },
+    {
       "page": "Kardakor",
       "name": "Kardakor",
       "level": "60",
@@ -102080,6 +104136,24 @@
           "ns": 119,
           "ew": -433,
           "pct": 100
+        }
+      ]
+    },
+    {
+      "page": "Karis Griffith",
+      "name": "Karis Griffith",
+      "level": "70",
+      "zones": [
+        "Nektropos Undercrofts"
+      ],
+      "drops": [
+        "None"
+      ],
+      "loc": [
+        {
+          "ns": -139,
+          "ew": 41,
+          "z": 4
         }
       ]
     },
@@ -103856,6 +105930,20 @@
       ]
     },
     {
+      "page": "Kizrak the Tyrant",
+      "name": "Kizrak the Tyrant",
+      "level": "61",
+      "zones": [
+        "Oggok"
+      ],
+      "loc": [
+        {
+          "ns": 598,
+          "ew": -10
+        }
+      ]
+    },
+    {
       "page": "Kizya D`Dbth",
       "name": "Kizya D`Dbth",
       "level": "40",
@@ -104659,6 +106747,20 @@
       ]
     },
     {
+      "page": "Klok Sasz",
+      "name": "Klok Sasz",
+      "level": "50",
+      "zones": [
+        "Northern Desert of Ro"
+      ],
+      "loc": [
+        {
+          "ns": 2306,
+          "ew": -772
+        }
+      ]
+    },
+    {
       "page": "Klok Scaleroot",
       "name": "Klok Scaleroot",
       "level": "45",
@@ -105284,6 +107386,34 @@
         {
           "ns": -26,
           "ew": -261
+        }
+      ]
+    },
+    {
+      "page": "Konro Strongfoot",
+      "name": "Konro Strongfoot",
+      "level": "50",
+      "zones": [
+        "Lake Nerius"
+      ],
+      "loc": [
+        {
+          "ns": -322,
+          "ew": 251
+        }
+      ]
+    },
+    {
+      "page": "Kor Master Ralg",
+      "name": "Kor Master Ralg",
+      "level": "70",
+      "zones": [
+        "Rathe Mountains"
+      ],
+      "loc": [
+        {
+          "ns": -1883,
+          "ew": 2140
         }
       ]
     },
@@ -106548,6 +108678,24 @@
       ]
     },
     {
+      "page": "Lady Sileniu Everling",
+      "name": "Lady Sileniu Everling",
+      "level": "63",
+      "zones": [
+        "Nektropos Castle"
+      ],
+      "drops": [
+        "None"
+      ],
+      "loc": [
+        {
+          "ns": 552,
+          "ew": -132,
+          "z": 17
+        }
+      ]
+    },
+    {
       "page": "Lady Vox",
       "name": "Lady Vox",
       "level": "55",
@@ -107613,6 +109761,14 @@
       "zones": [
         "Nektulos Forest"
       ],
+      "drops": [
+        "Halfling Blood",
+        "Halfling Toe",
+        "Leatherfoot Raider Skullcap",
+        "Sample of Halfling Meat",
+        "Vial of Halfling Blood",
+        "Woven Grass Amulet"
+      ],
       "loc": [
         {
           "ns": 1016,
@@ -107629,8 +109785,12 @@
         "Nektulos Forest"
       ],
       "drops": [
-        "Woven Grass Amulet",
-        "Rusty Two Handed Hammer"
+        "Halfling Blood",
+        "Halfling Toe",
+        "Leatherfoot Raider Skullcap",
+        "Sample of Halfling Meat",
+        "Vial of Halfling Blood",
+        "Woven Grass Amulet"
       ],
       "loc": [
         {
@@ -111194,6 +113354,23 @@
       ]
     },
     {
+      "page": "Lord Ollix Everling",
+      "name": "NPC_Name",
+      "zones": [
+        "Nektropos Castle"
+      ],
+      "drops": [
+        "None"
+      ],
+      "loc": [
+        {
+          "ns": 354,
+          "ew": -20,
+          "z": -5
+        }
+      ]
+    },
+    {
       "page": "Lord Pickclaw",
       "name": "Lord Pickclaw",
       "level": "32",
@@ -111280,6 +113457,28 @@
         "Ornate Rune Blade",
         "Atramentous Shield",
         "Iksar Scale"
+      ]
+    },
+    {
+      "page": "Lord Rikantus Everling",
+      "name": "Lord_Rikantus_Everling",
+      "level": "65",
+      "zones": [
+        "Nektropos Castle"
+      ],
+      "drops": [
+        "Signet Ring of Lord Everling",
+        "Idol of Forsaken Ideals",
+        "Blood's Unity",
+        "Warstaff of Hope's Demise",
+        "Robe of the Betrayed"
+      ],
+      "loc": [
+        {
+          "ns": -382,
+          "ew": 181,
+          "z": -112
+        }
       ]
     },
     {
@@ -112181,7 +114380,7 @@
         "Solusek's Eye"
       ],
       "drops": [
-        "A 'Sparkle' Purse",
+        "Sparkle",
         "Damask Amice",
         "Soft Leather Shoes",
         "Dark Elf Parts"
@@ -113153,6 +115352,24 @@
         {
           "ns": 536,
           "ew": -87
+        }
+      ]
+    },
+    {
+      "page": "Maradon Faliahka",
+      "name": "Maradon Faliahka",
+      "level": "70",
+      "zones": [
+        "Nektropos Undercrofts"
+      ],
+      "drops": [
+        "None"
+      ],
+      "loc": [
+        {
+          "ns": 33,
+          "ew": 202,
+          "z": 4
         }
       ]
     },
@@ -114372,6 +116589,25 @@
       ]
     },
     {
+      "page": "Melanie Everling",
+      "name": "Melanie Everling",
+      "zones": [
+        "Nektropos Castle"
+      ],
+      "drops": [
+        "Melanie's Robe",
+        "Pyrosilk Sash",
+        "Pyrosilk Cloak"
+      ],
+      "loc": [
+        {
+          "ns": 753,
+          "ew": -313,
+          "z": 15
+        }
+      ]
+    },
+    {
       "page": "Meldikor the Windchaser",
       "name": "Meldikor the Windchaser",
       "level": "60",
@@ -114879,12 +117115,6 @@
       "level": "40",
       "zones": [
         "Greater Faydark"
-      ],
-      "loc": [
-        {
-          "ns": 420,
-          "ew": 373
-        }
       ]
     },
     {
@@ -115860,6 +118090,20 @@
       ]
     },
     {
+      "page": "Mindiinya N`Zar",
+      "name": "Mindiinya N`Zar",
+      "level": "50",
+      "zones": [
+        "Lake Nerius"
+      ],
+      "loc": [
+        {
+          "ns": -194,
+          "ew": 249
+        }
+      ]
+    },
+    {
       "page": "Miner Bordakn",
       "name": "Miner Bordakn",
       "level": "40",
@@ -116476,6 +118720,21 @@
       ]
     },
     {
+      "page": "Mojo the Tainted",
+      "name": "Mojo the Tainted",
+      "level": "30",
+      "zones": [
+        "Ocean of Tears"
+      ],
+      "loc": [
+        {
+          "ns": -1188,
+          "ew": -8716,
+          "z": 52
+        }
+      ]
+    },
+    {
       "page": "Moldering Ape",
       "name": "a moldering ape",
       "level": "35",
@@ -116491,6 +118750,17 @@
           "ew": 2517,
           "pct": 100
         }
+      ]
+    },
+    {
+      "page": "Moldrak Drin",
+      "name": "Moldrak Drin",
+      "level": "22",
+      "zones": [
+        "Southern Desert of Ro"
+      ],
+      "drops": [
+        "Cracked Staff"
       ]
     },
     {
@@ -116682,8 +118952,8 @@
       ],
       "loc": [
         {
-          "ns": -885,
-          "ew": 1115,
+          "ns": -1100,
+          "ew": 486,
           "pct": 5
         }
       ]
@@ -117492,6 +119762,21 @@
       ]
     },
     {
+      "page": "Myron Ketalin",
+      "name": "Myron Ketalin",
+      "level": "30",
+      "zones": [
+        "Nektropos Undercrofts"
+      ],
+      "loc": [
+        {
+          "ns": -52,
+          "ew": 164,
+          "z": 4
+        }
+      ]
+    },
+    {
       "page": "Myrva N`Tan",
       "name": "Myrva N`Tan",
       "level": "40",
@@ -117894,6 +120179,21 @@
         {
           "ns": 847,
           "ew": -441
+        }
+      ]
+    },
+    {
+      "page": "Nashana Pilaka",
+      "name": "Nashana Pilaka",
+      "level": "50",
+      "zones": [
+        "Nektropos Undercrofts"
+      ],
+      "loc": [
+        {
+          "ns": 24,
+          "ew": 118,
+          "z": 4
         }
       ]
     },
@@ -118438,6 +120738,20 @@
       ]
     },
     {
+      "page": "Neuven F`Lok",
+      "name": "Neuven F`Lok",
+      "level": "60",
+      "zones": [
+        "Lake Nerius"
+      ],
+      "loc": [
+        {
+          "ns": -40,
+          "ew": 135
+        }
+      ]
+    },
+    {
       "page": "Nexona",
       "name": "Nexona",
       "level": "65",
@@ -118664,6 +120978,20 @@
       ]
     },
     {
+      "page": "Nikko Canti",
+      "name": "Nikko Canti",
+      "level": "50",
+      "zones": [
+        "Lake Nerius"
+      ],
+      "loc": [
+        {
+          "ns": 2470,
+          "ew": 1425
+        }
+      ]
+    },
+    {
       "page": "Nilham the Chef",
       "name": "Nilham the Chef",
       "level": "26",
@@ -118882,6 +121210,7 @@
       "drops": [
         "Devlas Ilkvel",
         "Fine Steel Scimitar",
+        "Split Paw",
         "Split Paw Hide Mask",
         "Tesch Val Sinisch",
         "White Hellebore",
@@ -120872,8 +123201,8 @@
       ],
       "loc": [
         {
-          "ns": 207,
-          "ew": -145
+          "ns": 320,
+          "ew": 60
         }
       ]
     },
@@ -122516,6 +124845,23 @@
       ]
     },
     {
+      "page": "Peltin Funter",
+      "name": "Peltin Funter",
+      "level": "13",
+      "zones": [
+        "Innothule Swamp"
+      ],
+      "drops": [
+        "Human Flesh"
+      ],
+      "loc": [
+        {
+          "ns": 145,
+          "ew": -437
+        }
+      ]
+    },
+    {
       "page": "Pendle Dashinger",
       "name": "Pendle Dashinger",
       "level": "30",
@@ -122998,6 +125344,21 @@
       ]
     },
     {
+      "page": "Pilunza Zatovich",
+      "name": "Pilunza Zatovich",
+      "level": "50",
+      "zones": [
+        "Nektropos Undercrofts"
+      ],
+      "loc": [
+        {
+          "ns": 32,
+          "ew": 187,
+          "z": 4
+        }
+      ]
+    },
+    {
       "page": "Pincia Brownloe",
       "name": "Pincia Brownloe",
       "level": "45",
@@ -123109,6 +125470,24 @@
           "ns": 4634,
           "ew": 1235,
           "pct": 100
+        }
+      ]
+    },
+    {
+      "page": "Pishtian F`Lok",
+      "name": "Pishtian F`Lok",
+      "level": "60",
+      "zones": [
+        "Neriak - Commons"
+      ],
+      "drops": [
+        "None"
+      ],
+      "loc": [
+        {
+          "ns": 53,
+          "ew": -931,
+          "z": -52
         }
       ]
     },
@@ -123293,6 +125672,21 @@
         {
           "ns": -234,
           "ew": 77
+        }
+      ]
+    },
+    {
+      "page": "Plimptos",
+      "name": "Plimptos",
+      "level": "60",
+      "zones": [
+        "Nektropos Castle"
+      ],
+      "loc": [
+        {
+          "ns": 102,
+          "ew": -151,
+          "z": 7
         }
       ]
     },
@@ -124081,6 +126475,24 @@
       ]
     },
     {
+      "page": "Priestess of Ulkorruuk",
+      "name": "Priestess of Ulkorruuk",
+      "level": "52",
+      "zones": [
+        "Nektropos Castle"
+      ],
+      "loc": [
+        {
+          "ns": -24,
+          "ew": -159
+        },
+        {
+          "ns": -41,
+          "ew": -157
+        }
+      ]
+    },
+    {
       "page": "Priestess Sercema",
       "name": "Priestess Sercema",
       "level": "60",
@@ -124635,6 +127047,13 @@
           "ew": -865,
           "pct": 50
         }
+      ]
+    },
+    {
+      "page": "Puntar Sandfisher`s corpse",
+      "name": "Puntar Sandfisher`s corpse",
+      "zones": [
+        "Northern Desert of Ro"
       ]
     },
     {
@@ -126290,6 +128709,20 @@
       ]
     },
     {
+      "page": "Raul",
+      "name": "Raul",
+      "level": "35",
+      "zones": [
+        "Lake Nerius"
+      ],
+      "loc": [
+        {
+          "ns": -260,
+          "ew": 112
+        }
+      ]
+    },
+    {
       "page": "Raven",
       "name": "Raven",
       "level": "35",
@@ -126665,7 +129098,8 @@
         "Raw-Hide Cloak",
         "Runed Shawl",
         "Snakeskin Gloves",
-        "Raw-hide Gorget"
+        "Raw-hide Gorget",
+        "Sharp Claws"
       ],
       "loc": [
         {
@@ -127124,6 +129558,10 @@
           "ew": 107
         }
       ]
+    },
+    {
+      "page": "Retainer Ozval",
+      "name": "Retainer Ozval"
     },
     {
       "page": "Retlon Brenclog",
@@ -129577,6 +132015,21 @@
       ]
     },
     {
+      "page": "Saronia Asher",
+      "name": "Saronia Asher",
+      "level": "50",
+      "zones": [
+        "Nektropos Undercrofts"
+      ],
+      "loc": [
+        {
+          "ns": -136,
+          "ew": 117,
+          "z": 4
+        }
+      ]
+    },
+    {
       "page": "Sarot",
       "name": "Sarot",
       "level": "34",
@@ -129684,6 +132137,24 @@
         {
           "ns": 600,
           "ew": -1284
+        }
+      ]
+    },
+    {
+      "page": "Scabby",
+      "name": "Scabby",
+      "level": "49",
+      "zones": [
+        "Nektropos Undercrofts"
+      ],
+      "drops": [
+        "None"
+      ],
+      "loc": [
+        {
+          "ns": 32,
+          "ew": 119,
+          "z": 4
         }
       ]
     },
@@ -129963,6 +132434,34 @@
           "ns": -89.21,
           "ew": -471.75,
           "z": -80
+        }
+      ]
+    },
+    {
+      "page": "Scribe Biddlegorb",
+      "name": "Scribe Biddlegorb",
+      "level": "50",
+      "zones": [
+        "Rathe Mountains"
+      ],
+      "loc": [
+        {
+          "ns": -1870,
+          "ew": 2091
+        }
+      ]
+    },
+    {
+      "page": "Scribe Noglleg",
+      "name": "Scribe Noglleg",
+      "level": "50",
+      "zones": [
+        "Rathe Mountains"
+      ],
+      "loc": [
+        {
+          "ns": -2059,
+          "ew": 1935
         }
       ]
     },
@@ -134371,6 +136870,24 @@
       ]
     },
     {
+      "page": "Sergai Pilaka",
+      "name": "Sergai Pilaka",
+      "level": "70",
+      "zones": [
+        "Nektropos Undercrofts"
+      ],
+      "drops": [
+        "None"
+      ],
+      "loc": [
+        {
+          "ns": 41,
+          "ew": 133,
+          "z": 4
+        }
+      ]
+    },
+    {
       "page": "Sergeant Bladesplitter",
       "name": "Sergeant Bladesplitter",
       "level": "33",
@@ -134642,6 +137159,9 @@
       "level": "12",
       "zones": [
         "Rathe Mountains"
+      ],
+      "drops": [
+        "Recovered Loot"
       ]
     },
     {
@@ -134808,6 +137328,25 @@
         {
           "ns": -602,
           "ew": 2606
+        }
+      ]
+    },
+    {
+      "page": "Sergeant Tvyn",
+      "name": "Sergeant Tvyn",
+      "level": "50",
+      "zones": [
+        "Nektropos Castle"
+      ],
+      "drops": [
+        "Layered Guards",
+        "Sergeant's Leather Belt"
+      ],
+      "loc": [
+        {
+          "ns": 162,
+          "ew": 162,
+          "z": -7
         }
       ]
     },
@@ -135551,6 +138090,26 @@
       ]
     },
     {
+      "page": "Sheila Everling",
+      "name": "Shelia Everling",
+      "level": "56",
+      "zones": [
+        "Nektropos Castle"
+      ],
+      "drops": [
+        "Sheila's Robe",
+        "Pyrosilk Gloves",
+        "Pyrosilk Headband"
+      ],
+      "loc": [
+        {
+          "ns": 352,
+          "ew": 428,
+          "z": 17
+        }
+      ]
+    },
+    {
       "page": "Shelae Wolfkin",
       "name": "Shelae Wolfkin",
       "level": "45",
@@ -135942,6 +138501,24 @@
         {
           "ns": 2796,
           "ew": 2417
+        }
+      ]
+    },
+    {
+      "page": "Silas B`Dynn",
+      "name": "Silas B`Dynn",
+      "level": "70",
+      "zones": [
+        "Nektropos Undercrofts"
+      ],
+      "drops": [
+        "None"
+      ],
+      "loc": [
+        {
+          "ns": 37,
+          "ew": 86,
+          "z": 4
         }
       ]
     },
@@ -137908,8 +140485,9 @@
         "Misty Thicket"
       ],
       "drops": [
-        "Froglok Leg",
         "Bloodstone",
+        "Cat's Eye Agate",
+        "Froglok Leg",
         "Lapis Lazuli"
       ]
     },
@@ -139137,6 +141715,35 @@
       ]
     },
     {
+      "page": "Soulbinder Rakahs",
+      "name": "Soulbinder Rakahs",
+      "level": "1",
+      "zones": [
+        "Northern Desert of Ro"
+      ],
+      "loc": [
+        {
+          "ns": 2192,
+          "ew": -763
+        }
+      ]
+    },
+    {
+      "page": "Soulbinder Trurg",
+      "name": "Soulbinder Trurg",
+      "level": "1",
+      "zones": [
+        "Oggok"
+      ],
+      "loc": [
+        {
+          "ns": 500,
+          "ew": 655,
+          "pct": 100
+        }
+      ]
+    },
+    {
       "page": "Spanner Scrapsnatcher",
       "name": "Spanner Scrapsnatcher",
       "level": "25",
@@ -139918,12 +142525,21 @@
         "Innothule Swamp"
       ],
       "drops": [
-        "Huge Mushroom Head"
+        "Huge Mushroom Head",
+        "Splintering Club"
       ],
       "loc": [
         {
           "ns": 85,
           "ew": -385
+        },
+        {
+          "ns": 238,
+          "ew": -567
+        },
+        {
+          "ns": 340,
+          "ew": -92
         }
       ]
     },
@@ -140237,6 +142853,20 @@
         {
           "ns": 201,
           "ew": 572
+        }
+      ]
+    },
+    {
+      "page": "Stable Hand V`Shal",
+      "name": "Stable Hand V`Shal",
+      "level": "35",
+      "zones": [
+        "Lake Nerius"
+      ],
+      "loc": [
+        {
+          "ns": -255,
+          "ew": 301
         }
       ]
     },
@@ -142507,6 +145137,12 @@
       "zones": [
         "Innothule Swamp"
       ],
+      "drops": [
+        "Noble's Crest",
+        "Arrow",
+        "Longbow",
+        "Tattered Parchment"
+      ],
       "loc": [
         {
           "ns": 362,
@@ -143142,6 +145778,21 @@
       ]
     },
     {
+      "page": "Telius Gwyneth",
+      "name": "Telius Gwyneth",
+      "level": "50",
+      "zones": [
+        "Nektropos Undercrofts"
+      ],
+      "loc": [
+        {
+          "ns": -122,
+          "ew": -7,
+          "z": 4
+        }
+      ]
+    },
+    {
       "page": "Telkorenar",
       "name": "Telkorenar",
       "level": "66",
@@ -143552,6 +146203,21 @@
         {
           "ns": -421,
           "ew": -112
+        }
+      ]
+    },
+    {
+      "page": "Tern Zolhic",
+      "name": "Tern Zolhic",
+      "level": "50",
+      "zones": [
+        "Nektropos Undercrofts"
+      ],
+      "loc": [
+        {
+          "ns": -125,
+          "ew": 83,
+          "z": 4
         }
       ]
     },
@@ -144101,6 +146767,26 @@
       ]
     },
     {
+      "page": "The Game Master",
+      "name": "The Game Master",
+      "level": "54",
+      "zones": [
+        "Nektropos Castle"
+      ],
+      "drops": [
+        "Checkmate",
+        "Gamblers Gambit",
+        "Schemer's Guise"
+      ],
+      "loc": [
+        {
+          "ns": -34,
+          "ew": 118,
+          "z": -7
+        }
+      ]
+    },
+    {
       "page": "The Ghost of Kindle",
       "name": "the Ghost of Kindle",
       "level": "52",
@@ -144288,6 +146974,20 @@
       ]
     },
     {
+      "page": "The Great Zultor",
+      "name": "The Great Zultor",
+      "level": "50",
+      "zones": [
+        "Lake Nerius"
+      ],
+      "loc": [
+        {
+          "ns": -319,
+          "ew": 141
+        }
+      ]
+    },
+    {
       "page": "The guard captain",
       "name": "the guard captain",
       "level": "25",
@@ -144366,6 +147066,26 @@
       ]
     },
     {
+      "page": "The Head Librarian",
+      "name": "The Head Librarian",
+      "level": "55",
+      "zones": [
+        "Nektropos Castle"
+      ],
+      "drops": [
+        "Unbroken Golem Core",
+        "Dark Ironbound Tome",
+        "The Unbreakable Word"
+      ],
+      "loc": [
+        {
+          "ns": -83,
+          "ew": -201,
+          "z": 17
+        }
+      ]
+    },
+    {
       "page": "The Head Usher",
       "name": "The Head Usher",
       "level": "39",
@@ -144402,6 +147122,25 @@
         "Preserved Split Paw Eye",
         "Brain of the Ishva Mal",
         "Potion of Serious Healing"
+      ]
+    },
+    {
+      "page": "The Juggernaught",
+      "name": "The_Juggernaught",
+      "level": "62",
+      "zones": [
+        "Nektropos Castle"
+      ],
+      "drops": [
+        "Scars of the Indominable",
+        "Unstoppable Girdle"
+      ],
+      "loc": [
+        {
+          "ns": -331,
+          "ew": 310,
+          "z": -112
+        }
       ]
     },
     {
@@ -146632,6 +149371,25 @@
       ]
     },
     {
+      "page": "Tormentor Utzain",
+      "name": "Tormentor Utzain",
+      "level": "54",
+      "zones": [
+        "Nektropos Castle"
+      ],
+      "drops": [
+        "Torturer's Signature",
+        "Wellworn Blade"
+      ],
+      "loc": [
+        {
+          "ns": 142,
+          "ew": -146,
+          "z": -7
+        }
+      ]
+    },
+    {
       "page": "Torodrane Frompwaddle",
       "name": "Torodrane Frompwaddle",
       "level": "30",
@@ -146730,6 +149488,21 @@
         {
           "ns": 481,
           "ew": -75
+        }
+      ]
+    },
+    {
+      "page": "Tosh Rumbad",
+      "name": "Tosh Rumbad",
+      "level": "50",
+      "zones": [
+        "Nektropos Undercrofts"
+      ],
+      "loc": [
+        {
+          "ns": -124,
+          "ew": 122,
+          "z": 4
         }
       ]
     },
@@ -147206,6 +149979,53 @@
         {
           "ns": 613,
           "ew": 51
+        }
+      ]
+    },
+    {
+      "page": "Translocator Fithop",
+      "name": "Translocator Fithop",
+      "level": "1",
+      "zones": [
+        "Butcherblock Mountains"
+      ],
+      "loc": [
+        {
+          "ns": 1350,
+          "ew": 3264,
+          "z": 10
+        }
+      ]
+    },
+    {
+      "page": "Translocator Narrik",
+      "name": "Translocator Narrik",
+      "zones": [
+        "Ocean of Tears"
+      ],
+      "loc": [
+        {
+          "ns": 264,
+          "ew": -9202,
+          "z": 3
+        }
+      ]
+    },
+    {
+      "page": "Translocator Setikan",
+      "name": "Translocator Setikan",
+      "level": "1",
+      "zones": [
+        "East Freeport"
+      ],
+      "drops": [
+        "None"
+      ],
+      "loc": [
+        {
+          "ns": -25,
+          "ew": -1032,
+          "z": -53
         }
       ]
     },
@@ -147691,6 +150511,20 @@
       ]
     },
     {
+      "page": "Trooni Thimblethumb",
+      "name": "Trooni Thimblethumb",
+      "level": "50",
+      "zones": [
+        "Lake Nerius"
+      ],
+      "loc": [
+        {
+          "ns": -248,
+          "ew": 113
+        }
+      ]
+    },
+    {
       "page": "Trooper Agash",
       "name": "Trooper Agash",
       "level": "50",
@@ -147704,6 +150538,38 @@
         {
           "ns": -2393,
           "ew": -613
+        }
+      ]
+    },
+    {
+      "page": "Trooper Axlia",
+      "name": "Trooper Axlia",
+      "level": "50",
+      "zones": [
+        "Northern Desert of Ro"
+      ],
+      "loc": [
+        {
+          "ns": 2284,
+          "ew": -745
+        }
+      ]
+    },
+    {
+      "page": "Trooper Axyl",
+      "name": "Trooper Axyl",
+      "level": "50",
+      "zones": [
+        "New Sebilis Expedition"
+      ],
+      "loc": [
+        {
+          "ns": 177,
+          "ew": 66
+        },
+        {
+          "ns": 137,
+          "ew": 65
         }
       ]
     },
@@ -148924,6 +151790,9 @@
       "zones": [
         "New Sebilis Expedition"
       ],
+      "drops": [
+        "Finely Crafted Shan`Tok"
+      ],
       "loc": [
         {
           "ns": 485,
@@ -148997,6 +151866,20 @@
         {
           "ns": 2441,
           "ew": 2922
+        }
+      ]
+    },
+    {
+      "page": "Trooper Loxra",
+      "name": "Trooper Loxra",
+      "level": "50",
+      "zones": [
+        "New Sebilis Expedition"
+      ],
+      "loc": [
+        {
+          "ns": 177,
+          "ew": 66
         }
       ]
     },
@@ -150054,6 +152937,20 @@
       ]
     },
     {
+      "page": "Trooper Tygin",
+      "name": "Trooper Tygin",
+      "level": "50",
+      "zones": [
+        "Northern Desert of Ro"
+      ],
+      "loc": [
+        {
+          "ns": 2207,
+          "ew": -725
+        }
+      ]
+    },
+    {
       "page": "Trooper Uthmytel",
       "name": "Trooper Uthmytel",
       "level": "50",
@@ -150408,6 +153305,24 @@
           "ns": -90,
           "ew": -190,
           "pct": 100
+        }
+      ]
+    },
+    {
+      "page": "Tsarisa Kolianna",
+      "name": "Tsarisa Kolianna",
+      "level": "70",
+      "zones": [
+        "Nektropos Undercrofts"
+      ],
+      "drops": [
+        "None"
+      ],
+      "loc": [
+        {
+          "ns": -112,
+          "ew": -3,
+          "z": 4
         }
       ]
     },
@@ -150864,6 +153779,24 @@
       ]
     },
     {
+      "page": "Ty`Klerr",
+      "name": "Ty`Klerr",
+      "level": "50",
+      "zones": [
+        "Neriak Foreign Quarter"
+      ],
+      "drops": [
+        "None"
+      ],
+      "loc": [
+        {
+          "ns": -390,
+          "ew": -233,
+          "z": 5
+        }
+      ]
+    },
+    {
       "page": "Tycyn Fe`Dhar",
       "name": "Tycyn Fe`Dhar",
       "level": "46",
@@ -151188,6 +154121,21 @@
       ]
     },
     {
+      "page": "Ugoth",
+      "name": "Ugoth",
+      "level": "30",
+      "zones": [
+        "Nektropos Undercrofts"
+      ],
+      "loc": [
+        {
+          "ns": -161,
+          "ew": 1,
+          "z": 4
+        }
+      ]
+    },
+    {
       "page": "Ugrak da Raider",
       "name": "Ugrak da Raider",
       "level": "24",
@@ -151225,6 +154173,20 @@
           "ns": -717,
           "ew": -4312,
           "pct": 100
+        }
+      ]
+    },
+    {
+      "page": "Ukbog",
+      "name": "Ukbog",
+      "level": "50",
+      "zones": [
+        "Lake Nerius"
+      ],
+      "loc": [
+        {
+          "ns": -313,
+          "ew": 258
         }
       ]
     },
@@ -152290,6 +155252,39 @@
         {
           "ns": -201,
           "ew": -454
+        }
+      ]
+    },
+    {
+      "page": "Varen Pilaka",
+      "name": "Varen Pilaka",
+      "level": "50",
+      "zones": [
+        "Nektropos Undercrofts"
+      ],
+      "loc": [
+        {
+          "ns": 22,
+          "ew": 134,
+          "z": 4
+        }
+      ]
+    },
+    {
+      "page": "Varish Balinsky",
+      "name": "Varish Balinsky",
+      "level": "30",
+      "zones": [
+        "Nektropos Undercrofts"
+      ],
+      "drops": [
+        "None"
+      ],
+      "loc": [
+        {
+          "ns": -37,
+          "ew": 159,
+          "z": 4
         }
       ]
     },
@@ -154222,7 +157217,8 @@
       "loc": [
         {
           "ns": 411,
-          "ew": 91
+          "ew": 90,
+          "z": 18
         }
       ]
     },
@@ -154394,6 +157390,20 @@
       ]
     },
     {
+      "page": "Vlad Sterovich",
+      "name": "Vlad Sterovich",
+      "level": "50",
+      "zones": [
+        "Lake Nerius"
+      ],
+      "loc": [
+        {
+          "ns": 0,
+          "ew": 0
+        }
+      ]
+    },
+    {
       "page": "Vluudeen",
       "name": "Vluudeen",
       "level": "49",
@@ -154480,6 +157490,20 @@
     {
       "page": "Voidling",
       "name": "Voidling"
+    },
+    {
+      "page": "Vol T`Vke",
+      "name": "Vol T`Vke",
+      "level": "60",
+      "zones": [
+        "Nektulos Forest"
+      ],
+      "loc": [
+        {
+          "ns": 2338,
+          "ew": -803
+        }
+      ]
     },
     {
       "page": "Voleen Tassen",
@@ -158799,6 +161823,20 @@
       ]
     },
     {
+      "page": "Yelayna",
+      "name": "Yelayna",
+      "level": "50",
+      "zones": [
+        "Lake Nerius"
+      ],
+      "loc": [
+        {
+          "ns": -7,
+          "ew": 64
+        }
+      ]
+    },
+    {
       "page": "Yeldema",
       "name": "Yeldema",
       "level": "52",
@@ -159464,6 +162502,21 @@
       ]
     },
     {
+      "page": "Zalincha Carthune",
+      "name": "Zalincha Carthune",
+      "level": "50",
+      "zones": [
+        "Nektropos Undercrofts"
+      ],
+      "loc": [
+        {
+          "ns": -148,
+          "ew": 42,
+          "z": 4
+        }
+      ]
+    },
+    {
       "page": "Zamel",
       "name": "Zamel",
       "level": "10",
@@ -159887,7 +162940,8 @@
       "drops": [
         "A Noble's Crest",
         "Giant Snake Fang",
-        "Human Flesh"
+        "Human Flesh",
+        "Tattered Parchment"
       ],
       "loc": [
         {
@@ -160002,6 +163056,12 @@
       ],
       "drops": [
         "Zimbittle's Pouch"
+      ],
+      "loc": [
+        {
+          "ns": -2644,
+          "ew": -520
+        }
       ]
     },
     {
@@ -160104,6 +163164,98 @@
       ]
     },
     {
+      "page": "Zok Crikk",
+      "name": "Zok Crikk",
+      "level": "50",
+      "zones": [
+        "Rathe Mountains"
+      ],
+      "loc": [
+        {
+          "ns": -1239,
+          "ew": 38
+        }
+      ]
+    },
+    {
+      "page": "Zok Moic",
+      "name": "Zok Moic",
+      "level": "50",
+      "zones": [
+        "Rathe Mountains"
+      ],
+      "loc": [
+        {
+          "ns": -1962,
+          "ew": -168
+        }
+      ]
+    },
+    {
+      "page": "Zok Pirk",
+      "name": "Zok Pirk",
+      "level": "50",
+      "zones": [
+        "Rathe Mountains"
+      ],
+      "loc": [
+        {
+          "ns": -1882,
+          "ew": -194
+        }
+      ]
+    },
+    {
+      "page": "Zok Prolo",
+      "name": "Zok Prolo",
+      "level": "50",
+      "zones": [
+        "Rathe Mountains"
+      ],
+      "loc": [
+        {
+          "ns": -1899,
+          "ew": -188
+        }
+      ]
+    },
+    {
+      "page": "Zok Rurpp",
+      "name": "Zok Rurpp",
+      "level": "50",
+      "zones": [
+        "Rathe Mountains"
+      ],
+      "loc": [
+        {
+          "ns": -1940,
+          "ew": -187
+        }
+      ]
+    },
+    {
+      "page": "Zok Seleka",
+      "name": "Zok Seleka",
+      "level": "50",
+      "zones": [
+        "Rathe Mountains"
+      ],
+      "loc": [
+        {
+          "ns": -1215,
+          "ew": 59
+        }
+      ]
+    },
+    {
+      "page": "Zok Virek",
+      "name": "Zok Virek",
+      "level": "50",
+      "zones": [
+        "Rathe Mountains"
+      ]
+    },
+    {
       "page": "Zok Zribb",
       "name": "Zok Zribb",
       "level": "?",
@@ -160114,6 +163266,20 @@
         {
           "ns": -2134,
           "ew": 306
+        }
+      ]
+    },
+    {
+      "page": "Zol Master Malgorn",
+      "name": "Zol Master Malgorn",
+      "level": "70",
+      "zones": [
+        "Rathe Mountains"
+      ],
+      "loc": [
+        {
+          "ns": -2060,
+          "ew": 1957
         }
       ]
     },

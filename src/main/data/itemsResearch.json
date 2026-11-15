@@ -293,11 +293,6 @@
     "source": "eqlwiki.com/Unfinished Lute Body — stats block: \"Stringed Instrument\"",
     "checkedAt": "2026-08-06"
   },
-  "unfinished lute neck": {
-    "instrument": "string",
-    "source": "eqlwiki.com/Unfinished Lute Neck — stats block: \"Stringed Instrument\"",
-    "checkedAt": "2026-08-06"
-  },
   "unicorn horn": {
     "instrument": "wind",
     "source": "eqlwiki.com/Unicorn Horn — stats block: \"Wind Resonance: 12\"",

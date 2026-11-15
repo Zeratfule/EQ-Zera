@@ -301,6 +301,17 @@ function findFieldValueEnd(block: string, from: number, nextMarkerValStart: numb
 }
 
 /** Strip wiki markup from a short field value → plain text. */
+/**
+ * THE TEMPLATE'S OWN PLACEHOLDER is not a spell type (2026-11-15). A fresh Spellpage stub ships
+ * `spell_type = Beneficial / Detrimental / Heal` - every option at once - until an editor picks
+ * one; the October 2026 `Illusion: Half Dark Elf` page is such a stub. The page has stated
+ * nothing, so the field is absent, exactly like a page that leaves it blank.
+ */
+const SPELL_TYPE_PLACEHOLDER = /^Beneficial \/ Detrimental \/ Heal$/i
+function statedSpellType(v: string | undefined): string | undefined {
+  return v !== undefined && SPELL_TYPE_PLACEHOLDER.test(v) ? undefined : v
+}
+
 function clean(v: string | undefined): string | undefined {
   if (v == null) return undefined
   let s = v
@@ -423,7 +434,7 @@ function parseSpell(title: string, fields: Record<string, string>): SpellEntry {
     castTimeMs: Number.isFinite(castSec) ? Math.round(castSec * 1000) : undefined,
     ...(Number.isFinite(recastSec) ? { recastMs: Math.round(recastSec * 1000) } : {}),
     targetType: clean(fields.target_type),
-    spellType: clean(fields.spell_type),
+    spellType: statedSpellType(clean(fields.spell_type)),
     classes: clean(fields.classes),
     msgCastOnYou: clean(fields.msg_cast_on_you),
     msgCastOnOther: clean(fields.msg_cast_on_other),

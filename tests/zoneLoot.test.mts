@@ -143,7 +143,7 @@ test('zoneLootSummary: mobs are DISTINCT pages, drops are rows, seen is a sum', 
 
 const REAL: MobEntry[] = (mobsJson as unknown as { mobs: MobEntry[] }).mobs
 
-test('zoneOptions over the REAL catalog: 186 zones, Cazic Thule folded to one 30-mob option', () => {
+test('zoneOptions over the REAL catalog: 189 zones, Cazic Thule folded to one 30-mob option', () => {
   const opts = zoneOptions(REAL)
   // 185 -> 186 on the 2026-10-07 rescrape, and the one new option is a SPELLING, not a place:
   // `The Lair of the Splitpaw` (one row, Nisch Mal Gnoll), which is `shared/zones.ts`'s own `paw`
@@ -151,7 +151,11 @@ test('zoneOptions over the REAL catalog: 186 zones, Cazic Thule folded to one 30
   // `zoneKey` only, so all three were never going to merge here - `Splitpaw Lair` and `Infected
   // Paw` were already two options before - while `mobsInZone` joins the verified aliases, so any
   // of the three serves the same bestiary. Nothing else in the option list appeared or vanished.
-  assert.equal(opts.length, 186, 'the committed catalog stopped yielding 186 folded zones')
+  // 186 -> 189 on the 2026-11-15 rescrape (the Oct 22 Castle Nektropos patch): +3 real zones (Nektropos Castle, Lake Nerius, Nektropos
+  // Undercrofts), -1 `Lake of Ill Omen.` (the wiki dropped the stray full stop, so it folds into
+  // the real zone), and +1 WIKI TYPO: `a moss snake`'s page lists "Toxxulia Forest Lake Nerius"
+  // with the comma missing, a one-mob option that is fixed on the wiki, never papered over here.
+  assert.equal(opts.length, 189, 'the committed catalog stopped yielding 189 folded zones')
   // The corpus spells it `Cazic Thule` (28 rows) AND `Cazic-Thule` (2); the fold is why this is one
   // option and not two, and 30 is the number the picker states beside it.
   const ct = opts.find((o) => o.zone === 'Cazic Thule')

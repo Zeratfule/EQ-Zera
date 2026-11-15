@@ -1,5 +1,5 @@
 {
-  "scrapedAt": "2026-10-18T16:20:29.848Z",
+  "scrapedAt": "2026-11-15T20:12:16.633Z",
   "quests": [
     {
       "className": "Bard",
@@ -184,7 +184,7 @@
           "where": "",
           "count": 1,
           "page": "Efreeti War Spear",
-          "stats": "Lore Equipped, Attunable, Quest, Placeable\nSlot: PRIMARY\nSkill: Piercing Atk Delay: 40\nDMG: 15BACKSTAB: 15\nWT: 5.0 Size: MEDIUM\nClass: WAR BRD ROG SHM BST\nRace: ALLDMG Bonus: 20 @ lvl 50"
+          "stats": "Lore Equipped, Attunable, Quest, Placeable\nSlot: PRIMARY\nSkill: 1H Piercing Atk Delay: 40\nDMG: 15 BACKSTAB: 15\nSize: MEDIUM WT: 5.0\nClass: WAR BRD ROG SHM BST\nRace: ALLDMG Bonus: 20 @ lvl 50\nMerchant resale value: absolutely nothing"
         },
         {
           "name": "Wind Rune Heda",
@@ -292,7 +292,7 @@
           "where": "",
           "count": 1,
           "page": "Brass Knuckles",
-          "stats": "No Trade, Quest, Placeable\nSlot: Primary Secondary\nSkill: 1H Blunt Atk Delay: 25\nDMG: 10 DMG Bonus: 11\nSize: MEDIUM WT: 1.0\nDmg Bon: 12\nClass: MNK BST\nRace: ALL"
+          "stats": "No Trade, Quest, Placeable\nSlot: Primary Secondary\nSkill: 1H Blunt Atk Delay: 25\nDMG: 10\nSize: MEDIUM WT: 1.0\nClass: MNK BST\nRace: ALLDMG Bonus: 12 @ lvl 50"
         },
         {
           "name": "Wind Rune Izah",
@@ -700,7 +700,7 @@
           "where": "Island 7",
           "count": 1,
           "page": "Djinni Aura",
-          "stats": "LORE ITEM NO DROP\nWT: 5.0 Size: MEDIUM\nClass: ALL\nRace: ALL"
+          "stats": "No Trade, Quest\nSize: MEDIUM WT: 5.0\nClass: CLR\nRace: ALL"
         },
         {
           "name": "Efreeti Mace",
@@ -708,7 +708,7 @@
           "where": "",
           "count": 1,
           "page": "Efreeti Mace",
-          "stats": "Lore Equipped, Attunable, Quest, Placeable\nSlot: Primary\nSkill: 1H Blunt Atk Delay: 30\nDMG: 10\nDmg Bon: 15\nWT: 1.0 Size: MEDIUM\nClass: WAR CLR PAL RNG SHD MNK BRD ROG SHM BST\nRace: ALL\nMerchant resale value: absolutely nothing"
+          "stats": "Lore Equipped, Attunable, Quest, Placeable\nSlot: Primary\nSkill: 1H Blunt Atk Delay: 30\nDMG: 10\nSize: MEDIUM WT: 1.0\nClass: WAR CLR PAL RNG SHD MNK BRD ROG SHM BST\nRace: ALLDMG Bonus: 15 @ lvl 50\nMerchant resale value: absolutely nothing"
         },
         {
           "name": "Wind Rune Kala",
@@ -933,7 +933,7 @@
       "giver": "Strandar Pinemist",
       "rune": "Wind Rune Izah",
       "reward": "Espri",
-      "rewardStats": "MAGIC ITEM LORE ITEM NO DROP\nSlot: PRIMARY\nSkill: 1H Slashing Atk Delay: 23\nDMG: 10\nDEX: +9 WIS: +9 MANA: +50\nEffect: Combust (Combat, Casting Time: Instant) at Level 45\nWT: 2.0 Size: MEDIUM\nClass: DRU\nRace: ALLDMG Bonus: 11 @ lvl 50",
+      "rewardStats": "Lore Equipped, No Trade, Placeable\nSlot: PRIMARY\nSkill: 1H Slashing Atk Delay: 23\nDMG: 10\nWIS: +9 DEX: +9 MANA: +50\nEffect: Combust (Combat) at Level 45\nSize: MEDIUM WT: 2.0\nClass: DRU\nRace: ALLDMG Bonus: 11 @ lvl 50\nItem Lore : Espri, Sword of Fire",
       "rewardPage": "Espri",
       "items": [
         {
@@ -944,7 +944,7 @@
           "where": "Island 8",
           "count": 1,
           "page": "Storm Sky Opal",
-          "stats": "LORE ITEM NO DROP\nWT: 1.0 Size: MEDIUM\nClass: ALL\nRace: ALL"
+          "stats": "No Trade, Quest\nSize: MEDIUM WT: 1.0\nClass: DRU\nRace: ALL"
         },
         {
           "name": "Efreeti Scimitar",
@@ -1368,7 +1368,7 @@
           "where": "Island 8",
           "count": 1,
           "page": "Large Opal",
-          "stats": "No Trade, Quest\nWT: 8.0 Size: LARGE\nClass: MAG\nRace: ALL\nItem Lore : Mistshrouded Opal"
+          "stats": "No Trade, Quest\nSize: LARGE WT: 8.0\nClass: MAG\nRace: ALL\nItem Lore : Mistshrouded Opal"
         },
         {
           "name": "Djinni Stave",
@@ -1536,7 +1536,7 @@
           "where": "",
           "count": 1,
           "page": "Brass Knuckles",
-          "stats": "No Trade, Quest, Placeable\nSlot: Primary Secondary\nSkill: 1H Blunt Atk Delay: 25\nDMG: 10 DMG Bonus: 11\nSize: MEDIUM WT: 1.0\nDmg Bon: 12\nClass: MNK BST\nRace: ALL"
+          "stats": "No Trade, Quest, Placeable\nSlot: Primary Secondary\nSkill: 1H Blunt Atk Delay: 25\nDMG: 10\nSize: MEDIUM WT: 1.0\nClass: MNK BST\nRace: ALLDMG Bonus: 12 @ lvl 50"
         },
         {
           "name": "Wind Rune Neza",
@@ -2052,7 +2052,7 @@
           "where": "",
           "count": 1,
           "page": "Efreeti Long Sword",
-          "stats": "Lore Equipped, Attunable, Quest, Placeable\nSlot: Primary Secondary\nSkill: 1H Slashing Atk Delay: 28\nDMG: 11 DMG Bonus: 13 @ lvl 50\nSize: SMALL WT: 0.1\nClass: WAR PAL RNG SHD BRD ROG\nRace: ALL\nMerchant resale value: absolutely nothing"
+          "stats": "Lore Equipped, Attunable, Quest, Placeable\nSlot: Primary Secondary\nSkill: 1H Slashing Atk Delay: 28\nDMG: 11\nSize: SMALL WT: 0.1\nClass: WAR PAL RNG SHD BRD ROG\nRace: ALLDMG Bonus: 14 @ lvl 50\nMerchant resale value: absolutely nothing"
         },
         {
           "name": "Wind Rune Ena",
@@ -2310,7 +2310,7 @@
           "where": "Island 3",
           "count": 1,
           "page": "Finely Crafted Amulet",
-          "stats": "No Trade, Quest\nWT: 0.1 Size: TINY\nClass: SHD\nRace: ALL"
+          "stats": "No Trade, Quest\nSize: TINY WT: 0.1\nClass: SHD\nRace: ALL"
         },
         {
           "name": "Wind Rune Ozah",
@@ -2447,7 +2447,7 @@
       "giver": "Sarkis Ebonblade",
       "rune": "Wind Rune Izah",
       "reward": "Pearlescent Pauldrons",
-      "rewardStats": "MAGIC ITEM LORE ITEM NO DROP\nSlot: SHOULDERS\nAC: 10\nSTR: +10 DEX: +15 INT: +15 MANA: +50\nWT: 4.5 Size: MEDIUM\nClass: SHD\nRace: ALL",
+      "rewardStats": "Lore Equipped, No Trade\nSlot: SHOULDERS\nAC: 10\nSTR: +10 INT: +15 DEX: +15 MANA: +50\nSize: MEDIUM WT: 4.5\nClass: SHD\nRace: ALL",
       "rewardPage": "Pearlescent Pauldrons",
       "items": [
         {
@@ -2487,7 +2487,7 @@
       "giver": "Sarkis Ebonblade",
       "rune": "Wind Rune Kala",
       "reward": "Khyldorn the Blood Drinker",
-      "rewardStats": "Lore Equipped, No Trade, Placeable\nSlot: PRIMARY\nSkill: 2H Slashing Atk Delay: 43\nDMG: 36\nSTR: +10 INT: +7\nEffect: Siphon (Combat, Casting Time: Instant) at Level 50\nSize: GIANT WT: 8.0\nClass: SHD\nRace: ALLDMG Bonus: 29 @ lvl 50",
+      "rewardStats": "Lore Equipped, No Trade, Placeable\nSlot: PRIMARY\nSkill: 2H Slashing Atk Delay: 43\nDMG: 36\nSTR: +10 INT: +7\nEffect: Siphon (Combat) at Level 50\nSize: GIANT WT: 8.0\nClass: SHD\nRace: ALLDMG Bonus: 29 @ lvl 50",
       "rewardPage": "Khyldorn the Blood Drinker",
       "items": [
         {
@@ -2634,7 +2634,7 @@
           "where": "",
           "count": 1,
           "page": "Efreeti War Club",
-          "stats": "Lore Equipped, Attunable, Quest, Placeable\nSlot: Primary\nSkill: 1H Blunt Atk Delay: 26\nDMG: 11\nDmg Bon: 12\nWT: 1.0 Size: MEDIUM\nClass: WAR CLR PAL RNG SHD DRU MNK ROG SHM BST\nRace: ALL\nMerchant resale value: absolutely nothing"
+          "stats": "Lore Equipped, Attunable, Quest, Placeable\nSlot: Primary\nSkill: 1H Blunt Atk Delay: 26\nDMG: 11\nSize: MEDIUM WT: 1.0\nClass: WAR CLR PAL RNG SHD DRU MNK ROG SHM BST\nRace: ALLDMG Bonus: 13 @ lvl 50\nMerchant resale value: absolutely nothing"
         },
         {
           "name": "Wind Rune Ena",
@@ -2916,7 +2916,7 @@
           "where": "",
           "count": 1,
           "page": "Efreeti Battle Axe",
-          "stats": "Lore Equipped, Attunable, Quest, Placeable\nSlot: Primary\nSkill: 2H Slashing Atk Delay: 28\nDMG: 15\nDmg Bon: 19\nWT: 0.5 Size: SMALL\nClass: WAR PAL RNG SHD BER\nRace: ALL\nMerchant resale value: absolutely nothing"
+          "stats": "Lore Equipped, Attunable, Quest, Placeable\nSlot: Primary\nSkill: 2H Slashing Atk Delay: 28\nDMG: 15\nSize: SMALL WT: 0.5\nClass: WAR PAL RNG SHD BER\nRace: ALLDMG Bonus: 19 @ lvl 50\nMerchant resale value: absolutely nothing"
         },
         {
           "name": "Wind Rune Dena",
@@ -3112,7 +3112,7 @@
           "where": "",
           "count": 1,
           "page": "Efreeti War Staff",
-          "stats": "Lore Equipped, Attunable, Quest, Placeable\nSlot: Primary\nSkill: 2H Blunt Atk Delay: 30\nDMG: 10\nDmg Bon: 20\nEnd: +10\nWT: 1.0 Size: MEDIUM\nClass: ALL\nRace: ALL\nMerchant resale value: absolutely nothing"
+          "stats": "Lore Equipped, Attunable, Quest, Placeable\nSlot: Primary\nSkill: 2H Blunt Atk Delay: 30\nDMG: 10\nEnd: +10\nSize: MEDIUM WT: 1.0\nClass: ALL\nRace: ALLDMG Bonus: 20 @ lvl 50\nMerchant resale value: absolutely nothing"
         },
         {
           "name": "Wind Rune Caza",

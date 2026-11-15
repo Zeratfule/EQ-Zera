@@ -96,7 +96,7 @@ Hand Retlon Brenclog the Sealed Letter.
 Retlon Brenclog says 'Ah! A letter from my brother! Mmm... no... no I don't have Tergon's spellbook. The orc's prophet took it and then they locked me in chains! Now why don't you go do something useful and get me key number 15!!'
 
 <div class='facblock'>
-Your faction standing with Eldritch Collective has been adjusted by 10.
+Your faction standing with Eldritch Collective has been adjusted by 5.
 Your faction standing with Dark Reflection has been adjusted by -1.
 Your faction standing with The Dead has been adjusted by -1.
 Your faction standing with Gem Choppers has been adjusted by 1.

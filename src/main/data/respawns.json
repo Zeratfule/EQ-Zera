@@ -1,6 +1,6 @@
 {
  "source": "eqlwiki.com — |respawn_time on every page in the committed mob catalog",
- "scrapedAt": "2026-10-08",
+ "scrapedAt": "2026-11-15",
  "rows": [
   {
    "key": "a alchemist`s acolyte",
@@ -138,6 +138,11 @@
    "seconds": 1320
   },
   {
+   "key": "a faceless throatcutter",
+   "page": "A faceless throatcutter",
+   "text": "?"
+  },
+  {
    "key": "a faerie dragon",
    "page": "A Faerie Dragon",
    "text": "7 minutes",
@@ -235,6 +240,11 @@
    "seconds": 1320
   },
   {
+   "key": "a goblin janitor",
+   "page": "A goblin janitor",
+   "text": "?"
+  },
+  {
    "key": "a goblin scryer",
    "page": "A goblin scryer",
    "text": "7 minutes",
@@ -250,6 +260,12 @@
    "key": "a gorgalask",
    "page": "A gorgalask",
    "text": "?"
+  },
+  {
+   "key": "a guard",
+   "page": "A Guard",
+   "text": "7m 30s",
+   "seconds": 450
   },
   {
    "key": "a guardian wurm",
@@ -278,6 +294,12 @@
    "page": "A kerran puma",
    "text": "3 min",
    "seconds": 180
+  },
+  {
+   "key": "a kobold",
+   "page": "A kobold (Rathe Mountains)",
+   "text": "4:06",
+   "seconds": 246
   },
   {
    "key": "a large fruit bat",
@@ -379,6 +401,12 @@
    "page": "A shady goblin",
    "text": "24 hours",
    "seconds": 86400
+  },
+  {
+   "key": "a shady mercenary",
+   "page": "A shady mercenary",
+   "text": "1m 12s",
+   "seconds": 72
   },
   {
    "key": "a silverflank guardian",
@@ -509,14 +537,14 @@
   {
    "key": "a tier'dal priest",
    "page": "A Tier'Dal Priest",
-   "text": "10 minutes",
-   "seconds": 600
+   "text": "2m 26s",
+   "seconds": 146
   },
   {
    "key": "a tier'dal spellbinder",
    "page": "A Tier'Dal Spellbinder",
-   "text": "10 minutes",
-   "seconds": 600
+   "text": "2m 26s",
+   "seconds": 146
   },
   {
    "key": "a tortured revenant",
@@ -536,14 +564,14 @@
   {
    "key": "a troll greenblood",
    "page": "A Troll Greenblood",
-   "text": "10 minutes",
-   "seconds": 600
+   "text": "2m 27s",
+   "seconds": 147
   },
   {
    "key": "a troll marauder",
    "page": "A Troll Marauder",
-   "text": "10 minutes",
-   "seconds": 600
+   "text": "2m 27s",
+   "seconds": 147
   },
   {
    "key": "a tundra yeti",
@@ -626,8 +654,8 @@
   {
    "key": "an ancient croc",
    "page": "An Ancient Croc",
-   "text": "16min 30sec",
-   "seconds": 990
+   "text": "8min 30sec",
+   "seconds": 510
   },
   {
    "key": "an ancient jarsath",
@@ -727,6 +755,12 @@
    "page": "An undead jester",
    "text": "18:20",
    "seconds": 1100
+  },
+  {
+   "key": "an undead knight (qeynos aqueducts)",
+   "page": "An undead knight (Qeynos Aqueducts)",
+   "text": "1m 12s",
+   "seconds": 72
   },
   {
    "key": "an undead knight of unrest",
@@ -989,6 +1023,12 @@
    "text": "Triggered"
   },
   {
+   "key": "corrupted kedgespawn",
+   "page": "Corrupted Kedgespawn",
+   "text": "12 minutes",
+   "seconds": 720
+  },
+  {
    "key": "councilor juliash lockhear",
    "page": "Councilor Juliash Lockhear",
    "text": "1 Hour",
@@ -1187,6 +1227,12 @@
    "page": "Derasinal",
    "text": "8 Hours",
    "seconds": 28800
+  },
+  {
+   "key": "discarded experiment",
+   "page": "Discarded Experiment",
+   "text": "12 min",
+   "seconds": 720
   },
   {
    "key": "doldigun steinwielder",
@@ -1520,8 +1566,8 @@
   {
    "key": "goblin drunkard",
    "page": "Goblin Drunkard",
-   "text": "18 min",
-   "seconds": 1080
+   "text": "7 min 12s",
+   "seconds": 432
   },
   {
    "key": "goblin janitor",
@@ -2214,6 +2260,12 @@
    "seconds": 604800
   },
   {
+   "key": "lord_rikantus_everling",
+   "page": "Lord Rikantus Everling",
+   "text": "~15 minutes",
+   "seconds": 900
+  },
+  {
    "key": "maestro of rancor",
    "page": "Maestro of Rancor",
    "text": "3 Days (+/- 8 Hours)",
@@ -2796,6 +2848,12 @@
    "page": "The Froglok Warden",
    "text": "16min 30sec",
    "seconds": 990
+  },
+  {
+   "key": "the game master",
+   "page": "The Game Master",
+   "text": "16:00",
+   "seconds": 960
   },
   {
    "key": "the ghost of kindle",

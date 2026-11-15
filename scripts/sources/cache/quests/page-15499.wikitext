@@ -54,10 +54,7 @@ Upon handing in the necklace, he gives you an Empty Vial to be taken to Forager 
 
 a prisoner .Groak.. So you are a friend to the froglok. ..Grooakk.. I am soon to die. My precious legs are a delicacy here. Before I go I must contact my brother Grikk. He is a froglok forager in Innothule. Give him this vial. He will know what it means.
 
-<div class="facblock">
-* Your faction standing with [[Oggok Citizens]] got better.
-</div> 
-{{exp}}
+{{exp}} (no faction)
 
 You receive [[Empty Vial]] ["Groak's Empty Vial"].
 
@@ -69,16 +66,15 @@ You say, 'Hail, Forager Grikk'
 
 : Forager Grikk says 'grrrikk.. This is Groak's vial!! He must be in danger. Here. Return this liquid to him. Be quick!'
 
+Your faction standing with [[Frogloks of Guk]] increased by ??.  
+
 {{exp}}
 
 You receive "Ochre Liquid" which you need to take back to the prisoner
 
 : a prisoner .Grooak.. You have done much to help me. This will come in handy soon. Thank you. Here is Marda's information. Take it to her. They must know. Farewell. 
 
-<div class="facblock">
-* Your faction standing with [[Oggok Citizens]] got better.
-</div> 
-{{exp}}
+{{exp}} (no faction)
 
 The prisoner will then give you one of two different possible notes (both have the same outcome).
 

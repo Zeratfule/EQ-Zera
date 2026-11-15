@@ -1,5 +1,5 @@
 {
-  "scrapedAt": "2026-10-18T16:14:23.310Z",
+  "scrapedAt": "2026-11-15T20:05:39.439Z",
   "source": "eqlwiki.com — Category:Quests + quest subcategories",
   "quests": [
     {
@@ -354,6 +354,30 @@
       ]
     },
     {
+      "name": "Alchemical Solution",
+      "page": "Alchemical Solution",
+      "giver": "Dorian G`Wyn",
+      "minLevel": 10,
+      "classes": [
+        "ALL"
+      ],
+      "relatedZones": [
+        "Lavastorm Mountains"
+      ],
+      "relatedNpcs": [
+        "Ty`Klerr"
+      ],
+      "requiredItems": [
+        "Defiled Fish Scales",
+        "Putrid Bile",
+        "Imp Blood",
+        "Dusty Scroll Case",
+        "Encoded Missive",
+        "Fetid Lake Muck"
+      ],
+      "expReward": true
+    },
+    {
       "name": "Ale for Beur",
       "page": "Ale for Beur",
       "startZone": "East Freeport",
@@ -617,7 +641,7 @@
         "Mold of Ro Bracer",
         "Deepwater Goblin Net",
         "Mold of Ro Breastplate",
-        "A Dark Cauldron",
+        "Dark Cauldron",
         "Mold of Ro Gauntlets",
         "A Locket",
         "Mold of Ro Greaves",
@@ -665,8 +689,8 @@
         "Speak with Abigail. You must have Amiable faction with Clerics of Tunare to complete this step.",
         "You say, 'Hail, Abigail'",
         "You say, 'I seek the Breastplate of Ro'",
-        "A Dark Cauldron drops from an ancille cook in Mistmoore Castle.",
-        "Give Abigail 2 A Dark Cauldrons and receive the Mold of Ro Breastplate.",
+        "Dark Cauldron drops from an ancille cook in Mistmoore Castle.",
+        "Give Abigail 2 Dark Cauldrons and receive the Mold of Ro Breastplate.",
         "Mold of Ro Gauntlets:",
         "You must have Amiable faction with Priests of Marr to complete this step.",
         "You say, 'Hail, Sentry Joanna'",
@@ -3962,6 +3986,34 @@
         "Icon of Sacrament (ground spawn found in the jail in Mistmoore Castle (-68, 280))",
         "Ingot of Sacrament"
       ]
+    },
+    {
+      "name": "Call for Aid",
+      "page": "Call for Aid",
+      "giver": "Nikko Canti",
+      "classes": [
+        "ALL"
+      ],
+      "relatedZones": [
+        "North Freeport",
+        "Neriak - Commons",
+        "The Temple of Solusek Ro"
+      ],
+      "relatedNpcs": [
+        "Dorian G`Wyn",
+        "Sir Mollin",
+        "Pishtian F`Lok",
+        "Lord Lyfyx of Burwood"
+      ],
+      "requiredItems": [
+        "Plea to Freeport",
+        "Appeal of Neriak",
+        "Solusek Petition",
+        "A Curt Dismissal",
+        "Exorbitant Commission",
+        "Ordination of Might"
+      ],
+      "expReward": true
     },
     {
       "name": "Call of Flame Quest",
@@ -9516,14 +9568,16 @@
         "Greater Faydark",
         "High Keep",
         "Misty Thicket",
-        "North Qeynos",
-        "Rivervale"
+        "North Qeynos"
       ],
       "relatedNpcs": [
+        "Assistant Kiolna",
         "Bronin Higginsbot",
         "Elmion Hendrys",
         "Faldor Hendrys",
-        "Slaythe"
+        "Jail Clerk Maryl",
+        "Slaythe",
+        "Tylfon"
       ],
       "rewards": [
         {
@@ -9532,44 +9586,58 @@
       ],
       "requiredItems": [
         "Cracked Emerald",
+        "Emerald Shard",
         "Froglok Leg",
         "H.K. 106",
-        "Emerald Shard",
-        "Eye of Stormhammer (Item)"
+        "Sealed Note"
       ],
       "expReward": true,
       "steps": [
-        "The Note:",
-        "After finishing the Clockwork Cleaner quest, go to Beno Targnarle in Kaladim.",
+        "Part 1: The Note of Release:",
+        "With the Clockwork Cleaner quest behind you, press Beno Targnarle at (83, 404, 15) to learn more about the stolen Eye of Stormhammer.",
         "You say, 'what important stormguard matter?'",
         "You say, 'what eye of stormhammer?'",
-        "He will give you a letter (A Sealed Note) to give to the Jail Clerk Maryl near the bank of High Keep.",
-        "Of course the prisoner has escaped but she does give Cracked Emerald (part of the eye of stormguard), as well as info that Bronin has the other part, the \"Emerald Shard\".",
-        "Slaythe:",
-        "Bronin Higginsbot is sometimes found in Rivervale and sometimes near the southern tower in Misty Thicket.",
-        "When you ask Bronin about the Emerald shard, he says he will give it to you if you do a small favor.",
-        "You say, 'Where is the emerald shard?'",
+        "He will give you a Sealed Note. Your task is to deliver this to Jail Clerk Maryl, who is located near the bank in High Keep at (3, -364, -10).",
+        "For players who cannot 'Port', to reach High Keep from South Kaladim, you will need to make two Translocator jumps: Butcherblock Mountains → Ocean of Tears, and then Ocean of Tears → East Freeport. Total cost is 42PP. To avoid another fee when travelling from Dagnor's Cauldron to Qeynos in part 5, Bind Affinity in High Keep.",
+        "Of course the prisoner has escaped, but she gives you the Cracked Emerald and reveals that Bronin Higginsbot has the matching Emerald Shard.",
+        "Part 2: Finding the Emerald Shard:",
+        "To obtain the shard, you must first track down Bronin Higginsbot. He is located on top of one of the wall towers at (-756, -471, 112) in Misty Thicket. He can also sometimes be found in Rivervale.",
+        "Speak to Bronin using the /say command. He will offer the Emerald Shard in exchange for a 'small favor.' Note that you do not need to be targeting Bronin for him to respond. Use one of the following phrases to trigger his dialogue:",
+        "You say, 'Where is the emerald shard?' or 'Do you have the missing emerald shard?'",
         "You say, 'small favor'",
-        "Apparently a bounty hunter by the name of Slaythe is after him. He says if you return a piece of his body, he will give you the emerald. Slaythe is beyond the wall in Misty Thicket. He appears to be a Froglok (around level 21 or so)! He hops around between the Orc camp and the wall. You may have to talk to Bronin to get him to spawn. If you defeat him, you get a Froglok Leg (lore item), a few gold, and the following faction adjustments:",
+        "A bounty hunter named Slaythe is pursuing him. To claim the emerald, you must return a piece of Slaythe's body to Bronin. Slaythe is a level 21 Froglok located at (862, 371, -11) beyond the wall in Misty Thicket, patrolling the area between the Orc camp and the wall. You must speak with Bronin to trigger his spawn. Slaythe drops a Froglok Leg, Gold, and various small items.",
         "Hand Bronin the Froglok Leg:",
         "You receive H.K. 106.",
         "You say, 'What second piece of the gem?'",
-        "Strongbox 106:",
-        "Bank Clerk Jaylin is in the High Keep underground bank.",
-        "Hand Banker Jaylin the H.K. 106.",
-        "You receive ~4 gold, 4 silver, 59 copper pieces.",
-        "You receive Emerald Shard.",
-        "Elmion:",
-        "Well... following this clue brings you to Dagnor's Cauldron and Elmion Hendrys at the Fabulous Four NPC-camp there.",
+        "While Bronin mentioned Kelethin, you cannot find the second shard until you first retrieve the first shard from the strongbox he mentioned.",
+        "Part 3: The High Keep Strongbox:",
+        "Now, travel to Highpass Hold and head to the Highkeep bank. To retrieve your shard, you must speak with Assistant Kiolna at (-38, -331, -10) behind Bank Clerk Jaylin.",
+        "Hand Assistant Kiolna the H.K. 106.",
+        "You receive 4 copper from Assistant Kiolna.",
+        "You receive 8 silver from Assistant Kiolna.",
+        "You receive 3 gold from Assistant Kiolna.",
+        "You receive 1 platinum from Assistant Kiolna.",
+        "You receive Emerald Shard. (not displayed in chat window)",
+        "With the second shard in hand, you must now find the second shard, which Bronin mentioned was hidden near Kelethin.",
+        "Part 4: The Gem of Tunare:",
+        "The second shard goes by the name 'Gem of Tunare'. To find it, you must investigate the Tunare's Scouts guild in Kelethin, within The Greater Faydark.",
+        "For players who cannot Port, to reach The Greater Faydark from Highpass Hold, you will first need to travel to East Freeport. From there, you will need to make two Translocator jumps: East Freeport → Ocean of Tears, and then Ocean of Tears → Butcherblock Mountains. Total cost is 42PP. If you are a Dwarf, you can avoid this by using Origin to get back to South Kaladim and travel from there.",
+        "The guild hall is located on the highest level (level 3) of Kelethin at (-479, -232, 161). Enter the hall and speak to Tylfon.",
+        "You say, 'Hail Tylfon'",
+        "You /say , 'Where is the Gem of Tunare?'",
+        "You say, 'Elmion Hendrys'",
+        "With Tylfon's information in hand, your next objective is to find Elmion Hendrys. Head to Dagnor's Cauldron and look for the Fabulous Four's camp at (440, 104, 76) near the lake.",
+        "Part 5: The Second Emerald Shard:",
+        "Following Tylfon's clue, head to Dagnor's Cauldron and locate the \"Fabulous Four\" camp at (440, 104, 76). Speak to Elmion Hendrys.",
         "You say, 'Hail, Elmion Hendrys'",
-        "You say, 'where is faldor?'",
-        "He tells you that his brother is a thief (and only his half brother btw...) and that he has gone to Qeynos, probably to work for the thieves guild there. Faldor Hendrys is a rare spawn in north Qeynos, he can be found walking out the front gate, and along the road to the Qeynos Hills zone sometimes. He may also sometimes be found in Crows Tavern.",
-        "You have looted Emerald Shard.",
-        "Combine the two shards in the Cracked Emerald container to yield the Eye of Stormhammer (Item), which gives you +5 magic, cold and fire protection.",
-        "Return to Beno:",
-        "Turn in the Eye to Beno in Kaladim.",
-        "He then will give you the Dwarven Avenger Battle Axe, a very nice warrior only 2HS weapon. It is likely that you need to have a very high faction with him to get the axe.",
-        "Need missing dialogues, current faction hits if any, /loc of quest mobs."
+        "You /say , 'Where is Faldor?'",
+        "If you didn't Bind Affinity in High Keep while travelling in part 1, you will need to make two Translocator jumps: Butcherblock Mountains → Ocean of Tears, and then Ocean of Tears → East Freeport. Total cost is 42PP. Otherwise, Gate to High Keep and travel to Qeynos from there.",
+        "Elmion's half-brother, Faldor Hendrys, has fled to Qeynos. He is a level 19 rare spawn at Crow's Tavern (-85, -134). He spawns at the tavern every two hours and walks from there to the Qeynos Hills zone line, where he despawns. His placeholder is 'a beggar'.",
+        "Once you locate Faldor, you must kill him to receive the final Emerald Shard.",
+        "Combine the two shards in the Cracked Emerald container to yield the Eye of Stormhammer.",
+        "Part 6: Returning the Eye:",
+        "Return to South Kaladim and offer the Eye to Beno Targnarle to complete the quest.",
+        "The Avenger Battle Axe is a powerful 2-handed weapon specifically for Warriors."
       ]
     },
     {
@@ -14110,6 +14178,32 @@
       ]
     },
     {
+      "name": "Hate, Betrayal, and Trust",
+      "page": "Hate, Betrayal, and Trust",
+      "giver": "Retainer Ozval",
+      "minLevel": 55,
+      "classes": [
+        "ALL"
+      ],
+      "relatedZones": [
+        "Lake Nerius",
+        "Northern Felwithe",
+        "Ak'Anon"
+      ],
+      "relatedNpcs": [
+        "Retainer Ozval",
+        "Corrupted Kedgespawn",
+        "Rylin Coil",
+        "Merchant Tyslin (North Felwithe)"
+      ],
+      "requiredItems": [
+        "Ancient Signet Ring of House Everling",
+        "Peerless Sapphire",
+        "Exquisite Gem Setter",
+        "Blessing of the Betrayer"
+      ]
+    },
+    {
       "name": "Head of Granin O'Gill",
       "page": "Head of Granin O'Gill",
       "startZone": "Halas",
@@ -16614,9 +16708,6 @@
           "name": "Supple Black Cloak"
         },
         {
-          "name": "Bloodstone Eyepatch"
-        },
-        {
           "name": "Bronze Gauntlets"
         },
         {
@@ -16698,9 +16789,6 @@
           "name": "Large Splinted Bronze Cloak"
         },
         {
-          "name": "Patch of Shadow"
-        },
-        {
           "name": "Ringmail Coat"
         },
         {
@@ -16758,7 +16846,16 @@
           "name": "Small Ringmail Pants"
         },
         {
+          "name": "Bloodstone Eyepatch"
+        },
+        {
+          "name": "Patch of Shadow"
+        },
+        {
           "name": "Serpentskin Eyepatch"
+        },
+        {
+          "name": "Short Sword"
         }
       ],
       "requiredItems": [
@@ -17696,7 +17793,7 @@
       ],
       "expReward": true,
       "steps": [
-        "You can give Soonog in the Greenblood guild 4 Lizard Meat for a rusty two handed sword.",
+        "You can give Soonog in the Greenblood guild 4 Lizard Meat for a rusty two handed sword. This requires at least Amiable faction.",
         "You say, 'Hail, Soonog'",
         "You say, 'Me Greenblood'",
         "Lizard Meat drops from any lizardman in The Feerrott, Rathe Mountains, or Cazic Thule. Hand 4 of them (or a stack of any multiple of 4) to Soonog.",
@@ -18620,10 +18717,12 @@
         "He tells you he doesn't believe you and to prove you are legitimate. To prove it to him, hand him the necklace of a Troll basher. This is the \"Intestine Necklace\" that drops from Basher guards in Grobb and in Innothule Swamp.",
         "Upon handing in the necklace, he gives you an Empty Vial to be taken to Forager Grikk in Innothule Swamp. (you may also receive a Hopper Spear for this turn-in):",
         "a prisoner .Groak.. So you are a friend to the froglok. ..Grooakk.. I am soon to die. My precious legs are a delicacy here. Before I go I must contact my brother Grikk. He is a froglok forager in Innothule. Give him this vial. He will know what it means.",
+        "(no faction)",
         "You receive Empty Vial [\"Groak's Empty Vial\"].",
         "Take the vial to Forager Grikk.",
         "You say, 'Hail, Forager Grikk'",
         "You receive \"Ochre Liquid\" which you need to take back to the prisoner",
+        "(no faction)",
         "The prisoner will then give you one of two different possible notes (both have the same outcome).",
         "Zimbittle",
         "One possible note involves Zimbittle (a female troll in Innothule Swamp) and how she's teaching the Lizardman Mystics to fight Ogres. Take the note to Marda who will insist you kill Zimbittle:",
@@ -25745,6 +25844,7 @@
       "requiredItems": [
         "Sealed Note",
         "Clockwork Oil Stout",
+        "Sparkle",
         "Underfoot Triple Bock",
         "Tunare's Finest",
         "Blood Spirit",
@@ -28106,7 +28206,7 @@
       ],
       "expReward": true,
       "steps": [
-        "Vira may be found on the balcony to the left, at +410, +85.",
+        "Vira may be found on the balcony to the left, at (411, 90, 18).",
         "You say, 'Hail, Vira'",
         "You say, 'What is elemental summoning?'",
         "You say, 'What of the shovel of Ponz?'",
@@ -28731,6 +28831,41 @@
         "You say, 'Hail Solvedi Aldeberan'",
         "You say, 'What defilers?'",
         "Give him a Lionhide Backpack and a Giant Laceless Sandal."
+      ]
+    },
+    {
+      "name": "Something Fishy",
+      "page": "Something Fishy",
+      "giver": "Nikko Canti",
+      "classes": [
+        "ALL"
+      ],
+      "requiredItems": [
+        "Fresh Fish",
+        "Defiled Fish Scales",
+        "Rickety Fishing Pole",
+        "Fishing Bait"
+      ],
+      "expReward": true,
+      "steps": [
+        "Step 1:",
+        "Fish in the nearby lake until you've caught 3 Fresh Fish, then give them to Nikko.",
+        "You offered 3 Fresh Fish to Nikko Canti.",
+        "Your task 'Something Fishy' has been updated.",
+        "Step 2:",
+        "Kill 2 A large piranha in the river just south of the lake and return to Nikko to hail him.",
+        "You say, 'Hail, Nikko Canti'",
+        "Step 3:",
+        "Kill a ghost gill in the lake for Defiled Fish Scales and give them to Nikko.",
+        "You offered 1 Defiled Fish Scales to Nikko Canti.",
+        "Your task 'Something Fishy' has been updated.",
+        "You receive Defiled Fish Scales",
+        "You have been assigned the task 'Alchemical Solution'.",
+        "= Notes =",
+        "You are required to fish up the fish during the quest to get credit.",
+        "If you already have the defiled scales, you can trade them with Nikko to get credit for killing the ghost gill and immediately trade them again",
+        "= Related Quests =",
+        "Something Fishy ➡ Alchemical Solution ➡ What's going on here ➡ Call for Aid ➡ Unfortunate News"
       ]
     },
     {
@@ -30519,22 +30654,41 @@
         "Regurgitonic",
         "Bayle List I",
         "Bayle List II",
-        "Bayle List III"
+        "Bayle List III",
+        "Mammoth's Hide",
+        "Page 30 of a Book"
       ],
       "steps": [
         "Note: Warmly faction required.",
         "This a long and involved quest, and can be started in a number of different places, but revolves around Qeynos, Surefall and Freeport. The details I was given are still unclear in spots, but it ultimately results in a high powered shadowknight weapon. It involves getting all three parts of the Bayle List. Each part can also be gotten separately for a different reward, as listed on the separate quests.",
         "List I:",
         "For Part one of the list, talk to Commander Kane in the Shrine of Bertoxxulus in Qeynos Aqueducts and he will ask you to deliver Blackburrow Stout (NO DROP version) to Barn Bloodstone who is outside the Golden Rooster in Highpass. Make sure your faction with Barn is at least indifferent. To raise, do the Note for Janam and Note for Rebby quests in the East Freeport. If Commander Kane doesn't talk to you at first, just Hail him and say, \"The disease is spreading.\" Then he will be much more manageable. Doing so results in Bayle List I, part one of the list.",
+        "Commander Kane is a timed spawn. He shares his spawn with Lahn Whinstone. Apparently he is up at night from 8 PM to 8 AM in-game time.",
         "As an alternative, you can kill Mutt Rootlit, who stands next to Barn Bloodstone, and she will drop the Bayle List I. Doing this will give a serious faction hit for Coalition of TradeFolk III, Coalition of TradeFolk, Carson McCabe, Corrupt Qeynos Guards, and The Freeport Militia.",
+        "If not pursuing the entire quest completion Bayle List I can also be turned in to Commander Kane in Qeynos Aqueduct System or Kane Bayle in North Qeynos for different faction hits.",
         "List II:",
         "For part two of the list, you can choose to kill a named bear or you can do The Regurgitonic quest.",
         "Sidequest background: Talk to Runethar Hamest in the Temple of Thunder, who is investigating corruption among the guards of Qeynos. He asks you to go to Surefall Glade, find Frenway Marthank in the Druids' Guild, and ask him for \"The Bayle List.\" When you do, Frenway is in a state of depression. His son -- who happened to be carrying the very list you're looking for -- was killed and devoured by the great grizzly bear Mammoth, who lives deep in the caves of Surefall Glade. As a Druid, Frenway is forbidden to harm the bears of the Glade, but he wants vengeance.",
         "If you can find and slay the level 20-25 Mammoth behind the waterfall, you will get a the Bayle List II.",
+        "Slaying Mammoth results in the following faction hits:",
+        "Karana Bandits (+45)",
+        "Jaggedpine Treefolk (-60)",
+        "Protectors of Pine (-60)",
+        "Surefall Protected Animals (-300)",
+        "Mammoth's Hide alongside Bayle List II can be used in Vengeance for Frenway for extra faction hits. Both must be turned in a single turn in and the Bayle List II is returned upon completion for further progress in the quest.",
         "As an alternative, you can feed Mammoth a Regurgitonic, which can be obtained from The Regurgitonic quest.",
+        "If not pursuing the entire quest completion Bayle List II can also be turned in to Commander Kane in Qeynos Aqueduct System or Kane Bayle in North Qeynos for different faction hits. Alternatively it can also be turned in to Runethar Hamest in South Qeynos as part of the Bonethunder Staff Quest or Te`Anara in Surefall Glade as stated in The Regurgitonic quest resulting in alternative different faction hits.",
         "List III:",
         "For part three, talk to Raltur Caliskon in the Dismal Rage in Freeport and he tells you to assist Sir Lucan D`Lere in any task he has. But to return any interesting information to him and not Delere. Ralture will then tell you to kill Lady Shae and get the Bayle List. However, Lady Shae will tell you that Dyllin Starshine was sent from Qeynos to retrieve this list, and that he just left for High Pass Hold/Qeynos with it.",
-        "He can be found in the smuggler's camp in Highpass. If you have a high faction or use your influence spell on him, he will give you the list. You can also get the Bayle List III by killing him, but you will take a bad faction hit from that that might cause you to not be able to complete the final part of the quest.",
+        "Dyllin Starshine's Primary Faction is Corrupt Qeynos Guards",
+        "Murdering Dyllin Starshine results in the following faction hits:",
+        "Guards of Qeynos (+15)",
+        "Bloodsabers (-15)",
+        "Circle of Unseen Hands (-10)",
+        "Corrupt Qeynos Guards (-100)",
+        "Kane Bayle (-15)",
+        "Dyllin Starshine also drops Page 30 of a Book for the Testament of Vanear Quest",
+        "He can be found in the smuggler's camp in Highpass. If you have a high faction or use your influence spell on him, he will give you the list. You can also get the Bayle List III by killing him, but you will take a bad faction hit from that that might cause you to not be able to complete the final part of the quest. >",
         "Final:",
         "Take all three parts to Rathmana Allin in South Ro along with 20 gp and he will give you back a translated list.",
         "If you give this to Pietro Zarn, the shadowknight guildmaster in the East Freeport Sewers, he will usually reward you with a Rage War Maul (you may need very high faction with him to get it - thus you shouldn't kill Dyllin unless you started extremely high).",
@@ -30544,6 +30698,78 @@
         "According to [https://everquest.allakhazam.com/db/quest.html?quest=503&mid=1578172128471733&p=1#msg1578172128471733](Zam Thread)",
         "Which suggests the it's a list of spies working for Antonius Bayle and giving the list to Kane/Zarn will cause their exposure and assassination.",
         "Only known 'Good' variant of this quest is the Bonethunder Staff Quest."
+      ]
+    },
+    {
+      "name": "The Betrayer",
+      "page": "The Betrayer",
+      "giver": "Lady Sileniu Everling",
+      "classes": [
+        "ALL"
+      ],
+      "relatedZones": [
+        "Nektropos Castle"
+      ],
+      "relatedNpcs": [
+        "Lady Sileniu Everling",
+        "Plimptos",
+        "Alexa`s Handmaiden",
+        "Alexa Everling",
+        "Lord Rikantus Everling"
+      ],
+      "requiredItems": [
+        "Blood's Unity",
+        "Nektropos Great Room Key",
+        "Nektropos Private Chamber Key",
+        "Nektropos Basement Key",
+        "Fractured Malice"
+      ],
+      "expReward": true,
+      "steps": [
+        "Castle Route and Door Keys:",
+        "This quest takes place during The Tragic Tale of House Everling. See that quest's library-key guide for the four harpsichord ground items and combine station.",
+        "Find Lady Sileniu Everling in the northeast of the second floor, at (552, -132, 17). Hail her, ask about \"He\", then \"swear\".",
+        "Return downstairs to Plimptos at (102, -151, 7). Hail him, say \"crimes\", then \"brought back\" to receive the sword hilt.",
+        "Speak to Alexa's Handmaiden in the southeast area of the second floor, at (172, -178, 17).",
+        "Kill all the sisters around the edges of the second-floor map. Their linked pages and recorded locations are listed below.",
+        "Return to Alexa's Handmaiden to receive the Nektropos Great Room Key.",
+        "Kill Alexa Everling in the southwest great room, just off the main hall on the second floor, to obtain the Nektropos Private Chamber Key. (26, 150, 15)",
+        "Go to the northwest area of the second floor. In the Guard Captain's room on the west side, use the secret entrance behind the bookshelf to descend into the basement. (600, 201, 15)",
+        "Follow the basement corridor southwest and kill the Juggernaut at (-331, 310, -112) to obtain the Nektropos Basement Key.",
+        "Enter the room beside the Juggernaut and defeat Lord Rikantus Everling at (-382, 181, -112), using the combat guidance below.",
+        "Return to Plimptos and say \"end\". He disappears. Then return to the House Everling quest: tell Lady Everling \"dead\" and \"Confess\", kill her, then return to Lord Ollix and say \"tragic\".",
+        "Lord Rikantus Everling: Combat:",
+        "Golem cycles: The lord spawns a golem every 20% HP, starting at 90% (90%, 70%, 50%, 30% and 10%). While the golem is present, the lord takes greatly reduced damage. Kill the golem, ignore the summoned zombies and resume attacking the lord.",
+        "Final 5%: Be ready to burst down the lord amid the zombie horde and any golem still present. Below 5%, focus on finishing the lord.",
+        "See Lord Rikantus Everling for the recorded spawn thresholds and additional combat details.",
+        "Dialogue and Quest Events:",
+        "You say, 'Hail, Lady Sileniu Everling'",
+        "You say, 'He'",
+        "You say, 'swear'",
+        "You say, 'Hail, Plimptos'",
+        "You say, 'crimes'",
+        "You say, 'brought back'",
+        "As you grasp the sword hilt, a voice echoes within your mind. 'Yes, he is right. Put the sisters to rest. Help end the cursed existence of this pitiful man.' Ghastly as the command may be, you feel compelled to obey.",
+        "You say, 'Hail, Alexa`s Handmaiden'",
+        "Kill Jenni Everling, Melanie Everling, Crysta Everling, Shelia Everling, Elise Everling and Deirdre Everling. Each kill:",
+        "You say, 'Hail, Alexa`s Handmaiden'",
+        "You receive Nektropos Great Room Key.",
+        "Kill Alexa Everling in the great room:",
+        "The voice enters your mind once more as you hold the bloodied sword hilt. 'You are almost done with this atrocious task. One last life must be paid. Go find the Lord of this house and soak the blade in his blood.' Drawing upon the blood it is now slaked with, the hilt reshapes itself into a small blade. While it still appears incomplete, its lethality has increased.",
+        "You receive Fractured Malice.",
+        "Kill Lord Rikantus Everling:",
+        "Everling falls, and the dead of Nektropos are still.",
+        "Return to Plimptos:",
+        "You say, 'end'",
+        "You thrust the blade deep into the body of Rikantus Everling, soaking its length with his blood. The voice inside your head has become a shriek of bliss. In your hand, the blade is fully reforged. The blade is satisfied. But you have one task left to complete.",
+        "You receive Blood's Unity.",
+        "= Notes =",
+        "This quest is given during The Tragic Tale of House Everling; finish that quest by telling Lady Sileniu Everling he is 'dead', then 'confess'.",
+        "Each Everling killed costs -2 Host of Nektropos faction.",
+        "Blood's Unity is a quest reward: even in a +4 instance, it is a +0.",
+        "Extra copies: after the task is done, saying 'brought back' to Plimptos still hands out a sword hilt, and several can be carried at once. Each kill of Alexa Everling turns the topmost hilt in your inventory into the small blade, and each kill of Lord Rikantus Everling turns a small blade into Blood's Unity: one upgrade per kill. Copies merge into higher + versions.",
+        "= Related Quests =",
+        "The Tragic Tale of House Everling"
       ]
     },
     {
@@ -34108,6 +34334,63 @@
       ]
     },
     {
+      "name": "The Tragic Tale of House Everling",
+      "page": "The Tragic Tale of House Everling",
+      "giver": "Lord Ollix Everling",
+      "classes": [
+        "ALL"
+      ],
+      "relatedZones": [
+        "Nektropos Castle"
+      ],
+      "relatedNpcs": [
+        "Lord Ollix Everling",
+        "Lady Sileniu Everling",
+        "Plimptos",
+        "Alexa`s Handmaiden",
+        "Lord Rikantus Everling"
+      ],
+      "requiredItems": [
+        "Blood's Unity",
+        "Nektropos Library Key",
+        "Harpsichord Black Key",
+        "Harpsichord White Key",
+        "Harpsichord String",
+        "Harpsichord Plectrum"
+      ],
+      "expReward": true,
+      "steps": [
+        "Castle Access and Library Key:",
+        "Complete Hate, Betrayal, and Trust to enter Nektropos Castle. Inside, hail Lord Ollix Everling and follow his dialogue. He is near the ruined harpsichord in the main hall; his exact NPC coordinates have not yet been recorded.",
+        "For the Nektropos Library Key, collect these four glowing ground items. The coordinates are the items' ground-spawn positions, not the nearby NPC positions.",
+        "Combine the four components in the ruined harpsichord at (368, 65), in the main lobby near Lord Ollix Everling. It is directly to the left while facing the staircase.",
+        "Quest Dialogue and Completion:",
+        "The room directions, door-key route and lord's combat phases are documented in The Betrayer's castle route.",
+        "You say, 'Hail, Lord Ollix Everling'",
+        "You say, 'dead'",
+        "Find Lady Sileniu Everling in the northeast of the second floor, at (552, -132, 17).",
+        "You say, 'Hail, Lady Sileniu Everling'",
+        "You say, 'He'",
+        "You say, 'swear'",
+        "Complete The Betrayer: kill the Everling sisters, Alexa Everling and Lord Rikantus Everling, then say 'end' to Plimptos.",
+        "You receive Blood's Unity.",
+        "You say, 'dead'",
+        "You completed the task that Lady Everling assigned to you, but the atrocities you had to commit weigh heavily on your soul. You realize you must [confess] the truth to Lady Everling.",
+        "You say, 'confess'",
+        "Kill Lady Sileniu Everling.",
+        "Return to Lord Ollix Everling in the main hall.",
+        "You say, 'tragic'",
+        "You have completed the achievement: The Tragic Tale of House Everling",
+        "You should now be able to open all doors and kill all rares in Nektropos Castle.",
+        "= Notes =",
+        "The Betrayer has the full steps for the sisters, Alexa and Lord Rikantus.",
+        "Blood's Unity is a quest reward: even in a +4 instance, it is a +0.",
+        "= Related Quests =",
+        "Hate, Betrayal, and Trust",
+        "The Betrayer"
+      ]
+    },
+    {
       "name": "The Traitor",
       "page": "The Traitor",
       "startZone": "West Freeport",
@@ -34407,7 +34690,7 @@
       "name": "The Visiting Priestess",
       "page": "The Visiting Priestess",
       "startZone": "Najena",
-      "giver": "A Visiting Priestess",
+      "giver": "a visiting priestess",
       "minLevel": 30,
       "classes": [
         "All except BRD ROG NEC WIZ MAG ENC"
@@ -34436,15 +34719,14 @@
         "Vial of Noble's Blood"
       ],
       "steps": [
-        "(OPTIONAL) Hail A Visiting Priestess in Najena who then asks \"Are you the champion that Najena sent for?\". You say \"I will champion for Najena\"",
+        "(OPTIONAL) Hail a visiting priestess in Najena who then asks \"Are you the champion that Najena sent for?\". You say \"I will champion for Najena\"",
         "Get the :Ice Crystal Staff from a goblin scryer in Permafrost",
         "Get the :Water Crystal Staff from Webclaw Murkwave in Lake Rathetear",
         "Get the :Slime Crystal Staff from King Xorbb in Beholder's Maze",
         "Get the :Fire Crystal Staff from goblin drunkard in Solusek's Eye",
-        "Give A Visiting Priestess the :Ice Crystal Staff , the :Water Crystal Staff , the :Slime Crystal Staff , and the :Fire Crystal Staff",
-        "Pick up Scroll of Flayed Goblin Skin from the ground near where A Visiting Priestess was.",
-        "(OPTIONAL) Give Nallar Q`Tentu the Scroll of Flayed Goblin Skin and a :Star Ruby and receive Scroll of Flayed Goblin Skin back.",
         "Get a :Vial of Noble's Blood from a fallen noble in Mistmoore Castle",
+        "Give a visiting priestess the :Ice Crystal Staff , the :Water Crystal Staff , the :Slime Crystal Staff , and the :Fire Crystal Staff to receive Scroll of Flayed Goblin Skin.",
+        "(OPTIONAL) Give Nallar Q`Tentu the Scroll of Flayed Goblin Skin and a :Star Ruby and receive Scroll of Flayed Goblin Skin back.",
         "(OPTIONAL) Give Zanotix Ixtaz 75 pp",
         "(OPTIONAL) Go to Nallar Q`Tentu and say \"Denouncer Ixtaz sent me\"",
         "Go to Zanotix Ixtaz give him :Vial of Noble's Blood, a spirit will appear in the blue flames.",
@@ -34608,7 +34890,6 @@
       "giver": "Loveal S`Nez",
       "minLevel": 20,
       "classes": [
-        "Necromancer",
         "Shadow Knight"
       ],
       "relatedZones": [
@@ -36083,6 +36364,22 @@
       ]
     },
     {
+      "name": "Unfortunate News",
+      "page": "Unfortunate News",
+      "classes": [
+        "ALL"
+      ],
+      "relatedNpcs": [
+        "Dorian G`Wyn"
+      ],
+      "requiredItems": [
+        "A Curt Dismissal",
+        "Exorbitant Commission",
+        "Ordination of Might"
+      ],
+      "expReward": true
+    },
+    {
       "name": "Unkempt Druids (Quest)",
       "page": "Unkempt Druids (Quest)",
       "startZone": "Southern Karana",
@@ -36608,11 +36905,17 @@
         "You say, 'How do you know Antonius Bayle?'",
         "Mammoth is the bear guilty of murder.",
         "Note: Killing Mammoth will incur a big negative faction hit for the residents of Surefall. Turning the hide in will recover only a tiny fraction of that loss.",
+        "Slaying Mammoth results in the following faction hits:",
+        "Karana Bandits (+45)",
+        "Jaggedpine Treefolk (-60)",
+        "Protectors of Pine (-60)",
+        "Surefall Protected Animals (-300)",
         "Kill Mammoth and loot Mammoth's Hide and Bayle List II",
         "You give the hide to Frenway.",
         "You receive 6 gold, 6 silver pieces.",
         "You give the list to Frenway.",
-        "Rewards? Faction?"
+        "Rewards? Faction?",
+        "If do a single turn in with both Mammoth's Hide and Bayle List II you get the above faction hits and Bayle List II is returned to you for further uses."
       ]
     },
     {
@@ -37466,6 +37769,100 @@
         "*IMPORTANT: You MUST hand in 100p along with your Werewolf Pelt in the same trade, or your item will be STOLEN and without reward!*",
         "There are no faction hits one way or the other, though you do gain experience."
       ]
+    },
+    {
+      "name": "What Happened Here?",
+      "page": "What Happened Here?",
+      "startZone": "New Sebilis Expedition",
+      "giver": "Commander Riteb (Warrior Guildmaster)",
+      "minLevel": 1,
+      "classes": [
+        "Beastlord",
+        "Monk",
+        "Necromancer",
+        "Shadow Knight",
+        "Shaman",
+        "Warrior"
+      ],
+      "relatedNpcs": [
+        "Defector Jabitzu",
+        "Orator Zikorisy",
+        "Flaming Wraith"
+      ],
+      "rewards": [
+        {
+          "name": "New Sebilisian Bindings"
+        }
+      ],
+      "steps": [
+        "Hail Commander Riteb (Warrior guild master) and start the task from responses.",
+        "Ask Orator Zikorisy [what happened here].",
+        "Saying [explored further] is what advances the task.",
+        "Find a scroll for Orator Zikorisy that helps fill in the gaps",
+        "The scroll can be found in a side room, on a table top, just outside of the safe area. /waypoint -4, 287 thumb",
+        "You pick up the ancient, crumbling scroll as delicately as you can, holding your breath, and scan the words written withing... \"According to our translations, the desert above and around us was once part of a massive forest called the 'Elddar Forest', which was apparently the ancestral home of the elves. For some unknown reason, the city at it's heart, caught the ire of the gods, and was smote from the surface. These elves were adept magic users, and tried their best to fight against their encroaching doom, first by bolstering the forest itself, and second by using the earth itself. Their eff…",
+        "Tell Orator Zikorisy what you [found].",
+        "Ask Defector Jabitzu about [the curse].",
+        "Defector Jabitzu is at: /waypoint 146, -92",
+        "Saying [go to plan] is what advances the task.",
+        "Find a scroll that details who cursed the forest.",
+        "This scroll is found on a bookshelf, slightly further outside of the safe area. /waypoint -68, 214",
+        "thumbAs you unfurl the scroll, you can feel the material start to break down, and start reading quickly, scanning for important information. \"After more searching, and more translating, it appears that the god responsible for the destruction was none other than Solusek Ro, the Burning Prince! According to their records, the sun hung directly overhead for a full week, scorching the great forest, and drying up many of the small lakes and ponds in the area. -Oushae\" As expected the scroll starts to crumble as you near the end.",
+        "Tell Defector Jabitzu about [ro's meddling].",
+        "thumbFind a scroll for Defector Jabitzu that documents the experiments.",
+        "Scroll can be found in the big square room to the south in the Northwest corner, see picture. /waypoint -483, 266",
+        "Unfurling the scroll carefully, you begin to quickly read it. \"The golems, they move slower than we expected, but their outer layers seem far more durable, and their movements are definitely more fluid. We'll need to do more testing, but the initial results are promising!\" \"There seems to be some reaction between the sand and the animating magics of the golems, turning them brittle. Sand has begun constantly falling from them, seemingly from nowhere. We've had to destroy most of them, or risk being buried. We have enough sand to try one more infusion, hopefully it works this time. -Zikorisy\"…",
+        "Kill the Abomination of Ro.",
+        "May need to kill some failed experiments for him to pop.",
+        "Tell Defector Jabitzu about the [golems].",
+        "Saying [favor] is what advances the task.",
+        "Kill the Spirit of Dessication",
+        "Found in the southern most room in the zone. /waypoint -623, -204",
+        "Shares Spawns with other mobs in the room",
+        "Kill the Flaming Wraith",
+        "Found in the southern most room in the zone. /waypoint -623, -204",
+        "Shares Spawns with other mobs in the room",
+        "Kill A Vitrified Skeleton",
+        "Found in the western most room of the zone. /waypoint 116, 457",
+        "Shares Spawns with other mobs in the room",
+        "Tell Defector Jabitzu about [what you saw].",
+        "Saying [what i saw] also completes the task.",
+        "__INDEX__",
+        "__NONEWSECTIONLINK__"
+      ]
+    },
+    {
+      "name": "What's going on here",
+      "page": "What's going on here",
+      "giver": "Dorian G`Wyn",
+      "minLevel": 1,
+      "classes": [
+        "Berserker",
+        "Bard",
+        "Beastlord",
+        "Cleric",
+        "Druid",
+        "Enchanter",
+        "Magician",
+        "Monk",
+        "Necromancer",
+        "Paladin",
+        "Ranger",
+        "Rogue",
+        "Shaman",
+        "Shadow Knight",
+        "Warrior",
+        "Wizard"
+      ],
+      "relatedNpcs": [
+        "Yelayna",
+        "Konro Strongfoot",
+        "Blergagh",
+        "Neuven F`Lok",
+        "The Great Zultor",
+        "Nikko Canti"
+      ],
+      "expReward": true
     },
     {
       "name": "White Dragonscale Cloak Quest",

@@ -177,7 +177,8 @@ test('the dead-lands gate actually removed something, and the count is measured 
     if (s.spellType !== 'Detrimental' || !s.msgCastOnOther) continue
     if (castOnOtherSuffix(s.msgCastOnOther) === null) dead += 1
   }
-  assert.equal(dead, 40, 'the measured population the `lands` gate now excludes')
+  // 40 -> 45 on the 2026-11-15 rescrape (the Oct 22 Castle Nektropos patch): new spell pages whose lands template names no message.
+  assert.equal(dead, 45, 'the measured population the `lands` gate now excludes')
 })
 
 test('`landsOnOther` always travels with the pattern it needs', () => {
