@@ -142,7 +142,11 @@ export const RELEASE_NOTES: readonly ReleaseNote[] = [
     entries: [
       {
         kind: 'new',
-        text: 'The Character tab has a Luclin model switch beside Show helmet. Turn it on to see your character as the Luclin-era model from your own game files, with its idle, faces, armour, dye and weapons. Luclin helms and robes are not drawn yet, and the card says so.'
+        text: 'The Character tab has a Luclin model switch beside Show helmet. Turn it on to see your character as the Luclin-era model from your own game files, with its idle, faces, armour, dye and weapons.'
+      },
+      {
+        kind: 'new',
+        text: 'Luclin figures wear the game\'s own Luclin helms, plate breastplates, shoulder pads, bracers and boots, and robes with their skirts and hoods, all in your gear\'s colours. Without a helm, most races show their default hair.'
       },
       {
         kind: 'fixed',
