@@ -135,6 +135,22 @@ export interface ReleaseNote {
  * still sees exactly the releases above it.
  */
 export const RELEASE_NOTES: readonly ReleaseNote[] = [
+  // The in-game UI skin (docs/plans/eql-ui-skin.md): EQ Zera's own drawn art on the layout of the
+  // game's Modern skin, generated on the player's PC; held from 1.27.0 for the redraw.
+  {
+    version: '1.28.0',
+    date: '2026-11-15',
+    entries: [
+      {
+        kind: 'new',
+        text: 'New in Preferences: an EQ Zera skin for EverQuest Legends itself. The game\'s windows, buttons, scrollbars and gauges get EQ Zera\'s retrowave look, with neon frames, glowing title bars and segmented gauges, on the layout of the game\'s Modern skin. Type /loadskin EQZera 1 in game to switch.'
+      },
+      {
+        kind: 'new',
+        text: 'The skin is built on your PC from your own game files and never changes the game\'s own skins. It is not supported by Daybreak, so it is off until you build it and used at your own risk; rebuild it from the same card after a game patch.'
+      }
+    ]
+  },
   // The Castle Nektropos release (2026-11-15): wiki data through the Oct 22 patch, the two newer
   // playable races on the Character tab, Luclin models + the Play button, Patch Notes, and the
   // spells_us.txt column the Nov 8 client inserted.
