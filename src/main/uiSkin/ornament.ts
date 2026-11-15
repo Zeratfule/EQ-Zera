@@ -138,9 +138,14 @@ function ticks(c: Canvas): void {
   for (const s of segs) line(c, s, 1, hex(PALETTE.cyan, 0.85))
 }
 
+/** A lit stripe near the top and a shaded lower half, on the fill's own pixels only (gaps stay clear). */
 function gloss(c: Canvas): void {
-  fillRoundRect(c, { x: 0, y: Math.max(0, Math.floor(c.h * 0.5)), w: c.w, h: c.h }, 0, [0, 0, 0, 0.18])
-  fillRoundRect(c, { x: 0, y: 1, w: c.w, h: 1 }, 0, [255, 255, 255, 1])
+  for (let i = 0; i < c.w * c.h; i++) {
+    if ((c.px[i * 4 + 3] ?? 0) === 0) continue
+    const y = Math.floor(i / c.w)
+    const k = y === 1 ? 1.2 : y >= c.h / 2 ? 0.82 : 1
+    for (let ch = 0; ch < 3; ch++) c.px[i * 4 + ch] = Math.min(255, Math.round((c.px[i * 4 + ch] ?? 0) * k))
+  }
 }
 
 function gaugeCap(c: Canvas, dir: Dir | null): void {
@@ -186,17 +191,4 @@ const ORNAMENTS: { [K in Piece['kind']]?: Ornamenter<K> } = {
 export function pieceOrnament(c: Canvas, piece: Piece, look: Look): void {
   const fn = ORNAMENTS[piece.kind] as Ornamenter<Piece['kind']> | undefined
   fn?.(c, piece, look)
-}
-
-/** A window background's ornament: the app's accent grid and faint scanlines. */
-export function backgroundOrnament(px: Uint8Array, size: { w: number; h: number }, look: Look): void {
-  for (let y = 0; y < size.h; y++) {
-    for (let x = 0; x < size.w; x++) {
-      const o = (y * size.w + x) * 4
-      const onGrid = look.grid > 0 && (x % 32 === 0 || y % 32 === 0)
-      const k = onGrid ? look.grid : 0
-      const shade = look.bgScan > 0 && y % 2 === 1 ? 1 - look.bgScan : 1
-      for (let i = 0; i < 3; i++) px[o + i] = Math.round(((px[o + i] ?? 0) * (1 - k) + VIOLET[i] * k) * shade)
-    }
-  }
 }

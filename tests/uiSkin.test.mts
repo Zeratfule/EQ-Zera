@@ -19,12 +19,12 @@ import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { decodeTga, encodeTga, type TgaImage } from '../src/main/uiSkin/tga'
 import { decodeDds } from '../src/main/uiSkin/dds'
-import { drawAtlas, drawBackground, readImage } from '../src/main/uiSkin/atlas'
+import { EMPTY_ALPHA, drawAtlas, drawBackground, meanAlpha, readImage } from '../src/main/uiSkin/atlas'
 import { SKIN_STYLES, lookFor } from '../src/main/uiSkin/look'
 import { parseAnimationFrames } from '../src/main/uiSkin/animations'
 import { classifyPiece } from '../src/main/uiSkin/pieceKinds'
 import { paintPiece } from '../src/main/uiSkin/paint'
-import { mapXmlColor } from '../src/main/uiSkin/recolor'
+import { GAUGE_DEEP, mapXmlColor } from '../src/main/uiSkin/recolor'
 import { hexToRgb, luma, type Rgb } from '../src/main/uiSkin/color'
 import { rewriteXmlColors } from '../src/main/uiSkin/xmlColors'
 import { buildSkin, removeSkin, skinStatus, SkinBuildError } from '../src/main/uiSkin/build'
@@ -154,10 +154,12 @@ test('an atlas redraws only its chrome; art and unreferenced pixels stay byte-id
 
 test('XML colours land on the palette by role', () => {
   const t = (hex: string): Rgb => hexToRgb(hex)
-  assert.deepEqual(mapXmlColor([150, 0, 0], 'gauge'), t(PALETTE.red), 'HP')
-  assert.deepEqual(mapXmlColor([0, 100, 200], 'gauge'), t(PALETTE.cyan), 'mana')
-  assert.deepEqual(mapXmlColor([100, 100, 0], 'gauge'), t(PALETTE.amber), 'endurance')
-  assert.deepEqual(mapXmlColor([170, 0, 170], 'gauge'), t(PALETTE.accent), 'casting')
+  assert.deepEqual(mapXmlColor([150, 0, 0], 'gauge'), GAUGE_DEEP.red, 'HP: the deep red, never the pastel token')
+  assert.deepEqual(mapXmlColor([0, 100, 200], 'gauge'), GAUGE_DEEP.cyan, 'mana')
+  assert.deepEqual(mapXmlColor([100, 100, 0], 'gauge'), GAUGE_DEEP.amber, 'endurance')
+  // The client prints white and green numbers over the fill: both must stay readable on it.
+  for (const fill of [GAUGE_DEEP.red, GAUGE_DEEP.cyan, GAUGE_DEEP.amber]) assert.ok(contrast([255, 255, 255], fill) >= 3, 'white numbers on the fill')
+  assert.deepEqual(mapXmlColor([170, 0, 170], 'gauge'), GAUGE_DEEP.violet, 'casting')
   assert.deepEqual(mapXmlColor([240, 240, 240], 'text'), t(PALETTE.text), 'body text is the app text colour')
   assert.deepEqual(mapXmlColor([214, 178, 40], 'text'), t(PALETTE.accentHi), 'gold headings')
   assert.deepEqual(mapXmlColor([107, 215, 255], 'text'), t(PALETTE.cyan), 'blue links')
@@ -173,7 +175,7 @@ test('the XML rewrite changes colour numbers and not one other byte', () => {
   assert.equal(strip(text), strip(TEST_WND_XML))
   assert.equal(text.split('\r\n').length, TEST_WND_XML.split('\r\n').length, 'CRLF kept')
   assert.ok(text.includes('<Foo><R>214</R><G>178</G><B>40</B></Foo>'))
-  const [r, g, b] = hexToRgb(PALETTE.red)
+  const [r, g, b] = GAUGE_DEEP.red
   assert.ok(text.includes(`<R>${String(r)}</R>\r\n\t\t\t<G>${String(g)}</G>\r\n\t\t\t<B>${String(b)}</B>`))
   assert.ok(text.includes('<!-- c_crWhite -->'))
 })
@@ -206,9 +208,7 @@ test('the builder layers modern over default, writes only what it must, and neve
     assert.deepEqual(atlas.format, decodeTga(readFileSync(join(s.src.base, 'window_pieces01.tga'))).format, 'same encoding')
     assert.deepEqual([...atlas.rgba.subarray((5 * 16 + 12) * 4, (5 * 16 + 12) * 4 + 3)], COIN, 'the coin is untouched')
     const bg = decodeTga(readFileSync(join(s.out, 'wnd_bg_light_rock.tga')))
-    const paper = hexToRgb(PALETTE.paper)
-    const off = (5 * 8 + 5) * 4
-    assert.ok(Math.abs(bg.rgba[off]! - paper[0]) <= 2 && Math.abs(bg.rgba[off + 2]! - paper[2]) <= 2, 'the background is paper off the grid lines')
+    assert.deepEqual([...bg.rgba.subarray(0, 3)], [0, 0, 0], 'the window background is black')
     const box = decodeDds(readFileSync(join(s.out, 'window_pieces11a.dds'))).rgba
     assert.deepEqual([...box.subarray((8 * 16 + 8) * 4, (8 * 16 + 8) * 4 + 3)], [...hexToRgb(PALETTE.bg)], 'the DDS checkbox face is drawn')
     assert.equal((await skinStatus(s.src, s.out)).state, 'current')
@@ -281,16 +281,32 @@ const contrast = (a: readonly number[], b: readonly number[]): number => {
   return (hi + 0.05) / (lo + 0.05)
 }
 
-test('every ornament step keeps body text at 7:1 or better over every window-background pixel', () => {
-  const text = hexToRgb(PALETTE.text)
-  for (const style of SKIN_STYLES) {
-    for (const name of ['wnd_bg_light_rock.tga', 'wnd_bg_dark_rock.tga']) {
-      const src = { width: 64, height: 64, rgba: new Uint8Array(64 * 64 * 4).fill(128), encode: (p: Uint8Array) => p }
-      const px = drawBackground(src, name, lookFor(style))
-      let worst = Infinity
-      for (let i = 0; i < 64 * 64; i++) worst = Math.min(worst, contrast(text, [px[i * 4]!, px[i * 4 + 1]!, px[i * 4 + 2]!]))
-      assert.ok(worst >= 7, `${style} ${name}: worst contrast ${worst.toFixed(2)}`)
-    }
+test('window content is black with its alpha kept, so every chat colour reads on it', () => {
+  const rgba = new Uint8Array(16 * 4)
+  for (let i = 0; i < 16; i++) rgba.set([40 + i, 50, 70, i * 16], i * 4)
+  const px = drawBackground({ width: 4, height: 4, rgba, encode: (p: Uint8Array) => p })
+  for (let i = 0; i < 16; i++) assert.deepEqual([...px.subarray(i * 4, i * 4 + 4)], [0, 0, 0, i * 16])
+  // EQ's chat colours are the player's to choose; the dimmest stock ones still clear 4.5:1 on black.
+  for (const c of [hexToRgb(PALETTE.text), [255, 0, 255], [0, 128, 255], [0, 200, 0], [160, 80, 255]]) {
+    assert.ok(contrast(c, [0, 0, 0]) >= 4.5, `${c.join(',')} on black`)
+  }
+})
+
+test('a piece the base skin leaves (almost) empty stays empty: no stray frames on borderless windows', () => {
+  const rgba = new Uint8Array(16 * 16 * 4)
+  // Left half: an opaque base piece (drawn over). Right half: a transparent frame piece with a
+  // faint 1px trace, the way a borderless template's pieces look in default_modern.
+  for (let i = 0; i < 256; i++) rgba.set(i % 16 < 8 ? [60, 60, 60, 255] : [200, 200, 200, i % 16 === 15 ? 12 : 0], i * 4)
+  const image = { width: 16, height: 16, rgba, encode: (p: Uint8Array) => p }
+  const frames = parseAnimationFrames(
+    '<Ui2DAnimation item="A_BorderFrameTopLeft"><Frames><Texture>a.tga</Texture><Location><X>0</X><Y>0</Y></Location><Size><CX>8</CX><CY>16</CY></Size></Frames></Ui2DAnimation>' +
+      '<Ui2DAnimation item="A_RoundedFrameTopLeftTrans"><Frames><Texture>a.tga</Texture><Location><X>8</X><Y>0</Y></Location><Size><CX>8</CX><CY>16</CY></Size></Frames></Ui2DAnimation>'
+  )
+  assert.ok(meanAlpha(image, frames[1]!) < EMPTY_ALPHA)
+  const { rgba: out, drawn } = drawAtlas(image, frames, 'a.tga', lookFor('ornamental'))
+  assert.deepEqual(drawn, ['A_BorderFrameTopLeft'])
+  for (let i = 0; i < 256; i++) {
+    if (i % 16 >= 8) assert.deepEqual([...out.subarray(i * 4, i * 4 + 4)], [...rgba.subarray(i * 4, i * 4 + 4)], `pixel ${String(i)} untouched`)
   }
 })
 

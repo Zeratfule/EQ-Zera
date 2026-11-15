@@ -177,10 +177,14 @@ function paintGauge(c: Canvas, dir: Dir | null): void {
   strokeRoundRect(c, panel, 2, { width: 1, paint: STYLE.edgeSoft })
 }
 
+/**
+ * The fill the XML tints: white, already SEGMENTED like the app's console bar (6px on, 2px clear),
+ * because most gauge templates carry no lines piece to cut it. The track shows through the gaps.
+ */
 function paintGaugeFill(c: Canvas): void {
-  fillRoundRect(c, { x: 0, y: 0, w: c.w, h: c.h }, 0, (_x, y) => {
+  fillRoundRect(c, { x: 0, y: 0, w: c.w, h: c.h }, 0, (x, y) => {
     const v = 255 - Math.round((30 * y) / Math.max(1, c.h - 1))
-    return [v, v, v, 1]
+    return [v, v, v, x % 8 >= 6 ? 0 : 1]
   })
 }
 

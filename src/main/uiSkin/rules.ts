@@ -25,12 +25,12 @@ export const FALLBACK_SKIN = 'default'
 export const MANIFEST_FILE = 'eqzera-skin.json'
 
 /** Bump when a rule below changes, so an installed skin reports itself out of date. */
-export const RULES_VERSION = 3
+export const RULES_VERSION = 4
 
 /** The command a player types in game. */
 export const LOADSKIN_COMMAND = UI_SKIN_COMMAND
 
-/** Window backgrounds and gutters, painted edge to edge as flat panel (alpha kept). */
+/** Window backgrounds and gutters, painted black edge to edge (alpha kept): see atlas.ts. */
 export const WHOLE_TEXTURES: readonly string[] = [
   'wnd_bg_dark_rock.tga',
   'wnd_bg_light_rock.tga',
@@ -42,11 +42,6 @@ export const WHOLE_TEXTURES: readonly string[] = [
   'scrollbar_gutter.tga',
   'scrollbar_Hgutter.tga'
 ]
-
-/** The dark ones are the app's page ground; the rest are its card paper. */
-export function isDarkBackground(name: string): boolean {
-  return /dark|gutter/i.test(name)
-}
 
 /**
  * Atlases whose chrome pieces are drawn. Pixels outside every drawn piece keep the base skin's

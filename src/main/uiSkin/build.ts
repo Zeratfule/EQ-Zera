@@ -169,7 +169,7 @@ async function transform(run: BuildRun, f: Layered): Promise<boolean> {
   if (isChromeAtlas(f.name) || isWholeTexture(f.name)) {
     const img = readImage(f.name, await readFile(f.path))
     if (!img) return false
-    const rgba = isWholeTexture(f.name) ? drawBackground(img, f.name, run.look) : drawAtlas(img, run.frames, f.name, run.look).rgba
+    const rgba = isWholeTexture(f.name) ? drawBackground(img) : drawAtlas(img, run.frames, f.name, run.look).rgba
     await writeOut(run, f.name, img.encode(rgba))
     run.counts.drawn++
     return true

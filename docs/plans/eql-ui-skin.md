@@ -20,7 +20,7 @@ Owner asks (2026-11-15), in order:
 - **Our chrome, drawn.** Every chrome piece is DRAWN by `src/main/uiSkin/paint.ts`, in the app's
   language (`src/shared/palette.ts`, `src/renderer/src/theme/theme.ts`). It is drawn at exactly
   the rectangle the XML cuts, into an atlas of exactly the base texture's size and format, so the
-  stock XML slices our art correctly. Window backgrounds are flat paper with a faint noise.
+  stock XML slices our art correctly. Window backgrounds are BLACK (see the in-game fixes below).
 - **Nothing of Daybreak's is committed.** The repo carries the codecs, classifier, painter, rules
   and synthetic test fixtures. Art the skin does not draw (icons, coins, cursors, logos, gems,
   pictorial menu buttons) and the inherited XML are copied from the player's own files when the
@@ -83,9 +83,7 @@ untouched.
 | `stoneui_*` (default only) | stone frames, gauges, slots (used only when no modern skin) | coin plates |
 
 Whole textures (repainted, alpha kept):
-- `wnd_bg_light_rock`, `wnd_bg_light_rock_inner` and `wnd_bg_mid_rock` become paper.
-- `wnd_bg_dark_rock`, `wnd_dark_rock`, `wnd_fg_dark_rock` and the scrollbar gutters become the page
-  ground (`bg`).
+- every `wnd_bg_*`, `wnd_dark_rock`, `wnd_fg_dark_rock` and the scrollbar gutters become black.
 
 Not touched: the login screen (`EQLSUI*`, `eqls_*`), character-select pieces, spell/gem/item art,
 achievement art, the 4a.dds pictorial buttons.
@@ -103,8 +101,9 @@ achievement art, the 4a.dds pictorial buttons.
 - **Title bars:** a slight top-down lift with the accent hairline underneath.
 - **Gauges:** the app's segmented console bar.
   - The track is ground plus 12% accent.
-  - The fill is white, tinted by the XML (HP red, mana cyan, endurance amber).
-  - The lines piece cuts a 2px gap every 8px.
+  - The fill is white and already segmented (6px on, 2px clear), tinted by the XML in the deep
+    shades (HP #dc2626, mana #0284c7, endurance #d97706).
+  - The lines piece, where a template has one, cuts the same gaps.
 - **Check boxes / radios:** violet fill with an ink check or dot.
 - **Slots:** ground with a soft violet edge and a dim accentHi label in a 5x7 pixel font
   (`font5x7.ts`).
@@ -128,16 +127,28 @@ different style reads as out of date). The default is **ornamental**.
   - chevron title caps, a blooming 2px hairline and a lit top edge on title bars;
   - title scanlines;
   - cyan corner ticks on hot-button slots;
-  - a violet inner glow on pressed buttons;
-  - the app's own accent grid (32px, 5%) on window backgrounds.
+  - a violet inner glow on pressed buttons.
 - **synthwave:** adds a magenta inner line, a neon band across the title bar, the striped retro
-  sun on the title's left cap, a 9% grid with background scanlines, stronger bloom and a magenta
-  pressed glow.
+  sun on the title's left cap, stronger bloom and a magenta pressed glow.
 
-**Limits.** Window backgrounds are TILED textures, so a perspective horizon grid that fades toward
-the bottom cannot be drawn: the grid is flat. The modern window border is 2-3px, so corner rivets
-only show where a frame has 5px or more (rounded/tooltip frames, title caps). Body text over every
-background pixel is at least 7:1 at every step (pinned in `tests/uiSkin.test.mts`).
+**Limits.** The modern window border is 2-3px, so corner rivets only show where a frame has 5px or
+more (rounded/tooltip frames, title caps).
+
+## In-game fixes (owner's ornamental test, 2026-11-15)
+
+1. **Content areas are black.** Window backgrounds came out as a light slate with the grid
+   showing, and player-chosen chat colours (purple tells) lost contrast. Every window background
+   texture is now black (alpha kept), with no grid or noise. The EQ Zera look lives only in the
+   frames, title bars, tabs and buttons. Pinned: a background is black with its alpha intact, and
+   stock chat colours clear 4.5:1 on it.
+2. **Gauges are deep and segmented.** The player window's templates name only
+   `A_GaugeBackground` + `A_GaugeFill` (no lines piece), so the segments now live in the fill
+   itself. The XML tints use the deep (600) shades of the app's tokens instead of the pastel 400s,
+   so the client's white and green numbers read on them.
+3. **Borderless windows stay borderless.** A piece whose base pixels are (almost) empty, mean
+   alpha under 6% (`EMPTY_ALPHA`), is a transparent template's chrome. It keeps the base pixels
+   instead of getting a frame or fill. This stops the stray frames on empty boxes, around the
+   character and through the buff row. Pinned in `tests/uiSkin.test.mts`.
 
 ## XML colour map
 
@@ -146,7 +157,7 @@ Only the three numbers of a colour block change; every other byte is copied from
 
 | Role | Elements | Rule |
 | --- | --- | --- |
-| gauge | `FillTint`, `LinesFillTint` | by hue: red -> `red` (HP), blue -> `cyan` (mana), yellow/olive/orange -> `amber` (endurance, exp), green -> `green`, purple -> `accent`, magenta -> `magenta`; neutral stays |
+| gauge | `FillTint`, `LinesFillTint` | by hue, deep (600) shades: red -> #dc2626 (HP), blue -> #0284c7 (mana), yellow/olive/orange -> #d97706 (endurance, exp), green -> #16a34a, purple -> #7c3aed, magenta -> #db2777; neutral stays |
 | text | `TextColor`, `Tab*Color`, `Mouseover/Pressed/DisabledColor` | light grey (luma >= 200) -> `text` #e5e9f5 exactly; mid grey -> text hue at its brightness; gold/yellow headings -> `accentHi`; blue links -> `cyan`; red/green keep meaning; dark text stays |
 | tint | `MiddleTint`, `BackgroundTextureTint`, `Tint1/2` | neutrals stay; saturated tints snap by hue at the original brightness |
 

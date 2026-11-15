@@ -6,9 +6,12 @@
  *   clean       flat panels and a violet edge (the first EQ Zera draft)
  *   subtle      + neon title hairline, bevelled buttons, glossy gauges, divider diamonds, a grip
  *   ornamental  + double-line frames, corner rivets, chevron title caps, hot-slot corner ticks,
- *                 title scanlines, the app's faint grid on window backgrounds
+ *                 title scanlines
  *   synthwave   + magenta inner lines, a neon title band, the striped retro sun on title bars,
- *                 background scanlines, stronger bloom, magenta pressed glow
+ *                 stronger bloom, magenta pressed glow
+ *
+ * Window CONTENT is black at every step (owner, in game: chat colours are player-chosen, and only
+ * black gives all of them contrast), so no ornament ever sits under text.
  */
 import { PALETTE } from '../../shared/palette'
 import type { Rgba } from './raster'
@@ -46,10 +49,6 @@ export interface Look {
   titleBand: number
   /** the striped retro sun at the title bar's left end */
   sun: boolean
-  /** alpha of the accent grid on window backgrounds */
-  grid: number
-  /** alpha of the darkened every-other row on window backgrounds */
-  bgScan: number
   /** glow strength multiplier */
   bloom: number
   /** inner glow on pressed buttons; null for none */
@@ -75,8 +74,6 @@ const CLEAN: Look = {
   titleScan: 0,
   titleBand: 0,
   sun: false,
-  grid: 0,
-  bgScan: 0,
   bloom: 1,
   pressedGlow: null
 }
@@ -91,7 +88,6 @@ const ORNAMENTAL: Look = {
   ticks: true,
   chevrons: true,
   titleScan: 0.12,
-  grid: 0.05,
   bloom: 1.2,
   pressedGlow: hex(PALETTE.accent, 0.45)
 }
@@ -103,8 +99,6 @@ const SYNTHWAVE: Look = {
   titleScan: 0.16,
   titleBand: 0.32,
   sun: true,
-  grid: 0.09,
-  bgScan: 0.12,
   bloom: 1.6,
   pressedGlow: hex(PALETTE.magenta, 0.5)
 }

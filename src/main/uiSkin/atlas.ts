@@ -6,11 +6,10 @@
 import { type AnimFrame } from './animations'
 import { decodeDds, encodeDds, DdsError } from './dds'
 import { type Look, lookFor } from './look'
-import { backgroundOrnament } from './ornament'
-import { paintPiece, STYLE } from './paint'
+import { paintPiece } from './paint'
 import { classifyPiece } from './pieceKinds'
-import { Canvas, noise } from './raster'
-import { ART_PIECES, isDarkBackground } from './rules'
+import { Canvas } from './raster'
+import { ART_PIECES } from './rules'
 import { decodeTga, encodeTga, TgaError } from './tga'
 
 export interface SkinImage {
@@ -44,6 +43,22 @@ function copyRect(dst: Uint8Array, src: Uint8Array, width: number, f: AnimFrame)
   }
 }
 
+/** Mean coverage below which a base piece counts as empty (6% of full alpha). */
+export const EMPTY_ALPHA = 0.06
+
+/** The base piece's mean alpha, 0..1, over the part of its rectangle inside the atlas. */
+export function meanAlpha(img: SkinImage, f: AnimFrame): number {
+  let sum = 0
+  let n = 0
+  for (let y = Math.max(0, f.y); y < Math.min(img.height, f.y + f.h); y++) {
+    for (let x = Math.max(0, f.x); x < Math.min(img.width, f.x + f.w); x++) {
+      sum += img.rgba[(y * img.width + x) * 4 + 3] ?? 0
+      n++
+    }
+  }
+  return n === 0 ? 0 : sum / n / 255
+}
+
 export interface AtlasResult {
   rgba: Uint8Array
   /** names of the pieces drawn */
@@ -69,6 +84,12 @@ export function drawAtlas(img: SkinImage, frames: readonly AnimFrame[], texture:
       if (f.w * f.h < (img.width * img.height) / 4) keep.push(f)
       continue
     }
+    // A piece the base skin leaves (almost) empty is a borderless or transparent window's chrome:
+    // drawing a frame or fill into it would put EQ Zera chrome where the base shows nothing.
+    if (meanAlpha(img, f) < EMPTY_ALPHA) {
+      keep.push(f)
+      continue
+    }
     atlas.put(paintPiece(piece, f, look), f.x, f.y)
     drawn.push(f.name)
   }
@@ -76,16 +97,13 @@ export function drawAtlas(img: SkinImage, frames: readonly AnimFrame[], texture:
   return { rgba: atlas.px, drawn }
 }
 
-/** A window background: the app's flat paper (or page ground), a whisper of noise, alpha kept. */
-export function drawBackground(img: SkinImage, name: string, look: Look = lookFor('clean')): Uint8Array {
-  const base = isDarkBackground(name) ? STYLE.bg : STYLE.paper
+/**
+ * A window background: BLACK, alpha kept (owner, in game 2026-11-15). Chat and combat colours are
+ * player-chosen, so the content area gets the one ground every one of them reads on, and the
+ * EQ Zera look stays in the frames, title bars, tabs and buttons around it.
+ */
+export function drawBackground(img: SkinImage): Uint8Array {
   const out = new Uint8Array(img.rgba)
-  for (let i = 0; i < img.width * img.height; i++) {
-    const n = Math.round((noise(i % img.width, Math.floor(i / img.width)) - 0.5) * 4)
-    out[i * 4] = Math.max(0, Math.min(255, Math.round(base[0]) + n))
-    out[i * 4 + 1] = Math.max(0, Math.min(255, Math.round(base[1]) + n))
-    out[i * 4 + 2] = Math.max(0, Math.min(255, Math.round(base[2]) + n))
-  }
-  backgroundOrnament(out, { w: img.width, h: img.height }, look)
+  for (let i = 0; i < img.width * img.height; i++) out.fill(0, i * 4, i * 4 + 3)
   return out
 }
