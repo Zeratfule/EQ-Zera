@@ -42,10 +42,12 @@ import {
 } from '../../shared/eqModel'
 import { effectiveEqRoot } from '../log/config'
 import { readPfs, type PfsArchive } from '../eqassets/pfs'
-import { RACE_CODES, SKIN_FACE_MAX, facesFor, readCharacter, readWld, type Skeleton, type WldFile } from '../eqassets/wld'
+import { RACE_CODES, SKIN_FACE_MAX, facesFor, readCharacter, readWld, skeletonOf, type CharacterModel, type Skeleton, type WldFile } from '../eqassets/wld'
 import { readItem } from '../eqassets/wldItem'
+import { LUCLIN_LENDER, LUCLIN_RACES, luclinFile } from '../eqassets/luclin'
 import { ddsToBmp, isDds } from '../eqassets/dds'
-import { readAnimation, readAnimationOrLent } from '../eqassets/wldAnim'
+import { readAnimation, readAnimationOrLent, type AnimLender } from '../eqassets/wldAnim'
+import { gripCorrection, luclinIdle, type PosedRig } from '../eqassets/wldPose'
 import { logError } from '../errorLog'
 
 /**
@@ -64,6 +66,35 @@ import { logError } from '../errorLog'
 const PER_SEX_RACES: Record<string, string> = { KE: 'globalke', HD: 'globalhd' }
 /** Which actor lends an idle across archives: HDF ships no P01 of her own. */
 const LENDER: Record<string, string> = { HDF: 'HDM', HDM: 'HDF', KEF: 'KEM', KEM: 'KEF' }
+/**
+ * THE LUCLIN MODELS (owner, 2026-11-15: "it should just be a toggle similar to how we have the
+ * helmet on or off option"). Every classic race and the Iksar also ship a Luclin-era actor, one
+ * archive per actor: `global<code>_chr.s3d` (HUM through IKF; a `_chr2` beside some of them holds
+ * extra ANIMATIONS only, no textures and no idle this reader needs). `readCharacter` reads them
+ * as they are - one mesh with the head built in, two eyeball meshes, the skin scheme
+ * (`<code><part>sk<F><P>.dds`) for the bare body and the face, and armour as
+ * `<code><part>0<V>0<P>.dds`, which is the classic variant digit, so the existing wear maps onto
+ * it. Luclin chests ship no plate texture on 25 of the 26 actors (BAF alone has `ch03`), so a part
+ * with no texture for its variant steps down to the closest armour the actor has (plate, chain,
+ * leather; wldDress.ts `armourFor`) and is bare skin only when it has none. The idle is CHOSEN to
+ * stand (wldPose.ts `luclinIdle`), and held items are turned to sit as the classic figure holds
+ * them (`gripLikeClassic`).
+ *
+ * HELMS AND ROBES, searched for (2026-11-15), including the owner's retail install read-only:
+ * no file in either install maps the lgequip_amr helm items (IT5000 up) to a race and material.
+ * Resources/NewArmorTagData.txt (both installs) maps only the later attached armour sets (IDs
+ * 2000+, IT14100+), and retail's extra global17..23_amr.s3d carry material sets 17-23, not plate.
+ *
+ * WHAT IS NOT DRAWN: the helm. A Luclin head is part of the body mesh and has no `HE01..03` helm
+ * meshes; the game draws Luclin helms as item models (lgequip_amr*.s3d, `IT5000` up in blocks of
+ * thirty), and which block belongs to which race is not something these files state. So the
+ * Luclin figure is bare-headed whatever the helm switch says, rather than wearing a guess.
+ *
+ * The races that ship ONE model (Kerra, Half Dark Elf) have no Luclin twin: the switch does not
+ * apply to them (`LUCLIN_RACES`), and the payload says which kind it is (`luclin`). Eight Luclin
+ * actors carry no animation at all and borrow an idle across archives (`LUCLIN_LENDER`); both
+ * tables live in eqassets/luclin.ts, where the tests can reach them.
+ */
 const IKSAR = 'global4_chr.s3d'
 const CLASSIC = 'global_chr.s3d'
 const ITEM_ARCHIVES = ['gequip.s3d', 'gequip2.s3d', 'gequip3.s3d', 'gequip4.s3d', 'gequip5.s3d', 'gequip6.s3d', 'gequip8.s3d', 'gequip2026.s3d']
@@ -92,7 +123,8 @@ interface Loaded {
 
 const loaded = new Map<string, Loaded | null>()
 
-function archive(name: string): Loaded | null {
+/** `scaledTracks`: read the archive's bone tracks with their scales (the Luclin archives; wld.ts `trackFrameAt`). */
+function archive(name: string, scaledTracks = false): Loaded | null {
   const hit = loaded.get(name)
   if (hit !== undefined) return hit
   let out: Loaded | null = null
@@ -102,7 +134,7 @@ function archive(name: string): Loaded | null {
       const pfs = readPfs(readFileSync(path))
       const wldName = pfs.entries.find((e) => e.name.endsWith('.wld'))?.name
       const bytes = wldName ? pfs.read(wldName) : undefined
-      out = bytes ? { pfs, wld: readWld(bytes) } : null
+      out = bytes ? { pfs, wld: readWld(bytes, { scaledTracks }) } : null
     }
   } catch (err) {
     logError('main:eqModel', { message: `could not read ${name}`, err })
@@ -137,6 +169,11 @@ function raceArchive(code: string): Loaded | null {
   return Object.hasOwn(RACE_CODES, race) ? archive(CLASSIC) : null
 }
 
+/** The actor's Luclin archive, or null when the race has none (or this install does not ship it). */
+function luclinArchive(code: string): Loaded | null {
+  return LUCLIN_RACES.has(code.slice(0, 2)) ? archive(luclinFile(code), true) : null
+}
+
 /** The highest face pick any scheme carries: `he00<F><P>` stops at 7, the skin scheme at 14 (wld.ts `facesFor` says which exist). */
 const FACE_MAX = SKIN_FACE_MAX
 
@@ -146,8 +183,9 @@ const FACE_MAX = SKIN_FACE_MAX
  * logged and swallowed. (Measured: IKM carries its own P01; IKF carries no P01 and no human
  * fallback lives in global4_chr.wld, so the Iksar female stands still.)
  */
-function idleClip(wld: WldFile, code: string, skeleton: Skeleton): EqModelClip | null {
+function idleClip(wld: WldFile, code: string, skeleton: Skeleton, luclin = false): EqModelClip | null {
   try {
+    if (luclin) return luclinIdle({ wld, code, skeleton }, luclinLenders(code))
     const lendCode = LENDER[code]
     const lendWld = lendCode !== undefined ? raceArchive(lendCode)?.wld : undefined
     if (lendWld && lendCode) return readAnimationOrLent({ wld, code, skeleton }, IDLE, { wld: lendWld, code: lendCode })
@@ -156,6 +194,35 @@ function idleClip(wld: WldFile, code: string, skeleton: Skeleton): EqModelClip |
     logError('main:eqModel', { message: 'no idle for ' + code, err })
     return null
   }
+}
+
+/**
+ * Turn each held item on a Luclin figure so it sits in the hand as the classic figure of the same
+ * actor holds it (wldPose.ts `gripCorrection`). No classic twin, no correction: the item hangs as is.
+ */
+function gripLikeClassic(code: string, luclin: PosedRig, weapons: EqModelWeapon[]): void {
+  try {
+    const classic = raceArchive(code)
+    const skeleton = classic ? skeletonOf(classic.wld, code) : null
+    if (!classic || !skeleton) return
+    const rig: PosedRig = { skeleton, code, clip: idleClip(classic.wld, code, skeleton) }
+    for (const w of weapons) {
+      const grip = gripCorrection(luclin, rig, w.attach)
+      if (grip) w.grip = grip
+    }
+  } catch (err) {
+    logError('main:eqModel', { message: 'no grip for ' + code, err })
+  }
+}
+
+/** The Luclin archives that may lend `code` an idle, in order, skipping any this install lacks. */
+function luclinLenders(code: string): AnimLender[] {
+  const out: AnimLender[] = []
+  for (const lender of LUCLIN_LENDER[code] ?? []) {
+    const wld = luclinArchive(lender)?.wld
+    if (wld) out.push({ wld, code: lender })
+  }
+  return out
 }
 
 /** A bitmap as the renderer can show it: a BMP as is, a DDS decoded to one (the later item archives). */
@@ -242,28 +309,49 @@ function weaponFor(hand: EqModelHand | undefined, attach: AttachPoint, textures:
   return null
 }
 
-export function loadEqModel(code: unknown, wear?: unknown, hands?: unknown): EqModelPayload | null {
-  if (typeof code !== 'string' || !/^[A-Z]{3}$/.test(code)) return null
+/**
+ * The actor's archive and its model, Luclin first when asked for and there. A Luclin ask the race
+ * or the install cannot answer is the classic figure, said so by the payload's `luclin: false`.
+ */
+function readActor(code: string, wear: EqModelWear, luclin: boolean): { races: Loaded; model: CharacterModel; luclin: boolean } | null {
+  const lu = luclin ? luclinArchive(code) : null
+  const luModel = lu ? readCharacter(lu.wld, code, { wear, has: lu.pfs.has }) : null
+  if (lu && luModel) return { races: lu, model: luModel, luclin: true }
   const races = raceArchive(code)
-  if (!races) return null
-  const model = readCharacter(races.wld, code, { wear: sanitizeWear(wear), has: races.pfs.has })
-  if (!model) return null
-  const textures: Record<string, string> = {}
-  for (const mesh of model.meshes) collectTextures(races.pfs, mesh, textures)
-  const idle = idleClip(races.wld, code, model.skeleton)
-  const held = sanitizeHands(hands)
+  const model = races ? readCharacter(races.wld, code, { wear, has: races.pfs.has }) : null
+  return races && model ? { races, model, luclin: false } : null
+}
+
+/** What each hand draws, primary then secondary, textures collected into `textures`. */
+function heldWeapons(held: EqModelHands, textures: Record<string, string>): EqModelWeapon[] {
   const weapons: EqModelWeapon[] = []
   const primary = weaponFor(held.primary, 'R_POINT', textures)
   const secondary = weaponFor(held.secondary, 'L_POINT', textures)
   if (primary) weapons.push(primary)
   if (secondary) weapons.push(secondary)
+  return weapons
+}
+
+export function loadEqModel(code: unknown, wear?: unknown, hands?: unknown, luclin?: unknown): EqModelPayload | null {
+  if (typeof code !== 'string' || !/^[A-Z]{3}$/.test(code)) return null
+  const read = readActor(code, sanitizeWear(wear), luclin === true)
+  if (!read) return null
+  const { races, model } = read
+  const textures: Record<string, string> = {}
+  for (const mesh of model.meshes) collectTextures(races.pfs, mesh, textures)
+  const idle = idleClip(races.wld, code, model.skeleton, read.luclin)
+  const weapons = heldWeapons(sanitizeHands(hands), textures)
+  if (read.luclin && weapons.length > 0) gripLikeClassic(code, { skeleton: model.skeleton, code, clip: idle }, weapons)
   const out: EqModelPayload = { actor: model.actor, bones: model.bones, meshes: model.meshes, clips: idle ? [idle] : [], weapons, textures }
   const faces = facesFor(code, races.pfs.has)
   if (faces.length > 0) out.faces = faces
   if (model.defaultFace !== undefined) out.defaultFace = model.defaultFace
+  if (luclin === true) out.luclin = read.luclin
+  if (model.undressed) out.undressed = model.undressed
   return out
 }
 
 export function registerEqModelIpc(): void {
-  ipcMain.handle(IPC.eqModel, (_e, code: unknown, wear: unknown, hands: unknown): EqModelPayload | null => loadEqModel(code, wear, hands))
+  // code, wear, hands, and whether the Luclin model was asked for - each untrusted, each checked by loadEqModel.
+  ipcMain.handle(IPC.eqModel, (_e, ...args: unknown[]): EqModelPayload | null => loadEqModel(args[0], args[1], args[2], args[3]))
 }

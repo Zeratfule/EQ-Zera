@@ -50,12 +50,16 @@ export interface EqModelBone {
   parent: number
   t: [number, number, number]
   q: [number, number, number, number]
+  /** a uniform bind SCALE, inherited by the bone's children; absent = 1 (only the Luclin rigs state one) */
+  s?: number
 }
 
 /** One bone's frames in a clip: `frames` translations (3 each) and quaternions (4 each), flattened. */
 export interface EqModelTrack {
   t: number[]
   q: number[]
+  /** one uniform scale per frame, when the clip states one other than 1 (Luclin); absent = hold the bind scale */
+  s?: number[]
 }
 
 export interface EqModelClip {
@@ -74,6 +78,11 @@ export type AttachPoint = 'R_POINT' | 'L_POINT' | 'SHIELD_POINT'
 export interface EqModelWeapon {
   attach: AttachPoint
   mesh: EqModelMesh
+  /**
+   * A rotation (quaternion xyzw) applied to the item on its bone: the Luclin rigs orient their
+   * attach points differently, so a Luclin figure's item is turned to sit as the classic one does.
+   */
+  grip?: [number, number, number, number]
 }
 
 /**
@@ -135,6 +144,17 @@ export interface EqModelPayload {
   faces?: number[]
   /** the `F` digit the bare head binds with no pick at all (2 for HUF and DWF, which have no face 0) */
   defaultFace?: number
+  /**
+   * Present only when the renderer ASKED for the Luclin model: true when this payload is that
+   * model, false when the race has no Luclin twin or the install lacks its archive and the classic
+   * figure was served instead.
+   */
+  luclin?: boolean
+  /**
+   * Worn parts drawn BARE because the archive has no armour texture for them at or below their
+   * variant (a Luclin plate chest steps down to chain instead). Absent when everything worn was drawn.
+   */
+  undressed?: WearPart[]
 }
 
 /**

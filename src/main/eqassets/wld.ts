@@ -20,9 +20,10 @@
 // WHAT COMES OUT is a model in the game's own frame, posed to its bind pose, with the bone each
 // vertex belongs to — so the renderer can skin and animate it (wldAnim.ts reads the clips).
 
-import { boundFace, facedTexture, skinTexture } from './skinScheme'
+import { boundFace } from './skinScheme'
+import { dress, undressedParts } from './wldDress'
 export { SKIN_FACE_MAX, facesFor } from './skinScheme'
-import { WEAR_PARTS, type EqModelBone, type EqModelGroup, type EqModelMaterial, type EqModelMesh, type EqModelWear } from '../../shared/eqModel'
+import type { EqModelBone, EqModelGroup, EqModelMaterial, EqModelMesh, EqModelWear, WearPart } from '../../shared/eqModel'
 
 const KEY = [0x95, 0x3a, 0xc5, 0x2a, 0x95, 0x7a, 0x95, 0x6a]
 const MAGIC = 0x54503d02
@@ -48,9 +49,11 @@ export interface WldFile {
   byName: Map<string, Fragment>
   /** a string-table reference (negative int) → the string */
   nameAt: (ref: number) => string
+  /** read every 0x12 frame's last int16 as a SCALE (see `trackFrameAt`); set for the Luclin archives */
+  scaledTracks?: boolean
 }
 
-export function readWld(bytes: Uint8Array): WldFile {
+export function readWld(bytes: Uint8Array, opts: { scaledTracks?: boolean } = {}): WldFile {
   const b = Buffer.from(bytes.buffer, bytes.byteOffset, bytes.byteLength)
   if (b.length < 28 || b.readUInt32LE(0) !== MAGIC) throw new Error('not a WLD file')
   const version = b.readUInt32LE(4)
@@ -75,7 +78,7 @@ export function readWld(bytes: Uint8Array): WldFile {
     if (name !== '') byName.set(name, frag)
     at += 8 + size
   }
-  return { version, fragments, byName, nameAt }
+  return opts.scaledTracks === true ? { version, fragments, byName, nameAt, scaledTracks: true } : { version, fragments, byName, nameAt }
 }
 
 /** The fragment a 1-based ref points at, if it is of the expected type. The ONE guard, used everywhere. */
@@ -92,6 +95,8 @@ export type Vec3 = [number, number, number]
 export interface Xform {
   t: Vec3
   q: Quat
+  /** a uniform scale, inherited down the tree; absent means 1 (every classic read) */
+  s?: number
 }
 
 export const IDENTITY: Xform = { t: [0, 0, 0], q: [0, 0, 0, 1] }
@@ -123,12 +128,29 @@ function qrot(q: Quat, v: Vec3): Vec3 {
 }
 
 function compose(parent: Xform, local: Xform): Xform {
+  const ps = parent.s ?? 1
   const t = qrot(parent.q, local.t)
-  return { t: [parent.t[0] + t[0], parent.t[1] + t[1], parent.t[2] + t[2]], q: qmul(parent.q, local.q) }
+  const out: Xform = { t: [parent.t[0] + ps * t[0], parent.t[1] + ps * t[1], parent.t[2] + ps * t[2]], q: qmul(parent.q, local.q) }
+  const s = ps * (local.s ?? 1)
+  if (s !== 1) out.s = s
+  return out
 }
 
-/** One frame of a 0x12 track at byte offset `at` (old format: eight int16). */
-export function trackFrameAt(body: Buffer, at: number): Xform {
+/** The fixed point a scaled track's translation and scale are stated in (LanternExtractor's reading). */
+const TRACK_UNIT = 256
+
+/**
+ * One frame of a 0x12 track at byte offset `at` (old format: eight int16).
+ *
+ * THE LAST INT16 IS TWO THINGS DEPENDING ON WHO READS IT. The classic reading (every archive this
+ * app read before 2026-11-15) divides the shift by it, which is exact while it is 256 and is how
+ * every classic figure has been drawn. The Luclin archives (`scaled`) break that: their bones
+ * carry real per-bone SCALES in it - `HUMPEBUTTR` binds at 6 (a buttock folded to 2% so a robe
+ * does not show it) and the deltoids at 333-350 (bulk) - and dividing by 6 threw that buttock 15
+ * units off the hip, which framed the whole Luclin human as a close-up of nothing. So a scaled
+ * read takes the shift over 256 and the last value over 256 as the bone's scale.
+ */
+export function trackFrameAt(body: Buffer, at: number, scaled = false): Xform {
   const rotDenom = body.readInt16LE(at)
   const rx = body.readInt16LE(at + 2)
   const ry = body.readInt16LE(at + 4)
@@ -137,9 +159,15 @@ export function trackFrameAt(body: Buffer, at: number): Xform {
   const sy = body.readInt16LE(at + 10)
   const sz = body.readInt16LE(at + 12)
   const shiftDenom = body.readInt16LE(at + 14)
-  const t: Vec3 = shiftDenom === 0 ? [0, 0, 0] : [sx / shiftDenom, sy / shiftDenom, sz / shiftDenom]
   const len = Math.hypot(rx, ry, rz, rotDenom) || 1
-  return { t, q: [rx / len, ry / len, rz / len, rotDenom / len] }
+  const q: Quat = [rx / len, ry / len, rz / len, rotDenom / len]
+  if (scaled && shiftDenom !== 0) {
+    const out: Xform = { t: [sx / TRACK_UNIT, sy / TRACK_UNIT, sz / TRACK_UNIT], q }
+    if (shiftDenom !== TRACK_UNIT) out.s = shiftDenom / TRACK_UNIT
+    return out
+  }
+  const t: Vec3 = shiftDenom === 0 ? [0, 0, 0] : [sx / shiftDenom, sy / shiftDenom, sz / shiftDenom]
+  return { t, q }
 }
 
 /** 0x12: nameRef(4) flags(4) frameCount(4) then frames of eight int16. */
@@ -163,7 +191,7 @@ export interface Skeleton {
 function boneLocal(wld: WldFile, trackRef: number): Xform {
   const track = fragmentAt(wld, trackRef, 0x13)
   const def = track ? fragmentAt(wld, track.body.readInt32LE(4), 0x12) : undefined
-  return def ? trackFrameAt(def.body, TRACK_FRAMES_AT) : IDENTITY
+  return def ? trackFrameAt(def.body, TRACK_FRAMES_AT, wld.scaledTracks === true) : IDENTITY
 }
 
 /** 0x10. */
@@ -397,6 +425,8 @@ export interface CharacterModel {
   skeleton: Skeleton
   /** the face the archive's own head binds, before any pick: the F digit of its piece-1 texture */
   defaultFace?: number
+  /** worn parts drawn bare because the archive has no texture for their variant (`undressedParts`) */
+  undressed?: WearPart[]
 }
 
 /** How a character is dressed: the wear, and whether the archive has a given texture file. */
@@ -415,55 +445,11 @@ function drawnMeshes(names: readonly string[], code: string, helm: number): Set<
   const body = `${code}_DMSPRITEDEF`
   const head = (n: number): string => `${code}HE0${String(n)}_DMSPRITEDEF`
   const chosen = helm > 0 && names.includes(head(helm)) ? head(helm) : head(0)
-  return new Set([body, chosen])
-}
-
-/** The body part a race texture belongs to (`bafch0001.bmp` → `ch`), and its variant/index digits. */
-function texturePart(texture: string, code: string): { part: (typeof WEAR_PARTS)[number]; index: string; ext: string } | null {
-  const m = new RegExp(`^${code.toLowerCase()}(${WEAR_PARTS.join('|')})(\\d\\d)(\\d\\d)\\.(bmp|dds)$`).exec(texture)
-  if (m) return { part: m[1] as (typeof WEAR_PARTS)[number], index: m[3], ext: m[4] }
-  // THE SKIN SCHEME (Kerra, 2026-11-15): the bare part is `<code><part>sk<F><P>.dds`, and its
-  // armour is `<code><part>0<V>0<P>.dds` - the same piece, numbered the classic way.
-  const sk = skinTexture(texture, code)
-  return sk && sk.part !== 'he' ? { part: sk.part as (typeof WEAR_PARTS)[number], index: `0${sk.piece}`, ext: 'dds' } : null
-}
-
-
-/** `bafch0001.bmp` → `bafch0301.bmp` when the wear says plate and the archive has it; plus the part's dye. */
-/** The armour texture a part's wear names, when the wear asks for one and the archive has it. */
-function armourFor(texture: string, code: string, outfit: Outfit): { at: NonNullable<ReturnType<typeof texturePart>>; dressed: string | null } | null {
-  const at = texturePart(texture, code)
-  if (!at) return null
-  const variant = outfit.wear[at.part] ?? 0
-  const dressed = `${code.toLowerCase()}${at.part}0${String(variant)}${at.index}.${at.ext}`
-  return { at, dressed: variant > 0 && outfit.has(dressed) ? dressed : null }
-}
-
-function dressedMaterial(mt: EqModelMaterial, code: string, outfit: Outfit): EqModelMaterial {
-  if (!mt.texture) return mt
-  const armour = armourFor(mt.texture, code, outfit)
-  // A skin-scheme part under armour shows the armour, not the skin pick; a classic head texture
-  // never matches `texturePart`, so the classic order (face first) is unchanged.
-  const faced = armour?.dressed ? null : facedTexture(mt.texture, code, outfit)
-  if (faced !== null) return { ...mt, texture: faced }
-  if (!armour) return mt
-  const texture = armour.dressed ?? mt.texture
-  const tint = outfit.wear.tint?.[armour.at.part]
-  return tint ? { ...mt, texture, tint } : { ...mt, texture }
-}
-
-/**
- * A mesh with every material dressed. A HELM mesh additionally takes the head slot's dye - and it
- * takes it ON TOP of the dressing rather than instead of it, which is the point: the old form
- * returned early with the RAW material, so a dyed helm silently lost its armour and face swaps.
- */
-function dress(mesh: EqModelMesh, code: string, outfit: Outfit): EqModelMesh {
-  const helmTint = /HE0[1-9]_DMSPRITEDEF$/.test(mesh.name) ? outfit.wear.tint?.helm : undefined
-  const one = (mt: EqModelMaterial): EqModelMaterial => {
-    const dressed = dressedMaterial(mt, code, outfit)
-    return helmTint ? { ...dressed, tint: helmTint } : dressed
-  }
-  return { ...mesh, materials: mesh.materials.map(one) }
+  // THE LUCLIN EYES (2026-11-15): a Luclin actor is ONE mesh, head included, plus two eyeball
+  // meshes on its skeleton's own list (`HUMEYE_L_DMSPRITEDEF`, textured `chr_eye*.dds`). Without
+  // them the face is two holes. Classic actors carry no such meshes, so nothing changes for them.
+  const eyes = names.filter((n) => n === `${code}EYE_L_DMSPRITEDEF` || n === `${code}EYE_R_DMSPRITEDEF`)
+  return new Set([body, chosen, ...eyes])
 }
 
 /** The skeleton an actor's name resolves to: `<CODE>_HS_DEF` is the 0x10 the 0x11 points at. */
@@ -493,7 +479,11 @@ export function meshCandidates(wld: WldFile, skeleton: Skeleton, code: string, h
 
 /** The bone tree with each bone's bind transform, for a renderer that skins. */
 function boneList(skeleton: Skeleton): EqModelBone[] {
-  const bones: EqModelBone[] = skeleton.bones.map((b) => ({ name: b.name, parent: -1, t: b.local.t, q: b.local.q }))
+  const bones: EqModelBone[] = skeleton.bones.map((b) => {
+    const bone: EqModelBone = { name: b.name, parent: -1, t: b.local.t, q: b.local.q }
+    if (b.local.s !== undefined) bone.s = b.local.s
+    return bone
+  })
   skeleton.bones.forEach((bone, i) => {
     for (const c of bone.children) bones[c].parent = i
   })
@@ -514,6 +504,8 @@ export function readCharacter(wld: WldFile, code: string, outfit: Outfit = BARE)
   const face = boundFace(raw, upper)
   const meshes = raw.map((m) => dress(m, upper, outfit))
   const model: CharacterModel = { actor: actor.name, bones: boneList(skeleton), meshes, skeleton }
+  const bare = undressedParts(raw, upper, outfit)
+  if (bare.length > 0) model.undressed = bare
   if (face !== undefined) model.defaultFace = face
   return model
 }

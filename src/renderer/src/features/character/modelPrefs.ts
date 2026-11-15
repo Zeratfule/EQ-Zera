@@ -28,6 +28,64 @@ export function faceKey(actor: string): string {
   return `eq.character.face.${actor}`
 }
 
+/**
+ * THE LUCLIN SWITCH (owner, 2026-11-15), stored the way the helmet switch is: '1' on, '0' off,
+ * absent reads OFF so an upgrade changes nobody's figure.
+ */
+export const LUCLIN_KEY = 'eq.character.luclinModel'
+
+/**
+ * The races that ship a Luclin-era model beside the classic one: the twelve classic races and the
+ * Iksar (main's `LUCLIN_RACES`). Kerra and the Half Dark Elf have one model each, so the switch
+ * changes nothing for them, and the card says so.
+ */
+const LUCLIN_RACES = new Set(['HU', 'BA', 'ER', 'EL', 'HI', 'DA', 'HA', 'DW', 'TR', 'OG', 'HO', 'GN', 'IK'])
+
+export function hasLuclinModel(race: string): boolean {
+  return LUCLIN_RACES.has(race)
+}
+
+/**
+ * The actor a face pick is REMEMBERED under. A Luclin face digit indexes a different set of faces
+ * from the classic one on the same race (`humhesk31.dds` is not `humhe0031.bmp`), so the two picks
+ * are kept apart: `HUM` for the classic figure, `HUML` for the Luclin one. A race without a Luclin
+ * model keeps its one key whatever the switch says.
+ */
+export function faceActor(actor: string, luclin: boolean): string {
+  return luclin && hasLuclinModel(actor.slice(0, 2)) ? `${actor}L` : actor
+}
+
+/** What the card needs to know about the payload to say what the Luclin switch did. */
+export interface LuclinShown {
+  /** the payload's own answer: true = the Luclin figure, false = the classic one served instead */
+  luclin: boolean
+  /** the helm kind the wear asked for (0 = bare head) */
+  helm: number
+}
+
+/**
+ * THE ONE LINE UNDER THE FIGURE THAT SAYS WHAT THE LUCLIN SWITCH DID, or null when there is nothing
+ * to say (switch off, no payload yet, or the Luclin figure drawn with nothing missing). Every
+ * sentence states a fact the payload backs; none of them guesses.
+ */
+export function luclinNote(on: boolean, race: string, raceLabel: string, shown: LuclinShown | null): string | null {
+  if (!on || shown === null) return null
+  if (!hasLuclinModel(race)) return `${raceLabel}: the game files carry one model for this race, so the Luclin switch does not change it.`
+  if (!shown.luclin) return 'No Luclin model files for this race were found in the configured EverQuest folder, so this is the classic figure.'
+  if (shown.helm > 0) return 'Luclin helms are separate item models this app does not draw yet, so the head is shown bare.'
+  return null
+}
+
+/** A body part as the note about undrawn armour names it. */
+const PART_LABEL: Readonly<Record<string, string>> = { ch: 'chest', ua: 'arms', fa: 'forearms', hn: 'hands', lg: 'legs', ft: 'feet' }
+
+/** The note for worn parts drawn bare because the model has no texture for their armour (payload `undressed`). */
+export function undressedNote(parts: readonly string[] | undefined): string | null {
+  if (!parts || parts.length === 0) return null
+  const named = parts.map((p) => PART_LABEL[p] ?? p).join(', ')
+  return `The game files have no texture on this model for the armour worn on the ${named}, so ${parts.length === 1 ? 'that part is' : 'those parts are'} drawn bare.`
+}
+
 export type Sex = 'M' | 'F'
 
 export const DEFAULT_RACE = 'HU'

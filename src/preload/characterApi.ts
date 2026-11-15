@@ -50,8 +50,8 @@ export const characterApi = {
   /** The character sheet read off the latest `/outputfile inventory` dump; null without a dump. */
   characterSheet: (): Promise<CharacterSheet | null> => ipcRenderer.invoke(IPC.characterSheet),
   /** A classic race model (`BAF`, `HUM`, …) read from the game's own global_chr.s3d, dressed as `wear` says; null without the game. */
-  eqModel: (code: string, wear: EqModelWear, hands: EqModelHands): Promise<EqModelPayload | null> =>
-    ipcRenderer.invoke(IPC.eqModel, code, wear, hands),
+  eqModel: (code: string, wear: EqModelWear, hands: EqModelHands, luclin = false): Promise<EqModelPayload | null> =>
+    ipcRenderer.invoke(IPC.eqModel, code, wear, hands, luclin),
   /** The look of an item by NAME out of the committed item table, for previewing it on the model; null for a name it does not know. */
   itemLook: (name: string): Promise<ItemLook | null> => ipcRenderer.invoke(IPC.itemLook, name),
   /** Encode a character profile as an `EQC1-` share string; null for a profile with nothing in it. */

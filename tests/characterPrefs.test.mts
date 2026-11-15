@@ -15,14 +15,19 @@ import assert from 'node:assert/strict'
 import {
   DEFAULT_RACE,
   DEFAULT_SEX,
+  LUCLIN_KEY,
   RACE_OPTIONS,
   actorCode,
+  faceActor,
   faceKey,
+  hasLuclinModel,
+  luclinNote,
   readFace,
   readPick,
   readRace,
   readSex,
-  storedFace
+  storedFace,
+  undressedNote
 } from '../src/renderer/src/features/character/modelPrefs'
 
 test('the old three-letter race value still names the race AND the sex it always meant', () => {
@@ -96,4 +101,32 @@ test('the face asked of main is a bare digit, and anything else is no pick at al
   assert.equal(storedFace('two'), undefined)
   assert.equal(storedFace('2.5'), undefined)
   assert.equal(storedFace('-1'), undefined)
+})
+
+test('the Luclin switch: its own key, and a Luclin face pick never overwrites the classic one', () => {
+  assert.equal(LUCLIN_KEY, 'eq.character.luclinModel', 'the key the switch lands in, beside eq.character.showHelm')
+  for (const r of ['HU', 'BA', 'ER', 'EL', 'HI', 'DA', 'HA', 'DW', 'TR', 'OG', 'HO', 'GN', 'IK']) assert.ok(hasLuclinModel(r), `${r} ships a Luclin model`)
+  for (const r of ['KE', 'HD', 'VS', 'FR', 'DR']) assert.equal(hasLuclinModel(r), false, `${r} has no Luclin twin`)
+  assert.equal(faceActor('HUM', false), 'HUM', 'the classic pick keeps the key it always had')
+  assert.equal(faceActor('HUM', true), 'HUML', 'the Luclin pick is remembered apart')
+  assert.notEqual(faceKey(faceActor('DWF', true)), faceKey(faceActor('DWF', false)))
+  assert.equal(faceActor('KEF', true), 'KEF', 'a race with one model keeps one face key whatever the switch says')
+  assert.equal(faceActor('HDM', true), 'HDM')
+})
+
+test('the Luclin note says only what the payload backs, and nothing while the switch is off', () => {
+  const luclinShown = { luclin: true, helm: 0 }
+  assert.equal(luclinNote(false, 'HU', 'Human', luclinShown), null, 'switch off: no line')
+  assert.equal(luclinNote(true, 'HU', 'Human', null), null, 'no payload yet: no line')
+  assert.equal(luclinNote(true, 'HU', 'Human', luclinShown), null, 'the Luclin figure with a bare head: nothing to say')
+  assert.match(luclinNote(true, 'HU', 'Human', { luclin: true, helm: 3 }) ?? '', /helms/, 'a helm the Luclin figure cannot wear is named')
+  assert.match(luclinNote(true, 'HU', 'Human', { luclin: false, helm: 0 }) ?? '', /classic figure/, 'an install without the archive says it fell back')
+  assert.match(luclinNote(true, 'KE', 'Kerra', { luclin: false, helm: 0 }) ?? '', /^Kerra: .*one model/, 'a one-model race says the switch does nothing')
+  assert.equal(undressedNote(undefined), null)
+  assert.equal(undressedNote([]), null)
+  assert.match(undressedNote(['ch']) ?? '', /worn on the chest, so that part is drawn bare/)
+  assert.match(undressedNote(['ch', 'lg']) ?? '', /chest, legs, so those parts are/)
+  for (const s of [luclinNote(true, 'KE', 'Kerra', luclinShown), luclinNote(true, 'HU', 'Human', { luclin: false, helm: 0 }), luclinNote(true, 'HU', 'Human', { luclin: true, helm: 1 }), undressedNote(['ch'])]) {
+    assert.ok(!(s ?? '').includes(String.fromCharCode(0x2014)), 'no em dashes in user-facing copy')
+  }
 })
