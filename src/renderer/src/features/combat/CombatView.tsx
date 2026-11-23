@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { Box, CircularProgress, Paper, Skeleton, Stack, Typography } from '@mui/material'
+import { CircularProgress, Paper, Skeleton, Stack, Typography } from '@mui/material'
 import { useCombat } from './useCombat'
 import { CombatTimeline } from './CombatTimeline'
 import { CombatHeader } from './CombatHeader'
@@ -7,6 +7,7 @@ import { ProcessingLog } from './ProcessingLog'
 import { SegmentBody } from './SegmentPanel'
 import { DpsChartCard, MobDamageCard, type Ringless } from './CombatDashboard'
 import { ProcsCard } from './ProcsPanel'
+import { BodyLogFrame, DashSplit, ResetLayoutButton } from './CombatSplitLayout'
 import {
   isLiveSelection,
   scopeOptions,
@@ -95,6 +96,11 @@ function HydratingPanel(): React.JSX.Element {
  * sized by flexGrow between the header and the fixed-height combat log — so the view still has
  * NO page-level scroll (Task #56). Below md it collapses to ONE column of comfortably-tall
  * panels and the region scrolls.
+ *
+ * …AND THE PLAYER CAN RESIZE IT (a player's email). "Equal" is the DEFAULT now, not the law: the
+ * grid is two columns (meter over procs, DPS curve over damage by mob) with a drag handle in each
+ * gap, the sizes are a persisted pref (combatLayout.ts), and an untouched install draws exactly
+ * the equal 2x2 above. The grid itself lives in CombatSplitLayout.DashSplit.
  */
 function DashboardGrid({
   seg,
@@ -117,50 +123,23 @@ function DashboardGrid({
   live: boolean
   ringless: Ringless
 }): React.JSX.Element {
+  // The four cells arrive in DashSplit as ELEMENT props, so dragging one of its handles re-renders
+  // the split and none of these (CombatSplitLayout.tsx says why that matters under a live meter).
   return (
-    <Box
-      data-testid="combat-dashboard"
-      sx={{
-        display: 'grid',
-        gap: 1.5,
-        flexGrow: 1,
-        minHeight: 0,
-        minWidth: 0,
-        overflow: { xs: 'auto', md: 'hidden' },
-        gridTemplateColumns: { xs: 'minmax(0, 1fr)', md: 'repeat(2, minmax(0, 1fr))' },
-        gridTemplateRows: { xs: 'none', md: 'repeat(2, minmax(0, 1fr))' },
-        // xs rows are a DEFINITE height on purpose: `auto` would let the meter's row list
-        // size the track (an append-only panel sizing its own box is the Task #56 bug), so
-        // each stacked panel gets a comfortable fixed box and scrolls inside it.
-        gridAutoRows: { xs: '320px', md: 'minmax(0, 1fr)' },
-        '& > *': { minWidth: 0, minHeight: 0 }
-      }}
-    >
-      <SegmentBody
-        seg={seg}
-        tl={tl}
-        mode={mode}
-        scope={meterScope}
-        roster={roster}
-        drill={drill}
-        setDrill={setDrill}
-      />
-      <DpsChartCard tl={tl} live={live} ringless={ringless} />
-      {/* PROCS: the selection's own ledger, three columns (name · PPM · count). No subject of its
-          own to keep in sync — it reads the same segment the meter ranks. */}
-      <ProcsCard seg={seg} />
-      {/* The mob card is DAMAGE by mob, and its level-2 body renders inside the meter panel — so
-          in the Healing dimension (where that panel is listing healers) its rows are read-only
-          rather than a click that opens nothing. It still shows its numbers: "what did I kill"
-          is worth reading beside a heal meter, it just cannot take the panel over. */}
-      <MobDamageCard
-        seg={seg}
-        tl={tl}
-        ringless={ringless}
-        drill={drill}
-        setDrill={mode === 'heal' ? null : setDrill}
-      />
-    </Box>
+    <DashSplit
+      meter={
+        <SegmentBody seg={seg} tl={tl} mode={mode} scope={meterScope} roster={roster} drill={drill} setDrill={setDrill} />
+      }
+      dps={<DpsChartCard tl={tl} live={live} ringless={ringless} />}
+      // PROCS: the selection's own ledger, three columns (name · PPM · count). No subject of its
+      // own to keep in sync — it reads the same segment the meter ranks.
+      procs={<ProcsCard seg={seg} />}
+      // The mob card is DAMAGE by mob, and its level-2 body renders inside the meter panel — so in
+      // the Healing dimension (where that panel is listing healers) its rows are read-only rather
+      // than a click that opens nothing. It still shows its numbers: "what did I kill" is worth
+      // reading beside a heal meter, it just cannot take the panel over.
+      mobs={<MobDamageCard seg={seg} tl={tl} ringless={ringless} drill={drill} setDrill={mode === 'heal' ? null : setDrill} />}
+    />
   )
 }
 
@@ -416,25 +395,31 @@ export default function CombatView({
 
       {/* The expanded per-ability stats are remembered beside the drill they sit inside (JOS-116),
           and reach `combatShared.SkillBar` four levels down through this provider rather than
-          through four components' props (abilityExpand.tsx says why). */}
-      <AbilityExpandProvider value={abilityExpand}>
-        <CombatBody
-          hydrating={hydrating}
-          view={view}
-          seg={seg}
-          tl={tl}
-          mode={mode}
-          meterScope={meterScope}
-          roster={roster}
-          drill={drill}
-          setDrill={setDrill}
-          live={live}
-          ringless={ringless}
-          scope={scope}
-        />
-      </AbilityExpandProvider>
-
-      <ProcessingLog lines={snap?.recent ?? []} showUnparsed={showUnparsed} setShowUnparsed={setShowUnparsed} />
+          through four components' props (abilityExpand.tsx says why).
+          The body sits over the combat log in a frame whose handle sets the log's height (a
+          persisted pref, combatLayout.ts); both arrive as element props, as in DashSplit. */}
+      <BodyLogFrame
+        body={
+          <AbilityExpandProvider value={abilityExpand}>
+            <CombatBody
+              hydrating={hydrating}
+              view={view}
+              seg={seg}
+              tl={tl}
+              mode={mode}
+              meterScope={meterScope}
+              roster={roster}
+              drill={drill}
+              setDrill={setDrill}
+              live={live}
+              ringless={ringless}
+              scope={scope}
+            />
+          </AbilityExpandProvider>
+        }
+        // (one line on purpose: CombatView sits at the 100-line function ceiling)
+        log={<ProcessingLog lines={snap?.recent ?? []} showUnparsed={showUnparsed} setShowUnparsed={setShowUnparsed} actions={<ResetLayoutButton />} />}
+      />
 
       {/* The share card and its four ways out. It draws nothing until asked, and nothing at all
           for a selection with no rows in it. */}
