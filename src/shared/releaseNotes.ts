@@ -135,6 +135,17 @@ export interface ReleaseNote {
  * still sees exactly the releases above it.
  */
 export const RELEASE_NOTES: readonly ReleaseNote[] = [
+  // The Luclin hair fix.
+  {
+    version: '1.29.1',
+    date: '2026-11-23',
+    entries: [
+      {
+        kind: 'fixed',
+        text: 'Luclin models on the Character tab: hair now sits on the head. It had been stretched down to the waist, and on some races the whole hairpiece was drawn at the hips.'
+      }
+    ]
+  },
   // The Luclin model switch on the Character tab, and the patch-note day fix.
   {
     version: '1.29.0',
