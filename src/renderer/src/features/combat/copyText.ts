@@ -29,7 +29,7 @@ import type { SegmentView, SourceView } from '@shared/combat'
 import { flattenSkills, type MobBreakdown, type SkillRow, type TargetDetail } from './dashboardData'
 import { defenseHeadlineParts, defenseRowText, defenseRows, riposteLine, ripostesTakenLine } from './defenseRows'
 import { landEvidence } from './landEvidence'
-import { nestedRows, type OwnRow } from './petRows'
+import { laneDps, nestedRows, type OwnRow } from './petRows'
 import { RANK, count, pctText, statLines, subjectLine, table, wrapText, type Col } from './copyTable'
 import { formatNum, formatRate } from '../../lib/formatRate'
 
@@ -180,6 +180,7 @@ function skillCols(rows: SkillRow[]): Col[] {
   const cols: Col[] = [
     { header: 'Skill', align: 'left' },
     { header: 'Total', align: 'right' },
+    { header: 'DPS', align: 'right' },
     { header: 'Hits', align: 'right' }
   ]
   if (rows.some((s) => s.hits > 0)) cols.push({ header: 'Avg', align: 'right' }, { header: 'Max', align: 'right' })
@@ -195,7 +196,7 @@ function skillCols(rows: SkillRow[]): Col[] {
  * prefix: it rides on every DERIVED number, and never on `Max` — an observed maximum is a lower
  * bound, not a scaled estimate, and prefixing it would claim it had been adjusted.
  */
-function skillCells(s: SkillRow, cols: Col[], a: string): string[] {
+function skillCells(s: SkillRow, cols: Col[], a: string, activeSec: number): string[] {
   const misses = s.misses ?? 0
   const resists = s.resists ?? 0
   // Resist rate over ATTEMPTS — landings included, and an effect proc's landings are its emotes
@@ -205,6 +206,8 @@ function skillCells(s: SkillRow, cols: Col[], a: string): string[] {
   const land = landEvidence(s, a)
   const by = new Map<string, string>([
     ['Total', `${a}${formatNum(s.total)}`],
+    // The lane's own rate, the same arithmetic the drilled bar prints beside its total.
+    ['DPS', `${a}${formatRate(laneDps(s.total, activeSec))}`],
     ['Hits', `${a}${s.hits}`],
     ['Landed', (s.lands ?? 0) > 0 ? `${a}${s.lands}` : ''],
     ['Avg', s.hits > 0 ? `${a}${formatNum(Math.round(s.total / s.hits))}` : ''],
@@ -218,11 +221,11 @@ function skillCells(s: SkillRow, cols: Col[], a: string): string[] {
 }
 
 /** The flat skill list as a table — a source's list, or one mob's. */
-function skillTable(rows: SkillRow[], a: string): string[] {
+function skillTable(rows: SkillRow[], a: string, activeSec: number): string[] {
   const cols = skillCols(rows)
   return table(
     cols,
-    rows.map((s) => skillCells(s, cols, a))
+    rows.map((s) => skillCells(s, cols, a, activeSec))
   )
 }
 
@@ -236,17 +239,18 @@ function skillTable(rows: SkillRow[], a: string): string[] {
  * would invent an observation.
  */
 function petCells(r: Extract<OwnRow, { kind: 'pet' }>, width: number): string[] {
-  const cells = [`${r.pet.name} (pet)`, formatNum(r.pet.total), String(r.pet.hits)]
+  // The pet's DPS is its own rate, as its nested bar prints it (PetBar).
+  const cells = [`${r.pet.name} (pet)`, formatNum(r.pet.total), formatRate(r.pet.dps), String(r.pet.hits)]
   while (cells.length < width) cells.push('')
   return cells
 }
 
 /** The flat list with pets nested in, as ONE table sharing ONE column set. */
-function ownTable(rows: OwnRow[]): string[] {
+function ownTable(rows: OwnRow[], activeSec: number): string[] {
   const cols = skillCols(rows.flatMap((r) => (r.kind === 'skill' ? [r.skill] : [])))
   return table(
     cols,
-    rows.map((r) => (r.kind === 'pet' ? petCells(r, cols.length) : skillCells(r.skill, cols, '')))
+    rows.map((r) => (r.kind === 'pet' ? petCells(r, cols.length) : skillCells(r.skill, cols, '', activeSec)))
   )
 }
 
@@ -274,7 +278,7 @@ export function formatEntityText(seg: SegmentView, entity: SourceView, pets: Sou
     out.push('No skill breakdown for this source.')
     return out.join('\n')
   }
-  out.push('', ...(rows ? ownTable(rows) : skillTable(skills, '')))
+  out.push('', ...(rows ? ownTable(rows, seg.activeSec) : skillTable(skills, '', seg.activeSec)))
 
   const r = entity.rounds
   if (r && (r.multiHitRounds > 0 || r.maxHitsInRound > 1)) {
@@ -307,7 +311,7 @@ export function formatTargetText(seg: SegmentView, target: string, detail: Targe
     out.push('Nothing landed on this mob in the selected segment.')
     return out.join('\n')
   }
-  out.push('', ...skillTable(detail.rows, a))
+  out.push('', ...skillTable(detail.rows, a, seg.activeSec))
   if (detail.estimated) out.push('', APPROX_NOTE)
   return out.join('\n')
 }

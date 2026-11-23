@@ -331,13 +331,13 @@ test('formatEntityText is the flat skill list, slay grouped, with the rounds foo
       'You - a deadly black widow +2 · 1:23',
       '31.2k · 375 dps · 260 hits · 12% crit · 82% hit · 29% resist',
       '',
-      'Skill          Total  Hits  Avg  Max  Crit  Miss  Resist',
-      'Melee          21.2k   210  101  412   11%   18%',
+      'Skill          Total      DPS  Hits  Avg  Max  Crit  Miss  Resist',
+      'Melee          21.2k  303 dps   210  101  412   11%   18%',
       // The two slay weapons arrive as ONE row (groupSlay), exactly as the panel lists them:
       // 3.2k+2.8k over 45 hits, max 500 across both weapons.
-      'Slay Undead     6.0k    45  133  500   18%   21%',
+      'Slay Undead     6.0k   86 dps    45  133  500   18%   21%',
       // A spell lane has no avoided swings, so its Miss cell is blank while its Resist isn't.
-      'Ancient Wrath   4.0k     5  800  900                 29%',
+      'Ancient Wrath   4.0k   57 dps     5  800  900                 29%',
       '',
       'Melee rounds: 186 · avg 1.29 hits/round · 41 multi-hit · up to 3/round'
     ].join('\n')
@@ -359,14 +359,14 @@ test('formatEntityText NESTS the pet as a line item when the preference passes i
       // numbers: not one point of pet damage joins a lane of yours.
       '31.2k · 375 dps · 260 hits · 12% crit · 82% hit · 29% resist',
       '',
-      'Skill          Total  Hits  Avg  Max  Crit  Miss  Resist',
-      'Melee          21.2k   210  101  412   11%   18%',
+      'Skill          Total      DPS  Hits  Avg  Max  Crit  Miss  Resist',
+      'Melee          21.2k  303 dps   210  101  412   11%   18%',
       // 9.0k ranks the pet second, between Melee and the slay group. Its Avg/Max/Crit/Miss cells
       // stay EMPTY: a pet aggregate has no single biggest hit, and printing one would invent an
       // observation.
-      'Vebarn (pet)    9.0k   120',
-      'Slay Undead     6.0k    45  133  500   18%   21%',
-      'Ancient Wrath   4.0k     5  800  900                 29%',
+      'Vebarn (pet)    9.0k  108 dps   120',
+      'Slay Undead     6.0k   86 dps    45  133  500   18%   21%',
+      'Ancient Wrath   4.0k   57 dps     5  800  900                 29%',
       '',
       'Melee rounds: 186 · avg 1.29 hits/round · 41 multi-hit · up to 3/round'
     ].join('\n')
@@ -386,8 +386,8 @@ test('formatEntityText omits every column the source has no data for', () => {
       '',
       // No Crit / Miss / Resist columns exist at all here — an absent dimension is absent,
       // never a column of zeroes.
-      'Skill  Total  Hits  Avg  Max',
-      'Melee   5.0k    40  125  260'
+      'Skill  Total     DPS  Hits  Avg  Max',
+      'Melee   5.0k  71 dps    40  125  260'
     ].join('\n')
   )
   assert.ok(fits(text))
@@ -406,12 +406,12 @@ test('formatTargetText carries the ~ estimate prefix on every derived number but
       '~1 resisted',
       'you + pet combined',
       '',
-      'Skill          Total  Hits    Avg  Max  Crit  Miss  Resist',
+      'Skill          Total       DPS  Hits    Avg  Max  Crit  Miss  Resist',
       // Max is the ONE unprefixed column: an observed maximum is a lower bound, not a scaled
       // estimate, so wearing a '~' would claim it had been adjusted.
-      'Melee          ~7.4k   ~92    ~80  412  ~10%  ~19%',
-      'Slay Undead    ~2.6k   ~24   ~108  500  ~17%  ~20%',
-      'Ancient Wrath  ~2.0k    ~2  ~1.0k  900                ~33%',
+      'Melee          ~7.4k  ~106 dps   ~92    ~80  412  ~10%  ~19%',
+      'Slay Undead    ~2.6k   ~37 dps   ~24   ~108  500  ~17%  ~20%',
+      'Ancient Wrath  ~2.0k   ~29 dps    ~2  ~1.0k  900                ~33%',
       '',
       '~ = estimated: this fight kept only a sample of its events.'
     ].join('\n')
