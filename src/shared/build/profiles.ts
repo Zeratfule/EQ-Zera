@@ -53,24 +53,42 @@ export function archetypeOf(classes: readonly ClassAbbr[]): Archetype {
   }
 }
 
-const SAVES: readonly GearStatKey[] = ['SV_FIRE', 'SV_COLD', 'SV_MAGIC', 'SV_DISEASE', 'SV_POISON']
+// SV_VOID IS A SAVE LIKE THE OTHER FIVE (2026-11-23). It was left out when this table was written,
+// when two pages stated it; the 2026-11-15 rescrape's Castle Nektropos gear states it outright
+// (Unbroken Golem Core +38, Blood's Unity +25, Robe of the Betrayed +4), and every upgraded item
+// that triggers `synthesizesVoidSave` gains it too. Leaving it unweighted scored those lines zero.
+const SAVES: readonly GearStatKey[] = ['SV_FIRE', 'SV_COLD', 'SV_MAGIC', 'SV_DISEASE', 'SV_POISON', 'SV_VOID']
+
+/** `SV ALL` is the five classic saves at once; void is not part of it. */
+const SV_ALL_COUNT = 5
 
 function withSaves(w: BuildWeights, each: number): BuildWeights {
   for (const k of SAVES) w[k] = each
-  w.SV_ALL = each * 5
+  w.SV_ALL = each * SV_ALL_COUNT
   return w
+}
+
+// ENDURANCE FOR MELEE (2026-11-23). EQ Legends gear states an endurance pool (END on 66 pages, up
+// from 30 in August; the Nektropos melee drops carry +45 to +95) and players spend it on melee
+// abilities (general chat in the owner's log, 2026-08-16: "it only uses endurance vs mana"). It
+// was unweighted, so a +95
+// END line counted for nothing. It is weighted the way the tank profile already weighs a hybrid's
+// mana pool: a little, per point. A heuristic like every number here.
+const MELEE_END: BuildWeights = { END: 0.15, END_REGEN: 10 }
+
+/** The tank weights: AC and HP first, a hybrid's mana pool and a melee's endurance a little. */
+function tankWeights(a: Archetype): BuildWeights {
+  const mana: BuildWeights = a.manaStat === null ? {} : { [a.manaStat]: 0.5, MP: 0.15 }
+  return withSaves(
+    { AC: 12, HP: 1, STA: 10, AGI: 3, STR: 1, DEX: 1, HP_REGEN: 20, HASTE: 8, ATTACK: 2, ...mana, ...(a.melee ? MELEE_END : {}) },
+    2
+  )
 }
 
 /** The weights for a profile, for this loadout. */
 export function profileWeights(profile: BuildProfile, classes: readonly ClassAbbr[]): BuildWeights {
   const a = archetypeOf(classes)
-  const mana: BuildWeights = a.manaStat === null ? {} : { [a.manaStat]: 0.5, MP: 0.15 }
-  if (profile === 'tank') {
-    return withSaves(
-      { AC: 12, HP: 1, STA: 10, AGI: 3, STR: 1, DEX: 1, HP_REGEN: 20, HASTE: 8, ATTACK: 2, ...mana },
-      2
-    )
-  }
+  if (profile === 'tank') return tankWeights(a)
   if (profile === 'heal') {
     const stat: GearStatKey = a.manaStat ?? 'WIS'
     return withSaves({ [stat]: 8, MP: 1.2, MANA_REGEN: 40, CHA: 0.5, HP: 0.5, STA: 3, AC: 3 }, 1.5)
@@ -78,7 +96,7 @@ export function profileWeights(profile: BuildProfile, classes: readonly ClassAbb
   // DPS: melee and caster halves, both present when the loadout is both.
   const w: BuildWeights = { HP: 0.4, STA: 2, AC: 2 }
   if (a.melee || !a.intCaster) {
-    Object.assign(w, { RATIO: 350, DMG_BONUS: 40, HASTE: 25, ATTACK: 6, STR: 4, DEX: 4, AGI: 1, STA: 3, AC: 3 })
+    Object.assign(w, { RATIO: 350, DMG_BONUS: 40, HASTE: 25, ATTACK: 6, STR: 4, DEX: 4, AGI: 1, STA: 3, AC: 3 }, MELEE_END)
     if (a.rogue) w.BACKSTAB = 25
   }
   if (a.intCaster || a.priest) {
