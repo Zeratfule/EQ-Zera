@@ -28,7 +28,7 @@
         <a class="eqz-btn eqz-btn-primary" href="https://github.com/Zeratfule/EQ-Zera/releases/latest/download/eq-zera-Setup.exe"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v11.2l3.6-3.6 1.4 1.4-6 6-6-6 1.4-1.4 3.6 3.6V3h2zM4 19h16v2H4z"/></svg>Download for Windows</a>
         <a class="eqz-btn eqz-btn-ghost" href="https://github.com/Zeratfule/EQ-Zera/releases">All releases</a>
       </div>
-      <p class="eqz-meta"><span><b>v1.28.0</b></span><span>Windows 10 / 11, 64-bit</span><span>134 MB</span><span>Free, source on GitHub</span><span>Updates itself</span></p>
+      <p class="eqz-meta"><span><b>v1.29.0</b></span><span>Windows 10 / 11, 64-bit</span><span>134 MB</span><span>Free, source on GitHub</span><span>Updates itself</span></p>
     </div>
 
     <figure class="eqz-shot">
@@ -231,6 +231,24 @@
     <h2>Recent releases</h2>
     <div class="eqz-releases">
       <div class="eqz-release">
+        <div class="v">1.29.0<small>2026-11-23</small></div>
+        <ul>
+          <li><span class="eqz-tag eqz-tag-new">New</span>New Races tab: type /outputfile achievements in game and every race unlock shows a progress bar of the factions you have maxed, sorted so the race closest to unlocking comes first.</li>
+          <li><span class="eqz-tag eqz-tag-new">New</span>Open a race to see each faction it needs, whether it is maxed, the change your log has seen, and the mobs and turn-ins that raise it most, with level and zone. Kills that would lower another faction the same race needs are flagged.</li>
+          <li><span class="eqz-tag eqz-tag-new">New</span>Combat tab panels are resizable. Drag the gaps between the meter, procs, DPS over time, damage by mob and the combat log, and your layout is remembered. Double-click a divider or use Reset layout to go back.</li>
+          <li><span class="eqz-tag eqz-tag-new">New</span>Loot rows show every tag an item earns, so an item used in a quest and a tradeskill recipe shows both. Crafters can turn the Tradeskill tag off in Preferences, Loot.</li>
+          <li><span class="eqz-tag eqz-tag-fixed">Fixed</span>Castle Nektropos, Lake Nerius and the Nektropos Undercrofts now open their maps when you zone in, with the wiki's mobs pinned. Loot there counts toward the zone in Zone Loot and Gear, and their drops no longer show an era? chip.</li>
+          <li><span class="eqz-tag eqz-tag-fixed">Fixed</span>Copy this view as text now includes the DPS of each skill and pet in a breakdown, as the panel shows it.</li>
+          <li><span class="eqz-tag eqz-tag-new">New</span>Build tab scores now count weapon procs, focus effects and worn effects, shown as an estimate (~) with a breakdown on hover and on each upgrade. Two focus effects of the same kind are no longer counted twice, and summoned temporary items are never suggested.</li>
+          <li><span class="eqz-tag eqz-tag-new">New</span>Endurance counts toward Build scores for the classes that spend it (Warrior, Monk, Rogue, Berserker and Ranger), and no best set wears the same item in two slots.</li>
+          <li><span class="eqz-tag eqz-tag-fixed">Fixed</span>The Build tab no longer pairs a two-handed weapon with a shield in its best set, which made every meter read low. A two-hander upgrade now counts the off-hand it takes off.</li>
+          <li><span class="eqz-tag eqz-tag-fixed">Fixed</span>Weapons with fire, cold, poison, magic or bane damage show their real base damage; Handmaiden's Handwrap read 25 instead of 5. Void resist now counts toward Build scores.</li>
+          <li><span class="eqz-tag eqz-tag-new">New</span>The Character tab has a Luclin model switch beside Show helmet. Turn it on to see your character as the Luclin-era model from your own game files, with its idle, faces, armour, dye and weapons.</li>
+          <li><span class="eqz-tag eqz-tag-new">New</span>Luclin figures wear the game's own Luclin helms, plate breastplates, shoulder pads, bracers and boots, and robes with their skirts and hoods, all in your gear's colours. Without a helm, most races show their default hair.</li>
+          <li><span class="eqz-tag eqz-tag-fixed">Fixed</span>Patch notes show the date in their title again. Notes posted near midnight UTC were listed a day early in US time zones, so the September 29 hotfix read as September 28.</li>
+        </ul>
+      </div>
+      <div class="eqz-release">
         <div class="v">1.28.0<small>2026-11-15</small></div>
         <ul>
           <li><span class="eqz-tag eqz-tag-new">New</span>New in Preferences: an EQ Zera skin for EverQuest Legends itself. The game's windows, buttons, tabs and scrollbars get EQ Zera's retrowave look, with neon frames and glowing title bars, on the layout of the game's Modern skin, with chat and combat text on black. Type /loadskin EQZera 1 in game to switch.</li>
@@ -245,15 +263,6 @@
           <li><span class="eqz-tag eqz-tag-new">New</span>The Character tab can draw Kerra, with all ten skin tones, and the Half Dark Elf from the Castle Nektropos patch.</li>
           <li><span class="eqz-tag eqz-tag-changed">Changed</span>Item, mob, quest and spell data refreshed from the EQ Legends wiki as of November 15, with Castle Nektropos, Lake Nerius and the Nektropos Undercrofts: 170 new items, 186 new mobs and their drops, and the new zones in Zone Loot.</li>
           <li><span class="eqz-tag eqz-tag-fixed">Fixed</span>Resist estimates read the right spell columns again. The November 8 game patch added a column to the client spell file, which shifted every resist adjustment by one and made results such as Lord Nagafen's magic resist read badly wrong.</li>
-        </ul>
-      </div>
-      <div class="eqz-release">
-        <div class="v">1.26.1<small>2026-10-18</small></div>
-        <ul>
-          <li><span class="eqz-tag eqz-tag-changed">Changed</span>Item, mob, quest, spell and Plane of Sky data refreshed from the EQ Legends wiki as of October 18, covering the patches through October 13. New items, mobs and quests are in, and changed stats, drops and rewards now match the wiki.</li>
-          <li><span class="eqz-tag eqz-tag-fixed">Fixed</span>Mob loot written as plain wiki links is now read, so 255 mobs that showed no drops have them and 391 mobs gained drops in total. Zone Loot and item sources fill in to match.</li>
-          <li><span class="eqz-tag eqz-tag-fixed">Fixed</span>Brass Knuckles and other Plane of Sky drops are credited to their efreeti again, three shields list their Secondary slot correctly, and the ghoul lord in Lower Guk has a respawn time again.</li>
-          <li><span class="eqz-tag eqz-tag-changed">Changed</span>Dungeon Crawl progress no longer counts the named NPCs the September 22 patch removed from crawl requirements, such as Boondin Babbinsbort in Befallen and Ssynthi in Mistmoore.</li>
         </ul>
       </div>
     </div>
