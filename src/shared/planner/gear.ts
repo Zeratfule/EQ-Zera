@@ -140,6 +140,35 @@ export interface GearEffect extends EffectFacts {
   /** V5 — the focus family and its rank; focus rows only, same as the donor index */
   family?: string
   familyTier?: number
+  /** what the joined spell page says the effect is WORTH, for the Build tab (`gearEffectValue.ts`) */
+  value?: GearEffectValue
+}
+
+/**
+ * AN EFFECT'S MAGNITUDES, read off its spell page at build time (src/main/planner/gearEffectValue.ts
+ * owns the reading and the reference level; src/shared/build/effectScore.ts turns them into score).
+ * Every field is absent when the page states no such number - absent, never 0 (law 1).
+ */
+export interface GearEffectValue {
+  /** a combat proc's damage per landing at the reference level: its direct damage plus every DoT tick */
+  procDamage?: number
+  /** the DoT part of `procDamage`, when it has one: damage per tick and how many ticks it runs */
+  procDot?: { perTick: number; ticks: number }
+  /** the item's own `Rate +N%` proc modifier, as a signed percent */
+  procRate?: number
+  /**
+   * A focus: which figure it moves and by how much (band midpoint, level decay applied), and the two
+   * limits that say which spells it touches: `Limit Type` (detrimental = damage spells, beneficial =
+   * heals) and the duration limit (instant-only nukes, or over-time only). Absent limit = any.
+   */
+  focus?: {
+    kind: 'damage' | 'heal' | 'mana'
+    pct: number
+    polarity?: 'detrimental' | 'beneficial'
+    scope?: 'instant' | 'over-time'
+  }
+  /** a worn effect's lines that map onto the stat vector (HASTE, HP_REGEN, ATTACK, AC ...) */
+  stats?: GearStats
 }
 
 // ---- the row -------------------------------------------------------------------------------
