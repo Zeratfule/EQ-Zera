@@ -10,7 +10,11 @@ const esc = (t: string): string => t.replace(/&/g, '&amp;').replace(/</g, '&lt;'
 
 const blocks = RELEASE_NOTES.slice(0, 3).map((r) => {
   const items = r.entries
-    .map((e) => `          <li><span class="eqz-tag eqz-tag-${e.kind}">${LABEL[e.kind]}</span>${esc(e.text)}</li>`)
+    .map((e) => {
+      // A release before 0.7.0 carries no kind; it shows untagged.
+      const tag = e.kind === undefined ? '' : `<span class="eqz-tag eqz-tag-${e.kind}">${LABEL[e.kind]}</span>`
+      return `          <li>${tag}${esc(e.text)}</li>`
+    })
     .join('\n')
   return `      <div class="eqz-release">\n        <div class="v">${r.version}<small>${r.date}</small></div>\n        <ul>\n${items}\n        </ul>\n      </div>`
 })

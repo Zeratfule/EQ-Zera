@@ -180,7 +180,7 @@ function dyed(mesh: EqModelMesh, tint: Tint | undefined): EqModelMesh {
 function armourPiece(p: LuclinPiece, wearer: WearerRig, textures: Record<string, string>): { skinned: EqModelMesh } | { hung: EqModelPiece } | null {
   const items = itemArchive(p.it, ARMOUR_ARCHIVES)
   if (!items) return null
-  const worn = readWornPiece(items.wld, p.it, wearer)
+  const worn = readWornPiece(items.wld, p.it, wearer, p.attach)
   const mesh = worn ?? readItem(items.wld, p.it)
   if (!mesh) return null
   collectTextures(items.pfs, mesh, textures)

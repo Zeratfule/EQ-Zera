@@ -94,7 +94,7 @@ test('the breastplate, robe skirts, flaps, belts and hair are SKINNED onto the w
     const pieces = [...luclinDress(code, wear, hasIt, () => false).pieces, ...luclinDress(code, {}, hasIt, () => false).pieces]
     for (const p of pieces) {
       const src = armour().find((w) => w.byName.has(`${p.it}_ACTORDEF`))!
-      const worn = readWornPiece(src, p.it, wearer)
+      const worn = readWornPiece(src, p.it, wearer, p.attach)
       const skinnedKind = ['CHEST_POINT', 'TUNIC_POINT', 'PELVIS_POINT', 'HAIR_POINT'].includes(p.attach)
       assert.equal(worn !== null, skinnedKind, `${code}: ${p.it} on ${p.attach} is ${skinnedKind ? 'skinned' : 'hung'}`)
       if (!worn) continue
@@ -104,6 +104,35 @@ test('the breastplate, robe skirts, flaps, belts and hair are SKINNED onto the w
       assert.ok(far < 5, `${code}: ${p.it} sits on the body (furthest ${far.toFixed(2)})`)
     }
   }
+})
+
+test('the hair sits on the HEAD: its root is the wearer’s HAIR_POINT, not the body root at the crotch (owner, 2026-11-23)', { skip: SKIP }, () => {
+  let checked = 0
+  for (const code of ACTORS) {
+    const hair = luclinDress(code, {}, hasIt, () => false).pieces.find((p) => p.attach === 'HAIR_POINT')
+    if (!hair) continue
+    const { wld } = load(luclinFile(code), true)
+    const skeleton = skeletonOf(wld, code)!
+    const world = bindPose(skeleton)
+    const chest = world[skeleton.bones.findIndex((b) => b.name === `${code}CHCHEST1_DAG`)].t[2]
+    const src = armour().find((w) => w.byName.has(`${hair.it}_ACTORDEF`))!
+    const worn = readWornPiece(src, hair.it, { skeleton, code, world }, hair.attach)!
+    const P = worn.positions
+    let low = Infinity
+    for (let i = 2; i < P.length; i += 3) low = Math.min(low, P[i])
+    assert.ok(low > chest, `${code}: ${hair.it} hangs no lower than the upper chest (lowest ${low.toFixed(2)}, chest ${chest.toFixed(2)})`)
+    let edge = 0
+    for (let i = 0; i < worn.indices.length; i += 3) {
+      for (let a = 0; a < 3; a++) {
+        const u = worn.indices[i + a] * 3
+        const v = worn.indices[i + ((a + 1) % 3)] * 3
+        edge = Math.max(edge, Math.hypot(P[u] - P[v], P[u + 1] - P[v + 1], P[u + 2] - P[v + 2]))
+      }
+    }
+    assert.ok(edge < 1, `${code}: ${hair.it} has no stretched triangle (longest edge ${edge.toFixed(2)})`)
+    checked++
+  }
+  assert.ok(checked >= 18, `hair checked on ${String(checked)} actors`)
 })
 
 test('leather and chain have no shoulder/wrist/boot pieces (only the plate pair exists), and nothing missing is ever named', { skip: SKIP }, () => {

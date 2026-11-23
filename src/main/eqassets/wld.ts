@@ -127,7 +127,7 @@ function qrot(q: Quat, v: Vec3): Vec3 {
   ]
 }
 
-function compose(parent: Xform, local: Xform): Xform {
+export function compose(parent: Xform, local: Xform): Xform {
   const ps = parent.s ?? 1
   const t = qrot(parent.q, local.t)
   const out: Xform = { t: [parent.t[0] + ps * t[0], parent.t[1] + ps * t[1], parent.t[2] + ps * t[2]], q: qmul(parent.q, local.q) }
