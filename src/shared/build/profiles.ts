@@ -21,8 +21,14 @@ export type BuildProfile = 'tank' | 'dps' | 'heal'
 export const BUILD_PROFILES: readonly BuildProfile[] = ['tank', 'dps', 'heal']
 export const PROFILE_LABEL: Record<BuildProfile, string> = { tank: 'Tank', dps: 'DPS', heal: 'Healer' }
 
-/** A weight per stat, plus RATIO (damage/delay) for weapon rows. HP-equivalents. */
-export type BuildWeights = Partial<Record<GearStatKey | 'RATIO', number>>
+/**
+ * What a FOCUS effect is weighed by, per percent (effectScore.ts reads them; `itemScore` never does):
+ * a spell damage focus, a healing focus, a mana-cost focus.
+ */
+export type FocusWeightKey = 'FOCUS_DAMAGE' | 'FOCUS_HEAL' | 'FOCUS_MANA'
+
+/** A weight per stat, plus RATIO (damage/delay) for weapon rows and the focus weights. HP-equivalents. */
+export type BuildWeights = Partial<Record<GearStatKey | 'RATIO' | FocusWeightKey, number>>
 
 const INT_CASTERS: readonly ClassAbbr[] = ['WIZ', 'MAG', 'NEC', 'ENC']
 const PRIESTS: readonly ClassAbbr[] = ['CLR', 'DRU', 'SHM']
@@ -68,19 +74,54 @@ function withSaves(w: BuildWeights, each: number): BuildWeights {
   return w
 }
 
-// ENDURANCE FOR MELEE (2026-11-23). EQ Legends gear states an endurance pool (END on 66 pages, up
-// from 30 in August; the Nektropos melee drops carry +45 to +95) and players spend it on melee
-// abilities (general chat in the owner's log, 2026-08-16: "it only uses endurance vs mana"). It
-// was unweighted, so a +95
-// END line counted for nothing. It is weighted the way the tank profile already weighs a hybrid's
-// mana pool: a little, per point. A heuristic like every number here.
-const MELEE_END: BuildWeights = { END: 0.15, END_REGEN: 10 }
+// ENDURANCE, FOR THE CLASSES THAT SPEND IT (2026-11-23). EQ Legends gear states an endurance pool
+// (END on 66 pages; the Nektropos melee drops carry +45 to +95) and players spend it on combat
+// abilities (general chat in the owner's log, 2026-08-16: "it only uses endurance vs mana"). It is
+// weighted the way the tank profile weighs a hybrid's mana pool: a little, per point.
+//
+// WHO SPENDS IT IS MEASURED, not assumed from "melee". The client's own `spells_us.txt` carries an
+// endurance cost in field 97 (owner's install, 2026-11-23: 3,020 rows state one, 21,792 state a
+// mana cost in field 14, and only 16 state both, so it is a second pool and not a copy of mana:
+// Provoke 85, Bellow 175, Sneak Attack 325, Phantom Wind 175, Disrupting Shot 75, Skull Bash 125).
+// Of the rows a class can learn at or below the level cap of 50, the ones with an endurance cost
+// belong to exactly five classes: WAR (Provoke, and War Cry from the class data), MNK (Phantom
+// Zephyr, Phantom Wind), ROG (Sneak Attack), BER (Tendon Slice, Skull Bash, Head Pummel and more)
+// and RNG (Disrupting Shot, a Legends-only row). PAL, SHD, BRD and BST learn none below 51, and no
+// priest or caster learns any — so those weigh endurance at zero, which is a narrowing of the first
+// cut (2026-11-23 audit), when every melee class weighed it.
+//
+// WHICH PROFILES: tank and DPS. Provoke and War Cry are aggro tools and the rest are attacks; none of
+// the five classes' endurance abilities heals, so the healer profile weighs it at zero for everyone.
+const ENDURANCE_USERS: readonly ClassAbbr[] = ['WAR', 'MNK', 'ROG', 'BER', 'RNG']
+const END_WEIGHTS: BuildWeights = { END: 0.15, END_REGEN: 10 }
 
-/** The tank weights: AC and HP first, a hybrid's mana pool and a melee's endurance a little. */
-function tankWeights(a: Archetype): BuildWeights {
-  const mana: BuildWeights = a.manaStat === null ? {} : { [a.manaStat]: 0.5, MP: 0.15 }
+/** Does this loadout have an ability that costs endurance (see above)? */
+export function spendsEndurance(classes: readonly ClassAbbr[]): boolean {
+  return classes.some((c) => ENDURANCE_USERS.includes(c))
+}
+
+// A FOCUS PERCENT IS WEIGHED AS THAT PERCENT OF A MANA POOL (2026-11-23). A spell damage focus of p%
+// is p% more damage out of the same mana, which is what p% more mana would buy; a healing focus is
+// the same for heals, and a mana-cost focus of p% is p% more casts out of the same pool. So one
+// percent is worth one percent of a reference pool, at the profile's own MP weight.
+//
+// THE REFERENCE POOL is the classic client mana formula (EQEmu `Client::CalcBaseMana`, the classic
+// branch: `max_m = ((5 * (MindFactor + 20)) / 2) * 3 * level / 40` for a mental stat over 100, where
+// the part of the stat above 199 counts half) read at the level cap of 50 and a mental stat of 200,
+// the point where it stops paying full rate: 9.375 x 220 = 2,062.5 mana. Gear mana and regen are left
+// out, so this leans LOW for a long fight. An estimate, and the Build tab prints it with a `~`.
+export const REFERENCE_MANA_POOL = 2062.5
+
+/** One focus percent, at a profile's MP weight. */
+function focusWeight(mp: number): number {
+  return (REFERENCE_MANA_POOL / 100) * mp
+}
+
+/** The tank weights: AC and HP first, a hybrid's mana pool and an endurance user's pool a little. */
+function tankWeights(a: Archetype, endurance: boolean): BuildWeights {
+  const mana: BuildWeights = a.manaStat === null ? {} : { [a.manaStat]: 0.5, MP: 0.15, FOCUS_MANA: focusWeight(0.15) }
   return withSaves(
-    { AC: 12, HP: 1, STA: 10, AGI: 3, STR: 1, DEX: 1, HP_REGEN: 20, HASTE: 8, ATTACK: 2, ...mana, ...(a.melee ? MELEE_END : {}) },
+    { AC: 12, HP: 1, STA: 10, AGI: 3, STR: 1, DEX: 1, HP_REGEN: 20, HASTE: 8, ATTACK: 2, ...mana, ...(endurance ? END_WEIGHTS : {}) },
     2
   )
 }
@@ -88,36 +129,44 @@ function tankWeights(a: Archetype): BuildWeights {
 /** The weights for a profile, for this loadout. */
 export function profileWeights(profile: BuildProfile, classes: readonly ClassAbbr[]): BuildWeights {
   const a = archetypeOf(classes)
-  if (profile === 'tank') return tankWeights(a)
+  const endurance = spendsEndurance(classes)
+  if (profile === 'tank') return tankWeights(a, endurance)
   if (profile === 'heal') {
     const stat: GearStatKey = a.manaStat ?? 'WIS'
-    return withSaves({ [stat]: 8, MP: 1.2, MANA_REGEN: 40, CHA: 0.5, HP: 0.5, STA: 3, AC: 3 }, 1.5)
+    const focus = focusWeight(1.2)
+    return withSaves({ [stat]: 8, MP: 1.2, MANA_REGEN: 40, CHA: 0.5, HP: 0.5, STA: 3, AC: 3, FOCUS_HEAL: focus, FOCUS_MANA: focus }, 1.5)
   }
   // DPS: melee and caster halves, both present when the loadout is both.
   const w: BuildWeights = { HP: 0.4, STA: 2, AC: 2 }
   if (a.melee || !a.intCaster) {
-    Object.assign(w, { RATIO: 350, DMG_BONUS: 40, HASTE: 25, ATTACK: 6, STR: 4, DEX: 4, AGI: 1, STA: 3, AC: 3 }, MELEE_END)
+    Object.assign(w, { RATIO: 350, DMG_BONUS: 40, HASTE: 25, ATTACK: 6, STR: 4, DEX: 4, AGI: 1, STA: 3, AC: 3 })
     if (a.rogue) w.BACKSTAB = 25
   }
+  if (endurance) Object.assign(w, END_WEIGHTS)
   if (a.intCaster || a.priest) {
     const stat: GearStatKey = a.manaStat ?? 'INT'
     w[stat] = (w[stat] ?? 0) + 8
     w.MP = 1.2
     w.MANA_REGEN = 40
+    w.FOCUS_DAMAGE = focusWeight(1.2)
+    w.FOCUS_MANA = focusWeight(1.2)
   }
   return withSaves(w, 1)
 }
 
-/** One item's worth under a profile: Σ weight × stat, plus the weapon ratio where it has one. */
+const FOCUS_KEYS: ReadonlySet<string> = new Set<FocusWeightKey>(['FOCUS_DAMAGE', 'FOCUS_HEAL', 'FOCUS_MANA'])
+
+/** One item's STATS under a profile: Σ weight × stat, plus the weapon ratio where it has one. */
 export function itemScore(stats: GearStats, weights: BuildWeights): number {
   let total = 0
-  for (const [key, w] of Object.entries(weights) as [GearStatKey | 'RATIO', number][]) {
+  for (const [key, w] of Object.entries(weights) as [GearStatKey | 'RATIO' | FocusWeightKey, number][]) {
     if (key === 'RATIO') {
       const ratio = gearRatio(stats)
       if (ratio !== undefined) total += w * ratio
       continue
     }
-    const v = stats[key]
+    if (FOCUS_KEYS.has(key)) continue
+    const v = stats[key as GearStatKey]
     if (v !== undefined) total += w * v
   }
   return total

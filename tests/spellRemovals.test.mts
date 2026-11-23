@@ -494,6 +494,14 @@ const RAW_IMPORT_EXEMPT: ReadonlyMap<string, string> = new Map([
   [
     'src/main/planner/wornFocusIndex.ts',
     'the same item Focus Effect: -> spell-page join, harvesting the percentage and the level cap; a focus page is learnable by nobody, so a removal can never be about one'
+  ],
+  [
+    // The fifth (2026-11-23, the Build tab's effect scoring) is the same join a third time, harvesting
+    // the proc damage, focus percent and worn stat lines a gear row is scored by. A removal says no
+    // player can LEARN a spell, never that no item carries it: Invigor is a combat effect on Abram's
+    // Axe of the Stoic, and the shortened list would only blank what that item is worth.
+    'src/main/planner/gearEffectValue.ts',
+    'the same item effect -> spell-page join, harvesting the numbers the Build tab scores; a removed row would blank what a real item does'
   ]
 ])
 

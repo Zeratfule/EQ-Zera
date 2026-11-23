@@ -7,13 +7,13 @@ import { Box, Button, Chip, IconButton, Paper, Stack, Typography } from '@mui/ma
 import CloseIcon from '@mui/icons-material/Close'
 import type { GearRow } from '@shared/planner/gear'
 import { planSlotLabel, type PlanSlotId } from '@shared/planner/types'
-import { itemScore } from '../../../../shared/build/profiles'
-import type { CellUpgrade } from '../../../../shared/build/optimizer'
+import { coverExcept, type CellUpgrade } from '../../../../shared/build/optimizer'
 import { PROFILE_LABEL } from '../../../../shared/build/profiles'
 import { FONTS } from '../../../../shared/palette'
 import { itemIconUrl } from '../../lib/ItemWindow'
 // The item hover card, in this tab's one safe mode - see BuildItemName.tsx's header.
 import { BuildItemName } from './BuildItemName'
+import { BuildEffectNote, BuildRowScore } from './BuildEffects'
 import { BUILD_CELLS, type BuildState, type WornUnknown } from './useBuild'
 
 const SCORE_SX = { fontFamily: FONTS.mono, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' } as const
@@ -80,11 +80,7 @@ function SetRow({ cell, build, onOpenLoot }: { cell: PlanSlotId; build: BuildSta
       <Icon row={row} />
       <SetRowName row={row} unknown={unknown} swapped={swapped} onOpenLoot={onOpenLoot} />
       {swapped && <Chip size="small" label="trying" color="primary" variant="outlined" sx={{ height: 18, fontSize: 9 }} />}
-      {row && (
-        <Typography variant="caption" sx={{ ...SCORE_SX, color: 'text.secondary' }}>
-          {fmt(itemScore(row.stats, build.weights))}
-        </Typography>
-      )}
+      {row && <BuildRowScore row={row} weights={build.weights} cover={coverExcept(build.set, [cell])} />}
       {swapped && (
         <IconButton size="small" aria-label="Undo this swap" onClick={() => build.unswap(cell)} sx={{ p: 0.25 }}>
           <CloseIcon sx={{ fontSize: 14 }} />
@@ -147,6 +143,7 @@ function UpgradeCell({ up, build, onOpenLoot }: { up: CellUpgrade; build: BuildS
             <Typography variant="caption" color="text.secondary" noWrap sx={{ display: 'block' }}>
               {sourceText(o.row)}
             </Typography>
+            <BuildEffectNote row={o.row} weights={build.weights} cover={coverExcept(build.set, [up.cell])} />
           </Box>
           <Typography variant="caption" sx={{ ...SCORE_SX, color: 'success.main' }}>
             +{fmt(o.delta)}

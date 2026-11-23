@@ -1,7 +1,7 @@
 // THE UPGRADE FINDER (EQ Zera): one row, against what is on your body, under one profile — and the
 // zones that would sell you the ones that win.
 //
-// WHY A VERDICT IS CHEAP, AND WHY THAT IS THE WHOLE DESIGN. `itemScore` is per row and a set's
+// WHY A VERDICT IS CHEAP, AND WHY THAT IS THE WHOLE DESIGN. `rowScore` is per row and a set's
 // score is the SUM over its cells (optimizer.ts), so "does this item improve my set" needs nothing
 // but the row and the worn item in each cell the row could occupy. No re-optimisation, no second
 // `bestBuild`: a Zone Loot table of 6,896 rows can ask this question once per row on a keystroke.
@@ -26,8 +26,9 @@
 import type { ClassAbbr } from '../classCombo'
 import type { GearRow } from '../planner/gear'
 import { cellsForSlot, isAnyCell, type PlanSlotId } from '../planner/types'
-import { itemScore, type BuildWeights } from './profiles'
-import { handsCost, isTwoHander, wearable, type BuildSet, type CellUpgrade } from './optimizer'
+import type { BuildWeights } from './profiles'
+import { rowScore, type FocusCover } from './effectScore'
+import { coverExcept, handsCost, isTwoHander, wearable, type BuildSet, type CellUpgrade } from './optimizer'
 
 /** What one row is worth in the best cell it could take, against what is already there. */
 export interface UpgradeVerdict {
@@ -48,8 +49,29 @@ export interface UpgradeContext {
   excluded?: (row: GearRow) => boolean
 }
 
+/**
+ * The focus the rest of the worn set holds, per cell (effectScore.ts `FocusCover`: a focus adds only
+ * what it holds above the best of its group elsewhere). Cached per worn set, because the Zone Loot
+ * table asks once per row on a keystroke and the set does not change between them.
+ */
+const COVERS = new WeakMap<BuildSet, Map<PlanSlotId, FocusCover>>()
+
+function coverFor(worn: BuildSet, cell: PlanSlotId): FocusCover {
+  let byCell = COVERS.get(worn)
+  if (!byCell) {
+    byCell = new Map()
+    COVERS.set(worn, byCell)
+  }
+  let cover = byCell.get(cell)
+  if (!cover) {
+    cover = coverExcept(worn, [cell])
+    byCell.set(cell, cover)
+  }
+  return cover
+}
+
 /** One cell's answer, or null where this file refuses to speak. */
-function cellVerdict(row: GearRow, cell: PlanSlotId, score: number, ctx: UpgradeContext): UpgradeVerdict | null {
+function cellVerdict(row: GearRow, cell: PlanSlotId, ctx: UpgradeContext): UpgradeVerdict | null {
   if (ctx.unknownCells.has(cell)) return null
   const current = ctx.worn.get(cell) ?? null
   if (current !== null && current.key === row.key) return null
@@ -58,7 +80,9 @@ function cellVerdict(row: GearRow, cell: PlanSlotId, score: number, ctx: Upgrade
   if (cell === 'PRIMARY' && isTwoHander(row) && ctx.unknownCells.has('SECONDARY')) return null
   const cost = handsCost(row, cell, ctx.worn, ctx.weights)
   if (cost === null) return null
-  const currentScore = current === null ? 0 : itemScore(current.stats, ctx.weights)
+  const cover = coverFor(ctx.worn, cell)
+  const score = rowScore(row, ctx.weights, cover)
+  const currentScore = current === null ? 0 : rowScore(current, ctx.weights, cover)
   const delta = score - currentScore - cost
   if (delta <= 0) return null
   return { cell, delta, score, currentScore, againstNothing: current === null }
@@ -73,14 +97,13 @@ function cellVerdict(row: GearRow, cell: PlanSlotId, score: number, ctx: Upgrade
 export function upgradeVerdict(row: GearRow, ctx: UpgradeContext): UpgradeVerdict | null {
   if (!wearable(row, ctx.classes)) return null
   if (ctx.excluded?.(row) === true) return null
-  const score = itemScore(row.stats, ctx.weights)
   const seen = new Set<PlanSlotId>()
   let best: UpgradeVerdict | null = null
   for (const slot of row.slots) {
     for (const cell of cellsForSlot(slot)) {
       if (isAnyCell(cell) || seen.has(cell)) continue
       seen.add(cell)
-      best = better(best, cellVerdict(row, cell, score, ctx))
+      best = better(best, cellVerdict(row, cell, ctx))
     }
   }
   return best

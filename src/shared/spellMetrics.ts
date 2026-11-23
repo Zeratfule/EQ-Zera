@@ -573,7 +573,7 @@ function rampAt(points: readonly Breakpoint[], level: number): number {
  * A range is read at its MIDPOINT: the page states two bounds and no distribution, and the
  * midpoint is the only summary that does not prefer one end of a claim the wiki did not make.
  */
-function magnitudeAt(tailRaw: string, level: number): { value: number; flat: boolean } | null {
+export function magnitudeAt(tailRaw: string, level: number): { value: number; flat: boolean } | null {
   const tail = normalizeBreakpoints(tailRaw)
   const points = breakpointsOf(tail)
   if (points.length > 0) return { value: rampAt(points, level), flat: false }

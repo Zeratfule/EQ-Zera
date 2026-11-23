@@ -39,6 +39,7 @@ import {
 } from '../itemsResearch'
 import { COMMITTED_SPELL_FACTS, slotsOf, type SpellFactsIndex } from './effectIndex'
 import { buildEraDerivations } from './eraDerive'
+import { COMMITTED_SPELL_PAGES, effectValueOf } from './gearEffectValue'
 import {
   isHasteEffect,
   normalizeClasses,
@@ -252,6 +253,7 @@ function gearEffect(effect: ItemEffect, spells: SpellFactsIndex, acc: Acc): Gear
   const facts = spells.get(effect.name.trim().toLowerCase()) ?? {}
   if (Object.keys(facts).length > 0) acc.stats.spellJoined++
   if (socket === null) acc.stats.socketless++
+  const value = effectValueOf(effect, COMMITTED_SPELL_PAGES)
   // Absent fields are OMITTED rather than set to `undefined`, here and on the row: the payload
   // crosses IPC, where a structured clone keeps an explicit `undefined` and a JSON round trip
   // does not. One shape on both sides of the wire, and absent stays the only spelling of unknown.
@@ -263,7 +265,8 @@ function gearEffect(effect: ItemEffect, spells: SpellFactsIndex, acc: Acc): Gear
     kind: effect.kind,
     ...(socket === null ? {} : { socket, tierRequired: extractionTier(socket) }),
     ...(isHasteEffect(effect.name, effect.detail) ? { hasteLocked: true as const } : {}),
-    ...(rank === null ? {} : { family: rank.family, familyTier: rank.tier })
+    ...(rank === null ? {} : { family: rank.family, familyTier: rank.tier }),
+    ...(value === undefined ? {} : { value })
   }
 }
 
