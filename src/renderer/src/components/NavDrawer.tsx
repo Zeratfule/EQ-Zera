@@ -19,6 +19,7 @@ import {
   PoskyMark,
   PreferencesMark,
   QuestsMark,
+  RacesMark,
   TimersMark,
   TriageMark,
   ZoneLootMark
@@ -165,6 +166,7 @@ const ROWS: NavRow[] = [
   { view: 'maps', icon: <MapsMark /> },
   { view: 'bosses', icon: <BossesMark /> },
   { view: 'posky', icon: <PoskyMark /> },
+  { view: 'races', icon: <RacesMark /> },
   { view: 'alerts', icon: <AlertsMark /> },
   { view: 'leveling', icon: <LevelingMark /> },
   { view: 'buffs', icon: <BuffsMark /> },

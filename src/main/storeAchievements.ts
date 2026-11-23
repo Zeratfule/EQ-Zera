@@ -28,15 +28,27 @@
 // build.
 
 import type { AchievementsSource, ClassUnlockClaim } from '../shared/outputs/achievements'
+import type { RaceUnlockState } from '../shared/outputs/raceUnlocks'
 import type { ProgressState } from '../shared/types'
 import { getProgress, setProgress } from './store'
 
-/** Record the achievements dump's earned class-unlock rewards and where they came from. */
-export function setAchievements(
-  charId: string,
-  unlocks: ClassUnlockClaim[],
+/** What one read of the achievements dump records: both projections and where they came from. */
+export interface AchievementsRecord {
+  unlocks: ClassUnlockClaim[]
+  races: RaceUnlockState[]
   source: AchievementsSource
-): ProgressState {
+}
+
+/**
+ * Record the achievements dump's earned class-unlock rewards, its race-unlock progress, and where
+ * they came from. `raceUnlocks` is another additive optional key under the same no-bump rule.
+ */
+export function setAchievements(charId: string, rec: AchievementsRecord): ProgressState {
   const p = getProgress(charId)
-  return setProgress(charId, { ...p, achievementUnlocks: unlocks, achievementsSource: source })
+  return setProgress(charId, {
+    ...p,
+    achievementUnlocks: rec.unlocks,
+    raceUnlocks: rec.races,
+    achievementsSource: rec.source
+  })
 }

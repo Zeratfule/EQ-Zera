@@ -562,11 +562,11 @@ function loadAchievementsNow(ref: CharacterRef, why: 'startup' | 'watch'): void 
   timeSeam('achievementsLoad', () => {
     const res = loadAchievements(who.name, who.server)
     if (!res) return
-    setAchievements(activeCharId(), res.unlocks, res.source)
+    setAchievements(activeCharId(), res)
     logInfo(
       `[everquest-companion] Achievements ${
         why === 'startup' ? 'loaded at startup' : 'auto-reloaded'
-      }: ${res.path} (${String(res.unlocks.length)} class-unlock rewards earned)`
+      }: ${res.path} (${String(res.unlocks.length)} class-unlock rewards earned, ${String(res.races.length)} race unlocks)`
     )
     sendToMain(IPC.onProgress, getProgress(activeCharId()))
   })

@@ -33,6 +33,7 @@ import type { CombatFocus } from './features/combat/combatFocus'
 // The mouse's Back button (JOS-201): the app-level answer, behind whatever drill is on screen.
 import { useBackFallback } from './appBack'
 import PoskyView from './features/posky/PoskyView'
+import RacesView from './features/races/RacesView'
 import LootView from './features/loot/LootView'
 import LevelingView from './features/leveling/LevelingView'
 import PlannerView from './features/planner/PlannerView'
@@ -135,6 +136,12 @@ function PlainView({
       {/* Maps remounts per character rebuild like the rest: the zone it auto-opens comes from
           the character module, which re-hydrates under the new character anyway. */}
       {view === 'maps' && <MapsView key={viewKey} />}
+      {/* RACES: race-unlock progress off the achievements dump. Keyed like the rest, since the
+          dump and the faction fold are both one character's; its ways to raise a faction link out
+          to the Mobs and Quests tabs. */}
+      {view === 'races' && (
+        <RacesView key={viewKey} onOpenMob={routing.openMob} onOpenQuestPage={routing.openQuestPage} />
+      )}
       {/* Leveling stays MOUNTED across a deep link like Loot and Mobs: the level a toast asked
           for arrives through the nonce, not through a remount. */}
       {view === 'leveling' && (

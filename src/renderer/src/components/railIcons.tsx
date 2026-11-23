@@ -145,6 +145,18 @@ export function PoskyMark(p: SvgIconProps): JSX.Element {
   )
 }
 
+/** Races — two faces side by side, one taller. */
+export function RacesMark(p: SvgIconProps): JSX.Element {
+  return (
+    <Mark {...p}>
+      <circle cx="8.5" cy="8" r="3" />
+      <path d="M3.5 20a5 5 0 0 1 10 0" />
+      <circle cx="16.5" cy="10" r="2.5" />
+      <path d="M13.8 20a3.8 3.8 0 0 1 6.9-2.4" />
+    </Mark>
+  )
+}
+
 /** Alerts — a war horn sounding. */
 export function AlertsMark(p: SvgIconProps): JSX.Element {
   return (
