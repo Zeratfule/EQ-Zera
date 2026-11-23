@@ -31,6 +31,7 @@ import {
   type ZoneLootRow,
   type ZoneUpgrade
 } from '../src/renderer/src/features/zoneloot/zoneLoot'
+import { eraChip } from '../src/renderer/src/features/planner/plannerData'
 import mobsJson from '../src/renderer/src/data/eqlegends/mobs.json' with { type: 'json' }
 
 /** A minimal catalog row — only the fields these joins read. One object, because `max-params` is 4. */
@@ -200,6 +201,25 @@ test('zoneLootRows over the REAL catalog: Kaesora folds 72 of its 117 drops out 
   assert.equal(shown.length + summary.outOfEra, all.length)
   // …and nothing shown is one of the folded ones.
   assert.ok(!shown.some((r) => r.outOfEra))
+})
+
+test('zoneLootRows over the REAL catalog: Nektropos Castle is in era, drop for drop (GitHub #18)', () => {
+  // The Castle Nektropos patch zones are EQL-new, and before zones.ts carried them a drop found only
+  // here read `era?` — this surface asks the ZONE, never the item's banner (the header's stated limit).
+  // The wiki files these pages under {{Classic Era}} and zones.ts section 5 says so, so the whole
+  // table is in era from the zone layer alone. The log's own spelling (ZoneNames.txt `28^Nektropos
+  // Castle`) is the catalog's, so the raw log zone and the picker's option land on the same rows.
+  const rows = zoneLootRows({ zone: 'Nektropos Castle - Group 2', catalog: REAL, seenByItem: NO_SEEN })
+  assert.ok(rows.length >= 70, `expected the castle's drop table, got ${String(rows.length)} rows`)
+  assert.ok(rows.some((r) => r.item === 'Checkmate' && r.mob === 'The Game Master'))
+  for (const r of rows) assert.equal(eraChip(r.era), null, `${r.item} off ${r.mob} should read in era`)
+  assert.equal(zoneLootSummary(rows).outOfEra, 0)
+  // And its two neighbours from the same patch.
+  for (const zone of ['Lake Nerius', 'Nektropos Undercrofts']) {
+    const near = zoneLootRows({ zone, catalog: REAL, seenByItem: NO_SEEN })
+    assert.ok(near.length > 0, zone)
+    for (const r of near) assert.equal(eraChip(r.era), null, `${zone}: ${r.item} should read in era`)
+  }
 })
 
 test('filterRows over the REAL catalog: the search narrows within the era fold', () => {

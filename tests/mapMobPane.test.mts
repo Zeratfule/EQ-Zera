@@ -268,3 +268,27 @@ test('a real zone yields a real pane: rows, pins, and an honest placed count', (
   assert.ok(counts.located <= counts.mobs, 'placed can never exceed listed')
   for (const r of rows) assert.equal(isLocatable(r), r.pins.length > 0)
 })
+
+test('the Castle Nektropos patch zones pin their wiki mobs inside the maps the game ships (GitHub #18)', () => {
+  // The extents are the `L` line bounds of the client's OWN base-layer maps (`<eqRoot>\maps\
+  // nektropos.txt`, `lakenerius.txt`, `nektrunder.txt`, patch-dated 2026-10-22), MEASURED
+  // 2026-11-23 and stated here because CI has no EverQuest install. Every stated wiki position in
+  // the three zones landed inside its map's extent (51/51, 36/36, 24/24 coordinates), which is
+  // the check that `mapFromLoc`'s negations and the zone join are both right for these rows.
+  const zones: readonly { raw: string; x: [number, number]; y: [number, number]; mobs: number; located: number }[] = [
+    { raw: 'Nektropos Castle', x: [-683.66, 508.2], y: [-873.26, 416.38], mobs: 48, located: 45 },
+    { raw: 'Lake Nerius', x: [-1606.56, 1872.96], y: [-2997.32, 2010.59], mobs: 38, located: 35 },
+    { raw: 'Nektropos Undercrofts - Solo', x: [-213.03, 14.77], y: [-44.84, 176.23], mobs: 24, located: 24 }
+  ]
+  for (const z of zones) {
+    const rows = mobRows(z.raw, MOB_CATALOG)
+    const counts = paneCounts(rows, [])
+    assert.deepEqual([counts.located, counts.mobs], [z.located, z.mobs], `${z.raw}: placed / listed`)
+    for (const r of rows) {
+      for (const p of r.pins) {
+        const inside = p.x >= z.x[0] && p.x <= z.x[1] && p.y >= z.y[0] && p.y <= z.y[1]
+        assert.ok(inside, `${z.raw}: ${r.name} pinned at (${String(p.x)}, ${String(p.y)}) is off the map`)
+      }
+    }
+  }
+})

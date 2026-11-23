@@ -59,6 +59,8 @@ import type { ZoneShort } from './maps'
  * "no era claim" — either the zone postdates the three eras (Luclin's Bazaar/Nexus, PoP's
  * Knowledge/Guild Lobby) or it is EQL-new content (New Sebilis Expedition) with no historic
  * expansion to point at. An unannotated zone reads as UNKNOWN downstream, never as out-of-era.
+ * The one stated exception is the Castle Nektropos patch (section 5): EQL-new too, but the wiki
+ * files its pages under `{{Classic Era}}`, so the row says `classic` with that as its evidence.
  *
  * Consumed by `src/shared/planner/era.ts`; nothing else in the app reads it yet.
  */
@@ -139,7 +141,8 @@ export function zoneKey(zone: string | undefined | null): string {
  *
  * Section 1 is the 51 distinct zone names the live log has actually printed; every one of them
  * resolves except the EQL-new tutorial (see the TODO below). Sections 2-4 extend toward the map
- * corpus with the classic / Kunark / Velious zones an EQL log could plausibly print next.
+ * corpus with the classic / Kunark / Velious zones an EQL log could plausibly print next, and
+ * section 5 holds the zones EQ Legends itself added later, verified against the client's files.
  */
 export const ZONES: readonly ZoneEntry[] = [
   // --- 1. OBSERVED IN THE LIVE LOG (50 of the 51 canonical names resolve) ---
@@ -416,15 +419,50 @@ export const ZONES: readonly ZoneEntry[] = [
   { short: 'thurgadinb', name: 'Icewell Keep', era: 'velious' }, // in default set
   { short: 'velketor', name: "Velketor's Labyrinth", era: 'velious' },
   { short: 'wakening', name: 'The Wakening Land', aliases: ['Wakening Lands'], era: 'velious' },
-  { short: 'westwastes', name: 'Western Wastes', era: 'velious' }
+  { short: 'westwastes', name: 'Western Wastes', era: 'velious' },
+
+  // --- 5. EQL-NEW: THE CASTLE NEKTROPOS PATCH (client files dated 2026-10-22). DEFAULT SET. ---
+  // Three zones EQ Legends added, verified against the INSTALL rather than the log (the owner's
+  // log has not entered them yet), 2026-11-23:
+  //   * SHORT: each stem is a zone the client ships (`nektropos.eqg/.zon`, `lakenerius.eqg/.zon`,
+  //     `nektrunder.eqg/.zon`, plus `nektropos_chr.txt` / `lakenerius_chr.txt`) AND a base-layer
+  //     map in the game's OWN `<eqRoot>\maps` (`nektropos.txt`, `lakenerius.txt`,
+  //     `nektrunder.txt`, each with a `_1` labels file), stamped with the same patch date. The
+  //     game's zone-line labels join them: `lakenerius_1` carries `to_Castle_Nektropos` and
+  //     `to_Nektulos_Forest`, `nektropos_1` carries `to_Lake_Nerius`, `nektrunder_1` carries
+  //     `to_Lake_Nerius_(click)`.
+  //   * NAME: the client's own zone-name table, `<eqRoot>\Resources\ZoneNames.txt` — `28^Nektropos
+  //     Castle`, `900^Lake Nerius`, `902^Nektropos Undercrofts`. That file agrees with the log's
+  //     `You have entered X.` spelling on every section-1 row checked, including the ones no
+  //     fold could guess (`18^The Lair of the Splitpaw`, `32^Nagafen's Lair`, `39^The Ruins of
+  //     Old Paineel`, `99^New Sebilis Expedition`). The wiki (items, mobs, quests) uses the same three
+  //     names, so the catalog folds onto `name` with no `mobCatalogNames` row.
+  //   * ALIAS `Castle Nektropos`: the game's own map label above, and NPC dialogue on the wiki's
+  //     Call for Aid quest ("the tumult within Castle Nektropos").
+  //   * ERA `classic`, UNLIKE New Sebilis Expedition, and on stated evidence rather than history:
+  //     these zones are open on the server today, and the wiki files every page about them under
+  //     its era register's `{{Classic Era}}` banner (all 72 committed items that name one of the
+  //     three, and the quest pages that start there). `era` is read downstream as "reachable under
+  //     CURRENT_ERA", and with no claim here every drop in the Zone Loot table reads `era?`
+  //     (that surface sees the zone, never the banner), and any future page here that carries no
+  //     banner of its own would be hidden by the Current era filter.
+  {
+    short: 'nektropos',
+    name: 'Nektropos Castle',
+    aliases: ['Castle Nektropos'],
+    era: 'classic'
+  },
+  { short: 'lakenerius', name: 'Lake Nerius', era: 'classic' },
+  { short: 'nektrunder', name: 'Nektropos Undercrofts', era: 'classic' }
 ]
 
 // TODO(zone table) — candidates deliberately LEFT OUT because they could not be verified:
 //   - `EverQuest Legends Tutorial`: the one observed log zone with no stem. It is EQL-new content
 //     (NPCs Doug / Dougina / "a rambunctious pet"), NOT Gloomingdeep, so `tutorial` / `tutoriala` /
 //     `tutorialb` would all be a guess. Resolves to null -> the viewer's zone picker.
-//   - `aviak` (Aviak Village), `erudsxing2` (Marauder's Mire), `nektropos`, `cshome` (Sunset Home):
-//     on eqlwiki's table but with NO file in either pack, so nothing to point at.
+//   - `aviak` (Aviak Village), `erudsxing2` (Marauder's Mire), `cshome` (Sunset Home): on
+//     eqlwiki's table but with NO file in either pack, so nothing to point at. (`nektropos` sat
+//     here until EQL shipped the zone and its map in the 2026-10-22 patch; it is in section 5.)
 //   - `oldkaesoraa`: in the default set, no long name in any source. EQL-new or a variant of Kaesora.
 //   - The Live-EQ revamp stems the classic rows deliberately shadow — `northro`/`southro`,
 //     `commonlands`, `freeporteast`/`freeportwest`/`freeport*`, `kithforest`, `befallenb`,
