@@ -22,7 +22,9 @@
       <a href="#first-run">First run</a>
       <a href="#overlays">Overlays over the game</a>
       <a href="#alerts">Sound alerts and rules</a>
+      <a href="#combat">Combat tab</a>
       <a href="#quests">Quest tracker</a>
+      <a href="#races">Race unlocks</a>
       <a href="#loot">Loot, upgrades and farming</a>
       <a href="#share">Sharing your setup</a>
       <a href="#game">Playing through EQ Zera</a>
@@ -76,6 +78,17 @@
   </div>
 </section>
 
+<section class="eqz-section eqz-guide" id="combat">
+  <div class="eqz-wrap eqz-narrow">
+    <h2>Combat tab</h2>
+    <p>The Combat tab shows the selected fight as a meter, your procs, DPS over time, damage by mob and the combat log. Click a name in the meter to drill into its attacks and spells, each with its own DPS.</p>
+    <ul>
+      <li><b>Size the panels.</b> Drag the gaps between panels, and the top edge of the combat log, to make any of them bigger. Your layout is remembered. Double-click a divider to reset that split, or press <b>Reset layout</b> in the combat log header to go back to the default. The dividers also move with the arrow keys.</li>
+      <li><b>Copy a breakdown.</b> The copy icon in a panel header puts what you are looking at on the clipboard as plain text that lines up in Discord or guild chat, including each skill's DPS.</li>
+    </ul>
+  </div>
+</section>
+
 <section class="eqz-section eqz-guide" id="quests">
   <div class="eqz-wrap eqz-narrow">
     <h2>Quest tracker</h2>
@@ -89,6 +102,19 @@
   </div>
 </section>
 
+<section class="eqz-section eqz-guide" id="races">
+  <div class="eqz-wrap eqz-narrow">
+    <h2>Race unlocks</h2>
+    <p>Most races unlock by reaching maximum faction with three factions; Kerran unlocks through a task, and Half Elf unlocks with Human or Wood Elf. The <b>Races</b> tab tracks them all.</p>
+    <ol>
+      <li>In game, type <code>/outputfile achievements</code>. The game writes your achievements to a file, and EQ Zera reads it straight away. Type it again whenever you want the tab brought up to date.</li>
+      <li>Open <b>Races</b>. Each race has a progress bar of the factions you have maxed, and the race closest to unlocking is at the top.</li>
+      <li>Open a race to see each faction it needs, whether it is maxed, and the change your log has seen. Below each faction are the mobs and turn-ins that raise it most, with level and zone. A kill or turn-in that would lower another faction the same race needs is flagged, so you do not undo your own progress.</li>
+    </ol>
+    <p>The game's log reports faction changes, not your standing, so the bars count maxed factions rather than a percentage. A Race Unlock Token skips any unlock; the cards say so.</p>
+  </div>
+</section>
+
 <section class="eqz-section eqz-guide" id="loot">
   <div class="eqz-wrap eqz-narrow">
     <h2>Loot, upgrades and farming</h2>
@@ -96,7 +122,9 @@
       <li>Fill in your gear under the <b>Build</b> tab, or let the Gear tab read it. That profile is what upgrades are measured against.</li>
       <li>Open <b>Zone Loot</b>, pick a zone, and see every mob the wiki lists there and what each drops, beside how many you have looted yourself and your drops per hour. Drops that beat what you wear carry an <b>upgrade</b> chip; there is a switch to show upgrades only.</li>
       <li>The Build tab lists where to farm your upgrades, zone by zone, with the mobs that drop them.</li>
+      <li>Build scores weigh each item's stats for your classes and role (tank, damage or healer), including endurance for the classes that spend it. Weapon procs, focus effects and worn effects count too, as an estimate marked <b>~</b>; hover a score to see how much each effect added and which effects are not scored. Summoned temporary items are never suggested.</li>
       <li>Wish-list an item from its page and you get an alert and a card when it drops for you, and when you enter a zone where it drops. Your own loot only: the log has no line for what other players loot.</li>
+      <li>Loot rows carry a tag for everything an item is used for: <b>quest</b>, <b>tradeskill</b>, or both. Hover a tag to see which quest or recipe. Crafters who do not want the tradeskill tag can turn it off in <b>Preferences → Loot</b>.</li>
       <li>The <b>Crafting</b> tab shows what you can make from what you hold, what you are one ingredient away from, and every recipe with what you are missing.</li>
     </ol>
   </div>

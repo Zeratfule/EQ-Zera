@@ -165,12 +165,20 @@ export const RELEASE_NOTES: readonly ReleaseNote[] = [
         text: "Copy this view as text now includes the DPS of each skill and pet in a breakdown, as the panel shows it."
       },
       {
+        kind: 'new',
+        text: "Build tab scores now count weapon procs, focus effects and worn effects, shown as an estimate (~) with a breakdown on hover and on each upgrade. Two focus effects of the same kind are no longer counted twice, and summoned temporary items are never suggested."
+      },
+      {
+        kind: 'new',
+        text: "Endurance counts toward Build scores for the classes that spend it (Warrior, Monk, Rogue, Berserker and Ranger), and no best set wears the same item in two slots."
+      },
+      {
         kind: 'fixed',
         text: "The Build tab no longer pairs a two-handed weapon with a shield in its best set, which made every meter read low. A two-hander upgrade now counts the off-hand it takes off."
       },
       {
         kind: 'fixed',
-        text: "Weapons with fire, cold, poison, magic or bane damage show their real base damage; Handmaiden's Handwrap read 25 instead of 5. Void resist and, for melee, endurance now count toward Build scores."
+        text: "Weapons with fire, cold, poison, magic or bane damage show their real base damage; Handmaiden's Handwrap read 25 instead of 5. Void resist now counts toward Build scores."
       },
       {
         kind: 'new',
