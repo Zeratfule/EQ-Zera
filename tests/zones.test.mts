@@ -391,3 +391,43 @@ test('no mobCatalogName can hijack another zone’s own name — the two indexes
     }
   }
 })
+
+// ---- the Castle Nektropos patch (GitHub #18) ---------------------------------------------------
+
+test('Castle Nektropos, Lake Nerius and the Undercrofts resolve from the log, the catalog and the map', () => {
+  // GitHub #18 (filed on 1.26.1): "Gear tab does not support loot from the new Nek Castle or Lake
+  // zone." The table used to leave `nektropos` out ("no file in either pack"); EQL's 2026-10-22
+  // patch shipped all three zones AND their maps in the game's own `<eqRoot>\maps`.
+  //
+  // THE NAMES are the client's zone-name table verbatim (`Resources\ZoneNames.txt`: `28^Nektropos
+  // Castle`, `900^Lake Nerius`, `902^Nektropos Undercrofts`), a file that agrees with the log on the
+  // OBSERVED rows above (Nagafen's Lair, The Ruins of Old Paineel …). The owner's log has not printed them yet, so the raw forms below are the
+  // log line's shape with those names in it, instance suffixes included.
+  const cases: readonly (readonly [string, string])[] = [
+    ['Nektropos Castle', 'nektropos'],
+    ['Nektropos Castle - Group 2', 'nektropos'],
+    ['Castle Nektropos', 'nektropos'], // the game's own map label: lakenerius_1 `to_Castle_Nektropos`
+    ['Lake Nerius', 'lakenerius'],
+    ['Nektropos Undercrofts', 'nektrunder'],
+    ['Nektropos Undercrofts - Solo', 'nektrunder']
+  ]
+  for (const [raw, stem] of cases) assert.equal(zoneShortName(raw), stem, raw)
+  // The wiki spells all three exactly as the client does, so the catalog needs no rename row and
+  // its strings open the same maps (the Maps tab's cross-zone search, the mob page's map link).
+  const catalog: readonly (readonly [string, string])[] = [
+    ['Nektropos Castle', 'nektropos'],
+    ['Lake Nerius', 'lakenerius'],
+    ['Nektropos Undercrofts', 'nektrunder']
+  ]
+  for (const [name, stem] of catalog) {
+    assert.equal(zoneShortNameFromCatalog(name), stem, name)
+    assert.deepEqual(catalogZonesFor(name), [], `${name}: the fold already reaches the catalog`)
+    // The wiki files every page about these zones under {{Classic Era}}; see zones.ts section 5.
+    assert.equal(zoneEntryFor(name)?.era, 'classic', name)
+  }
+  // Neighbours by NAME, not by place: none of them may be swallowed by the new rows.
+  assert.equal(zoneShortName('Nektulos Forest'), 'nektulos')
+  assert.equal(zoneShortName('Castle Mistmoore'), 'mistmoore')
+  // A wiki cell that ran two zone links together stays dirt, exactly like the others in the TODO.
+  assert.equal(zoneShortNameFromCatalog('Toxxulia Forest Lake Nerius'), null)
+})
