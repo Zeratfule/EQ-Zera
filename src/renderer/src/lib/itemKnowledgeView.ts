@@ -5,6 +5,51 @@
 // only answers "what is this item, for display purposes".
 
 import type { ItemKnowledge, ItemQuestUse } from '@shared/types'
+import { recipeUseLabel } from '../../../shared/itemKnowledge'
+
+export type KnowledgeTagKind = 'lore' | 'quest' | 'tradeskill'
+
+/** One tag chip beside a loot row's name: the word drawn, and its one-clause hover title. */
+export interface KnowledgeTag {
+  kind: KnowledgeTagKind
+  label: string
+  title: string
+}
+
+export interface KnowledgeTagOptions {
+  /** the row already carries the PoSky chip, which says "quest" for it */
+  isPosky: boolean
+  /** Preferences: "Show Tradeskill tag on loot" */
+  showTradeskill: boolean
+}
+
+/** `first`, or `first +N more` when the list is longer. */
+function firstAndMore(names: string[]): string {
+  return names.length > 1 ? `${names[0]} +${String(names.length - 1)} more` : (names[0] ?? '')
+}
+
+/**
+ * EVERY TAG AN ITEM EARNS, in a fixed order (LORE, quest, tradeskill). Tags never overwrite one
+ * another: an item a quest uses AND a recipe consumes carries both. The one exclusion is the
+ * stats block's bare QUEST ITEM flag on a recipe component no quest uses (Gnome Meat): that flag
+ * leads nowhere, so the item reads as tradeskill only.
+ */
+export function knowledgeTags(k: ItemKnowledge, opts: KnowledgeTagOptions): KnowledgeTag[] {
+  const recipes = k.recipes ?? []
+  const quests = k.questUses.map((u) => u.quest)
+  const tags: KnowledgeTag[] = []
+  if (k.lore) tags.push({ kind: 'lore', label: 'LORE', title: 'Lore item - you can hold only one' })
+  const questTagged = quests.length > 0 || (k.quest && recipes.length === 0)
+  if (questTagged && !opts.isPosky) {
+    const title = quests.length > 0 ? `Quest: ${firstAndMore(quests)}` : 'Quest item'
+    tags.push({ kind: 'quest', label: 'quest', title })
+  }
+  if (recipes.length > 0 && opts.showTradeskill) {
+    const title = `Tradeskill: ${firstAndMore(recipes.map(recipeUseLabel))}`
+    tags.push({ kind: 'tradeskill', label: 'tradeskill', title })
+  }
+  return tags
+}
 
 /**
  * TRADESKILL-ONLY: the item is a recipe INGREDIENT and nothing else.

@@ -46,6 +46,8 @@
 //             default Everyone since JOS-229 — JOS-115 moved it here off every combat surface,
 //             JOS-229 changed which way it opens) and where the
 //             pet's damage sits. Lives in ./CombatSection.tsx, descriptor and all.
+//   Loot     — which tags a loot row wears: the Tradeskill tag switch (default on). Lives in
+//             ./LootTagSetting.tsx, descriptor and all.
 //   Overlays — when the floating meters get out of the way: hide them while EverQuest isn't
 //             running (on by default) and/or while it isn't the window you're in (off).
 //             Lives in ./OverlayAutoHideSetting.tsx. Plus the celebration toast's controls — and
@@ -102,6 +104,8 @@ import { gameSection } from './GameSection'
 // Combat: whose damage the meters show (JOS-115) + where the pet's sits. Its own file with its own
 // descriptor, same ceiling and same answer as PerfSetting and GraphicsSetting.
 import { combatSection } from './CombatSection'
+// Loot: which tags a loot row wears (the Tradeskill tag switch). Descriptor beside its card.
+import { lootSection } from './LootTagSetting'
 import { FeedbackSetting, type OpenFeedback } from './FeedbackSetting'
 import { VoiceSetting } from './VoiceSetting'
 import { OverlayAutoHideSetting } from './OverlayAutoHideSetting'
@@ -316,6 +320,7 @@ function buildSections({ version, status, onSendFeedback, onWhatsNew }: SectionI
     // keeps second place, above).
     uiSkinSection(),
     combatSection(),
+    lootSection(),
     overlaysSection(),
     // Right after the overlays, because the promise this switch makes is about them: closing the
     // window keeps them running (JOS-139).
