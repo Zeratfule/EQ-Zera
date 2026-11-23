@@ -141,6 +141,8 @@ export const TELEMETRY_VIEWS = [
   'crafting',
   // The EverQuest Legends patch notes tab (EQ Zera) - same note as `crafting` above.
   'patchnotes',
+  // The Races tab (EQ Zera) - same note as `crafting` above.
+  'races',
   'preferences',
   'triage'
 ] as const
@@ -1241,8 +1243,7 @@ export function normalizeTelemetryPrefs(value: unknown): TelemetryPrefs {
   const id = v.analyticsId
   return {
     enabled: typeof v.enabled === 'boolean' ? v.enabled : DEFAULT_TELEMETRY_PREFS.enabled,
-    noticeShown:
-      typeof v.noticeShown === 'boolean' ? v.noticeShown : DEFAULT_TELEMETRY_PREFS.noticeShown,
+    noticeShown: typeof v.noticeShown === 'boolean' ? v.noticeShown : DEFAULT_TELEMETRY_PREFS.noticeShown,
     analyticsId: typeof id === 'string' && UUID_V4_RE.test(id) ? id : null,
     // ALLOWLISTED, deduped and canonically ordered: the marks are schema constants, so an
     // unrecognized one (a hand edit, a downgrade from a build with more steps) is DROPPED rather

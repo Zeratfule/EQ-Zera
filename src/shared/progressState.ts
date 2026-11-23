@@ -19,6 +19,7 @@ import type { ComboProgress } from './classCombo'
 import type { ItemCountOverride } from './itemOverrides'
 import type { AchievementsSource, ClassUnlockClaim } from './outputs/achievements'
 import type { InventorySource } from './outputs/baseline'
+import type { RaceUnlockState } from './outputs/raceUnlocks'
 import type { ExaltPlan } from './planner/types'
 import type { GearSet } from './planner/gearSet'
 import type { WishList } from './planner/wishlist'
@@ -118,6 +119,17 @@ export interface ProgressState {
   achievementUnlocks?: ClassUnlockClaim[]
   /** metadata about the last achievements load — the file's mtime and when we read it (JOS-429). */
   achievementsSource?: AchievementsSource
+  /**
+   * EVERY RACE UNLOCK the last achievements dump carried, objectives and their status included:
+   * the `Untapped Potential: Races` projection (`raceUnlockStates`). Unlike `achievementUnlocks`
+   * the `I` rows are kept, because an objective's status IS the progress the Races tab draws.
+   * Replaced whole on every read of the dump, so a corrected file corrects it.
+   *
+   * ADDITIVE and OPTIONAL - no schema bump and no migration, the `exaltPlans` precedent: every
+   * reader defaults on a missing key, and electron-store rewrites the whole parsed object so the
+   * key survives a round trip through an older build.
+   */
+  raceUnlocks?: RaceUnlockState[]
   /**
    * HAND-STATED HELD COUNTS (JOS-186) — the escape hatch for an item the witnesses cannot see the
    * truth about: one destroyed, given away, or otherwise gone in a way no log line and no dump

@@ -25,6 +25,7 @@ import {
   type ClassUnlockClaim
 } from '../../shared/outputs/achievements'
 import type { OutputKindId } from '../../shared/outputs/kinds'
+import { raceUnlockStates, type RaceUnlockState } from '../../shared/outputs/raceUnlocks'
 import { parseOutput, type OutputParseResult } from './kinds'
 import { outputStatus, type OutputCharacter } from './registry'
 
@@ -121,6 +122,8 @@ export interface LoadedAchievements {
   path: string
   /** The earned `Obtain <Item>` rows — the flat artifact that gets persisted (JOS-429). */
   unlocks: ClassUnlockClaim[]
+  /** Every race unlock and its objectives, `I` rows included - what the Races tab draws. */
+  races: RaceUnlockState[]
   /** Exactly what gets persisted as `ProgressState.achievementsSource`. */
   source: AchievementsSource
 }
@@ -149,6 +152,7 @@ export function loadAchievements(
   return {
     path: loaded.path,
     unlocks: classUnlockClaims(result.data.dump),
+    races: raceUnlockStates(result.data.dump),
     // `loadedAt` is the FILE's mtime (when the player typed the command) and `readAt` is ours —
     // the JOS-253 pair, kept because a single timestamp cannot answer both questions.
     source: { path: loaded.path, loadedAt: loaded.loadedAt, readAt: now() }

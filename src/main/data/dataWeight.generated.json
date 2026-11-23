@@ -50,6 +50,7 @@
     }
   ],
   "rendererOnly": [
+    "src/renderer/src/data/eqlegends/factionSources.json",
     "src/renderer/src/data/eqlegends/posky.json",
     "src/renderer/src/data/eqlegends/quests.json"
   ]
