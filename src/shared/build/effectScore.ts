@@ -38,12 +38,16 @@
 // The best qualifying focus applies and the rest do nothing (wornFocus.ts carries the evidence from
 // the owner's own log). Scored as a plain sum, three spell damage focuses on one set counted three
 // times, and the first cut of this file picked exactly that set for a wizard. So a focus is scored
-// against a COVER: the best percent the REST of the set already holds in the same group (`focusGroup`:
-// the figure moved, the spells it is limited to, and the duration limit - so a DoT focus and a nuke
-// focus, which touch different spells, are two groups, and two ranks of one focus are one). A
-// focus adds only what it holds above its cover. `setScore` is the exact set total (each group's
-// best, once); a candidate scored against the cover of the other cells gains exactly what swapping
-// it in would change.
+// against a COVER: the best percent the REST of the set already holds per focus ENTRY (`focusEntry`:
+// the figure moved, the polarity it is limited to, and its duration limit). One spell takes one
+// focus per figure, so entries of one figure whose spells OVERLAP do not stack: Mana Preservation
+// (any spell), Jolum's Abatement (detrimental only) and an over-time-only mana focus all touch a
+// DoT, and only the best of them applies to it. Entries whose spells are DISJOINT do add (a nuke
+// focus beside a DoT focus, a detrimental beside a beneficial one). So a figure's worth is the best
+// set of pairwise-disjoint entries (`focusValue`), and a focus adds only what it moves that worth
+// above its cover. A focus alone is worth its percent times its weight, exactly as before.
+// `setScore` is the exact set total; a candidate scored against the cover of the other cells gains
+// exactly what swapping it in would change.
 //
 // WHAT THIS DOES NOT MODEL, said once here: worn effects of the same name do not stack in game
 // either (two Aura of Battle are one buff), and a worn haste line beside another item's `Haste:` is
@@ -132,15 +136,84 @@ export type FocusCover = ReadonlyMap<string, number>
 const NO_COVER: FocusCover = new Map()
 
 /**
- * A focus effect's non-stacking group: the weight that prices it, the figure it moves, and the spells
- * its duration limit admits. Improved Damage (instant only) and Burning Affliction (over time only)
- * touch different spells and are two groups; two Improved Damage ranks are one. The key leads with
- * the weight so `setScore` can price a group from its key alone.
+ * A focus effect's entry: the figure it moves, then the polarity and duration limit of the spells it
+ * touches (`any` where unlimited). Two ranks of one focus are one entry, and within an entry the
+ * best percent wins outright. Keyed `figure|polarity|scope` so `focusValue` can price an entry and
+ * tell which entries overlap from the key alone.
  */
-function focusGroup(e: GearEffect): string | null {
+function focusEntry(e: GearEffect): string | null {
   const focus = e.value?.focus
   if (e.kind !== 'focus' || focus === undefined) return null
-  return `${focusWeightKey(focus)}:${focus.kind}:${focus.scope ?? 'any'}`
+  return `${focus.kind}|${focus.polarity ?? 'any'}|${focus.scope ?? 'any'}`
+}
+
+/** Two limits overlap unless both are stated and differ. */
+function meets(a: string, b: string): boolean {
+  return a === 'any' || b === 'any' || a === b
+}
+
+/** Do two entries of one figure touch a common spell? */
+function overlaps(a: readonly string[], b: readonly string[]): boolean {
+  return meets(a[1], b[1]) && meets(a[2], b[2])
+}
+
+interface PricedEntry {
+  parts: string[]
+  value: number
+}
+
+/** One entry's worth on its own: percent times the weight that prices it. */
+function entryValue(parts: readonly string[], pct: number, w: BuildWeights): number {
+  const polarity = parts[1] === 'any' ? undefined : parts[1]
+  const key = focusWeightKey({ kind: parts[0], polarity } as FocusValue)
+  return pct * (w[key] ?? 0)
+}
+
+/** Can entry `i` join the entries already in `mask`? */
+function fitsMask(list: readonly PricedEntry[], mask: number, i: number): boolean {
+  for (let j = 0; j < list.length; j++) if (mask & (1 << j) && overlaps(list[i].parts, list[j].parts)) return false
+  return true
+}
+
+/** The best total of pairwise-disjoint entries: every subset, built up one entry at a time. */
+function bestDisjoint(list: readonly PricedEntry[]): number {
+  const sums = new Map<number, number>([[0, 0]])
+  let best = 0
+  for (let i = 0; i < list.length; i++) {
+    for (const [mask, sum] of [...sums]) {
+      if (!fitsMask(list, mask, i)) continue
+      const next = sum + list[i].value
+      sums.set(mask | (1 << i), next)
+      if (next > best) best = next
+    }
+  }
+  return best
+}
+
+/**
+ * The focus worth of a cover: per figure, the best set of pairwise-disjoint entries (one spell takes
+ * one focus per figure). A figure has at most nine entries (three polarities by three scopes), so
+ * trying every disjoint subset is cheap and exact.
+ */
+export function focusValue(cover: FocusCover, w: BuildWeights): number {
+  const byFigure = new Map<string, PricedEntry[]>()
+  for (const [key, pct] of cover) {
+    const parts = key.split('|')
+    const list = byFigure.get(parts[0]) ?? []
+    list.push({ parts, value: entryValue(parts, pct, w) })
+    byFigure.set(parts[0], list)
+  }
+  let total = 0
+  for (const list of byFigure.values()) total += bestDisjoint(list)
+  return total
+}
+
+/** The cover plus one focus effect: the best percent per entry. */
+function withFocus(cover: FocusCover, e: GearEffect): FocusCover {
+  const g = focusEntry(e)
+  const pct = e.value?.focus?.pct ?? 0
+  if (g === null || pct <= (cover.get(g) ?? 0)) return cover
+  return new Map(cover).set(g, pct)
 }
 
 /** The cover these rows give: the best percent per focus group. */
@@ -149,7 +222,7 @@ export function focusCover(rows: Iterable<GearRow | null>): Map<string, number> 
   for (const row of rows) {
     if (row === null) continue
     for (const e of row.effects) {
-      const g = focusGroup(e)
+      const g = focusEntry(e)
       const pct = e.value?.focus?.pct ?? 0
       if (g !== null && pct > (out.get(g) ?? 0)) out.set(g, pct)
     }
@@ -157,11 +230,10 @@ export function focusCover(rows: Iterable<GearRow | null>): Map<string, number> 
   return out
 }
 
+/** What one focus adds above `cover`: the change it makes to the cover's focus worth. */
 function focusScore(e: GearEffect, w: BuildWeights, cover: FocusCover): number {
-  const focus = e.value?.focus
-  const g = focusGroup(e)
-  if (focus === undefined || g === null) return 0
-  return Math.max(0, focus.pct - (cover.get(g) ?? 0)) * (w[focusWeightKey(focus)] ?? 0)
+  const next = withFocus(cover, e)
+  return next === cover ? 0 : Math.max(0, focusValue(next, w) - focusValue(cover, w))
 }
 
 function wornScore(row: GearRow, e: GearEffect, w: BuildWeights): number {
@@ -183,8 +255,13 @@ function partScore(row: GearRow, e: GearEffect, w: BuildWeights, cover: FocusCov
 
 /** The effect half of a row's score against a cover (see the header), no labels — the hot path. */
 export function effectScore(row: GearRow, weights: BuildWeights, cover: FocusCover = NO_COVER): number {
+  // A row's own focuses join the cover as they are counted, so two on one row never double up.
   let total = 0
-  for (const e of row.effects) total += partScore(row, e, weights, cover)
+  let held = cover
+  for (const e of row.effects) {
+    total += partScore(row, e, weights, held)
+    held = withFocus(held, e)
+  }
   return total
 }
 
@@ -200,13 +277,9 @@ export function setScore(rows: Iterable<GearRow | null>, weights: BuildWeights):
   for (const row of rows) if (row !== null) list.push(row)
   for (const row of list) {
     total += itemScore(row.stats, weights)
-    for (const e of row.effects) if (focusGroup(e) === null) total += partScore(row, e, weights, NO_COVER)
+    for (const e of row.effects) if (focusEntry(e) === null) total += partScore(row, e, weights, NO_COVER)
   }
-  for (const [group, pct] of focusCover(list)) {
-    const key = group.slice(0, group.indexOf(':')) as FocusWeightKey
-    total += pct * (weights[key] ?? 0)
-  }
-  return total
+  return total + focusValue(focusCover(list), weights)
 }
 
 /** Is this a proc this file could have scored, were the row a held weapon? */
@@ -225,7 +298,10 @@ export function effectReading(row: GearRow, weights: BuildWeights, cover: FocusC
   const parts: EffectPart[] = []
   const unscored: string[] = []
   let total = 0
+  let held = cover
   for (const e of row.effects) {
+    const here = held
+    held = withFocus(held, e)
     const kind = KIND_LABEL[e.kind]
     if (kind === undefined) continue
     const label = `${kind}: ${e.name}`
@@ -233,7 +309,7 @@ export function effectReading(row: GearRow, weights: BuildWeights, cover: FocusC
       unscored.push(label)
       continue
     }
-    const score = partScore(row, e, weights, cover)
+    const score = partScore(row, e, weights, here)
     if (score === 0) continue
     parts.push({ label, score })
     total += score

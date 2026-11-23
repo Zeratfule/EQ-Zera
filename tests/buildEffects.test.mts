@@ -175,6 +175,28 @@ test('no best set wears one row in two cells, and none carries two of one focus 
   }
 })
 
+test('mana focuses whose spells overlap do not stack: a DoT takes only the better one', () => {
+  // Black Alloy Medallion: Mana Preservation II, any spell. Chipped Bone Bracelet: Affliction
+  // Efficiency II, detrimental over-time only. Both touch a DoT, and one spell takes one mana focus,
+  // so the pair is worth the better of the two, not their sum (the overcount the first cut shipped).
+  const medallion = real('Black Alloy Medallion')
+  const bracelet = real('Chipped Bone Bracelet')
+  const alone = (r: GearRow): number => buildScore(new Map([['NECK' as PlanSlotId, r]]), wizDps) - itemScore(r.stats, wizDps)
+  const pair = buildScore(
+    new Map<PlanSlotId, GearRow>([
+      ['NECK', medallion],
+      ['WRIST', bracelet]
+    ]),
+    wizDps
+  )
+  const stats = itemScore(medallion.stats, wizDps) + itemScore(bracelet.stats, wizDps)
+  assert.ok(alone(medallion) > 0 && alone(bracelet) > alone(medallion))
+  assert.ok(Math.abs(pair - stats - alone(bracelet)) < 1e-6, 'the pair is worth the better focus once')
+  // And the bracelet scored against the medallion's cover adds only what it moves above it.
+  const gain = rowScore(bracelet, wizDps, focusCover([medallion])) - itemScore(bracelet.stats, wizDps)
+  assert.ok(Math.abs(gain - (alone(bracelet) - alone(medallion))) < 1e-6)
+})
+
 test('a Temporary summoned item is never a best-set pick, however well its focus scores', () => {
   // The bauble's mana focus made it the WIZ ear pick until Temporary rows were left out: it
   // vanishes on logout, so it is not gear anyone can plan a set around.
