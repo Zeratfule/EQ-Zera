@@ -138,8 +138,40 @@ export const RELEASE_NOTES: readonly ReleaseNote[] = [
   // The Luclin model switch on the Character tab, and the patch-note day fix.
   {
     version: '1.29.0',
-    date: '2026-11-15',
+    date: '2026-11-23',
     entries: [
+      {
+        kind: 'new',
+        text: "New Races tab: type /outputfile achievements in game and every race unlock shows a progress bar of the factions you have maxed, sorted so the race closest to unlocking comes first."
+      },
+      {
+        kind: 'new',
+        text: "Open a race to see each faction it needs, whether it is maxed, the change your log has seen, and the mobs and turn-ins that raise it most, with level and zone. Kills that would lower another faction the same race needs are flagged."
+      },
+      {
+        kind: 'new',
+        text: "Combat tab panels are resizable. Drag the gaps between the meter, procs, DPS over time, damage by mob and the combat log, and your layout is remembered. Double-click a divider or use Reset layout to go back."
+      },
+      {
+        kind: 'new',
+        text: "Loot rows show every tag an item earns, so an item used in a quest and a tradeskill recipe shows both. Crafters can turn the Tradeskill tag off in Preferences, Loot."
+      },
+      {
+        kind: 'fixed',
+        text: "Castle Nektropos, Lake Nerius and the Nektropos Undercrofts now open their maps when you zone in, with the wiki's mobs pinned. Loot there counts toward the zone in Zone Loot and Gear, and their drops no longer show an era? chip."
+      },
+      {
+        kind: 'fixed',
+        text: "Copy this view as text now includes the DPS of each skill and pet in a breakdown, as the panel shows it."
+      },
+      {
+        kind: 'fixed',
+        text: "The Build tab no longer pairs a two-handed weapon with a shield in its best set, which made every meter read low. A two-hander upgrade now counts the off-hand it takes off."
+      },
+      {
+        kind: 'fixed',
+        text: "Weapons with fire, cold, poison, magic or bane damage show their real base damage; Handmaiden's Handwrap read 25 instead of 5. Void resist and, for melee, endurance now count toward Build scores."
+      },
       {
         kind: 'new',
         text: 'The Character tab has a Luclin model switch beside Show helmet. Turn it on to see your character as the Luclin-era model from your own game files, with its idle, faces, armour, dye and weapons.'
