@@ -59,6 +59,9 @@ export function candidatesForCell(rows: readonly GearRow[], cell: PlanSlotId, ct
     if (slot !== null && !row.slots.includes(slot)) continue
     if (!wearable(row, ctx.classes)) continue
     if (ctx.excluded?.(row)) continue
+    // A Temporary item (a mage's summoned bauble) vanishes on logout: never a set to plan around,
+    // however well its focus scores. A worn one is still scored where it sits.
+    if (row.flags.includes('Temporary')) continue
     out.push({ row, score: rowScore(row, ctx.weights, cover) })
   }
   out.sort((a, b) => b.score - a.score || a.row.name.localeCompare(b.row.name))

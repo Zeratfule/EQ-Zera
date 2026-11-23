@@ -175,6 +175,14 @@ test('no best set wears one row in two cells, and none carries two of one focus 
   }
 })
 
+test('a Temporary summoned item is never a best-set pick, however well its focus scores', () => {
+  // The bauble's mana focus made it the WIZ ear pick until Temporary rows were left out: it
+  // vanishes on logout, so it is not gear anyone can plan a set around.
+  assert.ok(real("Summoned: Jolum's Brilliant Bauble").flags.includes('Temporary'))
+  const best = bestBuild(rows, BUILD_CELLS, { classes: ['WIZ'], weights: wizDps, excluded: (r) => eraHides(r, true) })
+  for (const r of best.values()) assert.ok(!r || !r.flags.includes('Temporary'), `${r?.name} is Temporary`)
+})
+
 // ---- worn --------------------------------------------------------------------------------------
 
 test('a worn haste line counts only what it adds above the row own Haste stat', () => {
