@@ -1,8 +1,8 @@
 // The Combat tab's classification-ring readout — the append-only "Combat log" card at the
 // bottom of the view. Split out of CombatView.tsx.
 
-import { memo, useEffect, useRef } from 'react'
-import { Box, FormControlLabel, Switch, Typography } from '@mui/material'
+import { memo, useEffect, useRef, type ReactNode } from 'react'
+import { Box, FormControlLabel, Stack, Switch, Typography } from '@mui/material'
 import { DashCard, QuietNote } from './combatShared'
 import { formatTime } from '../../lib/formatDate'
 import { isAtBottom } from './followScroll'
@@ -35,11 +35,14 @@ const LogLine = memo(
 export function ProcessingLog({
   lines,
   showUnparsed,
-  setShowUnparsed
+  setShowUnparsed,
+  actions
 }: {
   lines: ClassifiedLine[]
   showUnparsed: boolean
   setShowUnparsed: (v: boolean) => void
+  /** extra header controls beside the switch - the Combat tab's Reset layout. */
+  actions?: ReactNode
 }): React.JSX.Element {
   const ref = useRef<HTMLDivElement>(null)
   // FOLLOW ONLY FROM THE BOTTOM (JOS-95). This used to scroll unconditionally on every append,
@@ -54,18 +57,23 @@ export function ProcessingLog({
   // FIXED height, not minHeight (Task #56): this card's body is an append-only ring that grows
   // to 150 lines. As `flex: 0 0 auto` it sized to that CONTENT and — being unshrinkable —
   // squeezed the entire dashboard down to its `minHeight: 0`, so a few seconds after the live
-  // tail started the Combat tab was JUST a scrolling log. The ring scrolls inside a fixed box.
+  // tail started the Combat tab was JUST a scrolling log. The ring scrolls inside a fixed box -
+  // whose height the user now picks: the card FILLS the fixed-height frame that
+  // CombatSplitLayout.BodyLogFrame draws for it (default 220px, the height it always had).
   return (
     <DashCard
       title="Combat log"
       right={
-        <FormControlLabel
-          control={<Switch size="small" checked={showUnparsed} onChange={(e) => setShowUnparsed(e.target.checked)} />}
-          label={<Typography variant="caption">show unparsed</Typography>}
-          sx={{ m: 0 }}
-        />
+        <Stack direction="row" spacing={1} alignItems="center">
+          {actions}
+          <FormControlLabel
+            control={<Switch size="small" checked={showUnparsed} onChange={(e) => setShowUnparsed(e.target.checked)} />}
+            label={<Typography variant="caption">show unparsed</Typography>}
+            sx={{ m: 0 }}
+          />
+        </Stack>
       }
-      height={220}
+      fill
     >
       <Box
         ref={ref}

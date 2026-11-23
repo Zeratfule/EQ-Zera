@@ -46,8 +46,8 @@ const MARKER_TOL_PX = 5
 /** How the wrapper drives this layer. Imperative on purpose: it keeps hover setState out of the
  *  component that renders the curve (rule 1 above) while the listeners stay on the wrapper Box. */
 export interface CurveHoverHandle {
-  /** cursor at (x, y) in CSS px relative to the wrapper, over a chart `w` CSS px wide. */
-  move: (x: number, y: number, w: number) => void
+  /** cursor at (x, y) in CSS px relative to the wrapper, over a chart `w` x `h` CSS px. */
+  move: (x: number, y: number, w: number, h: number) => void
   clear: () => void
 }
 
@@ -73,6 +73,8 @@ interface Hit {
   y: number
   /** measured CSS width of the stretched chart — the px↔user factor for this move. */
   w: number
+  /** …and its height: CHART_H unless the Combat cell grew the plot, which stretches Y too. */
+  h: number
   /** cursor time, ms into the encounter. */
   t: number
   mk: TimelineMarker | null
@@ -80,7 +82,7 @@ interface Hit {
 
 /** The change gate: same marker, same width, and the cursor barely moved ⇒ no setState at all. */
 function sameHit(a: Hit, b: Hit): boolean {
-  return a.mk === b.mk && a.w === b.w && Math.abs(a.x - b.x) < 2 && Math.abs(a.y - b.y) < 2
+  return a.mk === b.mk && a.w === b.w && a.h === b.h && Math.abs(a.x - b.x) < 2 && Math.abs(a.y - b.y) < 2
 }
 
 /** The rolling-DPS block — sampled from THIS chart's own series (dpsAt), never recomputed, and
@@ -111,15 +113,17 @@ function buildTip(hit: Hit, series: DpsSeries, startTs: number, hidden: readonly
  *  that space would paint as an ellipse, and a 1px rule as a fat one. */
 function Cursor({ hit, chart, series }: { hit: Hit; chart: DpsChart; series: DpsSeries }): React.JSX.Element {
   const ux = Math.min(CHART_W - PAD_X, Math.max(PAD_X, pxToUser(hit.x, hit.w)))
+  // user Y → CSS px: 1 on a CHART_H-tall plot, more when the resizable cell stretched it.
+  const ky = hit.h > 0 ? hit.h / CHART_H : 1
   return (
-    <svg width={hit.w} height={CHART_H} style={{ position: 'absolute', left: 0, top: 0, display: 'block' }}>
+    <svg width={hit.w} height={hit.h} style={{ position: 'absolute', left: 0, top: 0, display: 'block' }}>
       {/* the confirmation of WHICH tick the title names — nearest-in-time picking has no other */}
       {hit.mk && (
         <line
           x1={userToPx(xAtT(chart, hit.mk.t), hit.w)}
           x2={userToPx(xAtT(chart, hit.mk.t), hit.w)}
-          y1={PAD_T - 4}
-          y2={CHART_H - PAD_B}
+          y1={(PAD_T - 4) * ky}
+          y2={(CHART_H - PAD_B) * ky}
           stroke={MARKER_COLOR[hit.mk.kind]}
           strokeWidth={3}
           opacity={0.35}
@@ -128,19 +132,19 @@ function Cursor({ hit, chart, series }: { hit: Hit; chart: DpsChart; series: Dps
       <line
         x1={hit.x}
         x2={hit.x}
-        y1={PAD_T - 4}
-        y2={CHART_H - PAD_B}
+        y1={(PAD_T - 4) * ky}
+        y2={(CHART_H - PAD_B) * ky}
         stroke="rgba(255,255,255,0.18)"
         strokeWidth={1}
       />
-      {/* Y is 1:1 on this chart, so the curve's user Y is already a CSS px offset. The dot rides
+      {/* Y is 1:1 on a CHART_H-tall plot and `ky` when the cell grew it. The dot rides
           the OUTGOING line, so it goes with it: with that line hidden it would sit at a height
           nothing on the plot explains. The crosshair and the readout stay — the cursor still has
           an instant, and the visible lines still have rates at it. */}
       {chart.outLine !== null && (
         <circle
           cx={userToPx(ux, hit.w)}
-          cy={curveYAtUserX(chart, series, ux)}
+          cy={curveYAtUserX(chart, series, ux) * ky}
           r={3}
           fill={KIND_COLOR.you}
           stroke="rgba(0,0,0,0.55)"
@@ -166,20 +170,20 @@ export function DpsCurveHoverLayer({
   const mks = useMemo(() => markers.map((p) => p.m), [markers])
 
   const hitAt = useCallback(
-    (x: number, y: number, w: number): Hit => {
+    (x: number, y: number, w: number, h: number): Hit => {
       const t = tAtUserX(chart, pxToUser(x, w))
       // ms per user unit × the grab radius expressed in user units — one conversion each way, so
       // the tolerance is a true 5 CSS px however wide the card happens to be.
       const msPerUser = Math.max(1, chart.t1 - chart.t0) / (CHART_W - 2 * PAD_X)
       const tol = pxToUser(MARKER_TOL_PX, w) * msPerUser
-      return { x, y, w, t, mk: pickMarker(mks, t, tol)?.item ?? null }
+      return { x, y, w, h, t, mk: pickMarker(mks, t, tol)?.item ?? null }
     },
     [chart, mks]
   )
 
   const apply = useCallback(
-    (x: number, y: number, w: number): void => {
-      const next = hitAt(x, y, w)
+    (x: number, y: number, w: number, h: number): void => {
+      const next = hitAt(x, y, w, h)
       const prev = last.current
       if (prev && sameHit(prev, next)) return
       last.current = next
@@ -203,11 +207,11 @@ export function DpsCurveHoverLayer({
   )
 
   return (
-    <div style={{ position: 'absolute', left: 0, top: 0, right: 0, height: CHART_H, pointerEvents: 'none', zIndex: 4 }}>
+    <div style={{ position: 'absolute', left: 0, top: 0, right: 0, bottom: 0, pointerEvents: 'none', zIndex: 4 }}>
       {hit && tip && (
         <>
           <Cursor hit={hit} chart={chart} series={series} />
-          <ChartTooltip {...tip} x={hit.x} y={hit.y} bounds={{ w: hit.w, h: CHART_H }} />
+          <ChartTooltip {...tip} x={hit.x} y={hit.y} bounds={{ w: hit.w, h: hit.h }} />
         </>
       )}
     </div>

@@ -143,7 +143,8 @@ function DpsCurve({
   markers,
   startTs,
   a,
-  hidden
+  hidden,
+  grow
 }: {
   chart: DpsChart
   series: DpsSeries
@@ -152,6 +153,8 @@ function DpsCurve({
   startTs: number
   a: string
   hidden: readonly ChartLineKey[]
+  /** take the card's spare height (the Combat tab's resizable cell) instead of a fixed CHART_H. */
+  grow: boolean
 }): React.JSX.Element {
   const hoverRef = useRef<CurveHoverHandle>(null)
   // HOVER / DRAG SEAM (§7.1): a bare pointermove only. `buttons` is non-zero throughout a drag,
@@ -163,20 +166,30 @@ function DpsCurve({
       return
     }
     const r = ev.currentTarget.getBoundingClientRect()
-    hoverRef.current?.move(ev.clientX - r.left, ev.clientY - r.top, r.width)
+    hoverRef.current?.move(ev.clientX - r.left, ev.clientY - r.top, r.width, r.height)
   }, [])
   const onHoverLeave = useCallback(() => hoverRef.current?.clear(), [])
 
   return (
     // flexShrink 0 on every strip: in a short grid cell the card body scrolls, it never
     // squashes the curve into an unreadable sliver.
-    <Box sx={{ position: 'relative', flexShrink: 0 }} onPointerMove={onHoverMove} onPointerLeave={onHoverLeave}>
+    //
+    // GROW (the resizable Combat cell): the plot takes the card's spare height, never less than
+    // CHART_H. The SVG is ABSOLUTE inside a flex-sized frame, so its drawn height can never feed
+    // back into the frame's size, and the viewBox stretches in Y exactly as it always has in X
+    // (every line is `non-scaling-stroke`, so a taller plot is not a fatter one). Nothing is
+    // measured here: the hover reads the frame's box on each move.
+    <Box
+      sx={grow ? { position: 'relative', flex: '1 1 0', minHeight: CHART_H } : { position: 'relative', flexShrink: 0 }}
+      onPointerMove={onHoverMove}
+      onPointerLeave={onHoverLeave}
+    >
       <svg
         viewBox={`0 0 ${CHART_W} ${CHART_H}`}
         width="100%"
-        height={CHART_H}
+        height={grow ? '100%' : CHART_H}
         preserveAspectRatio="none"
-        style={{ display: 'block' }}
+        style={grow ? { display: 'block', position: 'absolute', left: 0, top: 0 } : { display: 'block' }}
         data-testid="dps-plot"
       >
         <CurveLines chart={chart} />
@@ -425,7 +438,7 @@ export function DpsOverTime({
         <>
           {hasDrawnLine(chart) ? (
             <>
-              <DpsCurve chart={chart} series={series} markers={drawn} startTs={tl.startTs} a={a} hidden={hidden} />
+              <DpsCurve chart={chart} series={series} markers={drawn} startTs={tl.startTs} a={a} hidden={hidden} grow={fill === true && compact !== true} />
               <ChartAxis chart={chart} />
             </>
           ) : (
