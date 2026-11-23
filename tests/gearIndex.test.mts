@@ -280,7 +280,7 @@ test('scaling all rows at one state is fast enough to move a slider', () => {
 // THE CENSUSES — law 1 lives here rather than on the rows
 // =================================================================================
 
-test('the unindexed stat keys are exactly the four the corpus states', () => {
+test('the unindexed stat keys are exactly the per-item facts and the qualified damage lines', () => {
   // CHARGES / COOLDOWN / CAST TIME / REQUIRED LEVEL are per-item facts, not gear comparisons
   // (shared/planner/gear.ts says why they are out of the vector). A key here that is NOT one of
   // those is a stat the gear table would silently not have a column for.
@@ -293,12 +293,37 @@ test('the unindexed stat keys are exactly the four the corpus states', () => {
   // spelling and goes back in this census, not the alias table (law 2 canonicalizes at
   // boundaries we own). This assertion is an EQUALITY on purpose: a new spelling should stop the
   // suite too.
+  //
+  // THE FIVE `*_DMG` KEYS (2026-11-23) are elemental and bane damage lines (`Fire DMG: 4`,
+  // `Bane DMG: Undead +25`), which used to be read AS the base DMG and overwrite it
+  // (shared/itemStats.ts `QUALIFIED_DAMAGE_KEYS`). They are not base damage — bane is conditional
+  // on the target, elemental is resistible — so they stay out of the vector and the ratio, and are
+  // counted here instead of being silently folded into a weapon's numbers.
   assert.deepEqual(Object.keys(index.stats.unindexedStatKeys).sort(), [
+    'BANE_DMG',
     'CAST_TIME',
     'CHARGES',
+    'COLD_DMG',
     'COOLDOWN',
+    'FIRE_DMG',
+    'MAGIC_DMG',
+    'POISON_DMG',
     'REQUIRED_LEVEL'
   ])
+})
+
+test('a qualified damage line no longer overwrites the base DMG (2026-11-15 Nektropos drops)', () => {
+  // Real rows from the committed corpus; the stored scrape-time parse had DMG 4 / 25 / 15 here
+  // (the qualified value), and `knowledgeFromDb` now lays the fixed parser's reading on at load.
+  const blade = byKey.get('burning fighters blade') // "DMG: 8 Fire DMG: 4"
+  const wrap = byKey.get("handmaiden's handwrap") // "DMG: 5" … "Bane DMG: Undead +25"
+  const staff = byKey.get("warstaff of hope's demise") // "DMG: 10" … "BACKSTAB: 15 Magic DMG: 15"
+  const mallet = byKey.get('keg mallet') // "Base Dmg: 9" IS the base damage
+  assert.equal(blade?.stats.DMG, 8)
+  assert.equal(wrap?.stats.DMG, 5)
+  assert.equal(staff?.stats.DMG, 10)
+  assert.equal(staff?.stats.BACKSTAB, 15)
+  assert.equal(mallet?.stats.DMG, 9)
 })
 
 // ---- the weapon skill vocabulary (JOS-302) ----------------------------------------------------

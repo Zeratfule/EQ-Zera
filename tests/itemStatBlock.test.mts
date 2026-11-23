@@ -18,7 +18,8 @@ import {
   itemTierFromName,
   statLabel,
   tierBonusPct,
-  unlockedExaltationSlots
+  unlockedExaltationSlots,
+  withQualifiedDamage
 } from '../src/shared/itemStats'
 
 // =================================================================================
@@ -330,4 +331,49 @@ test('the three regens are three keys, not one (Talisman of Kejaar Kerrath, 2026
   assert.deepEqual(b.stats.map((s) => statLabel(s.key)), ['HP Regen', 'Mana Regen', 'Endurance Regen', 'Strength'])
   // A bare `Regen:` still parses as itself.
   assert.deepEqual(parseStatsBlock('Regen: 3').stats, [{ key: 'REGEN', value: '3' }])
+})
+
+test('a qualified damage line is its own key, never the base DMG (2026-11-15 Nektropos drops)', () => {
+  // VERBATIM `statsBlock` lines from src/main/data/items.json. The matcher's whitespace boundary
+  // used to fire on the `DMG` inside `Fire DMG`, so the qualified value overwrote the base.
+  const blade = parseStatsBlock('Slot: SECONDARY\n\nSkill: 1H Slashing Atk Delay: 20\n\nDMG: 8 Fire DMG: 4\n\nWIS: +4 DEX: +4') // Burning Fighters Blade
+  assert.equal(blade.dmg, 8)
+  assert.equal(blade.atkDelay, 20)
+  assert.deepEqual(blade.stats.map((s) => [s.key, s.value]), [['FIRE DMG', '4'], ['WIS', '+4'], ['DEX', '+4']])
+  const wrap = parseStatsBlock('Skill: Hand to Hand Atk Delay: 30\n\nDMG: 5\n\nDmg Bon: 15\n\nBane DMG: Undead +25') // Handmaiden's Handwrap
+  assert.equal(wrap.dmg, 5)
+  assert.equal(wrap.dmgBonus, 15)
+  assert.deepEqual(wrap.stats, [{ key: 'BANE DMG', value: 'Undead +25' }])
+  const staff = parseStatsBlock('DMG: 10\n\nBACKSTAB: 15 Magic DMG: 15\nDmg Bon: 15') // Warstaff of Hope's Demise
+  assert.deepEqual([staff.dmg, staff.backstab, staff.dmgBonus], [10, 15, 15])
+  assert.equal(statLabel('BANE DMG'), 'Bane Dmg')
+  // `Base Dmg: 9` (Keg Mallet) IS the base damage; it keeps reading as DMG.
+  assert.equal(parseStatsBlock('Base Dmg: 9\n\nAtk Delay: 30').dmg, 9)
+})
+
+test('withQualifiedDamage repairs a stored scrape-time block at load, and is a no-op on a fixed one', () => {
+  const raw = 'Slot: SECONDARY\n\nSkill: 1H Slashing Atk Delay: 20\n\nDMG: 8 Fire DMG: 4\n\nWIS: +4 DEX: +4'
+  // The block exactly as the 2026-11-15 scrape stored it for Burning Fighters Blade.
+  const stored = {
+    flags: [],
+    stats: [
+      { key: 'WIS', value: '+4' },
+      { key: 'DEX', value: '+4' }
+    ],
+    saves: [],
+    effects: [],
+    exaltationSlots: [],
+    extras: [],
+    slot: 'SECONDARY',
+    skill: '1H Slashing',
+    atkDelay: 20,
+    dmg: 4
+  }
+  const fixed = withQualifiedDamage(stored, raw)
+  assert.equal(fixed.dmg, 8)
+  assert.deepEqual(fixed.stats.map((s) => s.key), ['WIS', 'DEX', 'FIRE DMG'])
+  assert.equal(withQualifiedDamage(fixed, raw), fixed, 'idempotent: a block that already agrees comes back unchanged')
+  const plain = parseStatsBlock('DMG: 12\n\nSTR: +3')
+  assert.equal(withQualifiedDamage(plain, 'DMG: 12\n\nSTR: +3'), plain, 'no qualified line: untouched')
+  assert.equal(withQualifiedDamage(stored, undefined), stored)
 })

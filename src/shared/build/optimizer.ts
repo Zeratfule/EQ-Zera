@@ -2,9 +2,13 @@
 // upgrades from here to there — pure functions over the gear index rows the Gear tab already has.
 //
 // One row is scored once per profile (`itemScore`); a set's score is the sum over its cells. The
-// best set is greedy per cell, which is exact here because the cells are independent — the one
-// coupling this ignores is a two-hander taking both weapon cells, which the UI states rather than
-// models. Paired cells (EAR/EAR2 …) take two DISTINCT rows: a lore item cannot be worn twice and
+// best set is greedy per cell, which is exact here because the cells are independent — with ONE
+// coupling, modelled since 2026-11-23: a two-hander takes both hands. It used to be ignored, so
+// the "best" set paired a 2H weapon in PRIMARY with a shield in SECONDARY — a set nobody can wear,
+// and the ceiling every meter is a percentage of. `resolveHands` now picks whichever is worth more,
+// the best two-hander alone or the best one-hander plus the best off-hand, and the upgrade lists
+// charge a two-hander for the off-hand it would take off (`handsCost`).
+// Paired cells (EAR/EAR2 …) take two DISTINCT rows: a lore item cannot be worn twice and
 // the catalog does not say which items are lore reliably enough to special-case, so every item is
 // treated as once-only.
 //
@@ -14,6 +18,7 @@
 import type { ClassAbbr } from '../classCombo'
 import type { GearRow } from '../planner/gear'
 import { equipSlotOf, PAIRED_SLOTS, type PlanSlotId } from '../planner/types'
+import { WEAPON_CATEGORY_MEMBERS, weaponTypeOf } from '../planner/weaponType'
 import { itemScore, type BuildWeights } from './profiles'
 
 export interface BuildContext {
@@ -80,7 +85,52 @@ export function bestBuild(rows: readonly GearRow[], cells: readonly PlanSlotId[]
     if (pick) taken.add(pick.key)
     out.set(cell, pick)
   }
+  resolveHands(out, rows, cells, ctx)
   return out
+}
+
+/** A two-handed weapon — by its stated skill (`2H Slashing` …), the weapon-type fold's own table. */
+export function isTwoHander(row: GearRow): boolean {
+  const type = weaponTypeOf(row.skill)
+  return type !== null && WEAPON_CATEGORY_MEMBERS.TWO_HAND.includes(type)
+}
+
+/** The best PRIMARY candidate that leaves the off-hand free. */
+function bestOneHander(rows: readonly GearRow[], ctx: BuildContext): Scored | null {
+  for (const c of candidatesForCell(rows, 'PRIMARY', ctx)) if (!isTwoHander(c.row)) return c
+  return null
+}
+
+/**
+ * The one coupling between cells: a two-hander in PRIMARY leaves SECONDARY empty. When the greedy
+ * pass put one there, keep it only if it outscores the best ONE-hander plus the off-hand the
+ * greedy pass already chose; otherwise swap the one-hander in. Either way the set is wearable.
+ */
+function resolveHands(out: Map<PlanSlotId, GearRow | null>, rows: readonly GearRow[], cells: readonly PlanSlotId[], ctx: BuildContext): void {
+  const main = out.get('PRIMARY') ?? null
+  if (main === null || !isTwoHander(main) || !cells.includes('SECONDARY')) return
+  const off = out.get('SECONDARY') ?? null
+  const oneHand = bestOneHander(rows, ctx)
+  const pair = (oneHand?.score ?? 0) + (off === null ? 0 : itemScore(off.stats, ctx.weights))
+  if (oneHand !== null && pair > itemScore(main.stats, ctx.weights)) out.set('PRIMARY', oneHand.row)
+  else out.set('SECONDARY', null)
+}
+
+/**
+ * What else comes off the body when `row` goes into `cell`, in score — or `null` when the cell is
+ * not free to take anything. A two-hander into PRIMARY takes the off-hand with it; an off-hand
+ * cannot go on beside a worn two-hander (that is a two-item swap, not an upgrade to one cell).
+ */
+export function handsCost(row: GearRow, cell: PlanSlotId, set: BuildSet, weights: BuildWeights): number | null {
+  if (cell === 'PRIMARY' && isTwoHander(row)) {
+    const off = set.get('SECONDARY') ?? null
+    return off === null ? 0 : itemScore(off.stats, weights)
+  }
+  if (cell === 'SECONDARY') {
+    const main = set.get('PRIMARY') ?? null
+    if (main !== null && isTwoHander(main)) return null
+  }
+  return 0
 }
 
 export interface CellUpgrade {
@@ -100,14 +150,36 @@ export function upgradesFor(rows: readonly GearRow[], set: BuildSet, cells: read
   for (const cell of cells) {
     const current = set.get(cell) ?? null
     const currentScore = current ? itemScore(current.stats, ctx.weights) : 0
-    const options: CellUpgrade['options'] = []
-    for (const c of candidatesForCell(rows, cell, ctx)) {
-      if (options.length >= perCell) break
-      if (c.score <= currentScore) break
-      if (worn.has(c.row.key)) continue
-      options.push({ ...c, delta: c.score - currentScore })
-    }
-    out.push({ cell, current, currentScore, options })
+    out.push({ cell, current, currentScore, options: cellOptions(rows, cell, { ctx, set, currentScore, worn, perCell }) })
   }
   return out
+}
+
+interface CellQuery {
+  ctx: BuildContext
+  set: BuildSet
+  currentScore: number
+  /** keys already worn somewhere in the set — never offered again */
+  worn: ReadonlySet<string>
+  perCell: number
+}
+
+/**
+ * One cell's upgrade options. The gain is the candidate's score minus what it takes off the body:
+ * the worn item in this cell, plus the off-hand when it is a two-hander (`handsCost`). Because that
+ * charge varies per candidate the list is ranked by GAIN, not by raw score — the early exit is still
+ * safe, since no candidate can gain more than its own score minus the worn item's.
+ */
+function cellOptions(rows: readonly GearRow[], cell: PlanSlotId, q: CellQuery): CellUpgrade['options'] {
+  const options: CellUpgrade['options'] = []
+  for (const c of candidatesForCell(rows, cell, q.ctx)) {
+    if (c.score <= q.currentScore) break
+    if (q.worn.has(c.row.key)) continue
+    const cost = handsCost(c.row, cell, q.set, q.ctx.weights)
+    if (cost === null) break
+    const delta = c.score - q.currentScore - cost
+    if (delta > 0) options.push({ ...c, delta })
+  }
+  options.sort((a, b) => b.delta - a.delta || a.row.name.localeCompare(b.row.name))
+  return options.slice(0, q.perCell)
 }

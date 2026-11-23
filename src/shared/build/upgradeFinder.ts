@@ -27,7 +27,7 @@ import type { ClassAbbr } from '../classCombo'
 import type { GearRow } from '../planner/gear'
 import { cellsForSlot, isAnyCell, type PlanSlotId } from '../planner/types'
 import { itemScore, type BuildWeights } from './profiles'
-import { wearable, type BuildSet, type CellUpgrade } from './optimizer'
+import { handsCost, isTwoHander, wearable, type BuildSet, type CellUpgrade } from './optimizer'
 
 /** What one row is worth in the best cell it could take, against what is already there. */
 export interface UpgradeVerdict {
@@ -53,8 +53,13 @@ function cellVerdict(row: GearRow, cell: PlanSlotId, score: number, ctx: Upgrade
   if (ctx.unknownCells.has(cell)) return null
   const current = ctx.worn.get(cell) ?? null
   if (current !== null && current.key === row.key) return null
+  // A two-hander also takes the off-hand off (optimizer.ts `handsCost`), so an off-hand we cannot
+  // score is a gain we cannot state; and an off-hand beside a worn two-hander is no single swap.
+  if (cell === 'PRIMARY' && isTwoHander(row) && ctx.unknownCells.has('SECONDARY')) return null
+  const cost = handsCost(row, cell, ctx.worn, ctx.weights)
+  if (cost === null) return null
   const currentScore = current === null ? 0 : itemScore(current.stats, ctx.weights)
-  const delta = score - currentScore
+  const delta = score - currentScore - cost
   if (delta <= 0) return null
   return { cell, delta, score, currentScore, againstNothing: current === null }
 }

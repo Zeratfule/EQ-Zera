@@ -111,6 +111,22 @@ const STRUCT_KEYS = [
 ]
 
 /**
+ * THE QUALIFIED DAMAGE KEYS (2026-11-23, the BiS audit of the 2026-11-15 rescrape). A weapon's
+ * base damage is `DMG:`; the wiki writes elemental and bane damage as a SECOND damage line with a
+ * qualifier in front — `DMG: 8 Fire DMG: 4` (Burning Fighters Blade), `BACKSTAB: 15 Magic DMG: 15`
+ * (Warstaff of Hope's Demise), `Bane DMG: Undead +25` (Handmaiden's Handwrap). With only `DMG` in
+ * the key list, the matcher's leading-whitespace boundary fired on the `DMG` INSIDE `Fire DMG`, and
+ * the qualified value OVERWROTE the base: the Handwrap read DMG 25 instead of 5, and every damage
+ * ratio built on it was invented. Measured: 15 pages in the 2026-11-15 corpus, 3 of them new.
+ *
+ * Each qualifier the corpus states is its own key (KEY_ALT is longest-first, so `Fire DMG` wins
+ * over `DMG` at the same spot) and lands in `stats[]` VERBATIM — the window shows it, nothing sums
+ * it into base damage. `Base Dmg: 9` (Keg Mallet) is deliberately absent: it IS the base damage,
+ * and the `DMG` match inside it is the right reading.
+ */
+export const QUALIFIED_DAMAGE_KEYS = ['Fire DMG', 'Cold DMG', 'Poison DMG', 'Magic DMG', 'Bane DMG']
+
+/**
  * Plain `KEY: value` stats that land in the attribute grid.
  *
  * THE THREE REGENS ARE THREE KEYS (2026-09-09, seen on a shared Talisman of Kejaar Kerrath:
@@ -124,7 +140,8 @@ const STAT_KEYS = [
   'STR', 'STA', 'AGI', 'DEX', 'WIS', 'INT', 'CHA', 'HP', 'MANA', 'END', 'ENDURANCE',
   'Haste', 'Attack', 'HP Regen', 'Mana Regen', 'End Regen', 'Endurance Regen', 'Regen',
   'Charges', 'Rec Level', 'Recommended Level',
-  'Required Level', 'Req Level', 'Cast Time', 'Cooldown', 'Recast', 'Range Damage'
+  'Required Level', 'Req Level', 'Cast Time', 'Cooldown', 'Recast', 'Range Damage',
+  ...QUALIFIED_DAMAGE_KEYS
 ]
 
 const ALL_KEYS = [...SAVE_KEYS, ...EFFECT_KEYS, ...STRUCT_KEYS, ...STAT_KEYS]
@@ -309,6 +326,32 @@ export function parseStatsBlock(raw: string): ItemStatBlock {
       applyPair(out, key, value)
     }
   }
+  return out
+}
+
+const QUALIFIED_DAMAGE_RE = new RegExp(`(?:^|\\s)(?:${QUALIFIED_DAMAGE_KEYS.map(esc).join('|')})\\s*:`, 'i')
+const QUALIFIED_DAMAGE_UPPER: ReadonlySet<string> = new Set(QUALIFIED_DAMAGE_KEYS.map((k) => k.toUpperCase()))
+
+/**
+ * A STORED block, re-read for the one thing an older parse got wrong: a qualified damage line
+ * (`Fire DMG: 4`, `Bane DMG: Undead +25`) overwriting the base `DMG:` (see `QUALIFIED_DAMAGE_KEYS`).
+ *
+ * The committed corpus is parsed at scrape time, so the parser fix alone would wait for the next
+ * rescrape; this is the load-time half (`itemsDb.knowledgeFromDb`, the rename overlay's
+ * precedent: corrected at LOAD, never in the file). It touches nothing else in the block — the
+ * stored block may carry folds the raw text does not (`|focus_effect`) — and it is IDEMPOTENT: a
+ * block parsed by the fixed parser already agrees, and comes back as the same object.
+ */
+export function withQualifiedDamage(block: ItemStatBlock, statsBlock: string | undefined): ItemStatBlock {
+  if (statsBlock === undefined || !QUALIFIED_DAMAGE_RE.test(statsBlock)) return block
+  const fresh = parseStatsBlock(statsBlock)
+  const have = new Set(block.stats.map((s) => s.key))
+  const added = fresh.stats.filter((s) => QUALIFIED_DAMAGE_UPPER.has(s.key) && !have.has(s.key))
+  if (fresh.dmg === block.dmg && added.length === 0) return block
+  const out: ItemStatBlock = { ...block, stats: [...block.stats, ...added] }
+  // Absent stays the only spelling of "states no base damage" (a bane-only line is not a DMG).
+  if (fresh.dmg === undefined) delete out.dmg
+  else out.dmg = fresh.dmg
   return out
 }
 
