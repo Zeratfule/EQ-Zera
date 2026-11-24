@@ -1,0 +1,124 @@
+<!-- TRIMMED from eqlwiki.com Alternate_Advancement rev 201518 (2026-11-23): headings, table syntax and
+     the rows below copied verbatim; every irregular row shape the page has is represented. -->
+== About Alternate Advancement ==
+The Alternate Advancement system (AA for short) was introduced to EverQuest in the Shadows of Luclin expansion in 2001.  This feature was originally available to players who were level 51 and above, providing an additional way to grow in power beyond the level cap by engaging in any activity that provides experience.  On live servers, there is an AA slider, that allows you to choose how much of your leveling experience goes towards getting an AA point, and how much goes towards gaining a new level. There is no AA slider in EverQuest Legends, so there is no way to change the rates at which you gain AA points.
+
+== General AAs ==
+{| class="wikitable sortable"
+! Name !! Ranks !! Cost !! Description
+|-
+| Adamant Will || 4 || 2/4/6/9 || This passive ability grants you an additional 20/40/60/80% chance to resist charm, and 15/30/45/60% chance to resist mesmerization spells. Requirements: Level 1.
+|-
+|Full Potential
+|1
+|0
+|This passive ability provides the following storage capacity increases. +50 Tradeskill slots, +25 Dragon's Hoard, +5 Activated Item Slots, +25 Equipment Slots, +25 Exaltation Slots. Requirements: Level 50.
+|-
+| Packrat || 10 || 1 for all ranks || This passive ability reduces the weight of all equipped and carried items by 5/10/15/20/25/30/35/40/45/50%. Requirements: Level 1.
+|}
+
+== Archetype AAs ==
+{| class="wikitable sortable"
+! Name !! Ranks !! Cost !! Description
+|-
+| Critical Affliction || 3 || 3/6/9 || This passive ability increases the chance your damage over time spells will deal critical damage at each 6 second interval they are active by 3/6/9%. Requirements: Level 1.
+|-
+| Destructive Cascade || 3 || 2/4/6 || This passive ability increases the damage dealt by your critical damage over time spells by 125/150/175%. Requires Critical Affliction rank 1/2/3. Requirements: Level 1.
+|-
+| Destructive Fury || 3 || 2/4/6 || This passive ability increases the damage dealt by your critical direct damage spells by 30/60/100%. Requirements: Level 1, Fury of Magic at Level 1.
+|-
+| Fury of Magic || 4 || 1/2/3/4 || This passive ability increases your chance to land a critical hit with your direct damage spells by 2/4/7/10%. Requirements: Level 1.
+|-
+| Innate Camouflage || 1 || 5 || Ability Activation ID: 80 - Refresh Time: 0:00:07 - Ability Timer(s): 2. This ability, when activated, grants you standard invisibility for up to 20 minutes. Requirements: Level 40.<br>
+Can wear off in under 20 minutes, but is instant-cast and has only a 7-second cooldown.
+|-
+|Point Blank Fire
+|1
+|0
+|This toggleable ability causes your auto attacks to prefer your ranged weapons, even in melee range. Additionally allows for double and triple attacks from ranged attacks regardless of toggle state. Requirements: Level 1
+|}
+
+== Class AAs ==
+=== Bard Class AAs ===
+{| class="wikitable sortable"
+! colspan="4" | Bard Class AAs
+|-
+! Name !! Ranks !! Cost !! Description
+|-
+| Symphonic Aura || 5 || 0/3/3/3/3 || Ability Activation ID: 152 - Refresh Time: 0:00:01 - Ability Timer(s): 0. This toggleable ability allows one/two/three/four/five Bard songs to auto pulse. In order for a song to be eligible, it must have no mana cost, have no cooldown, and be a non-targeted area of effect song. Any song that meets these criteria cannot be played manually while the ability is turned on. This ability chooses the first eligible song, starting from your final spell gem, and working backwards. Requirements: Level 1. Rank 1 is auto-granted.
+|-
+| Unbound Versatility || 3 || 0 || Gives a passive 5/10/15% chance for you to continue casting through a stun. Requirements: Level 12/30/50.
+|}
+
+=== Druid Class AAs ===
+{| class="wikitable sortable"
+! colspan="4" | Druid Class AAs
+|-
+! Name !! Ranks !! Cost !! Description
+|-
+| Quick Evacuation || 3 || 3/6/9 || This passive ability reduces the cast time of your evacuation and succor spells and abilities by 10%. Requirements: Level 1.
+|}
+
+=== Magician Class AAs ===
+{| class="wikitable sortable"
+! colspan="4" | Magician Class AAs
+|-
+! Name !! Ranks !! Cost !! Description
+|-
+| Turn Summoned || 3 || 3/6/? || Ability Activation ID: 559 - Refresh Time: 0:05:00 - Ability Timer(s): 5. Turn Summoned I, when activated, deals 400/800/? damage to your elemental target and has a 5% chance to trigger Infusion of Elemental Light I which critically deals 32000 damage. Requirements: Level 45. Rank 2 requires level 59 so not reachable for now.
+|}
+
+=== Paladin Class AAs ===
+{| class="wikitable sortable"
+! colspan="4" | Paladin Class AAs
+|-
+! Name !! Ranks !! Cost !! Description
+|-
+| <s>Valiant Steed</s>|| 1 || 9 || <s>Ability Activation ID: 570 - Refresh Time: 0:00:01 - Ability Timer(s): 0. This ability, when activated, summons the bridle of a very fast Valiant Unicorn. Requirements: Level 50, Holy Steed at Level 1.</s> This AA has been removed.
+|}
+
+=== Ranger Class AAs ===
+{| class="wikitable sortable"
+! colspan="4" | Ranger Class AAs
+|-
+! Name !! Ranks !! Cost !! Description
+|-
+| Unbounded Strikethrough || 3 || 0 || This passive ability increases the chance you will strike through your opponent's active defenses, such as dodge, block, parry, and riposte, by 10/20/30%. Requirements: Level 12/30/50.
+|}
+
+=== Warrior Class AAs ===
+{| class="wikitable sortable"
+! colspan="4" | Warrior Class AAs
+|-
+! Name !! Ranks !! Cost !! Description
+|-
+| Warrior's Endurance || 1 || 6 || This passive ability increases your hit point regeneration rate by 1% of your maximum health per 6 seconds. Requirements: Level 30.
+|}
+
+=== Wizard Class AAs ===
+{| class="wikitable sortable"
+! colspan="4" | Wizard Class AAs
+|-
+! Name !! Ranks !! Cost !! Description
+|-
+| Quick Evacuation || 3 || 3/6/9 || This passive ability reduces the cast time of your evacuation and succor spells and abilities by 10/25/50%. Requirements: Level 1.
+|}
+
+== Special AAs ==
+Special AAs require either an achievement to unlock or using the [[Reincarnation System]]. Sharing Same Cooldown. for all HK
+
+{| class="wikitable sortable"
+! colspan="4" | Special AAs
+|-
+! Name !! Ranks I !! Rank II !! Rank III !! Description !! HK Share CoolDown on 90sec timer
+|-
+| Banestrike || 2 || 4 || 7% & rankIV-10% || This passive ability improves the base damage of your melee attacks and the power of your damaging and healing abilities by 2/4/7/10%. Complete Slayer achievements to progress this ability. Requirements: Level 1.
+|-
+| Class Reincarnation: Bard || 3 || 6 || 9 || This passive ability increases your movement speed by 3%. || 	Fading Memories: escape from NPCs up to 5 levels above you, become last on rampage lists, and gain permanent invisibility (Evader's Invisibility)
+|-
+| Class Reincarnation: Barbarian || 3% || 6% || 9% || This passive ability reduces incoming cold damage by 3%. 
+|-
+| Class Reincarnation: Halfling || 15% || 30 || 45 ||| This passive ability will mitigate the effects of any negative movement speed effect by 15%.
+|-
+| Reincarnation: Completionist || 1 || 2 || 3 || This passive ability increases the damage of your melee by 1%. You can raise your rank in this ability by completing all Class Reincarnations. 
+|}

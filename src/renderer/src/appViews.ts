@@ -12,6 +12,9 @@ export type View =
   | 'bosses'
   | 'posky'
   | 'races'
+  // THE AAs TAB (EQ Zera): the Alternate Advancement planner - what your class trio can buy, what
+  // your log says you hold, and what a plan of target ranks costs and when you can afford it.
+  | 'aa'
   | 'alerts'
   | 'leveling'
   | 'loot'
@@ -92,6 +95,7 @@ export const VIEW_LABELS: Record<View, string> = {
   bosses: 'Raid Targets',
   posky: 'Plane of Sky',
   races: 'Races',
+  aa: 'AAs',
   alerts: 'Alerts',
   leveling: 'Leveling',
   loot: 'Loot',
@@ -136,6 +140,7 @@ const KNOWN_VIEWS: View[] = [
   'bosses',
   'posky',
   'races',
+  'aa',
   'alerts',
   'leveling',
   'loot',
