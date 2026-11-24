@@ -27,6 +27,10 @@ export const IPC = {
   // renderer -> main: state (count) or take back (null) ONE item's held count by hand — the
   // correction for an item the log and the dump cannot see the truth about (JOS-186).
   setItemOverride: 'progress:setItemOverride',
+  // renderer -> main: merge confirmed reincarnations the log showed / state one class or race's
+  // reincarnation count by hand (shared/reincarnation.ts).
+  recordReincarnations: 'progress:recordReincarnations',
+  setReincarnationCount: 'progress:setReincarnationCount',
   // main -> renderer: progress changed (quest completion / inventory), so every
   // view that shows progress stays consistent without re-fetching on a timer.
   onProgress: 'progress:changed',

@@ -42,6 +42,7 @@ import { EMPTY_LEVELING } from './levelingModule'
 // The four hero cards — split into their own file the day this one reached the measured ceiling.
 import { LevelingHeroes } from './LevelingHeroes'
 import { NewAtLevelPanel } from './NewAtLevelPanel'
+import { ReincarnationPanel } from './ReincarnationPanel'
 // THE RIGHT COLUMN'S FIRST PANEL (JOS-445): of everything the loadout already owns, what is best at
 // the level being viewed. It reads no scope and no chart — only the loadout — so it is the reason
 // the right column can exist on a log the charts cannot draw.
@@ -644,6 +645,8 @@ export default function LevelingView({
               what this placement is for. The consequence, stated so the specs can measure it: the
               tab's deepest pixel is now usually the RIGHT column's, so scrolling the page to the
               very bottom no longer guarantees this panel is in frame. */}
+          {/* Reincarnation: the record, its AAs and the reported XP cost (ReincarnationPanel.tsx). */}
+          <ReincarnationPanel events={state.reincarnations} prog={prog} currentLevel={currentLevel} />
           <NewAtLevelPanel {...unlockPanel} />
         </Stack>
 

@@ -54,6 +54,8 @@ import { registerPresenceIpc } from './presence'
 // The QUEST TRACKER's read/write pair (EQ Zera) — one more per-character document beside the
 // planner's three, in a leaf of its own for the reason every other leaf in this folder is one.
 import { registerQuestPinsIpc } from './questPins'
+// The reincarnation record's merge + hand-count pair (shared/reincarnation.ts).
+import { registerReincarnationIpc } from './reincarnation'
 import { registerCraftIpc } from './craft'
 import { registerReleaseNotesIpc } from './releaseNotes'
 // EverQuest Legends patch notes: the developer's posted notes, fetched by main and cached on disk.
@@ -143,6 +145,7 @@ export function registerIpc(): void {
   registerMapsIpc()
   registerPresenceIpc()
   registerQuestPinsIpc()
+  registerReincarnationIpc()
   registerCraftIpc()
   registerWindowIpc()
   registerOverlayMoveIpc()

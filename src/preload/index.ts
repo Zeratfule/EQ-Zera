@@ -25,6 +25,7 @@ import type { ClassAbbr, ComboDelta, ComboSnap } from '../shared/classCombo'
 // The level-unlock and planner types moved with their methods: knowledge.ts (JOS-293) carries
 // the spell/item/mob/unlock lookups, planner.ts (JOS-285) the exaltation + gear reads.
 import { characterApi } from './characterApi'
+import { reincarnationApi } from './reincarnationApi'
 // Posting that same character card to a Discord channel webhook (owner, 2026-09-10), split out for
 // the same file-mass reason - and because the five doors of a secret-bearing feature read better
 // together than scattered through this list. See ./discordApi.ts.
@@ -478,6 +479,7 @@ const api = {
    *  transport that answers `null` for "no dump" has no business turning anything into a red box —
    *  but nothing is expected to produce one now. */
   ...characterApi,
+  ...reincarnationApi,
 
   /** Posting a character card to a Discord CHANNEL (docs/plans/discord-connect.md).
    *  A channel is CONNECTED through Discord's own picker (2026-09-11) or, under Advanced, pasted

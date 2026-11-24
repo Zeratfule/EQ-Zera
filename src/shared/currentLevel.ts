@@ -46,6 +46,8 @@ export type LevelSource =
   | 'who'
   /** `You have gained a level! Welcome to level N!` */
   | 'ding'
+  /** a reincarnation's grant lines (shared/reincarnation.ts) — the new life is level 1 */
+  | 'reincarnation'
 
 /** The level, the instant the log stated it, and which line did. */
 export interface LevelStatement {
@@ -121,8 +123,15 @@ export function laterStatement(a: LevelStatement, b: LevelStatement): LevelState
  */
 export function dingStatement(snap: ProgressionSnap): LevelStatement | null {
   const n = snap.levelValue.length
-  if (n === 0) return null
-  return { level: snap.levelValue[n - 1], ts: snap.levelTs[n - 1], source: 'ding' }
+  const ding: LevelStatement | null =
+    n === 0 ? null : { level: snap.levelValue[n - 1], ts: snap.levelTs[n - 1], source: 'ding' }
+  // A reincarnation after the last ding restarts the bar at level 1, with no ding to say so.
+  const rebirths = snap.rebirthTs ?? []
+  const rebirth = rebirths.length ? rebirths[rebirths.length - 1] : null
+  if (rebirth !== null && (ding === null || rebirth > ding.ts)) {
+    return { level: 1, ts: rebirth, source: 'reincarnation' }
+  }
+  return ding
 }
 
 /** `3d 4h` / `2h 10m` / `14m` / `31s` — the vocabulary the leveling surfaces already speak. */
@@ -138,7 +147,8 @@ function agoText(ms: number): string {
 /** The words for each source, in the two places they are needed. */
 const SOURCE_WORDS: Record<LevelSource, { from: string; said: string }> = {
   who: { from: '/who', said: 'Your own /who row stated this level' },
-  ding: { from: 'level-up', said: 'Your last level-up reported this level' }
+  ding: { from: 'level-up', said: 'Your last level-up reported this level' },
+  reincarnation: { from: 'reincarnation', said: 'You reincarnated - the new life started at level 1' }
 }
 
 /**

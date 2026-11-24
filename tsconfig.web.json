@@ -37,6 +37,8 @@
     // what `perf.ts` (the HUD's slice of the bridge) is doing in this list.
     "src/preload/perf.ts",
     "src/preload/characterApi.ts",
+    // …and `reincarnationApi.ts` (the reincarnation record's merge + hand-count pair), likewise.
+    "src/preload/reincarnationApi.ts",
     // …and `discordApi.ts` (posting a character card to a Discord channel webhook), likewise.
     "src/preload/discordApi.ts",
     // …and `syncApi.ts` (sending your settings to another PC of your own), likewise.

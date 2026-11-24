@@ -170,12 +170,11 @@ function tooOffline(stats: RangeStats): boolean {
  */
 function anchorBlocked(
   snap: ProgressionSnap,
-  dingTs: number,
+  anchor: LevelStatement,
   level: LevelStatement | null | undefined
 ): EtaBlocked | null {
-  const dinged = snap.levelValue[snap.levelValue.length - 1]
-  if (level?.source === 'who' && level.ts > dingTs && level.level !== dinged) return 'swapped'
-  if (snap.windowStart > 0 && dingTs < snap.windowStart) return 'clipped'
+  if (level?.source === 'who' && level.ts > anchor.ts && level.level !== anchor.level) return 'swapped'
+  if (snap.windowStart > 0 && anchor.ts < snap.windowStart) return 'clipped'
   return null
 }
 
@@ -204,18 +203,23 @@ function paceOf(stats: RangeStats): { blocked: EtaBlocked } | { blocked: null; p
  * the ding belongs to a bar that no longer exists. "~2h to level 51" while the header says level
  * 11 is precisely the incoherence this ticket is about. Omit it and the function behaves exactly
  * as it always did.
+ *
+ * THE ANCHOR IS THE LAST DING, OR A LATER REINCARNATION (`dingStatement`): a new life's bar starts
+ * at level 1 at the grant lines, with no ding to say so, and anchoring on the cap's ding would sum
+ * the at-cap lines and refuse. NO REINCARNATION XP SCALING HERE, deliberately: the percentages the
+ * game states are already of the larger reincarnated bar, so applying the reported multiplier
+ * (shared/reincarnationXp.ts) would count the penalty twice.
  */
 export function levelEta(
   snap: ProgressionSnap,
   stats: RangeStats,
   level?: LevelStatement | null
 ): LevelEta {
-  const n = snap.levelTs.length
-  if (n === 0) return { blocked: 'no-ding' }
-  const dingTs = snap.levelTs[n - 1]
-  const anchor = anchorBlocked(snap, dingTs, level)
-  if (anchor) return { blocked: anchor }
-  const { equiv, unstated } = statedSinceDing(snap, dingTs)
+  const anchor = dingStatement(snap)
+  if (!anchor) return { blocked: 'no-ding' }
+  const refused = anchorBlocked(snap, anchor, level)
+  if (refused) return { blocked: refused }
+  const { equiv, unstated } = statedSinceDing(snap, anchor.ts)
   if (unstated > 0) return { blocked: 'unstated' }
   // More than a full bar's worth stated with no ding to show for it: the model and the log
   // disagree, and the honest answer to "where am I in the bar" is that we do not know.
@@ -225,7 +229,7 @@ export function levelEta(
   return {
     blocked: null,
     ms: ((1 - equiv) / pace.perHour) * MS_PER_HOUR,
-    toLevel: snap.levelValue[n - 1] + 1,
+    toLevel: anchor.level + 1,
     progress: equiv,
     offlineMs: stats.offlineMs
   }

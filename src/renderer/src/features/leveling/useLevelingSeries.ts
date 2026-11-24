@@ -14,7 +14,7 @@
 import { useMemo } from 'react'
 import type { AAEvent, AASpendEvent, LevelingSnap } from '@shared/types'
 import { computeAAAccounting } from '@shared/aa'
-import { buildLevelSegments, sortLevels, type LevelPoint, type LevelSegment } from './levelSeries'
+import { buildLevelSegments, sortLevels, withRebirths, type LevelPoint, type LevelSegment } from './levelSeries'
 import type { AaPoint } from './levelChartGeometry'
 import type { FeedItem } from './LedgerColumn'
 // The feed is the one PURE piece of this move, so it sits where a node test can reach it — see
@@ -71,8 +71,10 @@ export interface LevelingSeries {
 
 /** Every fold over the `leveling` snapshot, once. See the file header for why they live together. */
 export function useLevelingSeries(state: LevelingSnap): LevelingSeries {
-  const { levels, aaGains: aas, aaSpends: spends } = state
-  const sortedLevels = useMemo(() => sortLevels(levels), [levels])
+  const { levels, aaGains: aas, aaSpends: spends, reincarnations } = state
+  // A reincarnation is folded in as a new life's level-1 point (levelSeries.ts `withRebirths`), so
+  // every series below — segments, feed, curve — reads it as a life, never as a swap.
+  const sortedLevels = useMemo(() => withRebirths(sortLevels(levels), reincarnations ?? []), [levels, reincarnations])
   // eslint-disable-next-line eqc/no-domain-munging -- JOS-459 cutover ledger item 3: no served view source answers this yet, so the renderer still derives AAEvent. Becomes a view descriptor when the source lands.
   const sortedAAs = useMemo(() => [...aas].sort((a, b) => a.ts - b.ts), [aas])
   const levelSegments = useMemo(() => buildLevelSegments(sortedLevels), [sortedLevels])

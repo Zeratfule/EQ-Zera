@@ -215,7 +215,7 @@ export function visibleSegments(segments: readonly LevelSegment[], t0: number): 
     const pts = segments[s].points
     const after = pts.filter((p) => p.ts > t0)
     const kept = s === anchorSeg ? [pts[stepIndexAt(pts, t0)], ...after] : after
-    if (kept.length > 0) out.push({ points: kept, afterSwap: segments[s].afterSwap })
+    if (kept.length > 0) out.push({ ...segments[s], points: kept })
   }
   return out
 }

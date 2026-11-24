@@ -238,12 +238,26 @@ export interface LevelSpan {
  */
 export function recentLevelSpans(snap: ProgressionSnap, max: number = HISTORY_MAX): LevelSpan[] {
   const spans: LevelSpan[] = []
+  const rebirths = snap.rebirthTs ?? []
+  // Reincarnated since the last ding: this life has completed no level yet.
+  const lastDing = snap.levelTs.length ? snap.levelTs[snap.levelTs.length - 1] : Number.POSITIVE_INFINITY
+  if (rebirths.some((r) => r > lastDing)) return spans
   for (let i = snap.levelTs.length - 1; i > 0 && spans.length < max; i--) {
+    const t0 = snap.levelTs[i - 1]
+    const t1 = snap.levelTs[i]
+    // A REINCARNATION ENDS THE RUN TOO, and its own bar is the last one counted: the new life's
+    // first ding is timed from the grant lines at level 1, never across the life before it.
+    const rebirth = rebirths.find((r) => r > t0 && r < t1)
+    if (rebirth !== undefined) {
+      const offlineMs = offlineMsIn(snap, rebirth, t1)
+      spans.push({ fromLevel: 1, toLevel: snap.levelValue[i], ms: t1 - rebirth - offlineMs, offlineMs })
+      break
+    }
     const fromLevel = snap.levelValue[i - 1]
     const toLevel = snap.levelValue[i]
     if (toLevel <= fromLevel) break
-    const offlineMs = offlineMsIn(snap, snap.levelTs[i - 1], snap.levelTs[i])
-    spans.push({ fromLevel, toLevel, ms: snap.levelTs[i] - snap.levelTs[i - 1] - offlineMs, offlineMs })
+    const offlineMs = offlineMsIn(snap, t0, t1)
+    spans.push({ fromLevel, toLevel, ms: t1 - t0 - offlineMs, offlineMs })
   }
   return spans.reverse()
 }
