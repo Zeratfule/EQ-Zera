@@ -132,7 +132,7 @@ pub fn tables_ready() -> bool {
 
 /// Wiki class name → `/who` code. The wiki spells the Shadow Knight both ways across its own spell
 /// pages, and both canonicalize to SHD.
-fn abbr_by_wiki_name(name: &str) -> Option<ClassAbbr> {
+pub fn abbr_by_wiki_name(name: &str) -> Option<ClassAbbr> {
     Some(match name {
         "bard" => "BRD",
         "beastlord" => "BST",

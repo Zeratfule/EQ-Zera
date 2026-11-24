@@ -51,6 +51,10 @@ pub struct CharacterModule {
     /// `set_character` been called yet", the inner is the ref it was called with — and the call
     /// itself moves the revision, so a `None` ref and no call at all publish different seqs.
     pending: Option<Option<Value>>,
+    /// A reincarnation states level 1 at its first grant line (`reincarnation.rs`), so the level
+    /// is not left at the cap until the next ding.
+    #[serde(default)]
+    rebirths: super::reincarnation::GrantTracker,
 }
 
 impl CharacterModule {
@@ -61,6 +65,7 @@ impl CharacterModule {
             level: None,
             rev: 0,
             pending: Some(character),
+            rebirths: Default::default(),
         }
     }
 
@@ -104,6 +109,7 @@ impl EqModule for CharacterModule {
         // The ref survives; see the header.
         self.zone = None;
         self.level = None;
+        self.rebirths.reset();
         self.rev += 1;
         // The construction ref lands here, once: `rev` IS the published `seq`, so the ORDER of the
         // two bumps is observable, and the composition root spends them as reset-then-setCharacter.
@@ -120,7 +126,17 @@ impl EqModule for CharacterModule {
                 // one. The ref is pushed in and stays.
                 self.zone = None;
                 self.level = None;
+                self.rebirths.reset();
                 self.rev += 1;
+            }
+            "aaSpend" => {
+                if let Some(a) = self.rebirths.admit(ev).filter(|a| a.opens) {
+                    self.state_level(LevelStatement {
+                        level: 1,
+                        ts: a.ts,
+                        source: "reincarnation",
+                    });
+                }
             }
             "zone" => {
                 let zone = ev.str("zone").map(str::to_string);

@@ -55,6 +55,9 @@ pub struct ComboModule {
     who_rows: Vec<WhoRow>,
     levels: Vec<LevelPoint>,
     corrections: Vec<ComboCorrection>,
+    /// Reincarnations: a new life with the same classes, which the swap detectors must not cut.
+    #[serde(default)]
+    reincarnation: super::reincarnation::ReincarnationLog,
     /// `epochDetector.ts LAUNCH_MS` — a correction older than the launch describes the wiped beta
     /// character that shares this log file. A correction is the one combo state outliving a replay.
     launch_ms: i64,
@@ -72,6 +75,7 @@ impl ComboModule {
             who_rows: Vec::new(),
             levels: Vec::new(),
             corrections: Vec::new(),
+            reincarnation: Default::default(),
             launch_ms,
             spell_classes,
             rev: 0,
@@ -111,10 +115,14 @@ impl EqModule for ComboModule {
         self.observations.clear();
         self.who_rows.clear();
         self.levels.clear();
+        self.reincarnation = Default::default();
         self.mark_stale();
     }
 
     fn on_event(&mut self, ev: &Event, _live: bool) {
+        if self.reincarnation.on_event(ev) {
+            self.mark_stale();
+        }
         if ev.kind() == "epoch" {
             // Character rebirth: observations before the boundary belong to a dead character. Note
             // what is deliberately absent — a level-regression epoch trigger. A level drop is a
@@ -156,11 +164,13 @@ impl EqModule for ComboModule {
     }
 
     fn snapshot(&self) -> Value {
+        let rebirths = super::reincarnation::rebirth_instants(&self.reincarnation.events());
         let intervals = build_intervals(&IntervalInput {
             observations: &self.observations,
             who_rows: &self.who_rows,
             levels: &self.levels,
             corrections: &self.corrections,
+            rebirths: &rebirths,
         });
         // `current` is the last interval, or null — the same object, never a second reading.
         let current = intervals.last().cloned();

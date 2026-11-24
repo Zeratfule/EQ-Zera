@@ -44,6 +44,9 @@ pub struct LevelingModule {
     aa_gains: Vec<AaGainRow>,
     aa_spends: Vec<AaSpendRow>,
     aa_potions: Vec<AaPotionRow>,
+    /// Reincarnations (`reincarnation.rs`): published, derived, never appended to.
+    #[serde(default)]
+    reincarnation: super::reincarnation::ReincarnationLog,
     seq: i64,
     /// The announce cursor — see [`crate::announce`]. Four arms append and a fifth clears; that is
     /// the whole of what this module publishes, and every other log line leaves it untouched.
@@ -78,6 +81,7 @@ impl EqModule for LevelingModule {
         self.aa_gains.clear();
         self.aa_spends.clear();
         self.aa_potions.clear();
+        self.reincarnation = Default::default();
         self.seq = 0;
         self.announce.reset();
     }
@@ -85,12 +89,14 @@ impl EqModule for LevelingModule {
     fn on_event(&mut self, ev: &Event, _live: bool) {
         self.seq = ev.seq();
         // One bump for five arms, ahead of the match rather than inside each, because the arms are
-        // exactly the mutations: four appends and a clear.
+        // exactly the mutations: four appends and a clear. A `/who` row or an unclaimed
+        // reincarnation line can move the derived reincarnations, so those announce too.
+        let reborn = self.reincarnation.on_event(ev);
         let published = matches!(
             ev.kind(),
             "epoch" | "level" | "aaGain" | "aaSpend" | "aaPotion"
         );
-        if published {
+        if published || reborn {
             self.announce.changed(self.seq);
         }
         match ev.kind() {
@@ -128,7 +134,7 @@ impl EqModule for LevelingModule {
     }
 
     fn snapshot(&self) -> Value {
-        json!({
+        let mut out = json!({
             "seq": self.seq,
             "state": {
                 "levels": self.levels,
@@ -136,6 +142,12 @@ impl EqModule for LevelingModule {
                 "aaSpends": self.aa_spends,
                 "aaPotions": self.aa_potions
             }
-        })
+        });
+        // Absent unless there is one, so no existing character's snapshot moves.
+        let reincarnations = self.reincarnation.events();
+        if !reincarnations.is_empty() {
+            out["state"]["reincarnations"] = json!(reincarnations);
+        }
+        out
     }
 }

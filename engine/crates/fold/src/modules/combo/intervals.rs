@@ -24,7 +24,8 @@
 //! at once.
 
 use super::evidence::ClassObservation;
-use super::levels::{level_range, level_regressed_inside, LevelPoint, LevelStatements, WhoRow};
+use super::levels::{drop_is_rebirth, level_range, level_regressed_inside, slot_prior};
+use super::levels::{LevelPoint, LevelStatements, WhoRow};
 use super::score::{score_slots, stated_slots, ComboSlot};
 use super::ClassAbbr;
 use crate::jsmap::JsMap;
@@ -32,9 +33,6 @@ use serde::{Deserialize, Serialize};
 
 mod overlap;
 use overlap::overlap_ms;
-
-/// The tertiary slot unlocks at level 10 — a PRIOR, overridden by a `/who` row's own arity.
-const TERTIARY_UNLOCK_LEVEL: i64 = 10;
 /// § 4.5 R8: never bisect below this, or an ambiguous span thrashes into confetti.
 const WINDOW_FLOOR_MS: i64 = 15 * 60_000;
 /// Bound on shift bisection. The real log needs ONE cut; this is the runaway guard.
@@ -113,6 +111,8 @@ pub struct IntervalInput<'a> {
     pub who_rows: &'a [WhoRow],
     pub levels: &'a [LevelPoint],
     pub corrections: &'a [ComboCorrection],
+    /// Reincarnation instants: a new life with the same classes, never a swap.
+    pub rebirths: &'a [i64],
 }
 
 /// Consecutive `/who` rows that disagree, minus the swaps something sharper already dated.
@@ -209,13 +209,12 @@ pub fn who_shift_boundaries(
 }
 
 /// A non-increasing level ding. The window is honestly wide — tens of hours — and the UI is
-/// expected to draw it as a range.
-pub fn level_drop_boundaries(levels: &[LevelPoint]) -> Vec<Boundary> {
+/// expected to draw it as a range. A drop a reincarnation explains is not a swap and cuts nothing.
+pub fn level_drop_boundaries(levels: &[LevelPoint], rebirths: &[i64]) -> Vec<Boundary> {
     let mut out = Vec::new();
     for i in 1..levels.len() {
-        let prev = levels[i - 1];
-        let ding = levels[i];
-        if ding.level > prev.level {
+        let (prev, ding) = (levels[i - 1], levels[i]);
+        if ding.level > prev.level || drop_is_rebirth(prev.ts, ding.ts, rebirths) {
             continue;
         }
         out.push(Boundary {
@@ -724,13 +723,10 @@ fn to_interval(slice: &Slice, input: &IntervalInput, index: usize) -> ComboInter
     let statements = LevelStatements {
         levels: input.levels,
         who_rows: input.who_rows,
+        rebirths: input.rebirths,
     };
     let (level_lo, level_hi) = level_range(&statements, slice.start.at, slice.end);
-    let prior: usize = if level_lo.is_some_and(|l| l < TERTIARY_UNLOCK_LEVEL) {
-        2
-    } else {
-        3
-    };
+    let prior = slot_prior(level_lo, slice.end, input.rebirths);
     let decision = slots_for(slice, input, prior);
     let last_ts = slice.observations.last().map(|o| o.ts);
     let mut interval = ComboInterval {
@@ -838,11 +834,12 @@ pub fn build_intervals(input: &IntervalInput) -> Vec<ComboInterval> {
         who_rows: input.who_rows,
         levels: input.levels,
         corrections: input.corrections,
+        rebirths: input.rebirths,
     };
     // Level dings first (the log SAYS a swap happened), then the evidence shift inside each segment
     // they cut — a shift is only meaningful within one announced era. `/who` disagreements come
     // last, because they only fire where nothing sharper already cut.
-    let drops = level_drop_boundaries(input.levels);
+    let drops = level_drop_boundaries(input.levels, input.rebirths);
     let mut shifts: Vec<Boundary> = Vec::new();
     for segment in hard_segments(&observations, &merge_boundaries(&drops)) {
         // The prior is enough here: a 2-slot era simply cannot be over-determined at 3.

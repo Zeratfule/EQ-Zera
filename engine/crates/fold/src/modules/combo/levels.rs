@@ -38,12 +38,23 @@ pub struct LevelPoint {
 pub struct LevelStatements<'a> {
     pub levels: &'a [LevelPoint],
     pub who_rows: &'a [WhoRow],
+    /// Reincarnation instants (`reincarnation.rs`): each states level 1, and none is a swap.
+    pub rebirths: &'a [i64],
 }
 
-/// The level in force at `ts` — the LATEST statement at or before it, from either source.
+/// The tertiary slot unlocks at level 10 — a PRIOR, overridden by a `/who` row's own arity.
+const TERTIARY_UNLOCK_LEVEL: i64 = 10;
+
+/// The level in force at `ts` — the LATEST statement at or before it, from any source.
 pub fn level_at(input: &LevelStatements, ts: i64) -> Option<i64> {
     let mut level: Option<i64> = None;
     let mut at = i64::MIN;
+    for &r in input.rebirths {
+        if r <= ts && r >= at {
+            level = Some(1);
+            at = r;
+        }
+    }
     for p in input.levels {
         if p.ts <= ts && p.ts >= at {
             level = Some(p.level);
@@ -57,6 +68,26 @@ pub fn level_at(input: &LevelStatements, ts: i64) -> Option<i64> {
         }
     }
     level
+}
+
+/// A ding below the previous one that a reincarnation explains: the new life restarts at 1 with
+/// the SAME classes, so it is never a swap. The far edge allows for the grant lines trailing it.
+pub fn drop_is_rebirth(prev_ts: i64, ding_ts: i64, rebirths: &[i64]) -> bool {
+    let tail = crate::modules::reincarnation::GROUP_MS;
+    rebirths
+        .iter()
+        .any(|&r| r >= prev_ts && r <= ding_ts + tail)
+}
+
+/// The slot prior: 2 below the tertiary unlock, 3 after — and 3 at every level once the character
+/// has reincarnated, because a reincarnated loadout keeps all three classes from level 1.
+pub fn slot_prior(level_lo: Option<i64>, end: Option<i64>, rebirths: &[i64]) -> usize {
+    let reborn = rebirths.iter().any(|&r| end.is_none_or(|e| r < e));
+    if !reborn && level_lo.is_some_and(|l| l < TERTIARY_UNLOCK_LEVEL) {
+        2
+    } else {
+        3
+    }
 }
 
 /// Every level stated inside `[from, end)`. `from` is inclusive for the range — a ding that opens
@@ -79,6 +110,7 @@ fn stated_in(input: &LevelStatements, from: i64, end: Option<i64>, inclusive: bo
             .filter(|r| inside(r.ts))
             .map(|r| r.level),
     );
+    out.extend(input.rebirths.iter().filter(|&&r| inside(r)).map(|_| 1));
     out
 }
 
@@ -105,11 +137,19 @@ pub fn level_range(
 /// Stated as a regression rather than as a width, because a width is not evidence of anything:
 /// `levels 24-50` is a legitimate month of grinding, and `levels 11-50` is impossible only because
 /// the 11 came after the 50. The interval still carries the honest hull; this is what the hull
-/// cannot express.
+/// cannot express. A reincarnation inside the span restarts the count, so only the part before the
+/// first one is asked.
 pub fn level_regressed_inside(input: &LevelStatements, start_at: i64, end: Option<i64>) -> bool {
     let Some(in_force) = level_at(input, start_at) else {
         return false;
     };
+    let first_rebirth = input
+        .rebirths
+        .iter()
+        .copied()
+        .filter(|&r| r > start_at && end.is_none_or(|e| r < e))
+        .min();
+    let end = first_rebirth.map_or(end, Some);
     stated_in(input, start_at, end, false)
         .into_iter()
         .any(|level| level < in_force)
