@@ -24,6 +24,7 @@ import type { ExaltPlan } from './planner/types'
 import type { GearSet } from './planner/gearSet'
 import type { WishList } from './planner/wishlist'
 import type { QuestPin } from './questPins'
+import type { ReincarnationRecord } from './reincarnation'
 
 /** Held-item counts keyed by lowercased item name. */
 export type HeldCounts = Record<string, number>
@@ -221,6 +222,12 @@ export interface ProgressState {
    * both halves).
    */
   wishlist?: WishList
+  /**
+   * REINCARNATIONS (shared/reincarnation.ts): every confirmed life the log showed, merged by
+   * instant so a re-fold or a rotated log never lowers a count, plus the player's hand-stated
+   * counts, which win. ADDITIVE and OPTIONAL, the `exaltPlans` precedent: no schema bump.
+   */
+  reincarnation?: ReincarnationRecord
   /**
    * THE QUEST TRACKER (EQ Zera) — the catalog quests this character is following, each with the
    * checklist steps the player ticked BY HAND and the instant a completion was recorded

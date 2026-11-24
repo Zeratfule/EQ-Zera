@@ -154,6 +154,11 @@ export interface ProgressionSnap {
   levelValue: number[]
   aaGainTs: number[]
   aaGainAmount: number[]
+  /**
+   * CONFIRMED reincarnation instants (shared/reincarnation.ts) — where a new life's level bar
+   * starts at 1. Uncapped like the dings; ABSENT on a character that never reincarnated.
+   */
+  rebirthTs?: number[]
 
   /** last event ts folded (clamps the open zone interval and an open selection). */
   lastTs: number

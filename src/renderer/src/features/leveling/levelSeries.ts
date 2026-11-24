@@ -19,12 +19,22 @@
 //   • the chart is drawn as disjoint step segments; nothing is interpolated across a swap.
 //   • the elapsed time between the last pre-swap ding and the first post-swap ding is NOT
 //     "how long that level took" — it spans the unobserved swap — so it is suppressed.
+//
+// REINCARNATION IS NOT A SWAP (shared/reincarnation.ts). A confirmed one is a POINT of its own —
+// level 1 at the grant lines — so the new life is a segment that opens there, the 1→2 bar is timed
+// from it, and the chart says "Reincarnated". An inferred one (a cap-to-fresh drop with one trio)
+// marks the first ding after the drop, labelled possible, and times nothing across it.
 
 import type { LevelEvent } from '@shared/types'
+// The fold itself is shared (relative: node tests import this file), so the renderer derives nothing.
+import type { RebirthMark } from '../../../../shared/reincarnationLevels'
+export { rebirthLabel, withRebirths, type RebirthMark } from '../../../../shared/reincarnationLevels'
 
 export interface LevelPoint {
   ts: number
   level: number
+  /** Present on the first point of a life a reincarnation opened. */
+  rebirth?: RebirthMark
 }
 
 /** One loadout's run of dings — monotonically non-decreasing by construction. */
@@ -36,13 +46,17 @@ export interface LevelSegment {
    * the chart marks the boundary instead of drawing a cliff through it.
    */
   afterSwap: boolean
+  /** Set (and `afterSwap` false) when a reincarnation opened this run instead of a swap. */
+  rebirth?: RebirthMark
 }
 
 export interface LevelFeedEntry {
   ts: number
   level: number
   afterSwap: boolean
-  /** ms since the previous ding — null for the first ding and for post-swap dings. */
+  /** The reincarnation that opened a life here, when one did. */
+  rebirth?: RebirthMark
+  /** ms since the previous ding — null for the first ding, post-swap dings and a life's opening. */
   sinceMs: number | null
 }
 
@@ -60,17 +74,23 @@ export function latestLevel(sorted: readonly LevelPoint[]): number | null {
   return sorted.length ? sorted[sorted.length - 1].level : null
 }
 
-/** The highest level ever reported (a real, separate fact — labeled as "peak", not current). */
+/**
+ * The highest level ever reported (a real, separate fact — labeled as "peak", not current). Across
+ * a reincarnation it stays the life before's cap: "peak" is the record, the hero's current level is
+ * where this life stands.
+ */
 export function peakLevel(sorted: readonly LevelPoint[]): number | null {
   return sorted.length ? sorted.reduce((m, p) => (p.level > m ? p.level : m), sorted[0].level) : null
 }
 
-/** Split the series at every downward transition; each break is one class swap. */
+/** Split the series at every downward transition (a swap) and every reincarnation (a new life). */
 export function buildLevelSegments(sorted: readonly LevelPoint[]): LevelSegment[] {
   const segs: LevelSegment[] = []
   for (const p of sorted) {
     const cur = segs[segs.length - 1]
-    if (!cur || p.level < cur.points[cur.points.length - 1].level) {
+    if (p.rebirth && cur) {
+      segs.push({ points: [p], afterSwap: false, rebirth: p.rebirth })
+    } else if (!cur || p.level < cur.points[cur.points.length - 1].level) {
       segs.push({ points: [p], afterSwap: segs.length > 0 })
     } else {
       cur.points.push(p)
@@ -92,6 +112,7 @@ export function swapCount(segments: readonly LevelSegment[]): number {
 export function levelFeedEntries(sorted: readonly LevelPoint[]): LevelFeedEntry[] {
   return sorted.map((p, i) => {
     const prev = i > 0 ? sorted[i - 1] : null
+    if (p.rebirth) return { ts: p.ts, level: p.level, afterSwap: false, rebirth: p.rebirth, sinceMs: null }
     const afterSwap = prev != null && p.level < prev.level
     return {
       ts: p.ts,

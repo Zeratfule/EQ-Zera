@@ -74,12 +74,13 @@
 // which is what keeps the SVG path a few hundred numbers instead of a few thousand.
 
 import type { ProgressionSnap } from '@shared/types'
-import type { LevelSegment } from './levelSeries'
+import type { LevelSegment, RebirthMark } from './levelSeries'
 import { xOf, type ChartScale } from './levelChartGeometry'
 
 /** WHY a stretch of the curve cannot be drawn. Four of levelEta's `EtaBlocked` names, on
- *  purpose — the surfaces must refuse in the same words (see the header). */
-export type CurveRefusal = 'unstated' | 'overfull' | 'clipped' | 'swapped'
+ *  purpose — the surfaces must refuse in the same words (see the header) — plus `reborn`, the
+ *  restart at a reincarnation the log only implies (a confirmed one is a level-1 ding of its own). */
+export type CurveRefusal = 'unstated' | 'overfull' | 'clipped' | 'swapped' | 'reborn'
 
 /** One stated bar position: the value in force FROM `ts` until the next point. */
 export interface CurvePoint {
@@ -114,6 +115,8 @@ export interface CurveDing {
   level: number
   /** first ding of a new loadout — the discontinuity, not a level gained. */
   afterSwap: boolean
+  /** first point of a new life — a reincarnation, never a swap. */
+  rebirth?: RebirthMark
 }
 
 export interface LevelCurve {
@@ -156,7 +159,9 @@ function flattenDings(segments: readonly LevelSegment[]): CurveDing[] {
   const out: CurveDing[] = []
   for (const seg of segments) {
     for (let i = 0; i < seg.points.length; i++) {
-      out.push({ ts: seg.points[i].ts, level: seg.points[i].level, afterSwap: i === 0 && seg.afterSwap })
+      const ding: CurveDing = { ts: seg.points[i].ts, level: seg.points[i].level, afterSwap: i === 0 && seg.afterSwap }
+      if (i === 0 && seg.rebirth) ding.rebirth = seg.rebirth
+      out.push(ding)
     }
   }
   return out
@@ -231,7 +236,9 @@ function clippedAt(snap: ExpColumns, dingTs: number): boolean {
  * anchor — flagged, but not a decrease.
  */
 function isUnannouncedRestart(ding: CurveDing, next: CurveDing): boolean {
-  return next.afterSwap || next.level <= ding.level
+  // A CONFIRMED reincarnation is announced: its level-1 point closes the bar before it like a ding.
+  if (next.rebirth && !next.rebirth.inferred) return false
+  return next.afterSwap || next.rebirth !== undefined || next.level <= ding.level
 }
 
 /**
@@ -251,7 +258,7 @@ function foldBar(o: {
   const { snap, ding, next, domainEnd, out } = o
   const barEnd = next ? next.ts : domainEnd
   if (next !== undefined && isUnannouncedRestart(ding, next)) {
-    out.gaps.push({ kind: 'swapped', t0: ding.ts, t1: next.ts, level: ding.level })
+    out.gaps.push({ kind: next.rebirth ? 'reborn' : 'swapped', t0: ding.ts, t1: next.ts, level: ding.level })
     return
   }
   if (clippedAt(snap, ding.ts)) {
@@ -458,5 +465,6 @@ export const CURVE_REFUSAL_NOTE: Record<CurveRefusal, string> = {
   unstated: 'experience lines here stated no percentage - unknown, not zero',
   overfull: 'the percentages since the last level-up already exceed a full level',
   clipped: 'the retained record no longer reaches back to the level-up this bar started at',
-  swapped: 'the bar restarted at a class swap the log never announced'
+  swapped: 'the bar restarted at a class swap the log never announced',
+  reborn: 'the bar restarted at a possible reincarnation the log did not state'
 }

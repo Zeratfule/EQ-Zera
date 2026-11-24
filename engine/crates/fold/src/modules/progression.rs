@@ -130,6 +130,10 @@ struct Snap {
     level_value: Vec<i64>,
     aa_gain_ts: Vec<i64>,
     aa_gain_amount: Vec<i64>,
+    /// Confirmed reincarnation instants — where a new life's level bar starts at 1. Uncapped like
+    /// the dings, and absent while empty so no existing snapshot moves.
+    #[serde(skip_serializing_if = "Vec::is_empty", default)]
+    rebirth_ts: Vec<i64>,
     last_ts: i64,
     window_start: i64,
     dropped: i64,
@@ -160,6 +164,9 @@ pub struct ProgressionModule {
     /// claim must never promote it to a zone-surviving summoned pet.
     ever_charmed: HashSet<String>,
     pending_exp: Option<PendingExp>,
+    /// Which reincarnation AA ranks were already printed, so a burst publishes one instant.
+    #[serde(default)]
+    rebirths: super::reincarnation::GrantTracker,
     /// The announce cursor — see [`crate::announce`]. It moves on the `Snap::last_ts` advance as
     /// well as on every column push: `last_ts` is a published field that `zoneBands.ts` clamps the
     /// open zone interval's right edge to, so announcing only on rows would under-announce and a
@@ -447,6 +454,7 @@ impl ProgressionModule {
         self.charmed.clear();
         self.ever_charmed.clear();
         self.pending_exp = None;
+        self.rebirths.reset();
     }
 
     fn fold(&mut self, ev: &Event) {
@@ -539,6 +547,10 @@ impl EqModule for ProgressionModule {
             self.s.last_ts = ev.ts();
             // A published field moved — see the `announce` field for why this bump is owed. Every
             // column push below bumps for itself.
+            self.announce.changed(self.seq);
+        }
+        if let Some(a) = self.rebirths.admit(ev).filter(|a| a.opens) {
+            self.s.rebirth_ts.push(a.ts);
             self.announce.changed(self.seq);
         }
         self.fold(ev);

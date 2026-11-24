@@ -51,6 +51,8 @@ pub mod loot;
 pub mod observed_spell_ranks;
 pub mod output_files;
 pub mod progression;
+/// Reincarnation read off the log: the AA-grant bursts, plus the labelled inferred ones.
+pub mod reincarnation;
 pub mod resist;
 pub mod respawn;
 pub mod roster;

@@ -10,7 +10,7 @@
 // tests/levelingFeed.test.mts is that pin.
 
 import type { AAEvent } from '@shared/types'
-import { levelFeedEntries, type LevelPoint } from './levelSeries'
+import { levelFeedEntries, rebirthLabel, type LevelPoint } from './levelSeries'
 import { fmtDelta } from './levelChartGeometry'
 import type { FeedItem } from './LedgerColumn'
 
@@ -30,6 +30,11 @@ import type { FeedItem } from './LedgerColumn'
 export function buildFeed(levels: readonly LevelPoint[], aas: readonly AAEvent[]): FeedItem[] {
   const items: FeedItem[] = []
   for (const e of levelFeedEntries(levels)) {
+    // A reincarnation opens a life: its own row, never "class swap" and never a time-to-level.
+    if (e.rebirth) {
+      items.push({ ts: e.ts, kind: 'rebirth', label: rebirthLabel(e.rebirth), detail: `level ${String(e.level)} - same classes` })
+      continue
+    }
     items.push({
       ts: e.ts,
       kind: e.afterSwap ? 'swap' : 'level',

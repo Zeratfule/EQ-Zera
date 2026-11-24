@@ -854,6 +854,8 @@ export interface LevelingSnap {
   /** AA-potion quaffs in log order. Uncapped like its siblings — the charge count is read off
    *  the LAST one, and a bottle never expires, so an old activation is still load-bearing. */
   aaPotions: AAPotionEvent[]
+  /** Reincarnations, confirmed and possible (shared/reincarnation.ts). ABSENT when there is none. */
+  reincarnations?: import('./reincarnation').ReincarnationEvent[]
 }
 export interface LevelingDelta {
   levels: LevelEvent[]

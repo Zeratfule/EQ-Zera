@@ -262,7 +262,7 @@
       "file": "crates/fold/src/modules/combo/intervals.rs",
       "metric": "file-lines",
       "name": "",
-      "value": 653
+      "value": 651
     },
     {
       "file": "crates/fold/src/modules/resist/catalog.rs",

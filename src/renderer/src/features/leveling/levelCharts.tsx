@@ -39,6 +39,7 @@ import { formatTime } from '../../lib/formatDate'
 import { BAND_PAD, PAD_X, bandRects, bandStripStyle, type ZoneBand, type ZoneLegend } from './zoneBands'
 import type { ChartSelection, SelectionPointerHandlers } from './useChartSelection'
 import type { DraftStore } from './selectionDraft'
+import { RebirthMarker } from './RebirthMarker'
 
 const W = CHART_W
 const H = CHART_H
@@ -498,7 +499,9 @@ export function LevelStepChart({
             {/* A swap's first ding is NOT a level gained — it is where the bar restarted at a
                 level the log re-reported. It keeps the hollow marker and the dashed rule; a
                 filled dot beside the others would read as one more step up the same ladder. */}
-            {d.afterSwap ? (
+            {d.rebirth ? (
+              <RebirthMarker x={xOf(scale, d.ts)} top={PAD_TOP - 6} floor={floor} cy={y(d.level)} mark={d.rebirth} />
+            ) : d.afterSwap ? (
               <>
                 <line
                   x1={xOf(scale, d.ts)}

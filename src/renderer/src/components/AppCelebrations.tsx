@@ -54,6 +54,7 @@ import { questKey } from '../features/posky/keys'
 // The third always-mounted celebration watch (docs/plans/levelup-whats-new.md §2): a LIVE ding
 // fires the level-up toast, counting what it unlocked against the loadout AT THE DING'S ts.
 import { useLevelUpToast } from '../features/leveling/useLevelUpToast'
+import { useReincarnationRecorder } from '../features/leveling/useReincarnation'
 // The fourth always-mounted watch (ROADMAP §1): a LIVE loot of an item the quest catalog knows
 // fires the quest-item card, naming the quests it feeds and the step that wants it.
 import { useQuestItemToast } from '../features/quests/useQuestItemToast'
@@ -109,6 +110,9 @@ function useAppCelebrations(
   // overlay card IS the celebration. It seeds its own silent baseline (the startup replay holds
   // every level the character ever gained) and joins its counts to the combo at the ding's ts.
   useLevelUpToast()
+  // Not a celebration: the reincarnation RECORDER, mounted beside the ding detector so a confirmed
+  // reincarnation is persisted on any tab before the log can rotate it away.
+  useReincarnationRecorder()
 
   // Quest-item drops: the FOURTH watch, and the second with no on-screen surface of its own. It
   // seeds its silent baseline out of the loot module's replayed history (a row COUNT, not a

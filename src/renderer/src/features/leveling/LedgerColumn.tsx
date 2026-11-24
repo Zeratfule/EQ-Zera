@@ -3,6 +3,7 @@ import { Box, Chip, Paper, Stack, Typography } from '@mui/material'
 import type { AASpendEvent } from '@shared/types'
 import { formatDate } from '../../lib/formatDate'
 import { SWAP_COLOR } from './levelCharts'
+import { REBIRTH_COLOR } from './RebirthMarker'
 import type { ScopedStats } from './windowScope'
 // The per-ability AA ladder — the flat purchases list's replacement in the same slot.
 import { AaLedgerPanel } from './AaLedgerPanel'
@@ -26,7 +27,7 @@ import { PALETTE } from '../../../../shared/palette'
 /** One row of the interleaved progress feed. Built in LevelingView (`buildFeed`), drawn here. */
 export interface FeedItem {
   ts: number
-  kind: 'level' | 'aa' | 'swap'
+  kind: 'level' | 'aa' | 'swap' | 'rebirth'
   label: string
   detail: string
 }
@@ -34,7 +35,8 @@ export interface FeedItem {
 const FEED_COLOR: Record<FeedItem['kind'], string> = {
   level: PALETTE.accent,
   aa: PALETTE.cyan,
-  swap: SWAP_COLOR
+  swap: SWAP_COLOR,
+  rebirth: REBIRTH_COLOR
 }
 
 /**
