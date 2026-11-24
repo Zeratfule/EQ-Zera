@@ -135,6 +135,21 @@ export interface ReleaseNote {
  * still sees exactly the releases above it.
  */
 export const RELEASE_NOTES: readonly ReleaseNote[] = [
+  // Quest steps for the Nektropos-patch quest pages, and a fresh quest scrape.
+  {
+    version: '1.30.1',
+    date: '2026-11-24',
+    entries: [
+      {
+        kind: 'fixed',
+        text: 'Quests from the Nektropos patch, like Hate, Betrayal, and Trust, now show their step-by-step walkthrough, starting zone and rewards. Quest data is refreshed from the wiki as of today.'
+      },
+      {
+        kind: 'fixed',
+        text: "Mob resist estimates work again. The game's latest patch changed the layout of its spell file, and the app had stopped reading it."
+      }
+    ]
+  },
   // Reincarnation tracking and the AA planner.
   {
     version: '1.30.0',

@@ -8,7 +8,7 @@
 | [[Retainer Ozval]]
 |-
 ! ''' Minimum Level: '''
-| ?  Requires killing a level 55 mob to get drop for quest
+| 46 (and requires killing a level 55 mob to get drop for quest)
 |-
 ! ''' Classes: '''
 | ALL
@@ -32,18 +32,18 @@
 = Summary =
 
 {{CheckboxList}}
-* Travel through [[Nektulos Forest]] into [[Lake Nerius]], then meet [[Retainer Ozval]] at the central huts, near (201, -97, -7).
+* (At level 46 or higher) Travel through [[Nektulos Forest]] into [[Lake Nerius]], then meet [[Retainer Ozval]] at the central huts, near (201, -97, -7).
 * Loot the [[Ancient Signet Ring of House Everling]] from [[Corrupted Kedgespawn]] underwater at (2662, 1238, -119), then return the ring to Ozval.
 * Tell [[Merchant Tyslin (North Felwithe)|Merchant Tyslin]] in [[Felwithe|Northern Felwithe]], at (107, -438), '''"Ozval sent me"''' to receive the [[Peerless Sapphire]]. Put it in your bags before leaving.
 * Tell [[Rylin Coil]] in [[Ak'Anon]], at (1469, -190), '''"Ozval sent me"''' to receive the [[Exquisite Gem Setter]]. Put it in your bags before leaving.
 * Give the sapphire and gem setter to [[Retainer Ozval]].
 * Hail the [[High Priestess of Ulkorruuk]] on the second floor of the non-raid-instanced [[Plane of Hate]], at (-90, 287, 127), and say '''"swear"'''. This NPC cannot be attacked, so you do not have to worry about others killing the spawn. Do not hide or sneak; put the [[Blessing of the Betrayer]] in your bags.
-* Deliver the blessing (At level 46 or higher) to [[Retainer Ozval]], then follow the path north and click the gates to enter [[Nektropos Castle]].
+* Deliver the blessing to [[Retainer Ozval]], then follow the path north and click the gates to enter [[Nektropos Castle]].
 {{End}}
 
 = Walkthrough =
 
-Travel to [[Nektulos Forest]], then head west into [[Lake Nerius]]. [[Retainer Ozval]] is at the huts in the middle of the lake, near (201, -97, -7).
+(At level 46 or higher) Travel to [[Nektulos Forest]], then head west into [[Lake Nerius]]. [[Retainer Ozval]] is at the huts in the middle of the lake, near (201, -97, -7).
 
 You say, "Hail, Retainer Ozval"
 

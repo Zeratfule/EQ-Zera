@@ -182,7 +182,7 @@ export function parseTopTable(wikitext: string): QuestTopTable | null {
   const minNum = minText ? Number(/(\d+)/.exec(minText)?.[1]) : NaN
 
   return {
-    startZone: cellText(pick('start zone')),
+    startZone: cellText(pick('start zone', 'starts in')),
     giver: cellText(pick('quest giver', 'giver')),
     minLevel: Number.isFinite(minNum) ? minNum : undefined,
     minLevelText: minText && !/^\d+$/.test(minText) ? minText : undefined,
@@ -197,16 +197,23 @@ export interface WikiSection {
   text: string
 }
 
-/** Split wikitext into its lead and `== Heading ==` sections (any depth). */
+/**
+ * A heading line at ANY level, `= Walkthrough =` included: the quest pages written for the
+ * Nektropos patch (2026-11) use level-1 headings, and reading only `==` and deeper left them
+ * with no steps and no reward. Group 1 is the `=` run (the depth), group 2 the heading text.
+ */
+const HEADING_RE = /^\s*(={1,6})\s*([^=\s][^=]*?)\s*={1,6}\s*$/
+
+/** Split wikitext into its lead and `= Heading =` sections (any depth). */
 export function splitSections(wikitext: string): { lead: string; sections: WikiSection[] } {
   const lines = wikitext.split('\n')
   const sections: WikiSection[] = []
   const lead: string[] = []
   let cur: WikiSection | null = null
   for (const line of lines) {
-    const h = /^\s*={2,6}\s*(.+?)\s*={2,6}\s*$/.exec(line)
+    const h = HEADING_RE.exec(line)
     if (h) {
-      cur = { heading: h[1].trim(), text: '' }
+      cur = { heading: h[2].trim(), text: '' }
       sections.push(cur)
       continue
     }
@@ -230,6 +237,9 @@ const EXP_MARKER = /\{\{\s*(yougainexperience|exp)\s*\}\}|you gain experience/i
 const STEP_HEADINGS: RegExp[] = [
   /quick list$/i,
   /checklist$/i, // "Checklist", "High-level Checklist"
+  // "Summary": a {{CheckboxList}} of steps on the Nektropos-patch pages (2026-11), a bullet list
+  // on the handful of older pages that have one. Never prose on any cached page.
+  /^summary$/i,
   /^short walkthrough$/i,
   /^walkthrough$/i,
   /walkthrough/i // "Walkthrough with Dialogue", "Long Walkthrough with Dialogue"
@@ -277,7 +287,7 @@ function sectionWithChildren(wikitext: string, heading: RegExp): string | null {
   let level = 0
   const out: string[] = []
   for (const line of wikitext.split('\n')) {
-    const h = /^\s*(={2,6})\s*(.+?)\s*={2,6}\s*$/.exec(line)
+    const h = HEADING_RE.exec(line)
     if (!h) {
       if (level > 0) out.push(line)
       continue

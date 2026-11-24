@@ -320,3 +320,16 @@ test('the November 2026 client (174 fields: one column inserted before 77) reads
   const odd = [...f, '0', '0'].join('^')
   assert.equal(parseSpellsUs(odd)['smiting strike'], undefined, 'a layout never measured is skipped, not misread')
 })
+
+test('the late-November 2026 client (190 fields: sixteen more columns before the slots) reads the same', () => {
+  // Measured 2026-11-24: every row is 190 wide, -250 still at 79, aemaxtargets still at 144, and
+  // the effect slots are the last field (189).
+  const old = row({ id: 74037, name: 'Smiting Strike', resistType: 5, targetType: 5, resistAdj: -250, classes: { 2: 10 }, slots: '1|0|-82|0|104|157' })
+  const f = old.split('^')
+  const nov = [...f.slice(0, 77), '7', ...f.slice(77)]
+  const late = [...nov.slice(0, 173), ...new Array<string>(16).fill('3'), nov[173]].join('^')
+  assert.equal(late.split('^').length, 190)
+  const b = parseSpellsUs(late)['smiting strike']
+  assert.equal(b?.resistAdj, -250)
+  assert.deepEqual(b, parseSpellsUs(old)['smiting strike'], 'every field the parser reads agrees across the layouts')
+})

@@ -89,3 +89,50 @@ test('an item page filed under Quests has no headings, so it has no steps (and n
 test('parseQuestPage carries the steps', () => {
   assert.ok(parseQuestPage('Vurgo', page(15092)).steps.length >= 4)
 })
+
+// The Nektropos-patch pages (2026-11, e.g. "Hate, Betrayal, and Trust") use LEVEL-1 headings,
+// a "Summary" checklist and a "Starts In" label. All three used to read as nothing: no steps,
+// no reward, no start zone. Inline rather than a cache page, so a re-scrape cannot move the pin.
+const NEKTROPOS_SHAPE = [
+  '{| class="questTopTable"',
+  "! ''' Starts In: '''",
+  '| [[Lake Nerius]]',
+  '|-',
+  "! ''' Quest Giver: '''",
+  '| [[Retainer Ozval]]',
+  '|}',
+  '',
+  '= Reward =',
+  '<ul>',
+  "<li>{{:Blood's Unity}}</li>",
+  '</ul>',
+  '',
+  '= Summary =',
+  '{{CheckboxList}}',
+  '* Meet [[Retainer Ozval]] at the central huts.',
+  '* Loot the [[Ancient Signet Ring of House Everling]] and return it.',
+  '{{End}}',
+  '',
+  '= Walkthrough =',
+  'You say, "Hail, Retainer Ozval"',
+  ": Retainer Ozval says, 'Welcome.'",
+  '',
+  '= Notes =',
+  '* Not a step.'
+].join('\n')
+
+test('level-1 headings: the Summary checklist is the steps, and the reward and start zone are read', () => {
+  const q = parseQuestPage('Hate, Betrayal, and Trust', NEKTROPOS_SHAPE)
+  assert.deepEqual(q.steps, [
+    'Meet Retainer Ozval at the central huts.',
+    'Loot the Ancient Signet Ring of House Everling and return it.'
+  ])
+  assert.deepEqual(q.rewards, ["Blood's Unity"])
+  assert.equal(q.startZone, 'Lake Nerius')
+  assert.equal(q.giver, 'Retainer Ozval')
+})
+
+test('a level-1 Walkthrough still counts when there is no Summary', () => {
+  const steps = extractSteps('= Walkthrough =\nYou say, "Hail, Retainer Ozval"\n: Retainer Ozval says, \'Welcome.\'\n= Notes =\n* no\n')
+  assert.deepEqual(steps, ['You say, "Hail, Retainer Ozval"'])
+})

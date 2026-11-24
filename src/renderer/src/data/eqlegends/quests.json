@@ -1,5 +1,5 @@
 {
-  "scrapedAt": "2026-11-15T20:05:39.439Z",
+  "scrapedAt": "2026-11-24T22:34:02.718Z",
   "source": "eqlwiki.com — Category:Quests + quest subcategories",
   "quests": [
     {
@@ -356,6 +356,7 @@
     {
       "name": "Alchemical Solution",
       "page": "Alchemical Solution",
+      "startZone": "Lake Nerius",
       "giver": "Dorian G`Wyn",
       "minLevel": 10,
       "classes": [
@@ -375,7 +376,20 @@
         "Encoded Missive",
         "Fetid Lake Muck"
       ],
-      "expReward": true
+      "expReward": true,
+      "steps": [
+        "Obtain Defiled Fish Scales from the quest Something Fishy.",
+        "Give Defiled Fish Scales to Dorian G`Wyn in Lake Nerius.",
+        "Loot Putrid Bile from a a fire drake in Lavastorm Mountains.",
+        "Loot Imp Blood from a a fire imp in Lavastorm Mountains ( or an imp protector in Nagafen's Lair. )",
+        "Return to Dorian G`Wyn and give them Putrid Bile and Imp Blood",
+        "Tell Dorian G`Wyn \"assist\" and \"two things\"",
+        "Pick up Dusty Scroll Case in West Freeport at location -119, 35, -6",
+        "Tell Ty`Klerr in Neriak - Foreign Quarter \"Dorian\", \"ready\", and \"report\" to receive Encoded Missive",
+        "Return to Lake Nerius and give Dorian G`Wyn both Dusty Scroll Case and Encoded Missive",
+        "Fish for a Fetid Lake Muck in Lake Nerius",
+        "Give the Fetid Lake Muck to Dorian G`Wyn"
+      ]
     },
     {
       "name": "Ale for Beur",
@@ -3990,6 +4004,7 @@
     {
       "name": "Call for Aid",
       "page": "Call for Aid",
+      "startZone": "Lake Nerius",
       "giver": "Nikko Canti",
       "classes": [
         "ALL"
@@ -4013,7 +4028,13 @@
         "Exorbitant Commission",
         "Ordination of Might"
       ],
-      "expReward": true
+      "expReward": true,
+      "steps": [
+        "Say \"who\", \"Half Dark Elf\", \"Jeopardized\", and \"alleviate the threat\" to Dorian G`Wyn in Lake Nerius to receive Plea to Freeport, Appeal of Neriak, and Solusek Petition",
+        "Give the Plea to Freeport to Sir Mollin in North Freeport to get A Curt Dismissal",
+        "Give the Appeal of Neriak to Pishtian F`Lok in Neriak - Commons to get Exorbitant Commission",
+        "Give the Solusek Petition to Lord Lyfyx of Burwood in The Temple of Solusek Ro to get Ordination of Might"
+      ]
     },
     {
       "name": "Call of Flame Quest",
@@ -9321,12 +9342,46 @@
       "name": "Escort the Cargo Clockwork",
       "page": "Escort the Cargo Clockwork",
       "requiredItems": [
+        "Hector's Severed Head",
+        "Renaldo's Severed Head",
+        "Jerald's Severed Head",
         "Fine Steel Dagger",
         "Fine Steel Katana",
         "Fine Steel Rapier",
         "Fine Steel Spear"
       ],
-      "expReward": true
+      "expReward": true,
+      "steps": [
+        "You say, 'Hail, Jarah Reskan'",
+        "Jarah Reskan says, 'Greetings, child. Welcome to Gemchopper Hall. I trust that you are a [warrior], or perhaps you are lost..?'",
+        "You say, 'warrior'",
+        "Jarah Reskan says, 'That is good news! We gnomes are not known for our love of battle so it is always good to bring new blood into our ranks. We shall prove our worth as warriors to all other races. For now, there is much to do in Ak'Anon. We need someone to take care of the [rogue] and [bandit] problems in the Steamfont Mountains.'",
+        "You say, 'bandit'",
+        "Jarah Reskan says, 'The cargo clockwork is located near the entrance to Ak'Anon in the Steamfont Mountains. It runs a delivery to the windmills every five days at eight in the morning. There have been attacks by a group of highwaymen. They are quite a formidable group. I have offered a reward for their heads. Be very careful if you plan on escorting the cargo clockwork. This trio of bandits is very strong.'",
+        "The Cargo Clockwork appears to depart for the windmills at 7am, though it may not leave on the same day in every difficulty. < Needs further verification",
+        "Upon departure --",
+        "Cargo Clockwork says, 'This unit requires oiling.'",
+        "Enroute --",
+        "Cargo Clockwork Chuga... Chug... Chug... (sic)",
+        "Cargo Clockwork says, 'This unit requires maintenance.'",
+        "The bandits will ambush the Cargo Clockwork as it returns from the windmills, just east of Watchman Grep's post. (-700, 100)",
+        "Cargo Clockwork says, 'The chugging of the Cargo Clockwork comes to a halt. Cargo Clockwork say, This is highway robbery!' (sic)",
+        "You have slain Hector the highway bandit!",
+        "--You have looted a Hector's Severed Head from Hector the highway bandit's corpse.--",
+        "You have slain Renaldo the highway bandit!",
+        "--You have looted a Renaldo's Severed Head from Renaldo the highway bandit's corpse.--",
+        "You have slain Jerald the highway bandit!",
+        "--You have looted a Jerald's Severed Head from Jerald the highway bandit's corpse.--",
+        "(No faction or dialogue upon their demise)",
+        "Hand all three heads in to Jarah Reskan:",
+        "You offered 1 Hector's Severed Head to Jarah Reskan.",
+        "You offered 1 Renaldo's Severed Head to Jarah Reskan.",
+        "You offered 1 Jerald's Severed Head to Jarah Reskan.",
+        "Jarah Reskan says, 'I heard our shipment made it back safely. These heads will send a message to any other thief that plans on robbing our cargo shipments. Thank you , take this coin as your reward. I'm sorry to say we're currently out of masks.'",
+        "You receive 7 copper .",
+        "You receive 5 silver .",
+        "You receive 2 gold ."
+      ]
     },
     {
       "name": "Essence Lens Quest",
@@ -14180,8 +14235,9 @@
     {
       "name": "Hate, Betrayal, and Trust",
       "page": "Hate, Betrayal, and Trust",
+      "startZone": "Lake Nerius",
       "giver": "Retainer Ozval",
-      "minLevel": 55,
+      "minLevel": 46,
       "classes": [
         "ALL"
       ],
@@ -14201,6 +14257,15 @@
         "Peerless Sapphire",
         "Exquisite Gem Setter",
         "Blessing of the Betrayer"
+      ],
+      "steps": [
+        "(At level 46 or higher) Travel through Nektulos Forest into Lake Nerius, then meet Retainer Ozval at the central huts, near (201, -97, -7).",
+        "Loot the Ancient Signet Ring of House Everling from Corrupted Kedgespawn underwater at (2662, 1238, -119), then return the ring to Ozval.",
+        "Tell Merchant Tyslin in Northern Felwithe, at (107, -438), \"Ozval sent me\" to receive the Peerless Sapphire. Put it in your bags before leaving.",
+        "Tell Rylin Coil in Ak'Anon, at (1469, -190), \"Ozval sent me\" to receive the Exquisite Gem Setter. Put it in your bags before leaving.",
+        "Give the sapphire and gem setter to Retainer Ozval.",
+        "Hail the High Priestess of Ulkorruuk on the second floor of the non-raid-instanced Plane of Hate, at (-90, 287, 127), and say \"swear\". This NPC cannot be attacked, so you do not have to worry about others killing the spawn. Do not hide or sneak; put the Blessing of the Betrayer in your bags.",
+        "Deliver the blessing to Retainer Ozval, then follow the path north and click the gates to enter Nektropos Castle."
       ]
     },
     {
@@ -14830,6 +14895,7 @@
     {
       "name": "Hollow Skull Quest",
       "page": "Hollow Skull Quest",
+      "startZone": "Western Karana",
       "giver": "Yiz Pon",
       "minLevel": 25,
       "classes": [
@@ -14850,15 +14916,28 @@
         "Lynuga",
         "a Splitpaw assassin"
       ],
+      "rewards": [
+        {
+          "name": "Jeweled Skull"
+        }
+      ],
       "requiredItems": [
-        "Jeweled Skull",
         "Torn Parchment (Letter to Hyrill Pon)",
         "Hollow Skull (Skull of Wun Toque)",
         "Torn Parchment",
         "Large Ruby",
         "Ruby Pendant"
       ],
-      "expReward": true
+      "expReward": true,
+      "steps": [
+        "Find Yiz Pon in the northeast corner of Western Karana.",
+        "Say 'What beasts?' to Yiz Pon to receive Torn Parchment (Letter to Hyrill Pon) and spawn a Splitpaw assassin.",
+        "Kill a Splitpaw assassin and loot a Hollow Skull (Skull of Wun Toque) (container with two slots).",
+        "(Optional) Give Torn Parchment to Hyrill Pon in West Freeport.",
+        "Kill Lynuga in Innothule Swamp and loot a Large Ruby.",
+        "Kill Kurrpok Splitpaw in Splitpaw Lair or Southern Karana and loot a Ruby Pendant.",
+        "Combine the Large Ruby and Ruby Pendant in the Hollow Skull (Skull of Wun Toque) to create the Jeweled Skull."
+      ]
     },
     {
       "name": "Holy Armor Buff Quest",
@@ -19236,6 +19315,7 @@
     {
       "name": "Militia Seals",
       "page": "Militia Seals",
+      "startZone": "West Freeport",
       "giver": "Guard Jup",
       "minLevel": 35,
       "classes": [
@@ -19248,10 +19328,20 @@
       "relatedNpcs": [
         "Guard Jup"
       ],
+      "rewards": [
+        {
+          "name": "Twisted Silver Torque"
+        }
+      ],
       "requiredItems": [
-        "Twisted Silver Torque",
         "Militia Crate",
         "Pirate's Seal"
+      ],
+      "steps": [
+        "Speak with Guard Jup in West Freeport (-80, -158).",
+        "He will give you Militia Crate.",
+        "Fill it with 10x Pirate's Seal, then combine it.",
+        "Return crate to Guard Jup."
       ]
     },
     {
@@ -24872,7 +24962,12 @@
       "requiredItems": [
         "Spiderling Eye"
       ],
-      "expReward": true
+      "expReward": true,
+      "steps": [
+        "You say, \"Hail, Exterminator Galub\"",
+        "Hand 4 Spiderling Eye to Exterminator Galub:",
+        "You recieve 1 copper, 1 silver, and 1 gold piece."
+      ]
     },
     {
       "name": "Rathmana's Traveling Offer",
@@ -25275,6 +25370,7 @@
     {
       "name": "Renouncing Your Faith",
       "page": "Renouncing Your Faith",
+      "startZone": "Oasis of Marr",
       "giver": "Emissary of Zebuxoruk",
       "minLevel": 46,
       "classes": [
@@ -25465,18 +25561,9 @@
       ],
       "expReward": true,
       "steps": [
-        "Ostorm can be found in the east upper hallway in the Temple of Solusek Ro, at +430, -80, +35, through the door behind the throne along the corridor to the right.",
-        "You say, 'Hail, Ostorm'",
-        "You say, 'Steal my memories?'",
-        "You say, 'Losing my memories?'",
-        "You say, 'Lose advanced memory?'",
-        "Give him a Ruby.",
-        "Ostorm ..hear me? Ah, you seem to be coming out of your stupor. I think you have been exposed to the crystal long enough. By the time you leave the temple, your memories should have faded. Do you have the [fifty gold] coins that you owe me?",
-        "Your specialize skills have all been set to 49.",
-        "Note: The following portion of the quest is schmuck bait. Your specializations were reset after simply turning in the ruby, but you can give him the gold for faction.",
-        "You say, 'What fifty gold?'",
-        "Give him 50 gold.",
-        "Remember, only one specialization skill can exceed 50. Make sure the one that hits 50 next is the one you really want."
+        "Give Ostorm ( ) a Ruby",
+        "All specialization skills will be reset to 49",
+        "(Optional) Give Ostorm a 50 gold (has no effect on specializations, but gives Temple Of Sol Ro faction"
       ]
     },
     {
@@ -27990,6 +28077,9 @@
         },
         {
           "name": "Bronze_Dagger"
+        },
+        {
+          "name": "Fishing Spear"
         }
       ],
       "requiredItems": [
@@ -28836,6 +28926,7 @@
     {
       "name": "Something Fishy",
       "page": "Something Fishy",
+      "startZone": "Lake Nerius",
       "giver": "Nikko Canti",
       "classes": [
         "ALL"
@@ -28848,24 +28939,10 @@
       ],
       "expReward": true,
       "steps": [
-        "Step 1:",
-        "Fish in the nearby lake until you've caught 3 Fresh Fish, then give them to Nikko.",
-        "You offered 3 Fresh Fish to Nikko Canti.",
-        "Your task 'Something Fishy' has been updated.",
-        "Step 2:",
-        "Kill 2 A large piranha in the river just south of the lake and return to Nikko to hail him.",
-        "You say, 'Hail, Nikko Canti'",
-        "Step 3:",
-        "Kill a ghost gill in the lake for Defiled Fish Scales and give them to Nikko.",
-        "You offered 1 Defiled Fish Scales to Nikko Canti.",
-        "Your task 'Something Fishy' has been updated.",
-        "You receive Defiled Fish Scales",
-        "You have been assigned the task 'Alchemical Solution'.",
-        "= Notes =",
-        "You are required to fish up the fish during the quest to get credit.",
-        "If you already have the defiled scales, you can trade them with Nikko to get credit for killing the ghost gill and immediately trade them again",
-        "= Related Quests =",
-        "Something Fishy ➡ Alchemical Solution ➡ What's going on here ➡ Call for Aid ➡ Unfortunate News"
+        "Hail Nikko Canti in Lake Nerius and say \"not\", \"haven't seen\", \"feed\", and \"help\"",
+        "Fish up 3 Fresh Fish in Lake Nerius and give them to Nikko",
+        "Kill 2 A large piranha in the river and return to Nikko",
+        "Kill a ghost gill for Defiled Fish Scales and give them to Nikko"
       ]
     },
     {
@@ -30703,6 +30780,7 @@
     {
       "name": "The Betrayer",
       "page": "The Betrayer",
+      "startZone": "Nektropos Castle",
       "giver": "Lady Sileniu Everling",
       "classes": [
         "ALL"
@@ -30717,8 +30795,12 @@
         "Alexa Everling",
         "Lord Rikantus Everling"
       ],
+      "rewards": [
+        {
+          "name": "Blood's Unity"
+        }
+      ],
       "requiredItems": [
-        "Blood's Unity",
         "Nektropos Great Room Key",
         "Nektropos Private Chamber Key",
         "Nektropos Basement Key",
@@ -30726,50 +30808,14 @@
       ],
       "expReward": true,
       "steps": [
-        "Castle Route and Door Keys:",
-        "This quest takes place during The Tragic Tale of House Everling. See that quest's library-key guide for the four harpsichord ground items and combine station.",
-        "Find Lady Sileniu Everling in the northeast of the second floor, at (552, -132, 17). Hail her, ask about \"He\", then \"swear\".",
-        "Return downstairs to Plimptos at (102, -151, 7). Hail him, say \"crimes\", then \"brought back\" to receive the sword hilt.",
-        "Speak to Alexa's Handmaiden in the southeast area of the second floor, at (172, -178, 17).",
-        "Kill all the sisters around the edges of the second-floor map. Their linked pages and recorded locations are listed below.",
-        "Return to Alexa's Handmaiden to receive the Nektropos Great Room Key.",
-        "Kill Alexa Everling in the southwest great room, just off the main hall on the second floor, to obtain the Nektropos Private Chamber Key. (26, 150, 15)",
-        "Go to the northwest area of the second floor. In the Guard Captain's room on the west side, use the secret entrance behind the bookshelf to descend into the basement. (600, 201, 15)",
-        "Follow the basement corridor southwest and kill the Juggernaut at (-331, 310, -112) to obtain the Nektropos Basement Key.",
-        "Enter the room beside the Juggernaut and defeat Lord Rikantus Everling at (-382, 181, -112), using the combat guidance below.",
-        "Return to Plimptos and say \"end\". He disappears. Then return to the House Everling quest: tell Lady Everling \"dead\" and \"Confess\", kill her, then return to Lord Ollix and say \"tragic\".",
-        "Lord Rikantus Everling: Combat:",
-        "Golem cycles: The lord spawns a golem every 20% HP, starting at 90% (90%, 70%, 50%, 30% and 10%). While the golem is present, the lord takes greatly reduced damage. Kill the golem, ignore the summoned zombies and resume attacking the lord.",
-        "Final 5%: Be ready to burst down the lord amid the zombie horde and any golem still present. Below 5%, focus on finishing the lord.",
-        "See Lord Rikantus Everling for the recorded spawn thresholds and additional combat details.",
-        "Dialogue and Quest Events:",
-        "You say, 'Hail, Lady Sileniu Everling'",
-        "You say, 'He'",
-        "You say, 'swear'",
-        "You say, 'Hail, Plimptos'",
-        "You say, 'crimes'",
-        "You say, 'brought back'",
-        "As you grasp the sword hilt, a voice echoes within your mind. 'Yes, he is right. Put the sisters to rest. Help end the cursed existence of this pitiful man.' Ghastly as the command may be, you feel compelled to obey.",
-        "You say, 'Hail, Alexa`s Handmaiden'",
-        "Kill Jenni Everling, Melanie Everling, Crysta Everling, Shelia Everling, Elise Everling and Deirdre Everling. Each kill:",
-        "You say, 'Hail, Alexa`s Handmaiden'",
-        "You receive Nektropos Great Room Key.",
-        "Kill Alexa Everling in the great room:",
-        "The voice enters your mind once more as you hold the bloodied sword hilt. 'You are almost done with this atrocious task. One last life must be paid. Go find the Lord of this house and soak the blade in his blood.' Drawing upon the blood it is now slaked with, the hilt reshapes itself into a small blade. While it still appears incomplete, its lethality has increased.",
-        "You receive Fractured Malice.",
-        "Kill Lord Rikantus Everling:",
-        "Everling falls, and the dead of Nektropos are still.",
-        "Return to Plimptos:",
-        "You say, 'end'",
-        "You thrust the blade deep into the body of Rikantus Everling, soaking its length with his blood. The voice inside your head has become a shriek of bliss. In your hand, the blade is fully reforged. The blade is satisfied. But you have one task left to complete.",
-        "You receive Blood's Unity.",
-        "= Notes =",
-        "This quest is given during The Tragic Tale of House Everling; finish that quest by telling Lady Sileniu Everling he is 'dead', then 'confess'.",
-        "Each Everling killed costs -2 Host of Nektropos faction.",
-        "Blood's Unity is a quest reward: even in a +4 instance, it is a +0.",
-        "Extra copies: after the task is done, saying 'brought back' to Plimptos still hands out a sword hilt, and several can be carried at once. Each kill of Alexa Everling turns the topmost hilt in your inventory into the small blade, and each kill of Lord Rikantus Everling turns a small blade into Blood's Unity: one upgrade per kill. Copies merge into higher + versions.",
-        "= Related Quests =",
-        "The Tragic Tale of House Everling"
+        "'swear' to Lady Sileniu Everling that you will kill Plimptos.",
+        "Find Plimptos, hear his 'crimes', and take the sword hilt ('brought back').",
+        "Hail Alexa`s Handmaiden: Alexa is visiting her sisters.",
+        "Kill the spirits of the sisters: Jenni Everling, Melanie Everling, Crysta Everling, Shelia Everling, Elise Everling and Deirdre Everling.",
+        "Hail Alexa`s Handmaiden again for the Nektropos Great Room Key.",
+        "Kill Alexa Everling in the great room.",
+        "Kill Lord Rikantus Everling.",
+        "Say 'end' to Plimptos."
       ]
     },
     {
@@ -32762,9 +32808,18 @@
     {
       "name": "The Lost Snake",
       "page": "The Lost Snake",
+      "rewards": [
+        {
+          "name": "Trainer's Bauble"
+        }
+      ],
       "requiredItems": [
-        "Trainer's Bauble",
         "Muddy Trinket"
+      ],
+      "steps": [
+        "Speak with Animal Trainer Visop in Rathe Mountains.",
+        "Obtain Muddy Trinket.",
+        "Return to Animal Trainer Visop."
       ]
     },
     {
@@ -33257,7 +33312,12 @@
         "Svinal Wyspin"
       ],
       "requiredItems": [
-        "Capt. Orlin's Spiced Ale"
+        "Capt. Orlin's Spiced Ale",
+        "Beacon Mount",
+        "Metal Disk",
+        "Copper Band",
+        "Boat Beacon",
+        "Ak`Anon's Portrait"
       ],
       "expReward": true,
       "steps": [
@@ -33271,12 +33331,12 @@
         "The 'captain' he speaks of is an alcoholic beverage, Capt. Orlin's Spiced Ale. This can be purchased from the bartender right next to you, Nesin Tapper.",
         "Upon handing Palatos four drinks:",
         "(This step can be repeated to easily raise Craftkeepers and Erudin city factions. Palatos Kynarn is on Craftkeepers so he can be /considered to test it.)",
-        "Receive a Beacon Mount. In his drunkedness, Palatos advises you to seek out Svinal Wyspin, a Gnome merchant in the Emporium in West Freeport, at -250, -30.",
+        "Receive a Beacon Mount. In his drunkedness, Palatos advises you to seek out Svinal Wyspin, a Gnome merchant in the Emporium in North Freeport, at (64, -154).",
         "You say, 'Hail, Svinal Wyspin'",
         "You say, 'Tell me about the boat beacon'",
         "Buy the Metal Disk and Copper Band. You'll also need a Greater Lightstone. Combine those three items and the Beacon Mount in a Forge (reported trivial 70) to create a Boat Beacon.",
         "You can do one of two things with this Boat Beacon. Turn it in to Palatos Kynarn, or to Lenka Stoutheart (found occasionally in the Grub 'n Grog Tavern at the Freeport dock). Upon turning it into Palatos, the quest is over.",
-        "Upon turning it into Lenka Stoutheart, you receive positive Halas faction and a portrait of King Ak'Anon. Note: standing next to Lenka is Bronto Thudfoot, an Ogre on Wolves of the North faction who is KoS to both wolf form and earth elemental illusion. This greatly complicates doing this quest as an evil character looking to improve Barbarian faction."
+        "Upon turning it into Lenka Stoutheart, you receive positive Halas faction and a portrait of King Ak'Anon Ak`Anon's Portrait. Note: standing next to Lenka is Bronto Thudfoot, an Ogre on Wolves of the North faction who is KoS to both wolf form and earth elemental illusion. This greatly complicates doing this quest as an evil character looking to improve Barbarian faction."
       ]
     },
     {
@@ -34336,6 +34396,7 @@
     {
       "name": "The Tragic Tale of House Everling",
       "page": "The Tragic Tale of House Everling",
+      "startZone": "Nektropos Castle",
       "giver": "Lord Ollix Everling",
       "classes": [
         "ALL"
@@ -34350,8 +34411,12 @@
         "Alexa`s Handmaiden",
         "Lord Rikantus Everling"
       ],
+      "rewards": [
+        {
+          "name": "Blood's Unity"
+        }
+      ],
       "requiredItems": [
-        "Blood's Unity",
         "Nektropos Library Key",
         "Harpsichord Black Key",
         "Harpsichord White Key",
@@ -34360,34 +34425,13 @@
       ],
       "expReward": true,
       "steps": [
-        "Castle Access and Library Key:",
-        "Complete Hate, Betrayal, and Trust to enter Nektropos Castle. Inside, hail Lord Ollix Everling and follow his dialogue. He is near the ruined harpsichord in the main hall; his exact NPC coordinates have not yet been recorded.",
-        "For the Nektropos Library Key, collect these four glowing ground items. The coordinates are the items' ground-spawn positions, not the nearby NPC positions.",
-        "Combine the four components in the ruined harpsichord at (368, 65), in the main lobby near Lord Ollix Everling. It is directly to the left while facing the staircase.",
-        "Quest Dialogue and Completion:",
-        "The room directions, door-key route and lord's combat phases are documented in The Betrayer's castle route.",
-        "You say, 'Hail, Lord Ollix Everling'",
-        "You say, 'dead'",
-        "Find Lady Sileniu Everling in the northeast of the second floor, at (552, -132, 17).",
-        "You say, 'Hail, Lady Sileniu Everling'",
-        "You say, 'He'",
-        "You say, 'swear'",
-        "Complete The Betrayer: kill the Everling sisters, Alexa Everling and Lord Rikantus Everling, then say 'end' to Plimptos.",
-        "You receive Blood's Unity.",
-        "You say, 'dead'",
-        "You completed the task that Lady Everling assigned to you, but the atrocities you had to commit weigh heavily on your soul. You realize you must [confess] the truth to Lady Everling.",
-        "You say, 'confess'",
-        "Kill Lady Sileniu Everling.",
-        "Return to Lord Ollix Everling in the main hall.",
-        "You say, 'tragic'",
-        "You have completed the achievement: The Tragic Tale of House Everling",
-        "You should now be able to open all doors and kill all rares in Nektropos Castle.",
-        "= Notes =",
-        "The Betrayer has the full steps for the sisters, Alexa and Lord Rikantus.",
-        "Blood's Unity is a quest reward: even in a +4 instance, it is a +0.",
-        "= Related Quests =",
-        "Hate, Betrayal, and Trust",
-        "The Betrayer"
+        "Hail Lord Ollix Everling and ask about his sisters ('dead').",
+        "Obtain the Nektropos Library Key using the four harpsichord components.",
+        "Find his mother, Lady Sileniu Everling, in her northeast second-floor chambers at (552, -132, 17), and ask about 'He'.",
+        "'swear' to her that you will kill Plimptos (starts The Betrayer).",
+        "Complete The Betrayer: the sisters, Alexa, Lord Rikantus, then 'end' to Plimptos.",
+        "Tell Lady Sileniu Everling he is 'dead', then 'confess'. She turns on you: kill her.",
+        "Return to Lord Ollix Everling and say 'tragic'."
       ]
     },
     {
@@ -34865,22 +34909,12 @@
       ],
       "expReward": true,
       "steps": [
-        "You must be Kindly or better with Clerics of Tunare.",
-        "Vaila's Notes",
-        "Part I",
-        "Head to High Keep near the entrance next to the guard on your left as you enter the courtyard, Tearon Bleanix spawns. Target and say to him 'I will become a hero'. He will hand you Tearon's Bracer, 5.0Wt no AC.",
-        "Head up to the 4th Floor in High Keep and find Princess Lenya (not Lenia). Walk through the painting to a secret area in HK 4th floor. Continue down the hallway past the DE / Guard on the right. Pull a U-Turn around the wall and the room will have the Princess standing alone near a table and chairs. (Note: She despawns after quest turn in, so be prepared to sit and wait ~18 min.) Hand her the bracer, she will hand you back Tearon's Bracer this time with 1.0Wt and 1 AC.",
-        "You Say: 'Hail, Princess Lenya'",
-        "Princess Lenya: 'Are you not a little short for a Highpass Guard?'",
-        "Hand Her the bracer",
-        "Princess Lenya: 'So you are a member of the Silent Watch!! They are accepting anyone these days. I shall leave then. Here is your bracer back. Thank you for unlocking the door.'",
-        "If you're a caster that can bind, you can gate to Tearon if you're fast enough and do the next step, if not wait about 10ish min. for repop.",
-        "Head back to Tearon and zoom out your view so that you can easily and quickly hand in 2 items in succession. First hand in the bracer you have to Tearon, this will cause Lenya to spawn next to him, quickly hand her the amulet you receive. If you're successful you'll get a No Drop sealed letter from her. If you weren't fast enough you have to redo the whole quest up until this part.",
-        "Upon Handing in Bracer to Tearon:",
-        "Tearon Bleanix: 'King Tearis Thex thanks you my friend. Could you please hand the princess this amulet. It is hers. I pryed it from the hands of some beggar.'",
-        "Part II",
-        "You need to make your way to Felwithe now to Traveller's Home - Inn. Find Inkeeper Freegraze standing by the entrance door to the inn and say 'Where is Tolon Nurbyte?', this will cause Tolon to spawn on the 2nd Floor in the far back.",
-        "Hand Tolon Nurbyte the sealed letter and receive the Thex Dagger."
+        "Say \"I will become a hero\" to Tearon Bleanix in High Keep. Receive Tearon's Bracer (no AC).",
+        "Take it upstairs to Princess Lenya, loc 85, -200, 70. Receive Tearon's Bracer (1 AC).",
+        "Take it back downstairs to Tearon. Receive an Princess Lenya's Amulet (LORE, droppable), and a different version of Lenya spawns next to him.",
+        "Hand the amulet to the new Lenya that spawned next to Tearon. Receive A Sealed Letter.",
+        "In Felwithe, say \"Where is Tolon Nurbyte?\" to Inkeeper Freegraze in Traveller's Home. Tolon Nurbyte spawns upstairs.",
+        "Give Tolon Nurbyte the sealed letter. Receive Thex Dagger."
       ]
     },
     {
@@ -35641,7 +35675,7 @@
         "If you're also trying to level at the same time, then in terms of difficulty you will probably want to start with Lesser Faydark, Rathe Mountains, then the North and South Karanas camps first - though you will want Tracking for Grizzleknot in South Karana.",
         "Next you can do Everfrost and Ocean of Tears followed by Cazic Thule and Najena.",
         "And you will probably want to end with the Dagnor's Cauldron region (Dagnor's Cauldron, Unrest, Kedge Keep). I recommend doing Permafrost last because it requires clearing lots of the zone and dealing with lots of swarms of mobs, so better off done when you're not trying to get experience - unless you can convince friends to go with you. This may change in the coming months when Permafrost gets its own zone revamp for EQ Legends.",
-        "= Vrynn's Quests =",
+        "Vrynn's Quests:",
         "Boots:",
         "Reward: Totemic Boots",
         "Banded Boots",
@@ -35666,7 +35700,7 @@
         "Powdered Dufrenite",
         "Permafrost Snowball (goblin wizard, Permafrost) (lvl23)",
         "Bone Barbs (a barbed bone skeleton, Unrest) (lvl24)",
-        "= Kyralynn's Quests =",
+        "Kyralynn's Quests:",
         "Bracer:",
         "Reward: Totemic Bracers",
         "Banded Bracer",
@@ -35877,10 +35911,6 @@
         "Illegible Note: Vambraces"
       ],
       "steps": [
-        "General:",
-        "Xlixinar Arcut and Drixiv Arcut are on Legion of Cabilis faction, and are located at the of the Overthere chasm. The quests can be completed by anyone given sufficient faction.",
-        "With the exception of the vambraces, the note from Xlinar and Drixiv is not required to start these quests. They simply are used to get the other NPCs who give the recommendations to talk about the quest.",
-        "=Short Walkthrough=",
         "Drixiv Arcut:",
         "Boots",
         "Acquire 2x Fire Emerald",
@@ -35936,7 +35966,11 @@
         "Give a froglok slave the grayish liquid to receive Froglok Goo (Must be indifferent, see long walkthrough for details)",
         "Give Prime Hierophant Vek the froglok goo and 2 fire emeralds (unstacked) to receive his recommendation.",
         "Acquire a Banded Mantle",
-        "Give Xlixinar the Banded Mantle and recommendation."
+        "Give Xlixinar the Banded Mantle and recommendation.",
+        "Vambraces",
+        "Acquire a Sapphire",
+        "Acquire an Opal",
+        "Ask Xlixinar 'What vambraces?' to receive a note (item name?)"
       ]
     },
     {
@@ -36366,6 +36400,7 @@
     {
       "name": "Unfortunate News",
       "page": "Unfortunate News",
+      "startZone": "Lake Nerius",
       "classes": [
         "ALL"
       ],
@@ -36377,7 +36412,10 @@
         "Exorbitant Commission",
         "Ordination of Might"
       ],
-      "expReward": true
+      "expReward": true,
+      "steps": [
+        "Deliver the responses back to Dorian in Lake Nerius"
+      ]
     },
     {
       "name": "Unkempt Druids (Quest)",
@@ -36764,6 +36802,8 @@
         "Wristband of the Bonecaster"
       ],
       "steps": [
+        "Velious Class Quest Armor Comparisons:",
+        "The tables below exist to provide a quick side-by-side statistical comparison of the three tiers of class-specific quest reward armor from the Velious expansion.",
         "Bard:",
         "Full Set Comparison",
         "Source Set Name AC STR STA AGI DEX WIS INT CHA HP Mana SvM SvF SvC SvP SvD",
@@ -36821,9 +36861,7 @@
         "SvF",
         "SvC",
         "SvP",
-        "SvD",
-        "Thurgadin",
-        "Kael"
+        "SvD"
       ]
     },
     {
@@ -37834,6 +37872,7 @@
     {
       "name": "What's going on here",
       "page": "What's going on here",
+      "startZone": "Lake Nerius",
       "giver": "Dorian G`Wyn",
       "minLevel": 1,
       "classes": [
@@ -37862,7 +37901,21 @@
         "The Great Zultor",
         "Nikko Canti"
       ],
-      "expReward": true
+      "expReward": true,
+      "steps": [
+        "See what information about the [undead] you can gather from Yelayna",
+        "Tell Yelayna in Lake Nerius \"undead\", \"increased numbers\", and \"Everling's\"",
+        "What insights about [Lake Nerius] might Konro have?",
+        "Tell Konro Strongfoot in Lake Nerius \"lake nerius\", \"folk\", and \"hooded\"",
+        "Blergagh seems like he [knows more] than hes letting on about. Ask him about [Dorian]",
+        "Tell Blergagh in Lake Nerius \"dorian\", and \"smell\"",
+        "The banker, Neuven F`Lok, probably knows a lot if he knows how the [money] flows",
+        "Tell Neuven F'Lok in Lake Nerius \"money\", \"healthy\", and \"transients\"",
+        "The long winded 'The Great Zultor' may let slip useful info",
+        "The Great Zultor in Lake Nerius \"what else\", \"possibilities\", \"no knowable limit\", \"barriers\", and \"timeline\"",
+        "Ask Nikko Canti about [Dorian]",
+        "Nikko Canti in Lake Nerius (back at lake) \"dorian\", and \"others\""
+      ]
     },
     {
       "name": "White Dragonscale Cloak Quest",

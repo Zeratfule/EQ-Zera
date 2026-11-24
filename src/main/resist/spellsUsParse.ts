@@ -301,10 +301,21 @@ function prefer(existing: { info: SpellResistInfo; playable: boolean }, playable
 const LAYOUT_2026_08 = F_SLOTS + 1
 const LAYOUT_2026_11 = F_SLOTS + 2
 const INSERTED_BEFORE = 77
+/**
+ * THE LATE-NOVEMBER 2026 LAYOUT (EQ Zera, 2026-11-24): 190 fields. The 174-field row above with
+ * SIXTEEN more columns inserted just before the effect slots (now the last field, 189). Measured
+ * on the owner's install: every row is 190 wide, Smiting Strike's -250 still sits at 79, a rain's
+ * 4 targets still at 144, Odium's and Complete Heal's slots are field 189, and of the new columns
+ * 173..188 only 173..176 and 181..183 are ever non-zero (none of them a field this parser reads).
+ */
+const LAYOUT_2026_11B = LAYOUT_2026_11 + 16
 
 export function realign(f: string[]): string[] | null {
   if (f.length === LAYOUT_2026_08 || f.length === F_SLOTS) return f
   if (f.length === LAYOUT_2026_11) return [...f.slice(0, INSERTED_BEFORE), ...f.slice(INSERTED_BEFORE + 1)]
+  if (f.length === LAYOUT_2026_11B) {
+    return [...f.slice(0, INSERTED_BEFORE), ...f.slice(INSERTED_BEFORE + 1, F_SLOTS + 1), f[f.length - 1]]
+  }
   return null
 }
 
