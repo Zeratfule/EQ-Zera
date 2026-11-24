@@ -29,6 +29,7 @@
     "gen:sounds": "tsx scripts/gen-sounds.mts",
     "gen:eql-skin": "tsx scripts/gen-eql-skin.mts",
     "gen:spell-lines": "tsx scripts/gen-spell-lines.ts",
+    "gen:aa-catalog": "tsx scripts/gen-aa-catalog.mts",
     "gen:data-weight": "node --expose-gc --import tsx scripts/gen-data-weight.mts",
     "gen:protocol": "tsx scripts/gen-protocol.mts",
     "gen:telemetry-doc": "tsx scripts/gen-telemetry-doc.mts",

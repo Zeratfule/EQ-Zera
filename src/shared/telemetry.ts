@@ -143,6 +143,8 @@ export const TELEMETRY_VIEWS = [
   'patchnotes',
   // The Races tab (EQ Zera) - same note as `crafting` above.
   'races',
+  // The AAs tab (EQ Zera) - same note as `crafting` above.
+  'aa',
   'preferences',
   'triage'
 ] as const
@@ -597,10 +599,7 @@ export function bucketOf(value: number, edges: readonly number[]): number {
 }
 
 /** The half-open range bucket `i` covers: `[lo, hi)`, with `hi: null` for the open top. */
-export function bucketRange(
-  edges: readonly number[],
-  i: number
-): { lo: number; hi: number | null } {
+export function bucketRange(edges: readonly number[], i: number): { lo: number; hi: number | null } {
   return { lo: i === 0 ? 0 : edges[i - 1], hi: i < edges.length ? edges[i] : null }
 }
 

@@ -4,6 +4,7 @@ import { Box, Chip, Divider, Drawer, List, ListItemButton, ListItemIcon, Typogra
 // dev-only like the row that uses it: a named export whose only use sits inside a `false &&`
 // branch is tree-shaken out with the branch.
 import {
+  AaMark,
   AlertsMark,
   BossesMark,
   BuffsMark,
@@ -167,6 +168,7 @@ const ROWS: NavRow[] = [
   { view: 'bosses', icon: <BossesMark /> },
   { view: 'posky', icon: <PoskyMark /> },
   { view: 'races', icon: <RacesMark /> },
+  { view: 'aa', icon: <AaMark /> },
   { view: 'alerts', icon: <AlertsMark /> },
   { view: 'leveling', icon: <LevelingMark /> },
   { view: 'buffs', icon: <BuffsMark /> },

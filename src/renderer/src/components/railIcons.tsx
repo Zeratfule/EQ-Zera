@@ -157,6 +157,16 @@ export function RacesMark(p: SvgIconProps): JSX.Element {
   )
 }
 
+/** AAs — a star with a rising step beneath it. */
+export function AaMark(p: SvgIconProps): JSX.Element {
+  return (
+    <Mark {...p}>
+      <path d="M12 3l2.1 4.3 4.7.7-3.4 3.3.8 4.7L12 13.8 7.8 16l.8-4.7-3.4-3.3 4.7-.7z" />
+      <path d="M4 21h5v-2h5v-2h6" />
+    </Mark>
+  )
+}
+
 /** Alerts — a war horn sounding. */
 export function AlertsMark(p: SvgIconProps): JSX.Element {
   return (

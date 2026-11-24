@@ -34,6 +34,7 @@ import type { CombatFocus } from './features/combat/combatFocus'
 import { useBackFallback } from './appBack'
 import PoskyView from './features/posky/PoskyView'
 import RacesView from './features/races/RacesView'
+import { KEY_ONLY_VIEWS } from './keyOnlyViews'
 import LootView from './features/loot/LootView'
 import LevelingView from './features/leveling/LevelingView'
 import PlannerView from './features/planner/PlannerView'
@@ -48,8 +49,6 @@ import MapsView from './features/maps/MapsView'
 import CombatView from './features/combat/CombatView'
 import OverviewView from './features/overview/OverviewView'
 import AlertsView from './features/alerts/AlertsView'
-import BuffsView from './features/buffs/BuffsView'
-import TimersView from './features/timers/TimersView'
 import PreferencesView from './features/preferences/PreferencesView'
 // TWO FACTS THE PREFERENCES SNAPSHOT CANNOT LEARN FROM A CARD: what the X does (JOS-139 — the tray
 // menu carries the same checkbox) and WHICH OVERLAYS ARE OPEN (JOS-408 — the title bar's Overlay
@@ -119,6 +118,7 @@ function PlainView({
    *  there when no Discord channel webhook has been set up yet. */
   onOpenSharingPrefs: () => void
 }): JSX.Element {
+  const KeyOnly = KEY_ONLY_VIEWS[view]
   return (
     <>
       {/* The Loot tab stays MOUNTED across a deep link (no `key` churn on item change) —
@@ -171,11 +171,8 @@ function PlainView({
           every wish name links OUT to that item's Loot drill-down, the same contract the
           Exaltations tab's donor names use, so the drill's Back arrow comes home here. */}
       {view === 'wishlist' && <WishlistView key={viewKey} onOpenLoot={routing.openLoot} />}
-      {view === 'buffs' && <BuffsView key={viewKey} />}
-      {/* Respawn clocks (JOS-194). Character-scoped like the rest: the remount `key` is the
-          whole contract, since the watch list lives in the store and the clocks are re-derived
-          by the fold the character switch kicks off. */}
-      {view === 'timers' && <TimersView key={viewKey} />}
+      {/* Buffs, Timers and AAs take nothing but the `key` - keyOnlyViews.ts says why. */}
+      {KeyOnly && <KeyOnly key={viewKey} />}
       {view === 'alerts' && <AlertsView key={viewKey} {...{ onOpenVoicePrefs, onOpenOverlayPrefs }} />}
       {/* CHARACTER (JOS-45, released JOS-327). It sits HERE, below the no-characters gate, and not
           beside the triage branch: unlike triage this tab reads the game log (name, level, loadout)
