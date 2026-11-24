@@ -4,9 +4,11 @@
 // per-character renderer pref. Every rule is in shared/aaPlanner.ts and shared/aaPlanStore.ts,
 // pure and node-tested; this file only wires.
 //
-// THE PACE is the AA pace of the LAST HOUR OF THE LOG — the window the Overview card reads — so
-// "when can I afford this" means "at the pace you were just going". No pace, or a stale one (the
-// last completion sits far past the usual gap), and there is no ETA at all.
+// THE PACE is the AA pace of the LAST 24 HOURS OF THE LOG, in points per ONLINE hour (logouts the
+// log shows are carved out). Wider than the Overview card's hour on purpose: a plan is measured in
+// days, and an hour window is empty the moment the user stops to med, travel or log off, which
+// left most plans with no estimate. A pause since the last completion does not void the pace here
+// either; only too few completions in the window (`no-pace`) leaves the plan without an ETA.
 
 import { useCallback, useMemo, useState } from 'react'
 import type { CharacterSnap, LevelingSnap, ProgressionSnap } from '@shared/types'
@@ -28,7 +30,7 @@ import catalogJson from '../../data/eqlegends/aaCatalog.json'
 
 export const AA_CATALOG = catalogJson as unknown as AaCatalogData
 const INDEX = catalogIndex(AA_CATALOG.entries)
-const PACE_WINDOW_MS = 3_600_000
+const PACE_WINDOW_MS = 24 * 3_600_000
 
 export interface AaPlannerInputs {
   catalog: readonly AaCatalogEntry[]
@@ -43,7 +45,7 @@ export interface AaPlannerInputs {
   level: number | null
   banked: number
   allocated: number
-  /** ESTIMATE input: points per hour over the last hour of the log; null when there is no pace */
+  /** ESTIMATE input: points per online hour over the last 24 hours of the log; null when there is no pace */
   pointsPerHour: number | null
   /** the first AA line this log holds, or null when it holds none */
   seenSince: number | null
@@ -96,7 +98,7 @@ function paceOf(leveling: LevelingSnap, prog: ProgressionSnap): number | null {
   if (leveling.aaGains.length === 0 || prog.lastTs <= 0) return null
   const window = rangeStats({ snap: prog, range: { t0: prog.lastTs - PACE_WINDOW_MS, t1: prog.lastTs } })
   const pace = aaPace({ leveling, prog, window })
-  if (pace.eta.blocked !== null) return null
+  if (pace.eta.blocked === 'no-pace') return null
   const pph = pace.pointsPerHourWall
   return pph !== null && pph > 0 ? pph : null
 }

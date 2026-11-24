@@ -36,7 +36,7 @@ function Totals({ totals, hasPace }: { totals: AaPlanTotals; hasPace: boolean })
       <Total label="Points needed" value={`${String(totals.needed)}${unknown}`} testId="aa-planner-total-needed" />
       <Total label="Banked now" value={String(totals.banked)} testId="aa-planner-total-banked" />
       <Total label="Short" value={String(totals.shortfall)} testId="aa-planner-total-shortfall" />
-      {hasPace && eta !== null && <Total label="At your last hour's pace" value={eta} testId="aa-planner-total-eta" />}
+      {hasPace && eta !== null && <Total label="At your last 24 hours' pace" value={eta} testId="aa-planner-total-eta" />}
     </Stack>
   )
 }

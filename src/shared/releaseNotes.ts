@@ -135,6 +135,25 @@ export interface ReleaseNote {
  * still sees exactly the releases above it.
  */
 export const RELEASE_NOTES: readonly ReleaseNote[] = [
+  // Reincarnation tracking and the AA planner.
+  {
+    version: '1.30.0',
+    date: '2026-11-24',
+    entries: [
+      {
+        kind: 'new',
+        text: 'Reincarnation tracking on the Leveling tab: the app spots a reincarnation in your log, marks it on the chart, and restarts the level estimate at 1 instead of calling it a class swap. It also shows your extra XP requirement and how long the next run to 50 should take.'
+      },
+      {
+        kind: 'new',
+        text: 'The Leveling tab now lists the rank you hold in every Class and Race Reincarnation AA, plus your progress toward Completionist. Set counts by hand for reincarnations the app never saw.'
+      },
+      {
+        kind: 'new',
+        text: 'New AAs tab: browse every AA your classes can buy with the ranks you already hold, then plan a purchase order with points needed, points short, and when you can afford each step at your last 24 hours of AA pace.'
+      }
+    ]
+  },
   // The Luclin hair fix.
   {
     version: '1.29.1',
