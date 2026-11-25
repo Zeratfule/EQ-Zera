@@ -24,12 +24,13 @@
  *                          none: an item page, a disambiguation hub, a template page)
  *     floor                a catalog-wide share fell under its measured floor (FLOORS)
  *   Against the wikitext (scripts/sources/questPageAudit.ts): unparsed-heading,
- *     unread-step-heading, unread-list, unknown-label.
+ *     unread-step-heading, unread-list, unknown-label, unread-reward.
  *
- * A STALE ALLOWLIST ENTRY FAILS TOO, for the absolute and page rules: an exception that no longer
- * fires is one nobody re-reviewed, and the list only stays honest if it only shrinks by deletion.
- * (A stale entry for a comparison rule is expected — the next run compares against the fixed file —
- * and is only reported.)
+ * A STALE ALLOWLIST ENTRY FAILS TOO, WHATEVER ITS RULE: an exception that no longer fires is one
+ * nobody re-reviewed, and the list only stays honest if it only shrinks by deletion. For a
+ * COMPARISON rule that means the exception lives for exactly the one refresh that needed it — add
+ * it, run the refresh, delete it in the same commit — because left in place it would silently cover
+ * the NEXT loss of that field on that page (review 2026-11-25).
  */
 import type { QuestEntry } from '../src/shared/questTypes'
 import type { PageFinding, PageRule } from './sources/questPageAudit'
@@ -88,17 +89,6 @@ export const FLOORS: readonly Floor[] = [
   { name: 'with step coordinates', has: (q) => q.stepLocs !== undefined, min: 0.44 },
   { name: 'with ground spawns', has: (q) => (q.groundSpawns?.length ?? 0) > 0, minCount: 2 }
 ]
-
-const COMPARE_RULES: ReadonlySet<HealthRule> = new Set<HealthRule>([
-  'quest-removed',
-  'lost-steps',
-  'steps-halved',
-  'lost-start-zone',
-  'lost-giver',
-  'lost-rewards',
-  'lost-required-items',
-  'lost-ground-spawns'
-])
 
 const count = (a: readonly unknown[] | undefined): number => a?.length ?? 0
 
@@ -161,7 +151,7 @@ export interface HealthResult {
   failures: HealthFinding[]
   /** findings an entry covers, with its reason */
   allowed: (HealthFinding & { reason: string })[]
-  /** allowlist entries that matched nothing: absolute/page ones fail, comparison ones are a note */
+  /** allowlist entries that matched nothing — each one fails (see "A STALE ALLOWLIST ENTRY") */
   stale: AllowEntry[]
   /** the floors, measured, for the report */
   measured: string[]
@@ -184,8 +174,7 @@ export function applyAllowlist(findings: readonly HealthFinding[], allow: readon
     }
   }
   const stale = allow.filter((e) => !used.has(key(e.page, e.rule)))
-  const staleFails = stale.filter((e) => !COMPARE_RULES.has(e.rule))
-  return { ok: failures.length === 0 && staleFails.length === 0, failures, allowed, stale }
+  return { ok: failures.length === 0 && stale.length === 0, failures, allowed, stale }
 }
 
 /** The floors as numbers, for the report: `with steps 911/916 (99.5%, floor 98%)`. */
@@ -219,10 +208,7 @@ export function formatHealth(r: HealthResult): string[] {
   const out: string[] = []
   out.push(r.ok ? 'quest data health: PASS' : 'quest data health: FAIL')
   for (const f of r.failures) out.push(`  FAIL ${f.rule}: ${f.page} - ${f.detail}`)
-  for (const e of r.stale) {
-    const fails = !COMPARE_RULES.has(e.rule)
-    out.push(`  ${fails ? 'FAIL stale-allowlist' : 'note stale-allowlist'}: ${e.page} (${e.rule}) no longer fires${fails ? ' - delete the entry' : ''}`)
-  }
+  for (const e of r.stale) out.push(`  FAIL stale-allowlist: ${e.page} (${e.rule}) no longer fires - delete the entry`)
   out.push(`  allowed by the reviewed allowlist: ${String(r.allowed.length)}`)
   for (const m of r.measured) out.push(`  ${m}`)
   if (!r.ok) {

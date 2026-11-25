@@ -36,6 +36,7 @@ import type { ItemDropSource, MobEntry } from '@shared/types'
 // inside the vite build, and `tests/plannerSourceIndex.test.mts` reaches this module under the
 // node runner. Type-only imports are erased, so they keep the alias.
 import { itemBaseName } from '../../../shared/itemStats'
+import { withShownMobNames } from '../../../shared/mobName'
 import mobsJson from '../data/eqlegends/mobs.json'
 
 /** One place an item is known to come from. Exactly what the mob page stated, nothing more. */
@@ -99,7 +100,8 @@ export function buildSourceIndex(mobs: readonly MobEntry[]): Map<string, ItemSou
 let INDEX: Map<string, ItemSource[]> | null = null
 
 export function sourceIndex(): SourceIndex {
-  INDEX ??= buildSourceIndex(catalog.mobs ?? [])
+  // A `|name = NPC_Name` template placeholder is read as its page title (shared/mobName.ts).
+  INDEX ??= buildSourceIndex(withShownMobNames(catalog.mobs ?? []))
   return INDEX
 }
 

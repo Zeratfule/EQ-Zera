@@ -20,10 +20,13 @@ import type { MobIdentity } from './mobAliases'
 import type { MobData, MobDrop, MobEntry, MobKnowledge, MobQuestUse, QuestData } from '../shared/types'
 import mobsJson from '../renderer/src/data/eqlegends/mobs.json'
 import questsJson from '../renderer/src/data/eqlegends/quests.json'
+import { withShownMobNames } from '../shared/mobName'
 
 // ---- LOCAL 1: the scraped mob catalog (the definitive drop table) ---------------
 
-const mobData = mobsJson as unknown as MobData
+// A `|name = NPC_Name` template placeholder is read as its page title (shared/mobName.ts).
+const rawMobs = mobsJson as unknown as MobData
+const mobData: MobData = { ...rawMobs, mobs: withShownMobNames(rawMobs.mobs) }
 
 /**
  * Index the committed mob catalog by canonical name. Keyed BOTH ways a mob can be named:

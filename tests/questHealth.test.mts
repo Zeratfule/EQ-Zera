@@ -74,7 +74,7 @@ test('ABSOLUTE: a quest with no steps is a finding; a floor names its measured s
   assert.ok(found.some((f) => f.detail === 'quests: 2, floor 3'))
 })
 
-test('ALLOWLIST: an entry with a reason covers its page + rule only; a stale absolute entry FAILS, a stale comparison one is a note', () => {
+test('ALLOWLIST: an entry with a reason covers its page + rule only; a stale entry FAILS, whatever its rule', () => {
   const findings = [
     { page: 'A', rule: 'no-steps' as const, detail: '' },
     { page: 'B', rule: 'no-steps' as const, detail: '' }
@@ -90,7 +90,7 @@ test('ALLOWLIST: an entry with a reason covers its page + rule only; a stale abs
   const staleAbsolute = applyAllowlist([], [{ page: 'Z', rule: 'unknown-label', reason: 'fixed since' }])
   assert.equal(staleAbsolute.ok, false)
   const staleCompare = applyAllowlist([], [{ page: 'Z', rule: 'lost-steps', reason: 'a wiki rewrite, reviewed' }])
-  assert.equal(staleCompare.ok, true)
+  assert.equal(staleCompare.ok, false, 'a comparison exception lives for the one refresh that needed it')
   assert.equal(staleCompare.stale.length, 1)
 })
 
@@ -159,6 +159,9 @@ test('LAW: today’s catalog, rebuilt offline from the committed cache, passes t
   assert.ok(r.ok, formatHealth(r).join('\n'))
   // …and the committed file IS that rebuild: nobody hand-edited it or forgot to refresh it.
   assert.equal(JSON.stringify(rebuilt), JSON.stringify(committed))
+  // …in a FIXED collation ('en'), so that equality holds on a machine whose default locale differs.
+  const pages = committed.map((q) => q.page)
+  assert.deepEqual(pages, [...pages].sort((a, b) => a.localeCompare(b, 'en')))
   // Every floor holds with room, and every allowlist entry is used (none stale).
   assert.equal(r.stale.length, 0)
   assert.ok(FLOORS.length >= 8)

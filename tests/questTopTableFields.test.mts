@@ -49,6 +49,17 @@ test('"Location:" states the giver’s spot: one clean point per segment, and no
   assert.deepEqual(giverLocsOf('890,-75 (inside building); 825,-28, 1100, -300 (after 8PM game time)'), [{ ns: 890, ew: -75 }])
   assert.deepEqual(giverLocsOf('-10, 20, 3'), [{ ns: -10, ew: 20, z: 3 }])
   assert.deepEqual(giverLocsOf('near the bank'), [])
+  // REFUSED, each a shape whose axes or numbers cannot be read with certainty (review 2026-11-25):
+  assert.deepEqual(giverLocsOf('x: 100, y: 200'), [], 'axis letters: which is north-south is unknown')
+  assert.deepEqual(giverLocsOf('X 100, Y 200'), [])
+  assert.deepEqual(giverLocsOf('N 100, W 200'), [], 'compass letters flip signs the cell does not write')
+  assert.deepEqual(giverLocsOf('100N, 200W'), [])
+  assert.deepEqual(giverLocsOf('-1,234, 567'), [], 'a thousands separator')
+  assert.deepEqual(giverLocsOf('1,234,567'), [])
+  assert.deepEqual(giverLocsOf('50 @ (1, 2)'), [], 'a bare number before @ without % is not a spawn chance')
+  // ...and the accepted shapes still read.
+  assert.deepEqual(giverLocsOf('100% @ (-12, 34, 5)'), [{ ns: -12, ew: 34, z: 5 }])
+  assert.deepEqual(giverLocsOf('(-1234, 567)'), [{ ns: -1234, ew: 567 }])
   assert.deepEqual(parseQuestPage('Direwolf Fur Cloak Quest', page(15635), isItem).giverLocs, [{ ns: 1064, ew: 2409 }])
   assert.deepEqual(parseQuestPage('Granite Pebbles', page(15190), isItem).giverLocs, [{ ns: 890, ew: -75 }])
 })

@@ -216,7 +216,7 @@ async function collectQuestPages(): Promise<Member[]> {
     }
     console.log(`  ${cat}: ${members.length} members (+${added} pages)`)
   }
-  const pages = [...byTitle.values()].sort((a, b) => a.title.localeCompare(b.title))
+  const pages = [...byTitle.values()].sort((a, b) => a.title.localeCompare(b.title, 'en'))
   writeCache('quest-pages.json', pages)
   console.log(`Quest pages: ${pages.length}`)
   return pages

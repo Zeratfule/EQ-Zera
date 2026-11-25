@@ -75,11 +75,22 @@ function templatePoints(param: string): Point[] {
  * 825,-28, 1100, -300 (after 8PM game time)`. Segments split on `;`; a spawn chance (`50%`) and any
  * bracketed WORDS are dropped; a segment then holding exactly two or three numbers is one point
  * (ns, ew[, z]). Anything else is refused: four numbers are two points or a point with an elevation
- * of 1100, and the cell does not say which.
+ * of 1100, and the cell does not say which. So is a segment in any shape below (review 2026-11-25).
  */
+const UNREADABLE_LOC: readonly RegExp[] = [
+  // axis or compass letters (`x: 100`, `N 100, W 200`, `100N`): which number is north-south, and
+  // which sign the letter means, is the cell's convention, not /loc order
+  /\b[xyznsew]\s*[:=]?\s*[-+]?\d/i,
+  /\d\s*[xyznsew]\b/i,
+  // a thousands separator: `-1,234, 567` is two numbers or three
+  /\d,\d{3}(?!\d)/,
+  // `50 @ (1, 2)`: an `@` is read only after a spawn chance, `50% @`
+  /(?<!%\s*)@/
+]
 export function giverLocsOf(cell: string): Point[] {
   const out: Point[] = []
   for (const segment of cell.split(';')) {
+    if (UNREADABLE_LOC.some((re) => re.test(segment))) continue
     const bare = segment.replace(/\([^)]*[a-z][^)]*\)/gi, ' ').replace(/[-+]?\d+(?:\.\d+)?\s*%/g, ' ')
     if (/[a-z]{3,}/i.test(bare.replace(/\bloc\b/gi, ''))) continue
     const nums = bare.match(new RegExp(NUM, 'g')) ?? []

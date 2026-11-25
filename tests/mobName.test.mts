@@ -16,6 +16,9 @@ import { buildMobIndex, questLocations } from '../src/shared/questLocations'
 import { questPinsInZone } from '../src/shared/questMapPins'
 import { MOB_CATALOG } from '../src/renderer/src/features/mobs/mobSearch'
 import { parseMobPage } from '../scripts/sources/mobPage'
+import { sourceIndex } from '../src/renderer/src/lib/itemSources'
+import { committedCatalogs } from '../src/main/planner/eraDerive'
+import { localMobEntry } from '../src/main/mobLookupLocal'
 
 const quests = (questsJson as unknown as QuestData).quests
 const mobs = (mobsJson as unknown as MobData).mobs
@@ -43,6 +46,15 @@ test('REAL CATALOG: the two NPC_Name pages, and no chip or pin anywhere shows a 
 test('the Mobs tab / Maps pane catalog shows the page title instead', () => {
   assert.equal(MOB_CATALOG.find((m) => m.page === 'Lord Ollix Everling')?.name, 'Lord Ollix Everling')
   assert.equal(MOB_CATALOG.length, mobs.length)
+})
+
+test('EVERY SURFACE THAT READS mobs.json RAW: item sources, the planner’s droppers, the main mob lookup', () => {
+  const placeholderSource = [...sourceIndex().values()].flat().some((s) => isPlaceholderMobName(s.mob))
+  assert.ok(!placeholderSource, 'no item source names a placeholder')
+  const droppers = [...committedCatalogs().catalogDroppers.values()].flat()
+  assert.ok(!droppers.some(isPlaceholderMobName), 'no planner dropper is a placeholder')
+  assert.equal(localMobEntry('NPC_Name'), null, 'the placeholder is no longer a name the lookup answers to')
+  assert.equal(localMobEntry('Lord Ollix Everling')?.name, 'Lord Ollix Everling')
 })
 
 test('THE MOB PARSER stops writing it: a page whose |name is the placeholder takes its title', () => {

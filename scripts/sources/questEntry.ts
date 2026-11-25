@@ -80,6 +80,8 @@ export function buildQuestCatalog(pages: readonly QuestSourcePage[], isItem: (ti
     if (reason) skipped.push({ page: p.title, reason })
     else quests.push(toQuestEntry(parsed, groundSpawnsOf(p.wikitext, isItem)))
   }
-  quests.sort((a, b) => a.page.localeCompare(b.page))
+  // A FIXED collation: the default locale is the machine's, and the committed file must be the same
+  // bytes wherever it is rebuilt (the committed-equals-rebuild law, tests/questHealth.test.mts).
+  quests.sort((a, b) => a.page.localeCompare(b.page, 'en'))
   return { quests, skipped }
 }
