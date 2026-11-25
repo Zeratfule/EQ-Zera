@@ -42,11 +42,20 @@ import changedJson from './questStepsChanged.json'
 
 /** What a pin remembers about the steps its ticks were made on. */
 export interface StepsKey {
+  /** the `normaliseStep` version the hashes were made with; a key from another version is re-keyed, never judged */
+  v?: number
   /** the step count */
   n: number
   /** ticked index → hash of that step's normalised text */
   at: Record<string, string>
 }
+
+/**
+ * BUMP WHEN `normaliseStep` CHANGES WHAT IT KEEPS. A stored key made by another version has hashes
+ * this one cannot compare, so it is re-keyed with every tick kept (a changed step COUNT still drops:
+ * that is not a normaliser question).
+ */
+export const NORMALISER_VERSION = 1
 
 interface ChangedFile {
   stepsDigest: string
@@ -77,6 +86,27 @@ export function legacyRule(lastRun: string | null): (page: string) => boolean {
     const moved = LEGACY_MOVED.get(page)
     return moved !== undefined && (known === null || cmp(moved, known) >= 0)
   }
+}
+
+/** What the store keeps (`pinsLegacyBaseline`): the last-run version THIS build found on its first launch. */
+export interface StoredBaseline {
+  build: string
+  lastRun: string | null
+}
+
+/**
+ * THE BASELINE FOR UNSIGNED PINS, ONCE PER BUILD. A character's pins are reconciled when that
+ * character is first opened, which may be a later launch than the update's first — by when the
+ * What's-new stamp has moved to this build and would claim the player last ran it. So the value this
+ * build's FIRST launch found (`launch`) is stored with the build it belongs to, and every later
+ * launch of the same build reads it back; a newer build captures its own. `write` is what the caller
+ * must store, when anything.
+ */
+export function resolveLegacyBaseline(stored: unknown, build: string, launch: string | null): { baseline: string | null; write?: StoredBaseline } {
+  const s = stored as Partial<StoredBaseline> | null | undefined
+  const valid = typeof s === 'object' && s !== null && typeof s.build === 'string' && (s.lastRun === null || typeof s.lastRun === 'string')
+  if (valid && s.build === build) return { baseline: s.lastRun ?? null }
+  return { baseline: launch, write: { build, lastRun: launch } }
 }
 
 /**
@@ -139,11 +169,11 @@ export function stepHash(text: string): string {
 export function stepsKeyFor(steps: readonly string[], ticks: readonly number[]): StepsKey {
   const at: Record<string, string> = {}
   for (const t of ticks) if (t < steps.length) at[String(t)] = stepHash(steps[t])
-  return { n: steps.length, at }
+  return { v: NORMALISER_VERSION, n: steps.length, at }
 }
 
 const sameKey = (a: StepsKey, b: StepsKey): boolean =>
-  a.n === b.n && Object.keys(a.at).length === Object.keys(b.at).length && Object.entries(b.at).every(([k, v]) => a.at[k] === v)
+  a.v === b.v && a.n === b.n && Object.keys(a.at).length === Object.keys(b.at).length && Object.entries(b.at).every(([k, v]) => a.at[k] === v)
 
 type StepsOf = (page: string) => readonly string[] | undefined
 
@@ -152,6 +182,7 @@ function keptTicks(pin: QuestPin, steps: readonly string[], legacy: (page: strin
   const key = pin.stepsKey
   if (key === undefined) return legacy(pin.page) ? [] : pin.ticks
   if (key.n !== steps.length) return []
+  if (key.v !== NORMALISER_VERSION) return pin.ticks.filter((t) => t < steps.length)
   // A tick with no remembered hash was written by this build (a write keys every tick), so it stands.
   return pin.ticks.filter((t) => t < steps.length && (key.at[String(t)] ?? stepHash(steps[t])) === stepHash(steps[t]))
 }
@@ -196,11 +227,11 @@ const isCount = (v: unknown): v is number => typeof v === 'number' && Number.isI
 
 export function sanitizeStepsKey(value: unknown, maxEntries: number): StepsKey | null {
   if (!isObject(value)) return null
-  const v = value as { n?: unknown; at?: unknown }
+  const v = value as { v?: unknown; n?: unknown; at?: unknown }
   if (!isCount(v.n) || !isObject(v.at)) return null
   const at: Record<string, string> = {}
   for (const [k, h] of Object.entries(v.at).slice(0, maxEntries)) {
     if (/^\d{1,4}$/.test(k) && typeof h === 'string' && HASH_RE.test(h)) at[k] = h
   }
-  return { n: v.n, at }
+  return isCount(v.v) && v.v > 0 ? { v: v.v, n: v.n, at } : { n: v.n, at }
 }

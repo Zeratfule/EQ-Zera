@@ -25,6 +25,7 @@ import type { DiscordChannel } from '../shared/discordChannels'
 import type { CelebrationPostPrefs } from '../shared/celebrationPost'
 import type { AwayAlertsPrefs } from '../shared/awayAlerts'
 import type { LuclinPrefs } from '../shared/luclinModels'
+import type { StoredBaseline } from '../shared/questStepsSig'
 import type { WindowBounds } from './store'
 
 /**
@@ -298,6 +299,13 @@ export interface StoreShape {
    * here still opens in a build that predates the feature.
    */
   lastSeenNotesVersion?: string
+  /**
+   * The last-run version THIS build found on its first launch (`{ build, lastRun }`), the baseline
+   * the quest tracker judges pins stored before step keys against (shared/questStepsSig.ts
+   * `resolveLegacyBaseline`; src/main/launchVersion.ts). Written once per build, never overwritten by
+   * that build. Additive + optional, the `lastSeenNotesVersion` precedent above.
+   */
+  pinsLegacyBaseline?: StoredBaseline
   /**
    * The MAIN window's zoom factor (JOS-123; shared/uiScale.ts) — the "text size" control in
    * Preferences. A factor, not a percentage: 1.25 is what the card labels "125%".

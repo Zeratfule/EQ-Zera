@@ -15,7 +15,7 @@ import assert from 'node:assert/strict'
 import questsJson from '../src/renderer/src/data/eqlegends/quests.json'
 import type { QuestData } from '../src/shared/types'
 import { sanitizeQuestPins, setTick, type QuestPin } from '../src/shared/questPins'
-import { LEGACY_MOVED, adoptStepsKeys, legacyRule, normaliseStep, questStepsDigest, reconcileQuestTicks, stepHash, stepsKeyFor } from '../src/shared/questStepsSig'
+import { LEGACY_MOVED, NORMALISER_VERSION, adoptStepsKeys, legacyRule, normaliseStep, questStepsDigest, reconcileQuestTicks, resolveLegacyBaseline, stepHash, stepsKeyFor } from '../src/shared/questStepsSig'
 import changedJson from '../src/shared/questStepsChanged.json'
 
 const quests = (questsJson as unknown as QuestData).quests
@@ -134,4 +134,39 @@ test('NOT STALE: questStepsChanged.json was generated from THIS quests.json (re-
   // …and the digest does move with any step edit, so this check can fail.
   const edited = quests.map((q, i) => (i === 0 ? { ...q, steps: [...(q.steps ?? []), 'one more step'] } : q))
   assert.notEqual(questStepsDigest(edited), questStepsDigest(quests))
+})
+
+test('A KEY FROM ANOTHER NORMALISER VERSION is re-keyed, never judged: the tick stays', () => {
+  const steps = stepsOf("Tarton's Wheel") ?? []
+  // Hashes no current normaliser would produce, under an older version number: not evidence.
+  const old = { v: NORMALISER_VERSION - 1, n: steps.length, at: { '0': 'deadbeef', '2': 'cafef00d' } }
+  const out = reconcileQuestTicks([pin("Tarton's Wheel", [0, 2], { stepsKey: old })], stepsOf, () => false)
+  assert.deepEqual(out[0].ticks, [0, 2])
+  assert.deepEqual(out[0].stepsKey, stepsKeyFor(steps, [0, 2]))
+  assert.equal(out[0].stepsKey?.v, NORMALISER_VERSION)
+  // A changed COUNT is not a normaliser question: it still drops.
+  const moved = reconcileQuestTicks([pin("Tarton's Wheel", [0], { stepsKey: { ...old, n: steps.length + 3 } })], stepsOf, () => false)
+  assert.deepEqual(moved[0].ticks, [])
+})
+
+test('THE LEGACY BASELINE IS CAPTURED ONCE PER BUILD and every character is judged by it', () => {
+  // First launch of build 1.31.0: the store had no baseline; What's-new last showed 1.30.0.
+  const first = resolveLegacyBaseline(undefined, '1.31.0', '1.30.0')
+  assert.deepEqual(first, { baseline: '1.30.0', write: { build: '1.31.0', lastRun: '1.30.0' } })
+  // Character A is opened in that session: The Betrayer moved at 1.30.0, so its old ticks go.
+  const a = reconcileQuestTicks([pin('The Betrayer', [2])], stepsOf, legacyRule(first.baseline))
+  assert.deepEqual(a[0].ticks, [])
+  // A LATER launch of the same build: the player opened the notes, so the stamp now says 1.31.0 -
+  // but the stored baseline answers, so character Z (first opened now) is judged the same way.
+  const later = resolveLegacyBaseline(first.write, '1.31.0', '1.31.0')
+  assert.deepEqual(later, { baseline: '1.30.0' }, 'no write: the same build never overwrites its baseline')
+  const z = reconcileQuestTicks([pin('Harvester Quest', [1]), pin('The Betrayer', [2])], stepsOf, legacyRule(later.baseline))
+  assert.deepEqual(z.map((p) => p.ticks), [[], []])
+  // A NEWER build captures its own baseline.
+  assert.deepEqual(resolveLegacyBaseline(first.write, '1.32.0', '1.31.0'), { baseline: '1.31.0', write: { build: '1.32.0', lastRun: '1.31.0' } })
+  // Unknown on the first launch stays unknown (null = the full union), and is stored as such.
+  assert.deepEqual(resolveLegacyBaseline(undefined, '1.31.0', null), { baseline: null, write: { build: '1.31.0', lastRun: null } })
+  assert.deepEqual(resolveLegacyBaseline({ build: '1.31.0', lastRun: null }, '1.31.0', '1.31.0'), { baseline: null })
+  // A junk stored value is ignored and recaptured.
+  assert.deepEqual(resolveLegacyBaseline('junk', '1.31.0', '1.30.1'), { baseline: '1.30.1', write: { build: '1.31.0', lastRun: '1.30.1' } })
 })
