@@ -124,6 +124,11 @@ function getSnapshot(): Snapshot {
  * `useWishlist` does: StrictMode double-invokes those, and an IPC write is not a thing to do twice.
  */
 function apply(edit: (prev: QuestPins) => QuestPins): void {
+  // NOT BEFORE THE FIRST READ SETTLES. The document is written WHOLE, and until the store has been
+  // read the snapshot is an empty placeholder: an edit folded over it would overwrite the character's
+  // stored tracker with one row (review 2026-11-25). The quest page disables its controls until
+  // `ready`, so a refused edit here is one no control could have made.
+  if (!snapshot.ready) return
   const next = edit(snapshot.pins)
   writes += 1
   const mine = writes
@@ -172,12 +177,25 @@ export interface QuestPinsApi {
 
 const API_BASE = { toggle, tick, markDone, clearDone }
 
+/** The four edit doors, outside React — for tests/questPinsReady.test.mts. */
+export const questPinDoors = API_BASE
+
+/** The current document and its readiness, outside React (the same object the hook hands out). */
+export function questPinsSnapshot(): Readonly<Snapshot> {
+  return snapshot
+}
+
+/** Subscribe to main's pushes (once) and read the store (once). What mounting the hook does. */
+export function startQuestPins(): void {
+  watch()
+  load(false)
+}
+
 /** The character's tracked quests. Mount it wherever a surface needs it: there is one document. */
 export function useQuestPins(): [QuestPins, QuestPinsApi] {
   const snap = useSyncExternalStore(subscribe, getSnapshot)
   useEffect(() => {
-    watch()
-    load(false)
+    startQuestPins()
   }, [])
   return useMemo(() => [snap.pins, { ...API_BASE, ready: snap.ready }], [snap])
 }

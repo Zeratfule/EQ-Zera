@@ -202,6 +202,8 @@ export function QuestPage({
         <Button
           size="small"
           data-testid="quest-pin"
+          // Not before the tracker is read: an edit then would overwrite it (useQuestPins.ts apply).
+          disabled={!api.ready}
           variant={pinned ? 'contained' : 'outlined'}
           onClick={() => api.toggle(quest.page)}
         >
@@ -224,7 +226,7 @@ export function QuestPage({
             steps={steps}
             progress={progress}
             ticks={ticks}
-            onTick={pinned ? (step, on) => api.tick(quest.page, step, on) : null}
+            onTick={pinned && api.ready ? (step, on) => api.tick(quest.page, step, on) : null}
             where={{ chips: locs.steps, quest: quest.page, onOpenMap: openMap }}
           />
           {locs.npcs.length > 0 && (
