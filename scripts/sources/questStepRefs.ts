@@ -70,6 +70,27 @@ function templatePoints(param: string): Point[] {
   return out
 }
 
+/**
+ * A header "Location" cell (the giver's spot): `50% @ (1064, 2409)`, `890,-75 (inside building);
+ * 825,-28, 1100, -300 (after 8PM game time)`. Segments split on `;`; a spawn chance (`50%`) and any
+ * bracketed WORDS are dropped; a segment then holding exactly two or three numbers is one point
+ * (ns, ew[, z]). Anything else is refused: four numbers are two points or a point with an elevation
+ * of 1100, and the cell does not say which.
+ */
+export function giverLocsOf(cell: string): Point[] {
+  const out: Point[] = []
+  for (const segment of cell.split(';')) {
+    const bare = segment.replace(/\([^)]*[a-z][^)]*\)/gi, ' ').replace(/[-+]?\d+(?:\.\d+)?\s*%/g, ' ')
+    if (/[a-z]{3,}/i.test(bare.replace(/\bloc\b/gi, ''))) continue
+    const nums = bare.match(new RegExp(NUM, 'g')) ?? []
+    if (nums.length < 2 || nums.length > 3) continue
+    const [ns, ew, z] = nums.map(num)
+    if (![ns, ew, z ?? 0].every((n) => Number.isFinite(n) && Math.abs(n) <= MAX_ABS)) continue
+    out.push(z === undefined ? { ns, ew } : { ns, ew, z })
+  }
+  return out
+}
+
 /** `(a, b)` / `(a, b, z)` — how a coordinate reads in a step, signs only where negative. */
 export function formatPoint(p: Point): string {
   return `(${[p.ns, p.ew, ...(p.z === undefined ? [] : [p.z])].map(String).join(', ')})`

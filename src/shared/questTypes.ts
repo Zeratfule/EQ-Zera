@@ -31,6 +31,13 @@ export interface QuestStepLink {
   label?: string
 }
 
+/** A bare point, /loc order. */
+export interface QuestPoint {
+  ns: number
+  ew: number
+  z?: number
+}
+
 /** One coordinate the step's own words state, from prose or from a `{{Loc}}` template. */
 export interface QuestStepLoc {
   ns: number
@@ -76,6 +83,11 @@ export interface QuestEntry {
   startZone?: string
   /** "Quest Giver" NPC */
   giver?: string
+  /**
+   * Where the giver stands, as the page's header "Location" row states it (/loc order) — only a
+   * point it states unambiguously. A quest-page fact about the giver, resolved like any other.
+   */
+  giverLocs?: QuestPoint[]
   /** "Minimum Level" (numeric part only) */
   minLevel?: number
   /** classes the quest is offered to ("All" when unrestricted) */

@@ -56,7 +56,7 @@ export function pageFindingsFor(next: readonly QuestEntry[], pages: readonly Que
   const byPage = new Map(next.map((q) => [q.page, q]))
   return pages.flatMap((p) => {
     const q = byPage.get(p.title)
-    return q === undefined || p.wikitext === null ? [] : auditQuestPage(p.title, p.wikitext, q.steps?.length ?? 0)
+    return q === undefined || p.wikitext === null ? [] : auditQuestPage(p.title, p.wikitext, { steps: q.steps?.length ?? 0, rewards: q.rewards?.length ?? 0 })
   })
 }
 

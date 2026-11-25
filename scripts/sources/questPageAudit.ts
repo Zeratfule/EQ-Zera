@@ -9,20 +9,23 @@
  * it agreed. Where the parser's own regex is the thing being checked, the check never uses it to
  * look (a parser that stops seeing `= X =` must not blind the check that looks for `= X =`).
  *
- * THE FOUR RULES (a finding names its rule; the allowlist is keyed by page + rule):
+ * THE FIVE RULES (a finding names its rule; the allowlist is keyed by page + rule):
  *   - `unparsed-heading`  a line that is plainly a heading (`= Text =`, any depth, anything after)
  *                          that the parser's heading regex refuses. `== Checklist =={{CheckboxList}}`
- *                          on Harvester Quest is the live example.
+ *                          on Harvester Quest was the first-run example (fixed 2026-11-25).
  *   - `unread-step-heading` a heading whose words say steps (Checklist, Quick List, Summary,
  *                          Walkthrough, Steps) that is neither one of the parser's step headings nor
  *                          inside one, with content under it.
  *   - `unread-list`        the parser found NO steps, yet the page has a bullet list outside its
  *                          reward/notes/related sections.
  *   - `unknown-label`      a questTopTable label the parser neither reads nor deliberately skips.
+ *   - `unread-reward`      a Reward(s) section holding a box or a link, and NO reward read from the
+ *                          page. Added after the first fix wave showed 55 class-armor pages whose
+ *                          `{{Gear Set|…}}` reward box was read as nothing — no rule above saw it.
  */
 import { HEADING_RE, STEP_HEADINGS, TOP_TABLE_LABELS, topTableLabels } from './questPage'
 
-export type PageRule = 'unparsed-heading' | 'unread-step-heading' | 'unread-list' | 'unknown-label'
+export type PageRule = 'unparsed-heading' | 'unread-step-heading' | 'unread-list' | 'unknown-label' | 'unread-reward'
 
 export interface PageFinding {
   page: string
@@ -146,13 +149,37 @@ function labelFindings(page: string, wikitext: string, parser: ParserView): Page
 }
 
 /** Every finding for one cached page. `stepCount` is what the parser extracted from it. */
-export function auditQuestPage(page: string, wikitext: string, stepCount: number, parser: ParserView = PARSER): PageFinding[] {
+export function auditQuestPage(page: string, wikitext: string, got: ParsedCounts, parser: ParserView = PARSER): PageFinding[] {
   const lines = withoutNoise(wikitext).split('\n')
   const heads = looseHeadings(lines, parser)
   const out = [...headingFindings(page, lines, heads, parser), ...labelFindings(page, wikitext, parser)]
-  if (stepCount === 0) {
-    const f = listFinding(page, lines, heads)
-    if (f) out.push(f)
+  const list = got.steps === 0 ? listFinding(page, lines, heads) : null
+  const reward = got.rewards === 0 ? rewardFinding(page, lines, heads) : null
+  return [...out, ...[list, reward].filter((f): f is PageFinding => f !== null)]
+}
+
+/** What the parser got from the page: its step count, and (when known) its reward count. */
+export interface ParsedCounts {
+  steps: number
+  /** omitted ⇒ the reward check is not run */
+  rewards?: number
+}
+
+/**
+ * A BOX: a template in a Reward section that is not a `{{:Item}}` transclusion (read already) and not
+ * one of the experience / checklist markers. Links are NOT evidence — Reward sections link
+ * [[Faction]] and spell pages on hundreds of quests, and the parser rightly keeps only item pages.
+ */
+const ITEM_MARKUP = /\{\{(?!\s*(?::|experience\b|exp\b|yougainexperience\b|checkboxlist\b|end\b))/i
+
+/** No reward read: does a Reward(s) section (its sub-sections too) hold a box or a link anyway? */
+function rewardFinding(page: string, lines: readonly string[], heads: readonly Heading[]): PageFinding | null {
+  for (const [i, h] of heads.entries()) {
+    if (!/\brewards?\b/i.test(h.text)) continue
+    const next = heads.slice(i + 1).find((o) => o.depth <= h.depth)
+    const body = lines.slice(h.at + 1, next?.at ?? lines.length)
+    const hit = body.find((l) => ITEM_MARKUP.test(l))
+    if (hit !== undefined) return { page, rule: 'unread-reward', detail: `${h.text}: ${hit.trim().slice(0, 100)}` }
   }
-  return out
+  return null
 }

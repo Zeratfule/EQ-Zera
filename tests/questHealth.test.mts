@@ -107,16 +107,29 @@ test('JUDGE + FORMAT: a failing run says FAIL, names each finding, and says wher
 })
 
 test('PAGE CHECKS, INLINE: an unseen heading, an unread step heading, an unread list, an unknown label', () => {
-  const top = "{| class=\"questTopTable\"\n! ''' Start Zone: '''\n| [[Qeynos]]\n|-\n! ''' Quest Giver: '''\n| Guard\n|-\n! ''' Item Location: '''\n| (1, 2)\n|}\n"
-  const wt = `${top}== Walkthrough ==\nHail the guard.\n== Checklist =={{CheckboxList}}\n* Kill a rat\n== Quick Steps ==\n* Kill a rat\n`
-  const found = auditQuestPage('P', wt, parseQuestPage('P', wt).steps.length)
+  const top = "{| class=\"questTopTable\"\n! ''' Start Zone: '''\n| [[Qeynos]]\n|-\n! ''' Quest Giver: '''\n| Guard\n|-\n! ''' Item Origin: '''\n| (1, 2)\n|}\n"
+  // A heading the parser still cannot see: markup (not a template) after the closing `==`.
+  const wt = `${top}== Walkthrough ==\nHail the guard.\n== Checklist == <br>\n* Kill a rat\n== Quick Steps ==\n* Kill a rat\n`
+  const found = auditQuestPage('P', wt, { steps: parseQuestPage('P', wt).steps.length })
   assert.deepEqual(rules(found), ['unknown-label:P', 'unparsed-heading:P', 'unread-step-heading:P', 'unread-step-heading:P'])
   // A page whose only content is a list the parser never read.
   const listOnly = `${top}== Getting Started ==\n'''Part one'''\n{{CheckboxList}}\n* one\n* two\n`
-  assert.ok(rules(auditQuestPage('L', listOnly, 0)).includes('unread-list:L'))
+  assert.ok(rules(auditQuestPage('L', listOnly, { steps: 0 })).includes('unread-list:L'))
   // A page with no recognised step heading reads every section (the fallback): nothing is unread.
   const fallback = `${top}== The War ==\n* one\n== Checklists ==\n* two\n`
-  assert.deepEqual(rules(auditQuestPage('F', fallback, parseQuestPage('F', fallback).steps.length)), ['unknown-label:F'])
+  assert.deepEqual(rules(auditQuestPage('F', fallback, { steps: parseQuestPage('F', fallback).steps.length })), ['unknown-label:F'])
+})
+
+test('PAGE CHECKS: a Rewards section with a box or a link in it, and no reward read, is `unread-reward`', () => {
+  const gearSet = '== Rewards ==\n{{Gear Set\n|Helm of Ro\n}}\n== Walkthrough ==\nHail him.\n'
+  assert.deepEqual(rules(auditQuestPage('G', gearSet, { steps: 1, rewards: 0 })), ['unread-reward:G'])
+  assert.deepEqual(auditQuestPage('G', gearSet, { steps: 1, rewards: 1 }), [])
+  // Words only (coin, experience, faction) are not an unread item; no count given, no check.
+  assert.deepEqual(auditQuestPage('W', '== Reward ==\nExperience and 5 gold.\n', { steps: 1, rewards: 0 }), [])
+  assert.deepEqual(auditQuestPage('G', gearSet, { steps: 1 }), [])
+  // The real page that taught it: every class armor page read no reward before {{Gear Set}} was read.
+  const ro = cachedQuestPages().find((p) => p.title === 'Armor of Ro Quests')
+  assert.ok(rules(auditQuestPage('Armor of Ro Quests', ro?.wikitext ?? '', { steps: 1, rewards: 0 })).includes('unread-reward:Armor of Ro Quests'))
 })
 
 /** The parser as it stood on 2026-11-23, before cba516d: `==`+ headings, no Summary, no Starts In. */
@@ -129,13 +142,13 @@ const PARSER_2026_11_23: ParserView = {
 test('REPLAY: the 2026-11-23 parser over the REAL cached Nektropos pages fails the gate, page by page', () => {
   const pages = cachedQuestPages().filter((p) => p.wikitext !== null && /^=[^=].*[^=]=\s*$/m.test(p.wikitext))
   assert.ok(pages.length >= 15, `the level-1 heading pages are cached (${String(pages.length)})`)
-  const old = pages.flatMap((p) => auditQuestPage(p.title, p.wikitext ?? '', 1, PARSER_2026_11_23))
+  const old = pages.flatMap((p) => auditQuestPage(p.title, p.wikitext ?? '', { steps: 1 }, PARSER_2026_11_23))
   const flagged = new Set(old.filter((f) => f.rule === 'unparsed-heading').map((f) => f.page))
   assert.equal(flagged.size, pages.length, 'every level-1 heading page is named')
   assert.ok(old.some((f) => f.rule === 'unknown-label' && f.detail === 'starts in'), 'the Starts In label is named')
   assert.ok(old.some((f) => f.page === 'The Tragic Tale of House Everling' && f.rule === 'unknown-label'))
   // Today's parser reads them all: none of these pages has a finding.
-  const now = pages.flatMap((p) => auditQuestPage(p.title, p.wikitext ?? '', 1))
+  const now = pages.flatMap((p) => auditQuestPage(p.title, p.wikitext ?? '', { steps: 1 }))
   assert.deepEqual(now, [])
 })
 

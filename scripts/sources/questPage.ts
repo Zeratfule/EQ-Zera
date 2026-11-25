@@ -28,8 +28,8 @@
  * `isItem(title)` predicate (built from the wiki's item-page title set) — that filter is
  * what turns prose links into a trustworthy required-item list.
  */
-import type { QuestStepLink, QuestStepLoc } from '../../src/shared/questTypes'
-import { renderLocTemplates, stepLinksOf, stepLocsOf } from './questStepRefs'
+import type { QuestPoint, QuestStepLink, QuestStepLoc } from '../../src/shared/questTypes'
+import { giverLocsOf, renderLocTemplates, stepLinksOf, stepLocsOf } from './questStepRefs'
 
 /** The `{| class="questTopTable"` header block, verbatim label → value cells. */
 export interface QuestTopTable {
@@ -41,6 +41,12 @@ export interface QuestTopTable {
   classes: string[]
   relatedZones: string[]
   relatedNpcs: string[]
+  /** the giver's spot(s) a "Location" row states, /loc order — only the unambiguous ones */
+  giverLocs: QuestPoint[]
+  /** a "Reward" row's names — the page's reward even when its Reward section says nothing */
+  tableRewards: string[]
+  /** "Items Required" / "Related Items" rows' names (item-filtered by `parseQuestPage`) */
+  tableItems: string[]
 }
 
 export interface ParsedQuestPage extends QuestTopTable {
@@ -90,6 +96,28 @@ export function linkTargets(text: string): string[] {
     out.push(t)
   }
   return out
+}
+
+/** Every line under a Reward(s) heading, its deeper sub-headings included, up to the next heading as shallow. */
+function rewardTree(wikitext: string): string {
+  const out: string[] = []
+  let depth = 0
+  for (const line of wikitext.split('\n')) {
+    const h = HEADING_RE.exec(line)
+    if (h && (depth === 0 || h[1].length <= depth)) depth = /^rewards?\b/i.test(h[2].trim()) ? h[1].length : 0
+    else if (depth > 0) out.push(line)
+  }
+  return out.join('\n')
+}
+
+/** The pieces a `{{Gear Set|A|B|…}}` box lists, in order (its positional parameters). */
+export function gearSetPieces(text: string): string[] {
+  return [...text.matchAll(/\{\{\s*gear set\s*((?:\|[^{}|]*)*)\}\}/gi)].flatMap((m) =>
+    m[1]
+      .split('|')
+      .map((p) => p.trim())
+      .filter((p) => p !== '' && !p.includes('='))
+  )
 }
 
 /** Every `{{:Page}}` main-namespace transclusion target — on quest pages these are item boxes. */
@@ -183,7 +211,14 @@ export const TOP_TABLE_LABELS = {
   minLevel: ['minimum level', 'min level', 'level'],
   classes: ['classes'],
   relatedZones: ['related zones'],
-  relatedNpcs: ['related npcs', 'related npc']
+  relatedNpcs: ['related npcs', 'related npc', 'related creatures'],
+  // Read since the health gate's first run (2026-11-25), each on the page that writes it:
+  /** "Location: 50% @ (1064, 2409)" (Direwolf Fur Cloak Quest, Granite Pebbles): the giver's spot */
+  giverLoc: ['location'],
+  /** "Reward: [[Intensify Death]]" (Keeper Rott's Pages, whose only reward it is) */
+  reward: ['reward'],
+  /** "Items Required" (Bozinite Pestle Quest), "Related Items" (Clurg's New Creation) */
+  items: ['items required', 'related items']
 } as const
 
 /** Every label the page's questTopTable gives a value, lowercased (none without the table). */
@@ -214,8 +249,18 @@ export function parseTopTable(wikitext: string): QuestTopTable | null {
     minLevelText: minText && !/^\d+$/.test(minText) ? minText : undefined,
     classes: cellList(pick(TOP_TABLE_LABELS.classes)),
     relatedZones: cellList(pick(TOP_TABLE_LABELS.relatedZones)),
-    relatedNpcs: cellList(pick(TOP_TABLE_LABELS.relatedNpcs))
+    relatedNpcs: cellList(pick(TOP_TABLE_LABELS.relatedNpcs)),
+    giverLocs: giverLocsOf(stripMarkup(pick(TOP_TABLE_LABELS.giverLoc))),
+    tableRewards: cellTargets(pick(TOP_TABLE_LABELS.reward)),
+    // Each label on its own: a page could state both.
+    tableItems: TOP_TABLE_LABELS.items.flatMap((label) => cellTargets(pick([label])))
   }
+}
+
+/** A cell's link TARGETS (the page names), else its comma-separated words. */
+function cellTargets(raw: string): string[] {
+  const links = linkTargets(raw)
+  return links.length > 0 ? dedupe(links) : cellList(raw)
 }
 
 export interface WikiSection {
@@ -227,8 +272,13 @@ export interface WikiSection {
  * A heading line at ANY level, `= Walkthrough =` included: the quest pages written for the
  * Nektropos patch (2026-11) use level-1 headings, and reading only `==` and deeper left them
  * with no steps and no reward. Group 1 is the `=` run (the depth), group 2 the heading text.
+ *
+ * A TEMPLATE AFTER THE CLOSING `=` still leaves a heading (`== Checklist =={{CheckboxList}}`, 7 lines
+ * on 5 cached pages, found by the health gate 2026-11-25): unseen, Harvester Quest's checklist read
+ * as its Reward section and four turn-ins became rewards. The template opens the list below it;
+ * dropping it with the heading costs nothing, the step reader drops it on its own line anyway.
  */
-export const HEADING_RE = /^\s*(={1,6})\s*([^=\s][^=]*?)\s*={1,6}\s*$/
+export const HEADING_RE = /^\s*(={1,6})\s*([^=\s][^=]*?)\s*={1,6}\s*(?:\{\{[^{}]*\}\}\s*)*$/
 
 /** Split wikitext into its lead and `= Heading =` sections (any depth). */
 export function splitSections(wikitext: string): { lead: string; sections: WikiSection[] } {
@@ -382,6 +432,42 @@ export function extractStepLines(wikitext: string): StepLine[] {
   return rest.length === 0 ? [] : toSteps(rest.join('\n'))
 }
 
+/** A page with no questTopTable: every header field empty. */
+const NO_TOP_TABLE: QuestTopTable = { classes: [], relatedZones: [], relatedNpcs: [], giverLocs: [], tableRewards: [], tableItems: [] }
+
+/** The page's reward items and its needed items (the rest of the page, rewards excluded). */
+function pageItems(withoutTable: string, header: QuestTopTable, isItem: (title: string) => boolean): { rewards: string[]; requiredItems: string[] } {
+  const { lead, sections } = splitSections(withoutTable)
+  const rewardText = sections
+    .filter((s) => REWARD_HEADING.test(s.heading))
+    .map((s) => s.text)
+    .join('\n')
+  const bodyText = [lead, ...sections.filter((s) => !REWARD_HEADING.test(s.heading)).map((s) => s.text)].join('\n')
+
+  // Rewards: a `{{:Name}}` box is always an item; a plain link only counts when the
+  // title is a known item page (Reward sections also link factions, zones and coin).
+  const rewards = dedupe([
+    ...transclusionTargets(rewardText),
+    ...linkTargets(rewardText).filter(isItem),
+    // A {{Gear Set|piece|piece|…}} box (57 armor-quest pages) names its pieces; only item pages count.
+    // Read under the Rewards heading's SUB-headings too: Dreadscale Armor splits its sets by smith.
+    ...gearSetPieces(rewardTree(withoutTable)).filter(isItem),
+    // A header "Reward" row says so outright, so it needs no item page (a spell quest's reward).
+    ...header.tableRewards
+  ])
+  const rewardKeys = new Set(rewards.map((r) => r.toLowerCase()))
+
+  // Required/turn-in items: item references anywhere OUTSIDE the Reward section. Unlike the
+  // Reward section (which only ever holds item boxes), the body transcludes mob/zone boxes
+  // too, so BOTH links and transclusions go through the item filter here.
+  const requiredItems = dedupe([
+    ...transclusionTargets(bodyText).filter(isItem),
+    ...linkTargets(bodyText).filter(isItem),
+    ...header.tableItems.filter(isItem)
+  ]).filter((n) => !rewardKeys.has(n.toLowerCase()))
+  return { rewards, requiredItems }
+}
+
 /**
  * Parse one quest page. `isItem(title)` decides whether a prose link names an item page
  * (built from the wiki's item-title set); without it every link would be kept, dragging
@@ -393,41 +479,14 @@ export function parseQuestPage(
   isItem: (title: string) => boolean = () => false
 ): ParsedQuestPage {
   const top = parseTopTable(wikitext)
+  const header: QuestTopTable = top ?? NO_TOP_TABLE
   const withoutTable = wikitext.replace(TOP_TABLE_RE, '\n')
-  const { lead, sections } = splitSections(withoutTable)
-
-  const rewardText = sections
-    .filter((s) => REWARD_HEADING.test(s.heading))
-    .map((s) => s.text)
-    .join('\n')
-  const bodyText = [lead, ...sections.filter((s) => !REWARD_HEADING.test(s.heading)).map((s) => s.text)].join('\n')
-
-  // Rewards: a `{{:Name}}` box is always an item; a plain link only counts when the
-  // title is a known item page (Reward sections also link factions, zones and coin).
-  const rewards = dedupe([
-    ...transclusionTargets(rewardText),
-    ...linkTargets(rewardText).filter(isItem)
-  ])
-  const rewardKeys = new Set(rewards.map((r) => r.toLowerCase()))
-
-  // Required/turn-in items: item references anywhere OUTSIDE the Reward section. Unlike the
-  // Reward section (which only ever holds item boxes), the body transcludes mob/zone boxes
-  // too, so BOTH links and transclusions go through the item filter here.
-  const requiredItems = dedupe([
-    ...transclusionTargets(bodyText).filter(isItem),
-    ...linkTargets(bodyText).filter(isItem)
-  ]).filter((n) => !rewardKeys.has(n.toLowerCase()))
+  const { rewards, requiredItems } = pageItems(withoutTable, header, isItem)
   const stepLines = extractStepLines(withoutTable)
 
   return {
     page,
-    startZone: top?.startZone,
-    giver: top?.giver,
-    minLevel: top?.minLevel,
-    minLevelText: top?.minLevelText,
-    classes: top?.classes ?? [],
-    relatedZones: top?.relatedZones ?? [],
-    relatedNpcs: top?.relatedNpcs ?? [],
+    ...header,
     rewards,
     requiredItems,
     expReward: EXP_MARKER.test(wikitext),

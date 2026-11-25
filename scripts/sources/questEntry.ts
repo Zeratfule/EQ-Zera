@@ -51,6 +51,7 @@ function withPlaces(entry: QuestEntry, parsed: ParsedQuestPage, groundSpawns: re
   if (parsed.stepLinks.some((l) => l.length > 0)) entry.stepLinks = parsed.stepLinks
   if (parsed.stepLocs.some((l) => l.length > 0)) entry.stepLocs = parsed.stepLocs
   if (groundSpawns.length > 0) entry.groundSpawns = [...groundSpawns]
+  if (parsed.giverLocs.length > 0) entry.giverLocs = parsed.giverLocs
 }
 
 /** One cached quest page: its title and its wikitext (null when the fetch had none). */
