@@ -692,6 +692,7 @@
         "Velium Morning Star",
         "Velium Dagger",
         "Velium Spear",
+        "Spell: Turning of the Unnatural",
         "Ry`Gorr Scalp",
         "Orc Fang Earring",
         "Velium Great Staff",
@@ -1162,6 +1163,7 @@
       ],
       "drops": [
         "Scorpikis Claw Impaler",
+        "Spell: Thrall of Bones",
         "Tallow-marked Candle",
         "Sarnak Hide Girdle",
         "Ebonwood Cudgel",
@@ -1174,7 +1176,11 @@
         "Opal Bracelet",
         "Mithril Amulet",
         "Adamantite Armband",
-        "Gem Inlaid Band"
+        "Gem Inlaid Band",
+        "Spell: Spirit of Scale",
+        "Spell: Talisman of Jasinth",
+        "Spell: Cripple",
+        "Spell: Cannibalize III"
       ],
       "loc": [
         {
@@ -1197,6 +1203,7 @@
         "Skyfire Mountains"
       ],
       "drops": [
+        "Spell: Thrall of Bones",
         "Pearl Necklace",
         "Jasper",
         "Onyx",
@@ -1207,7 +1214,10 @@
         "Sapphire",
         "Diamond",
         "Opal Bracelet",
-        "Mithril Amulet"
+        "Mithril Amulet",
+        "Spell: Spirit of Scale",
+        "Spell: Talisman of Jasinth",
+        "Spell: Cannibalize III"
       ],
       "loc": [
         {
@@ -1238,6 +1248,13 @@
       "level": "42",
       "zones": [
         "Skyfire Mountains"
+      ],
+      "drops": [
+        "Spell: Spirit of Scale",
+        "Spell: Talisman of Jasinth",
+        "Spell: Cripple",
+        "Spell: Cannibalize III",
+        "Spell: Thrall of Bones"
       ],
       "loc": [
         {
@@ -1733,7 +1750,10 @@
         "Cobalt Scar"
       ],
       "drops": [
+        "Spell: Elemental Maelstrom",
         "Improved Invis vs Undead",
+        "Spell: Corporeal Empathy",
+        "Spell: Boon of the Garou",
         "Flawed Sea Sapphire",
         "Silver Ring",
         "Bulthar Trunk",
@@ -1830,6 +1850,7 @@
         "Temple of Veeshan"
       ],
       "drops": [
+        "Spell: Form of the Great Bear",
         "Wurm Meat"
       ],
       "loc": [
@@ -2626,6 +2647,7 @@
         "Dragon Necropolis"
       ],
       "drops": [
+        "Spell: Corporeal Empathy",
         "Velium Long Sword",
         "Velium Two Handed Sword",
         "Velium Short Sword",
@@ -2639,9 +2661,12 @@
         "Pristine Emerald",
         "Flawless Diamond",
         "Velium Great Staff",
+        "Spell: Elemental Maelstrom",
         "Old Dragon Horn",
         "Chetari Wardstaff",
-        "Improved Invis vs Undead"
+        "Improved Invis vs Undead",
+        "Spell: Enticement of Flame",
+        "Spell: Boon of the Garou"
       ],
       "loc": [
         {
@@ -3444,6 +3469,11 @@
         "Skyfire Mountains"
       ],
       "drops": [
+        "Spell: Spirit of Scale",
+        "Spell: Cripple",
+        "Spell: Thrall of Bones",
+        "Spell: Cannibalize III",
+        "Spell: Talisman of Jasinth",
         "Chromadrac Wing",
         "Essence of Sunlight"
       ]
@@ -3590,7 +3620,6 @@
       "drops": [
         "Starmetal Ore",
         "Part of Tasarin's Grimoire Pg. 390 (Left)",
-        "Tears of Prexus",
         "Charcoal",
         "Peridot",
         "Onyx",
@@ -4280,6 +4309,9 @@
         "Cloth Cord",
         "Cloth Gloves",
         "Cloth Sandals",
+        "Spell: Elemental Maelstrom",
+        "Spell: Corporeal Empathy",
+        "Spell: Boon of the Garou",
         "Loaf of Bread",
         "Large Brick of Velium",
         "Small Brick of Velium",
@@ -4315,11 +4347,15 @@
         "Cloth Cord",
         "Cloth Gloves",
         "Cloth Sandals",
+        "Spell: Elemental Maelstrom",
+        "Spell: Corporeal Empathy",
+        "Spell: Boon of the Garou",
         "Loaf of Bread",
         "Large Brick of Velium",
         "Small Brick of Velium",
         "Block of Velium",
-        "Small Piece of Velium"
+        "Small Piece of Velium",
+        "Spell: Enticement of Flame"
       ],
       "loc": [
         {
@@ -5172,6 +5208,7 @@
         "Velketor's Labyrinth"
       ],
       "drops": [
+        "Spell: Corporeal Empathy",
         "Diamond",
         "Small Brick of Velium",
         "Large Brick of Velium",
@@ -5312,6 +5349,8 @@
         "Velketor's Labyrinth"
       ],
       "drops": [
+        "Spell: Corporeal Empathy",
+        "Spell: Boon of the Garou",
         "Block of Velium",
         "Black Marble",
         "Pristine Emerald",
@@ -5559,6 +5598,10 @@
         "Velketor's Labyrinth"
       ],
       "drops": [
+        "Spell: Elemental Maelstrom",
+        "Spell: Corporeal Empathy",
+        "Spell: Enticement of Flame",
+        "Spell: Boon of the Garou",
         "Diamond",
         "Block of Velium",
         "Nephrite",
@@ -5591,6 +5634,7 @@
         "Crystal Chitin Circlet",
         "Ball of Velium",
         "Spider Fur Gloves",
+        "Spell: Enticement of Flame",
         "Small Brick of Velium",
         "Large Brick of Velium",
         "Small Piece of Velium",
@@ -5715,6 +5759,8 @@
         "Velketor's Labyrinth"
       ],
       "drops": [
+        "Spell: Corporeal Empathy",
+        "Spell: Boon of the Garou",
         "Block of Velium",
         "Black Marble",
         "Pristine Emerald",
@@ -9941,6 +9987,7 @@
         "Temple of Veeshan"
       ],
       "drops": [
+        "Spell: Form of the Great Bear",
         "Wurm Meat"
       ]
     },
@@ -10429,6 +10476,8 @@
         "Ruined Scaled Pants",
         "Ruined Scaled Visor",
         "Sainy's Claw",
+        "Spell: Spirit of Scale",
+        "Spell: Cripple",
         "Personal Diary Page",
         "Crier's Scroll",
         "Merchant's Letter",
@@ -10884,6 +10933,10 @@
         "Crushed Flame Emerald",
         "Crushed Lava Ruby",
         "Crushed Onyx Sapphire",
+        "Spell: Elemental Maelstrom",
+        "Spell: Corporeal Empathy",
+        "Spell: Enticement of Flame",
+        "Spell: Boon of the Garou",
         "Crystalline Silk",
         "Crystalline Silk Thread"
       ],
@@ -10920,6 +10973,10 @@
         "Crushed Flame Emerald",
         "Crushed Lava Ruby",
         "Crushed Onyx Sapphire",
+        "Spell: Elemental Maelstrom",
+        "Spell: Corporeal Empathy",
+        "Spell: Enticement of Flame",
+        "Spell: Boon of the Garou",
         "Crystalline Silk",
         "Crystalline Silk Thread"
       ],
@@ -12992,6 +13049,7 @@
         "Velium Great Staff",
         "Velium Spear",
         "Velium Rapier",
+        "Spell: Turning of the Unnatural",
         "Crystallized Shadows",
         "Crystallized Shadow Scimitar",
         "Velium Long Sword",
@@ -15854,6 +15912,9 @@
       "zones": [
         "Plane of Growth"
       ],
+      "drops": [
+        "Spell: Form of the Great Bear"
+      ],
       "loc": [
         {
           "ns": 308,
@@ -15884,7 +15945,8 @@
         "Ancient Silk Boots",
         "Ancient Silk Wristband",
         "Ancient Silk Turban",
-        "Ancient Silk Gloves"
+        "Ancient Silk Gloves",
+        "Spell: Form of the Great Bear"
       ],
       "loc": [
         {
@@ -15916,7 +15978,8 @@
         "Ancient Silk Boots",
         "Ancient Silk Wristband",
         "Ancient Silk Turban",
-        "Ancient Silk Gloves"
+        "Ancient Silk Gloves",
+        "Spell: Form of the Great Bear"
       ],
       "loc": [
         {
@@ -19767,7 +19830,8 @@
       "drops": [
         "Chestplate of Stability",
         "Noctivagant Breastplate",
-        "Noctivagant Vambraces"
+        "Noctivagant Vambraces",
+        "Spell: Form of the Great Bear"
       ],
       "loc": [
         {
@@ -19788,6 +19852,10 @@
         "Great Divide"
       ],
       "drops": [
+        "Spell: Elemental Maelstrom",
+        "Spell: Corporeal Empathy",
+        "Spell: Enticement of Flame",
+        "Spell: Boon of the Garou",
         "Fire Opal",
         "Star Ruby",
         "Fire Emerald",
@@ -19824,7 +19892,7 @@
         "Skyfire Mountains"
       ],
       "drops": [
-        "Tears of Prexus",
+        "Spell: Call of the Hero",
         "Crystallized Sulfur",
         "Emerald Ring",
         "Fire Emerald",
@@ -23672,6 +23740,8 @@
         "Velketor's Labyrinth"
       ],
       "drops": [
+        "Spell: Corporeal Empathy",
+        "Spell: Boon of the Garou",
         "Block of Velium",
         "Black Marble",
         "Pristine Emerald",
@@ -28140,6 +28210,7 @@
         "Pantaloons of the Bonecaster",
         "Silver Moon Arm Wraps",
         "Stonewood Mail",
+        "Spell: Cannibalize IV",
         "Spirit Weaver's Vambraces"
       ]
     },
@@ -29686,6 +29757,9 @@
         "Dusty Rusted Vambraces",
         "Opal Bracelet",
         "Mithril Amulet",
+        "Spell: Spirit of Scale",
+        "Spell: Talisman of Jasinth",
+        "Spell: Cripple",
         "Fire Opal",
         "Fire Emerald",
         "Runed Brass Disk"
@@ -31014,6 +31088,9 @@
       "level": "45",
       "zones": [
         "Eastern Wastes"
+      ],
+      "drops": [
+        "Spell: Turning of the Unnatural"
       ]
     },
     {
@@ -31163,6 +31240,7 @@
         "Ry`Gorr Chain Gloves",
         "Ry`Gorr Chain Collar",
         "Velium Great Staff",
+        "Spell: Turning of the Unnatural",
         "Rune of Conception",
         "Words of Coercion",
         "Flame of Vox",
@@ -33219,6 +33297,11 @@
         "Burning Woods"
       ],
       "drops": [
+        "Spell: Spirit of Scale",
+        "Spell: Talisman of Jasinth",
+        "Spell: Cripple",
+        "Spell: Cannibalize III",
+        "Spell: Minion of Shadows",
         "Black Pearl",
         "Amber",
         "Topaz",
@@ -33618,6 +33701,7 @@
       ],
       "drops": [
         "Froglok Scale Chestplate",
+        "Spell: Cripple",
         "Worn Cloth Mantle",
         "Fire Opal",
         "Fire Emerald"
@@ -33708,6 +33792,8 @@
         "Finely Crafted Shan`Tok",
         "Finely Crafted Sheer Blade",
         "Glowing Iksar Skull",
+        "Spell: Cripple",
+        "Spell: Thrall of Bones",
         "Nilitim's Grimoire Pg. 35",
         "Nilitim's Grimoire Pg. 36",
         "Nilitim's Grimoire Pg. 115",
@@ -33762,6 +33848,7 @@
         "Melodic Breastplate",
         "Melodic Vambraces",
         "Melodic Greaves",
+        "Spell: Aegolism",
         "Tears of Prexus"
       ]
     },
@@ -34269,6 +34356,7 @@
       "drops": [
         "Immortals",
         "Skyash Bile",
+        "Spell: Call of the Hero",
         "Star Ruby"
       ],
       "loc": [
@@ -34308,6 +34396,7 @@
         "Velium Great Staff",
         "Velium Spear",
         "Velium Rapier",
+        "Spell: Turning of the Unnatural",
         "Gnome Skin Sleeves",
         "Crystallized Shadows",
         "Velium Long Sword",
@@ -35101,10 +35190,14 @@
         "Velketor's Labyrinth"
       ],
       "drops": [
+        "Spell: Enticement of Flame",
+        "Spell: Boon of the Garou",
         "Small Brick of Velium",
         "Large Brick of Velium",
         "Block of Velium",
-        "Small Piece of Velium"
+        "Small Piece of Velium",
+        "Spell: Elemental Maelstrom",
+        "Spell: Corporeal Empathy"
       ],
       "loc": [
         {
@@ -35399,7 +35492,8 @@
         "Ancient Leather Sleeves",
         "Ancient Leather Boots",
         "Ancient Leather Bracelet",
-        "Ancient Leather Gloves"
+        "Ancient Leather Gloves",
+        "Spell: Form of the Great Bear"
       ],
       "loc": [
         {
@@ -36557,6 +36651,11 @@
         "Skyfire Mountains"
       ],
       "drops": [
+        "Spell: Spirit of Scale",
+        "Spell: Cripple",
+        "Spell: Thrall of Bones",
+        "Spell: Cannibalize III",
+        "Spell: Talisman of Jasinth",
         "Skyash Bile"
       ]
     },
@@ -36568,6 +36667,11 @@
         "Skyfire Mountains"
       ],
       "drops": [
+        "Spell: Spirit of Scale",
+        "Spell: Cripple",
+        "Spell: Thrall of Bones",
+        "Spell: Cannibalize III",
+        "Spell: Talisman of Jasinth",
         "Skyash Bile",
         "Words of the Ethereal"
       ]
@@ -36580,7 +36684,8 @@
         "Skyfire Mountains"
       ],
       "drops": [
-        "Skyash Bile"
+        "Skyash Bile",
+        "Spell: Cannibalize III"
       ],
       "loc": [
         {
@@ -38835,6 +38940,7 @@
         "Silver Moon Arm Wraps",
         "Silver Moon Pants",
         "Stonewood Mail",
+        "Spell: Form of the Great Bear",
         "Black Sapphire",
         "Diamond",
         "Jacinth",
@@ -39013,6 +39119,7 @@
       "drops": [
         "Flight Arrow",
         "Emerald Ring",
+        "Spell: Cripple",
         "Rune of Rathe",
         "Tears of Prexus",
         "Rune of Consumption"
@@ -39347,6 +39454,7 @@
         "Plane of Growth"
       ],
       "drops": [
+        "Spell: Aegolism",
         "Noctivagant Breastplate"
       ],
       "loc": [
@@ -39961,6 +40069,12 @@
       "level": "61-62",
       "zones": [
         "Sleeper's Tomb"
+      ],
+      "drops": [
+        "Spell: Cannibalize IV",
+        "Spell: Focus of Spirit",
+        "Spell: Aegolism",
+        "Spell: Death Peace"
       ]
     },
     {
@@ -41182,6 +41296,8 @@
         "Pearl Earring",
         "Jade Ring",
         "Obsidian Ring of Quintessence",
+        "Spell: Spirit of Scale",
+        "Spell: Cripple",
         "Peridot",
         "Emerald",
         "Star Ruby",
@@ -41300,6 +41416,7 @@
         "Flawed Emerald",
         "Flawed Sea Sapphire",
         "Chipped Onyx Sapphire",
+        "Spell: Boon of the Garou",
         "Crystalline Silk",
         "Crystalline Silk Thread"
       ]
@@ -41345,6 +41462,9 @@
         "Velketor's Labyrinth"
       ],
       "drops": [
+        "Spell: Corporeal Empathy",
+        "Spell: Form of the Great Bear",
+        "Spell: Boon of the Garou",
         "Black Marble",
         "Pristine Emerald",
         "Flawless Diamond",
@@ -41401,6 +41521,8 @@
         "Velketor's Labyrinth"
       ],
       "drops": [
+        "Spell: Form of the Great Bear",
+        "Spell: Boon of the Garou",
         "Jaundice Gem",
         "Nephrite",
         "Flawed Topaz",
@@ -45012,8 +45134,7 @@
       ],
       "drops": [
         "Starmetal Ore",
-        "Part of Tasarin's Grimoire Pg. 390 (Left)",
-        "Tears of Prexus"
+        "Part of Tasarin's Grimoire Pg. 390 (Left)"
       ],
       "loc": [
         {
@@ -45222,6 +45343,10 @@
         "Berserker's Breastplate",
         "Silver Moon Chest Wraps",
         "Noctivagant Breastplate",
+        "Spell: Cannibalize IV",
+        "Spell: Focus of Spirit",
+        "Spell: Death Peace",
+        "Spell: Aegolism",
         "Nilitim's Grimoire Pg. 379",
         "Nilitim's Grimoire Pg. 450"
       ],
@@ -46039,6 +46164,9 @@
       "level": "65",
       "zones": [
         "Plane of Growth"
+      ],
+      "drops": [
+        "Spell: Form of the Great Bear"
       ]
     },
     {
@@ -46075,7 +46203,11 @@
         "Sleeper's Tomb"
       ],
       "drops": [
-        "Priceless Velium Reinforced Bow"
+        "Priceless Velium Reinforced Bow",
+        "Spell: Cannibalize IV",
+        "Spell: Focus of Spirit",
+        "Spell: Aegolism",
+        "Spell: Death Peace"
       ]
     },
     {
@@ -46392,6 +46524,7 @@
         "Ancient Silk Boots",
         "Ancient Silk Wristband",
         "Ancient Silk Turban",
+        "Spell: Form of the Great Bear",
         "Ancient Tarnished Vambraces",
         "Ancient Tarnished Plate Boots",
         "Ancient Tarnished Plate Bracelet",
@@ -46565,7 +46698,9 @@
         "Skyfire Mountains"
       ],
       "drops": [
-        "Halcyon Broadsword"
+        "Halcyon Broadsword",
+        "Spell: Cannibalize III",
+        "Spell: Cannibalize IV"
       ]
     },
     {
@@ -48416,6 +48551,7 @@
         "Velium Scimitar",
         "Velium Morning Star",
         "Velium Spear",
+        "Spell: Turning of the Unnatural",
         "Gnome Skin Sleeves",
         "Crystallized Shadow Star",
         "Velium Long Sword",
@@ -48756,7 +48892,10 @@
         "Sorcerer's Pantaloons",
         "Sorcerer's Sleeves",
         "Stonewood Mail",
-        "Oakleaf Girdle"
+        "Oakleaf Girdle",
+        "Spell: Focus of Spirit",
+        "Spell: Aegolism",
+        "Spell: Death Peace"
       ],
       "loc": [
         {
@@ -48832,6 +48971,9 @@
         "Ruby Crown",
         "Sapphire Necklace",
         "Sleeves of Conjuration",
+        "Spell: Aegolism",
+        "Spell: Cannibalize IV",
+        "Spell: Focus of Spirit",
         "Star Ruby Earring",
         "Stonewood Mail"
       ]
@@ -49761,6 +49903,7 @@
         "Crystallized Shadow Dagger",
         "Crystallized Shadow Spear",
         "Crystallized Shadow Rapier",
+        "Spell: Turning of the Unnatural",
         "Crystallized Shadows"
       ],
       "loc": [
@@ -49800,6 +49943,10 @@
         "Spider Fur Collar",
         "Velium Short Blade",
         "Velium Short Sword",
+        "Spell: Elemental Maelstrom",
+        "Spell: Corporeal Empathy",
+        "Spell: Enticement of Flame",
+        "Spell: Boon of the Garou",
         "Icepaw Scalp",
         "Icepaw Kobold's Paw",
         "Icepaw Bangle",
@@ -49836,6 +49983,10 @@
         "Spider Fur Cloak",
         "Spider Fur Belt",
         "Spider Fur Collar",
+        "Spell: Elemental Maelstrom",
+        "Spell: Corporeal Empathy",
+        "Spell: Enticement of Flame",
+        "Spell: Boon of the Garou",
         "Icepaw Scalp",
         "Icepaw Kobold's Paw",
         "Jaundice Gem",
@@ -49884,6 +50035,10 @@
         "Spider Fur Cloak",
         "Spider Fur Belt",
         "Spider Fur Collar",
+        "Spell: Elemental Maelstrom",
+        "Spell: Corporeal Empathy",
+        "Spell: Enticement of Flame",
+        "Spell: Boon of the Garou",
         "Words of Covert",
         "Crystal Dragon Eye",
         "Icepaw Scalp",
@@ -49919,6 +50074,10 @@
         "Spider Fur Cloak",
         "Spider Fur Belt",
         "Spider Fur Collar",
+        "Spell: Elemental Maelstrom",
+        "Spell: Corporeal Empathy",
+        "Spell: Enticement of Flame",
+        "Spell: Boon of the Garou",
         "Icepaw Scalp",
         "Icepaw Kobold's Paw",
         "Icepaw Bangle",
@@ -49951,6 +50110,10 @@
         "Spider Fur Cloak",
         "Spider Fur Belt",
         "Spider Fur Collar",
+        "Spell: Elemental Maelstrom",
+        "Spell: Corporeal Empathy",
+        "Spell: Enticement of Flame",
+        "Spell: Boon of the Garou",
         "Icepaw Scalp",
         "Icepaw Kobold's Paw",
         "Icepaw Bangle",
@@ -49986,6 +50149,10 @@
         "Spider Fur Collar",
         "Velium Short Blade",
         "Velium Short Sword",
+        "Spell: Elemental Maelstrom",
+        "Spell: Corporeal Empathy",
+        "Spell: Enticement of Flame",
+        "Spell: Boon of the Garou",
         "Icepaw Scalp",
         "Icepaw Kobold's Paw",
         "Icepaw Bangle",
@@ -52903,6 +53070,9 @@
         "The Overthere"
       ],
       "drops": [
+        "Spell: Spirit of Scale",
+        "Spell: Cripple",
+        "Spell: Thrall of Bones",
         "Shadowed Spear",
         "Guard of the Marines"
       ],
@@ -58058,7 +58228,8 @@
         "Small Piece of Velium",
         "Black Marble",
         "Pristine Emerald",
-        "Flawless Diamond"
+        "Flawless Diamond",
+        "Spell: Form of the Great Bear"
       ],
       "loc": [
         {
@@ -58081,7 +58252,8 @@
         "Small Piece of Velium",
         "Black Marble",
         "Pristine Emerald",
-        "Flawless Diamond"
+        "Flawless Diamond",
+        "Spell: Form of the Great Bear"
       ],
       "loc": [
         {
@@ -61174,6 +61346,8 @@
         "Peerless Dragonleg Breeches",
         "Matchless Dragonleg Breeches",
         "Bufa's Talisman",
+        "Spell: Cannibalize IV",
+        "Spell: Aegolism",
         "Dragon Meat"
       ]
     },
@@ -67472,6 +67646,9 @@
       "zones": [
         "Skyshrine"
       ],
+      "drops": [
+        "Spell: Corporeal Empathy"
+      ],
       "loc": [
         {
           "ns": 1037,
@@ -67488,7 +67665,8 @@
         "Skyshrine"
       ],
       "drops": [
-        "Velium Scimitar"
+        "Velium Scimitar",
+        "Spell: Enticement of Flame"
       ],
       "loc": [
         {
@@ -68323,6 +68501,10 @@
       "drops": [
         "Crystal Spider Eyes",
         "Crystal Chitin Gauntlets",
+        "Spell: Elemental Maelstrom",
+        "Spell: Corporeal Empathy",
+        "Spell: Enticement of Flame",
+        "Spell: Boon of the Garou",
         "Crystalline Silk Thread",
         "Crystalline Silk"
       ],
@@ -68351,7 +68533,11 @@
         "Crystalline Silk",
         "Flawed Opal",
         "Flawed Flame Emerald",
-        "Crushed Jaundice Gem"
+        "Crushed Jaundice Gem",
+        "Spell: Elemental Maelstrom",
+        "Spell: Corporeal Empathy",
+        "Spell: Enticement of Flame",
+        "Spell: Boon of the Garou"
       ],
       "loc": [
         {
@@ -68384,7 +68570,10 @@
         "Crushed Sea Sapphire",
         "Small Brick of Velium",
         "Block of Velium",
-        "Small Piece of Velium"
+        "Small Piece of Velium",
+        "Spell: Corporeal Empathy",
+        "Spell: Enticement of Flame",
+        "Spell: Boon of the Garou"
       ],
       "loc": [
         {
@@ -69051,6 +69240,10 @@
         "Frostreaver's Embroidered Cloak",
         "Ring of Winter",
         "Frostreaver's Velium Crown",
+        "Spell: Cannibalize IV",
+        "Spell: Aegolism",
+        "Spell: Focus of Spirit",
+        "Spell: Death Peace",
         "Dain Frostreaver's Head"
       ],
       "loc": [
@@ -75578,6 +75771,7 @@
       "drops": [
         "Fire Emerald Ring",
         "Siren Hair Locket",
+        "Spell: Cannibalize IV",
         "Black Marble",
         "Pristine Emerald",
         "Flawless Diamond",
@@ -76549,7 +76743,11 @@
         "Crushed Flame Opal",
         "Crushed Flame Emerald",
         "Crushed Lava Ruby",
-        "Crushed Onyx Sapphire"
+        "Crushed Onyx Sapphire",
+        "Spell: Elemental Maelstrom",
+        "Spell: Corporeal Empathy",
+        "Spell: Enticement of Flame",
+        "Spell: Boon of the Garou"
       ]
     },
     {
@@ -77593,7 +77791,8 @@
         "Assassin's Chestguard",
         "Resplendent Robe",
         "Silver Moon Chest Wraps",
-        "Spirit Weaver's Breastplate"
+        "Spirit Weaver's Breastplate",
+        "Spell: Focus of Spirit"
       ],
       "loc": [
         {
@@ -80151,6 +80350,7 @@
         "Cobalt Helm",
         "Blade of the Green Dragon Eye",
         "Reet Froglok Crown",
+        "Spell: Cannibalize IV",
         "Fire Opal",
         "Ruby",
         "Black Sapphire",
@@ -80183,6 +80383,7 @@
         "Old Sebilis"
       ],
       "drops": [
+        "Spell: Cannibalize IV",
         "Reet Froglok Crown",
         "Fire Opal",
         "Ruby",
@@ -80214,6 +80415,7 @@
         "Old Sebilis"
       ],
       "drops": [
+        "Spell: Cannibalize IV",
         "Reet Froglok Crown",
         "Fire Opal",
         "Ruby",
@@ -80841,6 +81043,9 @@
         "Black Sapphire",
         "Froglok Meat",
         "Froglok Blood",
+        "Spell: Talisman of Jasinth",
+        "Spell: Cripple",
+        "Spell: Minion of Shadows",
         "Nilitim's Grimoire Pg. 351",
         "Crystallized Sulfur",
         "Rune of Ap`Sagor"
@@ -81230,6 +81435,7 @@
         "Heavy Dragonskin Mask",
         "Peerless Dragonskin Mask",
         "Matchless Dragonskin Mask",
+        "Spell: Aegolism",
         "Gafala's Talisman"
       ],
       "loc": [
@@ -81542,7 +81748,8 @@
         "Heavy Dragonhide Gauntlets",
         "Peerless Dragonhide Gauntlets",
         "Matchless Dragonhide Gauntlets",
-        "Gangel's Talisman"
+        "Gangel's Talisman",
+        "Spell: Aegolism"
       ],
       "loc": [
         {
@@ -83173,7 +83380,10 @@
         "Heavy Dragonhorn Boots",
         "Peerless Dragonhorn Boots",
         "Matchless Dragonhorn Boots",
-        "Glati's Talisman"
+        "Glati's Talisman",
+        "Spell: Focus of Spirit",
+        "Spell: Aegolism",
+        "Spell: Death Peace"
       ],
       "loc": [
         {
@@ -84394,7 +84604,8 @@
         "White Dragon Scales",
         "Prayers of Life",
         "Kavruul`s Mystic Pouch",
-        "Torn, Frost covered book"
+        "Torn, Frost covered book",
+        "Spell: Call of the Hero"
       ],
       "loc": [
         {
@@ -85096,6 +85307,7 @@
       ],
       "drops": [
         "Holgresh Grand Vizier Beads",
+        "Spell: Boon of the Garou",
         "Jacinth"
       ],
       "loc": [
@@ -85737,6 +85949,10 @@
         "Book of Twilight",
         "Cold Steel Breastplate",
         "Cold Steel Boots",
+        "Spell: Elemental Maelstrom",
+        "Spell: Corporeal Empathy",
+        "Spell: Enticement of Flame",
+        "Spell: Boon of the Garou",
         "Icepaw Scalp",
         "Icepaw Kobold's Paw",
         "Jaundice Gem",
@@ -95638,7 +95854,7 @@
       ],
       "drops": [
         "Rune of Impetus",
-        "Tears of Prexus",
+        "Spell: Cannibalize IV",
         "Wurm Meat"
       ]
     },
@@ -96175,7 +96391,9 @@
         "Merchant's Letter",
         "Written Announcement",
         "Priest's Diary Page",
-        "Words of Incarceration"
+        "Words of Incarceration",
+        "Spell: Spirit of Scale",
+        "Spell: Cripple"
       ]
     },
     {
@@ -96771,7 +96989,10 @@
         "Exquisite Velium Brawl Stick",
         "First Half of Al`Tarlkal's Tome",
         "Greater Dragon's Head",
-        "Harla Dar's Talisman"
+        "Harla Dar's Talisman",
+        "Spell: Focus of Spirit",
+        "Spell: Aegolism",
+        "Spell: Death Peace"
       ],
       "loc": [
         {
@@ -97949,7 +98170,8 @@
         "Heavy Dragonwing Cloak",
         "Peerless Dragonwing Cloak",
         "Matchless Dragonwing Cloak",
-        "Honvar's Talisman"
+        "Honvar's Talisman",
+        "Spell: Aegolism"
       ],
       "loc": [
         {
@@ -100761,7 +100983,8 @@
       "drops": [
         "Nathsar Helm",
         "Ring of Stealthy Travel",
-        "Oakleaf Scimitar"
+        "Oakleaf Scimitar",
+        "Spell: Call of the Hero"
       ],
       "loc": [
         {
@@ -100832,7 +101055,8 @@
         "Matchless Dragonleg Breeches",
         "Heavy Dragonskin Mask",
         "Ionat's Talisman",
-        "Greater Dragon's Head"
+        "Greater Dragon's Head",
+        "Spell: Aegolism"
       ],
       "loc": [
         {
@@ -101135,6 +101359,7 @@
         "Velium Morning Star",
         "Velium Dagger",
         "Velium Spear",
+        "Spell: Turning of the Unnatural",
         "Gnome Skin Tunic",
         "Crystallized Shadows",
         "Ceremonial Wedding Sword",
@@ -102160,6 +102385,10 @@
         "Book of Dawn",
         "Cold Steel Greaves",
         "Robe of Melding Auras",
+        "Spell: Elemental Maelstrom",
+        "Spell: Corporeal Empathy",
+        "Spell: Enticement of Flame",
+        "Spell: Boon of the Garou",
         "Icepaw Scalp",
         "Icepaw Kobold's Paw",
         "Jaundice Gem",
@@ -102389,7 +102618,8 @@
         "Western Wastes"
       ],
       "drops": [
-        "Bloody Claw of Jerigozia"
+        "Bloody Claw of Jerigozia",
+        "Spell: Form of the Great Bear"
       ],
       "loc": [
         {
@@ -104171,7 +104401,10 @@
         "Heavy Dragonwing Mantle",
         "Peerless Dragonwing Mantle",
         "Matchless Dragonwing Mantle",
-        "Karkona's Talisman"
+        "Karkona's Talisman",
+        "Spell: Focus of Spirit",
+        "Spell: Aegolism",
+        "Spell: Death Peace"
       ],
       "loc": [
         {
@@ -104868,6 +105101,10 @@
         "Typhoon, Sword of the Tidalwave",
         "Kelorek`Dar Spine Razor",
         "Bioluminescent Orb",
+        "Spell: Cannibalize IV",
+        "Spell: Focus of Spirit",
+        "Spell: Aegolism",
+        "Spell: Death Peace",
         "Blue Diamond",
         "Black Marble",
         "Sea Dragon Meat",
@@ -105282,6 +105519,10 @@
         "Lute of the Howler",
         "Blood Runed Girdle",
         "Crystalline Silk Mask (Lore)",
+        "Spell: Elemental Maelstrom",
+        "Spell: Corporeal Empathy",
+        "Spell: Enticement of Flame",
+        "Spell: Boon of the Garou",
         "Black Marble",
         "Icepaw Scalp",
         "Icepaw Kobold's Paw",
@@ -108169,6 +108410,10 @@
         "Star Ruby Earring",
         "Fire Emerald Ring",
         "Ruby Crown",
+        "Spell: Spirit of Scale",
+        "Spell: Talisman of Jasinth",
+        "Spell: Cripple",
+        "Spell: Minion of Shadows",
         "Star Ruby",
         "Fire Emerald",
         "Sapphire",
@@ -109472,6 +109717,10 @@
         "Velketor's Labyrinth"
       ],
       "drops": [
+        "Spell: Elemental Maelstrom",
+        "Spell: Corporeal Empathy",
+        "Spell: Enticement of Flame",
+        "Spell: Boon of the Garou",
         "Icepaw Scalp",
         "Icepaw Kobold's Paw",
         "Jaundice Gem",
@@ -111182,6 +111431,7 @@
         "Crystallized Shadow Belt",
         "Crystallized Shadow Helm",
         "Words of the Suffering",
+        "Spell: Turning of the Unnatural",
         "Small Raw-hide Gorget",
         "Gnome Skin Belt",
         "Gnome Skin Skullcap",
@@ -115604,6 +115854,10 @@
         "Spider Fur Belt",
         "Spider Fur Collar",
         "Shimmering Terror Hide Cloak",
+        "Spell: Elemental Maelstrom",
+        "Spell: Corporeal Empathy",
+        "Spell: Enticement of Flame",
+        "Spell: Boon of the Garou",
         "Icepaw Scalp",
         "Icepaw Kobold's Paw",
         "Jaundice Gem",
@@ -116284,6 +116538,9 @@
         "Peerless Dragonspine Vambraces",
         "Matchless Dragonleg Breeches",
         "Matchless Dragonspine Vambraces",
+        "Spell: Focus of Spirit",
+        "Spell: Aegolism",
+        "Spell: Death Peace",
         "Greater Dragon's Head",
         "Mazi's Talisman"
       ],
@@ -119549,6 +119806,7 @@
         "Blue Diamond",
         "Cobalt Bracer",
         "Green Jade Axe",
+        "Spell: Cannibalize IV",
         "Clarifying Spores"
       ],
       "loc": [
@@ -119575,6 +119833,7 @@
         "Cobalt Bracer",
         "Green Jade Axe",
         "Fine Steel Warhammer",
+        "Spell: Cannibalize IV",
         "Carnelian",
         "Fire Opal",
         "Star Ruby",
@@ -119603,6 +119862,7 @@
         "Fine Steel Warhammer",
         "Fine Steel Morning Star",
         "Fine Steel Great Staff",
+        "Spell: Cannibalize IV",
         "Star Ruby",
         "Fire Emerald",
         "Sapphire",
@@ -119642,6 +119902,7 @@
         "Cobalt Bracer",
         "Green Jade Axe",
         "Fine Steel Morning Star",
+        "Spell: Cannibalize IV",
         "Carnelian",
         "Bloodstone",
         "Jasper",
@@ -119840,6 +120101,7 @@
         "Ry`Gorr Chain Collar",
         "Velium Warhammer",
         "Velium Morning Star",
+        "Spell: Turning of the Unnatural",
         "Rune of Xegony",
         "Rune of Concussion",
         "Ry`Gorr Scalp"
@@ -121131,6 +121393,10 @@
         "Peerless Dragonwing Mantle",
         "Matchless Dragonwing Mantle",
         "Bufa's Talisman",
+        "Spell: Focus of Spirit",
+        "Spell: Aegolism",
+        "Spell: Form of the Great Bear",
+        "Spell: Death Peace",
         "Greater Dragon's Head",
         "Great Dragon's Head"
       ],
@@ -122683,6 +122949,7 @@
         "Fading Shadow Warhammer",
         "Fading Shadow Staff",
         "Fading Shadow Dagger",
+        "Spell: Turning of the Unnatural",
         "Crystallized Shadows",
         "Fading Shadow Star",
         "Fading Shadow Spear",
@@ -123945,6 +124212,7 @@
         "Velium Scimitar",
         "Velium Great Staff",
         "Velium Dagger",
+        "Spell: Turning of the Unnatural",
         "Crystallized Shadows",
         "Ceremonial Wedding Sword",
         "Crystallized Shadow Long Sword",
@@ -124385,6 +124653,8 @@
         "Peerless Dragonwing Cloak",
         "Matchless Dragonwing Cloak",
         "Pantrilla's Talisman",
+        "Spell: Form of the Great Bear",
+        "Spell: Death Peace",
         "Great Dragon's Head"
       ],
       "loc": [
@@ -126358,7 +126628,8 @@
         "Crystallized Shadow Rapier",
         "Signet Ring",
         "Crystallized Shadows",
-        "Crystallized Shadow Short Sword"
+        "Crystallized Shadow Short Sword",
+        "Spell: Turning of the Unnatural"
       ],
       "loc": [
         {
@@ -126615,6 +126886,9 @@
         "Woven Vine Wristband",
         "Maple Leaf Mask",
         "Flute of the Sacred Glade",
+        "Spell: Focus of Spirit",
+        "Spell: Aegolism",
+        "Spell: Death Peace",
         "Ruby Crown"
       ],
       "loc": [
@@ -130755,6 +131029,10 @@
         "Spider Fur Belt",
         "Spider Fur Collar",
         "Kobold Jester's Crown",
+        "Spell: Elemental Maelstrom",
+        "Spell: Corporeal Empathy",
+        "Spell: Enticement of Flame",
+        "Spell: Boon of the Garou",
         "Icepaw Scalp",
         "Icepaw Kobold's Paw",
         "Jaundice Gem",
@@ -131162,7 +131440,8 @@
         "Robe of the Bonecaster",
         "Berserker's Breastplate",
         "Robe of Conjuration",
-        "Silver Moon Chest Wraps"
+        "Silver Moon Chest Wraps",
+        "Spell: Cannibalize IV"
       ],
       "loc": [
         {
@@ -131360,6 +131639,7 @@
         "Ry`Gorr Chain Gloves",
         "Ry`Gorr Chain Collar",
         "Velium Great Staff",
+        "Spell: Turning of the Unnatural",
         "Flame of Vox",
         "The Scent of Marr",
         "Essence of Rathe",
@@ -132542,8 +132822,7 @@
         "Cobalt Helm",
         "Blood Ember Helm",
         "Sebilite Croaking Dirk",
-        "Undead Dragon Sinew",
-        "Tears of Prexus"
+        "Undead Dragon Sinew"
       ],
       "loc": [
         {
@@ -139680,7 +139959,9 @@
       "drops": [
         "Sivar's Talisman",
         "Reinforced Dragonhide Belt",
-        "Great Dragon's Head"
+        "Great Dragon's Head",
+        "Spell: Form of the Great Bear",
+        "Spell: Aegolism"
       ]
     },
     {
@@ -139811,6 +140092,9 @@
         "Ruby",
         "Black Sapphire",
         "Diamond",
+        "Spell: Spirit of Scale",
+        "Spell: Cripple",
+        "Spell: Cannibalize III",
         "Fire Opal",
         "Bone Chips"
       ],
@@ -139847,6 +140131,8 @@
         "Sapphire",
         "Ruby",
         "Black Sapphire",
+        "Spell: Cannibalize III",
+        "Spell: Call of the Hero",
         "Star Ruby",
         "Bone Chips"
       ],
@@ -147537,6 +147823,7 @@
         "Field of Bone"
       ],
       "drops": [
+        "Spell: Thrall of Bones",
         "Black Sapphire",
         "Nilitim's Grimoire Pg. 379",
         "Nilitim's Grimoire Pg. 449",
@@ -148231,6 +148518,7 @@
         "Velium Dagger",
         "Velium Spear",
         "Velium Rapier",
+        "Spell: Turning of the Unnatural",
         "Crystallized Shadows",
         "Ceremonial Wedding Sword",
         "Crystallized Shadow Rapier",
@@ -149604,6 +149892,10 @@
         "Cold Steel Gauntlets",
         "Cold Steel Helmet",
         "Shadow Rager",
+        "Spell: Elemental Maelstrom",
+        "Spell: Corporeal Empathy",
+        "Spell: Enticement of Flame",
+        "Spell: Boon of the Garou",
         "Icepaw Scalp",
         "Icepaw Kobold's Paw",
         "Jaundice Gem",
@@ -149901,6 +150193,9 @@
         "Western Wastes"
       ],
       "drops": [
+        "Spell: Focus of Spirit",
+        "Spell: Aegolism",
+        "Spell: Death Peace",
         "Huge Drake Wing"
       ],
       "loc": [
@@ -150135,6 +150430,10 @@
         "Resplendent Robe",
         "Silver Moon Chest Wraps",
         "Sorcerer's Robe",
+        "Spell: Cannibalize IV",
+        "Spell: Focus of Spirit",
+        "Spell: Death Peace",
+        "Spell: Aegolism",
         "Nilitim's Grimoire Pg. 379",
         "Nilitim's Grimoire Pg. 450"
       ],
@@ -154234,6 +154533,10 @@
         "Crystalline Silk Belt",
         "Cold Steel Gauntlets",
         "Cold Steel Greaves",
+        "Spell: Elemental Maelstrom",
+        "Spell: Corporeal Empathy",
+        "Spell: Enticement of Flame",
+        "Spell: Boon of the Garou",
         "Icepaw Scalp",
         "Icepaw Kobold's Paw",
         "Jaundice Gem",
@@ -154677,6 +154980,9 @@
         "Melodic Greaves",
         "Greaves of Stability",
         "Resplendent Trousers",
+        "Spell: Focus of Spirit",
+        "Spell: Aegolism",
+        "Spell: Death Peace",
         "Words of Bondage"
       ],
       "loc": [
@@ -155720,7 +156026,8 @@
         "Shield of the Freezing Winds",
         "Snow Storm Mask",
         "Bracelet of Frostbite",
-        "Silver Sword of Yalrek"
+        "Silver Sword of Yalrek",
+        "Spell: Cannibalize IV"
       ],
       "loc": [
         {
@@ -155835,6 +156142,10 @@
         "Spider Fur Belt",
         "Spider Fur Collar",
         "Shimmering Terror Hide Boots",
+        "Spell: Elemental Maelstrom",
+        "Spell: Corporeal Empathy",
+        "Spell: Enticement of Flame",
+        "Spell: Boon of the Garou",
         "Icepaw Scalp",
         "Icepaw Kobold's Paw",
         "Jaundice Gem",
@@ -156156,7 +156467,8 @@
         "Western Wastes"
       ],
       "drops": [
-        "Bloody Claw of Veredenia"
+        "Bloody Claw of Veredenia",
+        "Spell: Form of the Great Bear"
       ],
       "loc": [
         {
@@ -157264,7 +157576,10 @@
         "Heavy Dragonhorn Boots",
         "Peerless Dragonhorn Boots",
         "Matchless Dragonhorn Boots",
-        "Vitaela's Talisman"
+        "Vitaela's Talisman",
+        "Spell: Aegolism",
+        "Spell: Focus of Spirit",
+        "Spell: Form of the Great Bear"
       ],
       "loc": [
         {
@@ -157577,7 +157892,9 @@
         "Heavy Dragonspine Vambraces",
         "Peerless Dragonspine Vambraces",
         "Matchless Dragonspine Vambraces",
-        "Von's Talisman"
+        "Von's Talisman",
+        "Spell: Form of the Great Bear",
+        "Spell: Death Peace"
       ],
       "loc": [
         {
@@ -161145,6 +161462,9 @@
         "Crescent Blades of Luclin",
         "Skydarkener",
         "Tanglewood Shield",
+        "Spell: Focus of Spirit",
+        "Spell: Aegolism",
+        "Spell: Death Peace",
         "Emerald Dragon Scales"
       ],
       "loc": [
@@ -161634,6 +161954,8 @@
         "Western Wastes"
       ],
       "drops": [
+        "Spell: Form of the Great Bear",
+        "Spell: Death Peace",
         "Worked Dragonskull Helm",
         "Reinforced Dragonskull Helm",
         "Heavy Dragonskull Helm",
@@ -161800,6 +162122,12 @@
       "zones": [
         "Skyshrine"
       ],
+      "drops": [
+        "Spell: Boon of the Garou",
+        "Spell: Corporeal Empathy",
+        "Spell: Elemental Maelstrom",
+        "Spell: Enticement of Flame"
+      ],
       "loc": [
         {
           "ns": 958,
@@ -161852,6 +162180,9 @@
         "Peerless Dragonhorn Boots",
         "Matchless Dragonhorn Boots",
         "Yeldema's Talisman",
+        "Spell: Cannibalize IV",
+        "Spell: Death Peace",
+        "Spell: Aegolism",
         "Dragon Meat"
       ],
       "loc": [

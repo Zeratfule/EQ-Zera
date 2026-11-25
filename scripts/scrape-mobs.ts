@@ -42,7 +42,7 @@ import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs'
 import { dirname, resolve } from 'path'
 import { fileURLToPath } from 'url'
 import { isMobPage, parseMobPage } from './sources/mobPage'
-import { corpusItemTest, type ItemDbFile } from '../src/main/itemsDb'
+import { corpusItemTest, corpusScrollTest, type ItemDbFile } from '../src/main/itemsDb'
 import type { MobData, MobEntry } from '../src/shared/types'
 
 const API = 'https://eqlwiki.com/api.php'
@@ -63,7 +63,9 @@ const refresh = process.argv.slice(2).includes('--refresh')
 const reparse = process.argv.slice(2).includes('--reparse')
 if (refresh && reparse) throw new Error('--refresh and --reparse are contradictory')
 
-const isItem = corpusItemTest((JSON.parse(readFileSync(ITEMS_PATH, 'utf8')) as ItemDbFile).items)
+const corpus = (JSON.parse(readFileSync(ITEMS_PATH, 'utf8')) as ItemDbFile).items
+const isItem = corpusItemTest(corpus)
+const isScroll = corpusScrollTest(corpus)
 
 // ---- polite API client (identical contract to scrape-quests.ts) ------------------
 
@@ -323,7 +325,7 @@ async function readMobPage(p: Member): Promise<MobEntry | 'not-mob' | PageSkip> 
   // Expected and NUMEROUS: `embeddedin` reports indirect transclusions, so quest/zone/index
   // pages that merely show a mob box land in the candidate list. Counted, not enumerated.
   if (!isMobPage(wt)) return 'not-mob'
-  return parseMobPage(p.title, wt, { isItem }) ?? { reason: 'mob template present but nothing parsed' }
+  return parseMobPage(p.title, wt, { isItem, isScroll }) ?? { reason: 'mob template present but nothing parsed' }
 }
 
 interface RunSummary {
