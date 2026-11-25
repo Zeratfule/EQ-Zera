@@ -6,6 +6,7 @@ import { type JSX, useState } from 'react'
 import { Box, Chip, IconButton, Paper, Stack, Tooltip, Typography } from '@mui/material'
 import type { AaCatalogEntry } from '@shared/aaCatalog'
 import type { AaHeld } from '@shared/aaPlanner'
+import type { AaRankCap } from '@shared/aaRankCaps'
 import { nextRankCost } from '../../../../shared/aaPlanner'
 
 const GRANT_LABEL: Record<NonNullable<AaCatalogEntry['granted']>, string> = {
@@ -13,9 +14,10 @@ const GRANT_LABEL: Record<NonNullable<AaCatalogEntry['granted']>, string> = {
   achievement: 'granted by achievements'
 }
 
-function costText(entry: AaCatalogEntry, held: number): string {
+function costText(entry: AaCatalogEntry, held: number, cap: number): string {
   if (entry.granted) return GRANT_LABEL[entry.granted]
   if (held >= entry.maxRank) return 'maxed'
+  if (held >= cap) return 'at your class cap'
   const c = nextRankCost(entry, held)
   if (c === null) return 'next rank: cost unknown'
   return c === 0 ? 'next rank: free (auto-granted)' : `next rank: ${String(c)} pts`
@@ -76,18 +78,27 @@ function HeldChip({ entry, h }: { entry: AaCatalogEntry; h: AaHeld | undefined }
   )
 }
 
+/** A class rank cap, said on the row: the cap for this loadout, or the range while a class is unknown. */
+function CapChip({ cap }: { cap: AaRankCap }): JSX.Element | null {
+  if (cap.evidence === null) return null
+  const label = cap.certain ? `your classes: max ${String(cap.cap)}` : `max ${cap.range ? `${String(cap.range[0])}-${String(cap.range[1])}` : '?'} by class`
+  return <Chip size="small" variant="outlined" color={cap.limited ? 'warning' : 'default'} label={label} title={cap.evidence} data-testid="aa-planner-cap" data-cap={cap.cap} />
+}
+
 export interface AaRowProps {
   entry: AaCatalogEntry
   held: AaHeld | undefined
+  /** the rank this loadout's classes can train (shared/aaRankCaps.ts) */
+  cap: AaRankCap
   target: number
   onTarget: (rank: number) => void
   onStated: (rank: number) => void
 }
 
-export default function AaRow({ entry, held, target, onTarget, onStated }: AaRowProps): JSX.Element {
+export default function AaRow({ entry, held, cap, target, onTarget, onStated }: AaRowProps): JSX.Element {
   const [open, setOpen] = useState(false)
   const rank = held?.rank ?? 0
-  const plannable = entry.granted === undefined && rank < entry.maxRank
+  const plannable = entry.granted === undefined && rank < cap.cap
   return (
     <Paper
       variant="outlined"
@@ -105,13 +116,14 @@ export default function AaRow({ entry, held, target, onTarget, onStated }: AaRow
           <Chip key={c} size="small" variant="outlined" label={c} />
         ))}
         <Typography variant="caption" color="text.secondary" data-testid="aa-planner-next">
-          {costText(entry, rank)}
+          {costText(entry, rank, cap.cap)}
         </Typography>
+        <CapChip cap={cap} />
         {entry.issues && <Chip size="small" variant="outlined" color="warning" label="partly read" title={entry.issues.join(' | ')} />}
         <Box sx={{ flexGrow: 1 }} />
         <Stepper label="I hold" value={held?.stated ?? 0} min={0} max={entry.maxRank} testId="aa-planner-stated" onChange={onStated} />
         {plannable && (
-          <Stepper label="Plan to" value={Math.max(target, rank)} min={rank} max={entry.maxRank} testId="aa-planner-target" onChange={onTarget} />
+          <Stepper label="Plan to" value={Math.max(target, rank)} min={rank} max={cap.cap} testId="aa-planner-target" onChange={onTarget} />
         )}
       </Stack>
       <Typography variant="caption" color="text.secondary" data-testid="aa-planner-req" sx={{ display: 'block' }}>

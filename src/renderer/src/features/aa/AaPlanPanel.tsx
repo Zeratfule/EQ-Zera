@@ -58,6 +58,7 @@ function Checks({ checks }: { checks: AaReqCheck[] }): JSX.Element | null {
         label={c.status === 'unknown' ? `unknown: ${c.label}` : c.label}
         data-testid="aa-planner-step-check"
         data-status={c.status}
+        data-kind={c.kind}
       />
     )
   )
