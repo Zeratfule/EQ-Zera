@@ -151,3 +151,54 @@ test('the committed catalog: Tae Ew Archon has its drops back', () => {
   assert.ok(archon, 'Tae Ew Archon left the mob catalog')
   assert.deepEqual(archon.drops, ['Rubicite Vambraces', 'Ravenscale Armguards', 'Lizardscale Belt', 'Lizard Meat'])
 })
+
+test('a placeholder transclusion is "drops nothing", never an item named None/Nothing/Unknown/N/A/?', () => {
+  const wt = (inner: string): string =>
+    `{{Namedmobpage\n| name = a test mob\n| known_loot = \n<ul>\n${inner}\n</ul>\n| common_loot = \n}}`
+  for (const p of ['None', 'none', 'Nothing', 'Unknown', 'N/A', '?', '??'])
+    assert.equal(parseMobWikitext(wt(`<li> {{:${p}}}</li>`), { isItem }).dropsWiki, undefined, p)
+  // A real item beside the placeholder is still read, and nothing borrows a rarity from it.
+  assert.deepEqual(parseMobLoot('<li> {{:None}}</li>\n<li> {{:Lizard Meat}} (Common)</li>', { isItem }), [
+    { item: 'Lizard Meat', rarity: 'Common' }
+  ])
+})
+
+// Scabby (Nektropos Undercrofts), page 73055, VERBATIM from the 2026-11-25 cache down to
+// `|factions`: one of 21 pages that write an empty loot list as `{{:None}}`.
+const SCABBY = `{{Classic Era}}
+{{Namedmobpage
+
+| imagefilename     =
+
+| name              = Scabby
+| race              = ''Animal''
+| class             = [[Warrior]]
+| level             = 49
+| agro_radius       =
+| run_speed         =
+
+| zone              = [[Nektropos Undercrofts]]
+| location          = (32, 119, 4)
+| respawn_time      =
+
+| known_loot =
+
+<ul>
+<li> {{:None}}</li>
+</ul>
+
+| common_loot =
+
+| factions =
+
+* None
+}}`
+
+test('a real page: Scabby states no loot, and the committed catalog carries no "None" drop', () => {
+  const facts = parseMobWikitext(SCABBY, { isItem, isScroll })
+  assert.equal(facts.dropsWiki, undefined)
+  assert.equal(facts.levelText, '49')
+  const none = MOBS.filter((m) => (m.drops ?? []).some((d) => /^(?:none|nothing|unknown|n\/a|\?+)$/i.test(d))).map((m) => m.page)
+  assert.deepEqual(none, [])
+  assert.equal(MOBS.find((m) => m.page === 'Scabby')?.drops, undefined)
+})

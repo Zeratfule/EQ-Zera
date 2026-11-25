@@ -1,5 +1,5 @@
 {
-  "scrapedAt": "2026-11-15T19:46:55.948Z",
+  "scrapedAt": "2026-11-25T09:51:57.864Z",
   "source": "eqlwiki.com — Category:NPCs/Named Mobs/Merchants/Raid Encounters ∪ embeddedin Template:Namedmobpage/MerchantPage, filtered to pages opening a mob template",
   "mobs": [
     {
@@ -9393,9 +9393,6 @@
       "zones": [
         "Innothule Swamp"
       ],
-      "drops": [
-        "None"
-      ],
       "loc": [
         {
           "ns": -1960,
@@ -15086,6 +15083,25 @@
       ]
     },
     {
+      "page": "A giant fire beetle",
+      "name": "a giant fire beetle",
+      "level": "9-11",
+      "zones": [
+        "Western Plains of Karana",
+        "Toxxulia Forest"
+      ],
+      "drops": [
+        "Giant Fire Beetle Eye",
+        "Giant Fire Beetle Leg"
+      ],
+      "loc": [
+        {
+          "ns": -1903,
+          "ew": 385
+        }
+      ]
+    },
+    {
       "page": "A giant frenzied leech",
       "name": "a giant frenzied leech",
       "level": "36-40",
@@ -15679,6 +15695,23 @@
         "Barbarian Meat",
         "Winter Lilly",
         "Spider Silk"
+      ]
+    },
+    {
+      "page": "A giant yellow recluse",
+      "name": "a giant yellow recluse",
+      "level": "8-9",
+      "zones": [
+        "Steamfont Mountains"
+      ],
+      "drops": [
+        "Spider Legs"
+      ],
+      "loc": [
+        {
+          "ns": 301,
+          "ew": -1463
+        }
       ]
     },
     {
@@ -19631,9 +19664,6 @@
       "zones": [
         "Plane of Hate"
       ],
-      "drops": [
-        "None"
-      ],
       "loc": [
         {
           "ns": 130,
@@ -19699,6 +19729,51 @@
         "Lambent Stone",
         "Griffon Feathers",
         "Golden Pendant"
+      ]
+    },
+    {
+      "page": "A Grikbar Kobold",
+      "name": "a grikbar kobold",
+      "level": "3-5",
+      "zones": [
+        "Steamfont Mountains"
+      ],
+      "drops": [
+        "Ale",
+        "Bead Necklace",
+        "Belt Pouch",
+        "Hematite",
+        "Iron Ration",
+        "Malachite",
+        "Mead",
+        "Ration",
+        "Silver Stud",
+        "Small Box",
+        "Steamfont Spring Water"
+      ],
+      "loc": [
+        {
+          "ns": -364,
+          "ew": 1682
+        }
+      ]
+    },
+    {
+      "page": "A Grikbar Shaman",
+      "name": "a grikbar shaman",
+      "level": "4-5",
+      "zones": [
+        "Steamfont Mountains"
+      ],
+      "drops": [
+        "Small Box",
+        "Steamfont Spring Water"
+      ],
+      "loc": [
+        {
+          "ns": -350,
+          "ew": 1685
+        }
       ]
     },
     {
@@ -22401,9 +22476,6 @@
       "level": "1-5",
       "zones": [
         "Kerra Isle"
-      ],
-      "drops": [
-        "None"
       ]
     },
     {
@@ -23495,6 +23567,23 @@
       ]
     },
     {
+      "page": "A krag warrior",
+      "name": "a krag warrior",
+      "level": "9-10",
+      "zones": [
+        "Steamfont Mountains"
+      ],
+      "drops": [
+        "Aviak Talon"
+      ],
+      "loc": [
+        {
+          "ns": 386,
+          "ew": 1835
+        }
+      ]
+    },
+    {
       "page": "A krom zek spy",
       "name": "a krom zek spy",
       "level": "55 (also reported to be 53, which is it?)",
@@ -23653,6 +23742,25 @@
         "Fresh Fish",
         "Lancer Swordfish Fin",
         "Swordfish Bill"
+      ]
+    },
+    {
+      "page": "A lantern beetle",
+      "name": "a lantern beetle",
+      "level": "2",
+      "zones": [
+        "Butcherblock Mountains",
+        "Greater Faydark"
+      ],
+      "drops": [
+        "Fire Beetle Eye",
+        "Fire Beetle Leg"
+      ],
+      "loc": [
+        {
+          "ns": 1769,
+          "ew": -595
+        }
       ]
     },
     {
@@ -24241,6 +24349,20 @@
       ]
     },
     {
+      "page": "A large yellow recluse",
+      "name": "a large yellow recluse",
+      "level": "7",
+      "zones": [
+        "Steamfont Mountains"
+      ],
+      "loc": [
+        {
+          "ns": 969,
+          "ew": -251
+        }
+      ]
+    },
+    {
       "page": "A large yellowjacket",
       "name": "a large yellowjacket",
       "level": "4-5",
@@ -24471,6 +24593,23 @@
         {
           "ns": 2000,
           "ew": 0
+        }
+      ]
+    },
+    {
+      "page": "A leaf scarab",
+      "name": "a leaf scarab",
+      "level": "4-5",
+      "zones": [
+        "East Commonlands"
+      ],
+      "drops": [
+        "Scarab Legs"
+      ],
+      "loc": [
+        {
+          "ns": 651,
+          "ew": 195
         }
       ]
     },
@@ -25086,7 +25225,8 @@
       ],
       "drops": [
         "Ogreskin Chamois",
-        "Words of Allure"
+        "Words of Allure",
+        "Lizardman Fang"
       ]
     },
     {
@@ -25095,6 +25235,9 @@
       "level": "20-22",
       "zones": [
         "Cazic Thule"
+      ],
+      "drops": [
+        "Lizardman Fang"
       ]
     },
     {
@@ -26466,9 +26609,6 @@
       "level": "56",
       "zones": [
         "Plane of Hate"
-      ],
-      "drops": [
-        "None"
       ],
       "loc": [
         {
@@ -30449,6 +30589,24 @@
         {
           "ns": 36,
           "ew": 349
+        }
+      ]
+    },
+    {
+      "page": "A rebel clockwork",
+      "name": "a rebel clockwork",
+      "level": "8",
+      "zones": [
+        "Steamfont Mountains"
+      ],
+      "drops": [
+        "Mechanical Light Emitter",
+        "Saltpeter"
+      ],
+      "loc": [
+        {
+          "ns": 1476,
+          "ew": -1650
         }
       ]
     },
@@ -36226,6 +36384,9 @@
       "name": "a skeletal excavator",
       "zones": [
         "Befallen"
+      ],
+      "drops": [
+        "Rusty Mining Pick"
       ]
     },
     {
@@ -38299,9 +38460,6 @@
       "level": "56",
       "zones": [
         "Plane of Hate"
-      ],
-      "drops": [
-        "None"
       ]
     },
     {
@@ -39309,6 +39467,24 @@
           "ns": -180,
           "ew": -179,
           "pct": 10
+        }
+      ]
+    },
+    {
+      "page": "A terrorantuling",
+      "name": "a terrorantuling",
+      "level": "21",
+      "zones": [
+        "Southern Desert of Ro"
+      ],
+      "drops": [
+        "Terrorantula Silk",
+        "Urticating Hairs"
+      ],
+      "loc": [
+        {
+          "ns": 309,
+          "ew": 453
         }
       ]
     },
@@ -40615,6 +40791,21 @@
         {
           "ns": -304,
           "ew": -162
+        }
+      ]
+    },
+    {
+      "page": "A tormented dead",
+      "name": "A tormented dead",
+      "level": "?",
+      "zones": [
+        "The Estate of Unrest"
+      ],
+      "loc": [
+        {
+          "ns": 49.69,
+          "ew": 1.69,
+          "z": 5.69
         }
       ]
     },
@@ -42492,6 +42683,27 @@
         {
           "ns": 424,
           "ew": -1070
+        }
+      ]
+    },
+    {
+      "page": "A woodland lioness",
+      "name": "a woodland lioness",
+      "level": "6",
+      "zones": [
+        "East Commonlands"
+      ],
+      "drops": [
+        "Chunk of Meat",
+        "High Quality Cat Pelt",
+        "Lion Meat",
+        "Medium Quality Cat Pelt",
+        "Ruined Cat Pelt"
+      ],
+      "loc": [
+        {
+          "ns": 351,
+          "ew": 1504
         }
       ]
     },
@@ -54509,6 +54721,24 @@
       ]
     },
     {
+      "page": "Arthikus",
+      "name": "Arthikus",
+      "level": "33",
+      "zones": [
+        "Oasis of Marr"
+      ],
+      "drops": [
+        "Blackrock Lichen",
+        "Embalming Dust"
+      ],
+      "loc": [
+        {
+          "ns": -1337,
+          "ew": 704
+        }
+      ]
+    },
+    {
       "page": "Arthon Spiritsight",
       "name": "Arthon Spiritsight",
       "level": "30",
@@ -57998,9 +58228,6 @@
       "level": "60",
       "zones": [
         "Plane of Sky"
-      ],
-      "drops": [
-        "None"
       ]
     },
     {
@@ -62002,6 +62229,20 @@
         {
           "ns": -146,
           "ew": -114
+        }
+      ]
+    },
+    {
+      "page": "Byrola Bendil",
+      "name": "Byrola Bendil",
+      "level": "1-3",
+      "zones": [
+        "Steamfont Mountains"
+      ],
+      "loc": [
+        {
+          "ns": -137,
+          "ew": -469
         }
       ]
     },
@@ -69041,8 +69282,7 @@
         "Rune of Al'Kabor",
         "Rune of Infraction",
         "Words of Descrying",
-        "Words of Cazic-Thule",
-        "Words of Disillusionment"
+        "Words of Cazic-Thule"
       ],
       "loc": [
         {
@@ -69887,9 +70127,6 @@
       "level": "70",
       "zones": [
         "Nektropos Undercrofts"
-      ],
-      "drops": [
-        "None"
       ],
       "loc": [
         {
@@ -78326,6 +78563,7 @@
         "North Qeynos"
       ],
       "drops": [
+        "Fippy's Paw",
         "Patch of Gnoll Fur",
         "Gnoll Fang",
         "High Quality Gnoll Fur"
@@ -84583,6 +84821,20 @@
         {
           "ns": -184,
           "ew": -138
+        }
+      ]
+    },
+    {
+      "page": "Gorehorn",
+      "name": "Gorehorn",
+      "level": "14",
+      "zones": [
+        "Steamfont Mountains"
+      ],
+      "loc": [
+        {
+          "ns": 1575,
+          "ew": 1708
         }
       ]
     },
@@ -97080,7 +97332,7 @@
     },
     {
       "page": "Head Chef Vy`zen",
-      "name": "NPC_Name",
+      "name": "Head Chef Vy`zen",
       "level": "52",
       "zones": [
         "Nektropos Castle"
@@ -97179,6 +97431,23 @@
           "ns": 2340,
           "ew": 2889,
           "pct": 20
+        }
+      ]
+    },
+    {
+      "page": "Hector the highway bandit",
+      "name": "Hector the highway bandit",
+      "level": "13",
+      "zones": [
+        "Steamfont Mountains"
+      ],
+      "drops": [
+        "Hector's Severed Head"
+      ],
+      "loc": [
+        {
+          "ns": -726,
+          "ew": 102
         }
       ]
     },
@@ -101226,9 +101495,6 @@
       "zones": [
         "Nektropos Undercrofts"
       ],
-      "drops": [
-        "None"
-      ],
       "loc": [
         {
           "ns": 34,
@@ -102611,6 +102877,23 @@
       ]
     },
     {
+      "page": "Jerald the highway bandit",
+      "name": "Jerald the highway bandit",
+      "level": "13",
+      "zones": [
+        "Steamfont Mountains"
+      ],
+      "drops": [
+        "Jerald's Severed Head"
+      ],
+      "loc": [
+        {
+          "ns": -693,
+          "ew": 124
+        }
+      ]
+    },
+    {
       "page": "Jerigozia",
       "name": "Jerigozia",
       "level": "58",
@@ -102757,6 +103040,23 @@
         {
           "ns": 158,
           "ew": -371
+        }
+      ]
+    },
+    {
+      "page": "Jimble Woodentoe",
+      "name": "Jimble Woodentoe",
+      "level": "12",
+      "zones": [
+        "East Commonlands"
+      ],
+      "drops": [
+        "Tarnished Short Sword"
+      ],
+      "loc": [
+        {
+          "ns": 16,
+          "ew": 78
         }
       ]
     },
@@ -104375,9 +104675,6 @@
       "level": "70",
       "zones": [
         "Nektropos Undercrofts"
-      ],
-      "drops": [
-        "None"
       ],
       "loc": [
         {
@@ -108928,9 +109225,6 @@
       "level": "63",
       "zones": [
         "Nektropos Castle"
-      ],
-      "drops": [
-        "None"
       ],
       "loc": [
         {
@@ -113605,12 +113899,9 @@
     },
     {
       "page": "Lord Ollix Everling",
-      "name": "NPC_Name",
+      "name": "Lord Ollix Everling",
       "zones": [
         "Nektropos Castle"
-      ],
-      "drops": [
-        "None"
       ],
       "loc": [
         {
@@ -115305,6 +115596,20 @@
       ]
     },
     {
+      "page": "Malloy the Songbird",
+      "name": "Malloy the Songbird",
+      "level": "61",
+      "zones": [
+        "West Freeport"
+      ],
+      "loc": [
+        {
+          "ns": -283,
+          "ew": -347
+        }
+      ]
+    },
+    {
       "page": "Malteor Flamecaller",
       "name": "Malteor Flamecaller",
       "level": "65",
@@ -115611,9 +115916,6 @@
       "level": "70",
       "zones": [
         "Nektropos Undercrofts"
-      ],
-      "drops": [
-        "None"
       ],
       "loc": [
         {
@@ -116319,9 +116621,6 @@
       "level": "70",
       "zones": [
         "Rathe Mountains"
-      ],
-      "drops": [
-        "None"
       ],
       "loc": [
         {
@@ -118015,6 +118314,20 @@
       ]
     },
     {
+      "page": "Metallurgist Mirakzin",
+      "name": "Metallurgist Mirakzin",
+      "level": "61",
+      "zones": [
+        "Steamfont Mountains"
+      ],
+      "loc": [
+        {
+          "ns": -1933,
+          "ew": 1394
+        }
+      ]
+    },
+    {
       "page": "Metha Wintersong",
       "name": "Metha Wintersong",
       "level": "30",
@@ -118512,6 +118825,14 @@
           "ns": 855,
           "ew": -1831
         }
+      ]
+    },
+    {
+      "page": "Mip Sprocket",
+      "name": "Mip Sprocket",
+      "level": "60",
+      "zones": [
+        "Steamfont Mountains"
       ]
     },
     {
@@ -125212,7 +125533,7 @@
       "loc": [
         {
           "ns": -400,
-          "ew": 2666
+          "ew": 2670
         }
       ]
     },
@@ -125749,9 +126070,6 @@
       "level": "60",
       "zones": [
         "Neriak - Commons"
-      ],
-      "drops": [
-        "None"
       ],
       "loc": [
         {
@@ -129633,6 +129951,23 @@
       ]
     },
     {
+      "page": "Renaldo the highway bandit",
+      "name": "Renaldo the highway bandit",
+      "level": "13",
+      "zones": [
+        "Steamfont Mountains"
+      ],
+      "drops": [
+        "Renaldo's Severed Head"
+      ],
+      "loc": [
+        {
+          "ns": -677,
+          "ew": 103
+        }
+      ]
+    },
+    {
       "page": "Rendallen Ironforge",
       "name": "Rendallen Ironforge",
       "level": "25",
@@ -132427,9 +132762,6 @@
       "zones": [
         "Nektropos Undercrofts"
       ],
-      "drops": [
-        "None"
-      ],
       "loc": [
         {
           "ns": 32,
@@ -132732,6 +133064,20 @@
       ]
     },
     {
+      "page": "Scribe Flogglebig",
+      "name": "Scribe Flogglebig",
+      "level": "50",
+      "zones": [
+        "Rathe Mountains"
+      ],
+      "loc": [
+        {
+          "ns": -2056,
+          "ew": 1985
+        }
+      ]
+    },
+    {
       "page": "Scribe Noglleg",
       "name": "Scribe Noglleg",
       "level": "50",
@@ -132742,6 +133088,34 @@
         {
           "ns": -2059,
           "ew": 1935
+        }
+      ]
+    },
+    {
+      "page": "Scribe Ooglebeg",
+      "name": "Scribe Ooglebeg",
+      "level": "50",
+      "zones": [
+        "Rathe Mountains"
+      ],
+      "loc": [
+        {
+          "ns": -1993,
+          "ew": 1960
+        }
+      ]
+    },
+    {
+      "page": "Scribe Vordangl",
+      "name": "Scribe Vordangl",
+      "level": "50",
+      "zones": [
+        "Rathe Mountains"
+      ],
+      "loc": [
+        {
+          "ns": -1770,
+          "ew": 2156
         }
       ]
     },
@@ -137155,9 +137529,6 @@
       "zones": [
         "Nektropos Undercrofts"
       ],
-      "drops": [
-        "None"
-      ],
       "loc": [
         {
           "ns": 41,
@@ -138790,9 +139161,6 @@
       "zones": [
         "Nektropos Undercrofts"
       ],
-      "drops": [
-        "None"
-      ],
       "loc": [
         {
           "ns": 37,
@@ -139511,7 +139879,7 @@
     },
     {
       "page": "Sir Lucan Dlere",
-      "name": "Sir Lucan Dlere",
+      "name": "Sir Lucan D'Lere",
       "level": "48",
       "zones": [
         "West Freeport"
@@ -140955,6 +141323,14 @@
           "ns": -335,
           "ew": -107
         }
+      ]
+    },
+    {
+      "page": "Smith Numden",
+      "name": "Smith Numden",
+      "level": "60",
+      "zones": [
+        "Steamfont Mountains"
       ]
     },
     {
@@ -150313,9 +150689,6 @@
       "zones": [
         "East Freeport"
       ],
-      "drops": [
-        "None"
-      ],
       "loc": [
         {
           "ns": -25,
@@ -153614,9 +153987,6 @@
       "zones": [
         "Nektropos Undercrofts"
       ],
-      "drops": [
-        "None"
-      ],
       "loc": [
         {
           "ns": -112,
@@ -154083,9 +154453,6 @@
       "level": "50",
       "zones": [
         "Neriak Foreign Quarter"
-      ],
-      "drops": [
-        "None"
       ],
       "loc": [
         {
@@ -155582,9 +155949,6 @@
       "level": "30",
       "zones": [
         "Nektropos Undercrofts"
-      ],
-      "drops": [
-        "None"
       ],
       "loc": [
         {
@@ -162591,6 +162955,23 @@
         {
           "ns": 1212,
           "ew": -591
+        }
+      ]
+    },
+    {
+      "page": "Yulcabis",
+      "name": "Yulcabis",
+      "level": "13",
+      "zones": [
+        "Steamfont Mountains"
+      ],
+      "drops": [
+        "Yulcabis' Axe"
+      ],
+      "loc": [
+        {
+          "ns": -851,
+          "ew": -1448
         }
       ]
     },

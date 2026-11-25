@@ -1,5 +1,5 @@
 {
-  "scrapedAt": "2026-11-15T20:20:44.744Z",
+  "scrapedAt": "2026-11-25T09:55:38.630Z",
   "schema": 3,
   "count": 2025,
   "withEffects": 2021,
@@ -20690,7 +20690,7 @@
       "illusion": false,
       "mana": 200,
       "effects": [
-        "Summon Pet: Level 42 Monster"
+        "Summon Pet: Level 41 Monster"
       ]
     },
     {
