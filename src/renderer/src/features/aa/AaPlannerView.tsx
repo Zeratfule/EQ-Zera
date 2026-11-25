@@ -13,6 +13,8 @@ import { moveStep, setStated, setTarget, targetOf } from '../../../../shared/aaP
 import { formatDate } from '../../lib/formatDate'
 import AaRow from './AaRow'
 import AaPlanPanel from './AaPlanPanel'
+import AaCharacterBar from './AaCharacterBar'
+import { rankCapFor } from '../../../../shared/aaRankCaps'
 import { useAaPlanner, type AaPlannerInputs } from './useAaPlanner'
 
 const COLLAPSED_KEY = 'eq.aa.collapsed'
@@ -27,6 +29,10 @@ const SECTION_TITLE: Record<AaSection, string> = {
 const SECTION_NOTE: Partial<Record<AaSection, string>> = {
   archetype: 'The wiki does not say which archetype AAs each class gets, so every one is listed. Your in-game Archetype tab shows the ones your combo has.',
   special: 'Granted by reincarnating or by achievements, never bought - never part of a plan.'
+}
+
+function raceNote(race: string | null): string {
+  return race === null ? ' Every race is listed until you set your race.' : ` Race AAs: ${race} only, plus any you hold.`
 }
 
 function loadCollapsed(): Set<string> {
@@ -81,14 +87,16 @@ function Header({ p }: { p: AaPlannerInputs }): JSX.Element {
 
 interface SectionProps {
   section: AaSection
+  race: string | null
   entries: AaCatalogEntry[]
   collapsed: boolean
   onToggle: () => void
   row: (e: AaCatalogEntry) => JSX.Element
 }
 
-function Section({ section, entries, collapsed, onToggle, row }: SectionProps): JSX.Element {
-  const note = SECTION_NOTE[section]
+function Section({ section, race, entries, collapsed, onToggle, row }: SectionProps): JSX.Element {
+  const base = SECTION_NOTE[section]
+  const note = base !== undefined && section === 'special' ? base + raceNote(race) : base
   return (
     <Box data-testid={`aa-planner-section-${section}`} data-collapsed={collapsed}>
       <Typography
@@ -123,22 +131,26 @@ export default function AaPlannerView(): JSX.Element {
   const [search, setSearch] = useState('')
   const deferred = useDeferredValue(search)
   const [collapsed, toggle] = useCollapsed()
-  const { catalog, classes, plan, updatePlan, index, held, level, banked, allocated, pointsPerHour } = p
-  const sections = useMemo(() => plannerSections(catalog, classes, deferred), [catalog, classes, deferred])
+  const { catalog, classes, slots, race, plan, updatePlan, index, held, level, banked, allocated, pointsPerHour } = p
+  const sections = useMemo(() => plannerSections(catalog, classes, deferred, { race, held }), [catalog, classes, deferred, race, held])
   const { rows, totals } = useMemo(
-    () => evaluatePlan(plan.steps, index, held, { level, banked, allocated, pointsPerHour }),
-    [plan.steps, index, held, level, banked, allocated, pointsPerHour]
+    () => evaluatePlan(plan.steps, index, held, { level, banked, allocated, pointsPerHour, classes, slots }),
+    [plan.steps, index, held, level, banked, allocated, pointsPerHour, classes, slots]
   )
-  const row = (e: AaCatalogEntry): JSX.Element => (
-    <AaRow
-      key={aaKey(e.name)}
-      entry={e}
-      held={held.get(aaKey(e.name))}
-      target={targetOf(plan, e.name)}
-      onTarget={(t) => updatePlan((pl) => setTarget(pl, e, t, heldRank(held, e.name)))}
-      onStated={(r) => updatePlan((pl) => setStated(pl, e, r))}
-    />
-  )
+  const row = (e: AaCatalogEntry): JSX.Element => {
+    const cap = rankCapFor(e, classes, slots)
+    return (
+      <AaRow
+        key={aaKey(e.name)}
+        entry={e}
+        held={held.get(aaKey(e.name))}
+        cap={cap}
+        target={targetOf(plan, e.name)}
+        onTarget={(t) => updatePlan((pl) => setTarget(pl, e, Math.min(t, cap.cap), heldRank(held, e.name)))}
+        onStated={(r) => updatePlan((pl) => setStated(pl, e, r))}
+      />
+    )
+  }
   const actions = {
     onMove: (i: number, d: -1 | 1) => updatePlan((pl) => moveStep(pl, i, d)),
     onRemove: (name: string) => {
@@ -149,6 +161,7 @@ export default function AaPlannerView(): JSX.Element {
   return (
     <Stack spacing={1} data-testid="aa-planner" sx={{ height: '100%', minHeight: 0 }}>
       <Header p={p} />
+      <AaCharacterBar p={p} />
       <Stack direction="row" spacing={1.5} sx={{ flexGrow: 1, minHeight: 0 }}>
         <Stack spacing={1} sx={{ flexGrow: 1, minWidth: 0, minHeight: 0 }}>
           <TextField
@@ -161,7 +174,7 @@ export default function AaPlannerView(): JSX.Element {
           <Box data-testid="aa-planner-list" sx={{ flexGrow: 1, minHeight: 0, overflow: 'auto' }}>
             <Stack spacing={1.5}>
               {sections.map((s) => (
-                <Section key={s.section} section={s.section} entries={s.entries} collapsed={collapsed.has(s.section)} onToggle={() => toggle(s.section)} row={row} />
+                <Section key={s.section} section={s.section} race={race} entries={s.entries} collapsed={collapsed.has(s.section)} onToggle={() => toggle(s.section)} row={row} />
               ))}
               {sections.length === 0 && (
                 <Typography variant="body2" color="text.secondary" data-testid="aa-planner-no-match">

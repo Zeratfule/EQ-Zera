@@ -36,6 +36,9 @@ export const ZONE_OPTIONS_MAX = 200
 /** Stem -> the long name the zone table knows it by. Built once; the table is ~130 rows. */
 const NAMES = new Map<ZoneShort, string>(ZONES.map((z) => [z.short, z.name]))
 
+/** Stem -> the table's other spellings (aliases and wiki spellings), for the search haystack only. */
+const SPELLINGS = new Map<ZoneShort, string[]>(ZONES.map((z) => [z.short, [...(z.aliases ?? []), ...(z.mobCatalogNames ?? [])]]))
+
 /**
  * What to call a map stem in the UI.
  *
@@ -58,7 +61,9 @@ const HAYSTACKS = new Map<ZoneShort, string[]>()
 function haystack(short: ZoneShort): string[] {
   const cached = HAYSTACKS.get(short)
   if (cached) return cached
-  const built = tokenize(`${short} ${zoneLabel(short)}`)
+  // Every spelling the table knows, not just its name: `Clan RunnyEye` and `Cazic Thule` still find
+  // the zones the log renamed (2026-11-25 zone audit).
+  const built = tokenize([short, zoneLabel(short), ...(SPELLINGS.get(short) ?? [])].join(' '))
   HAYSTACKS.set(short, built)
   return built
 }

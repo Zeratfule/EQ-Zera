@@ -107,13 +107,15 @@ function inWindow(e: LootEvent, t0: number, t1: number, zk: ZoneFilter): boolean
   // (main/mobLookupParse.ts) is immune already, because a destroy names no mob.
   if (isDestroyed(e)) return false
   if (e.ts < t0 || e.ts >= t1) return false
-  return zoneAdmits(e.zone ?? UNKNOWN_ZONE, zk.zoneKey, zk.zoneExactKey)
+  return zoneAdmits(e.zone ?? UNKNOWN_ZONE, zk.zoneKey, zk.zoneExactKey, zk.zoneSameKeys)
 }
 
 /** The zone half of a slice, as every window derivation here reads it (JOS-130 / JOS-291). */
 interface ZoneFilter {
   zoneKey?: string | null
   zoneExactKey?: string | null
+  /** other place-fold keys the zone table says are this place (`RangeStatsArgs.zoneSameKeys`) */
+  zoneSameKeys?: ReadonlySet<string> | null
 }
 
 /** One zone this item has dropped in, for you. */
@@ -264,6 +266,8 @@ export interface WindowItemArgs {
    * against one tier's hours is rule 2's mismatch with a difficulty number on it.
    */
   zoneExactKey?: string | null
+  /** other place-fold keys the zone table says are this place (`RangeStatsArgs.zoneSameKeys`) */
+  zoneSameKeys?: ReadonlySet<string> | null
 }
 
 /**
@@ -359,6 +363,8 @@ export interface WindowRatesArgs {
   /** …and its tier restriction (a `zoneScope.zoneIdKey` fold, JOS-291), or null/absent for every
    *  tier of the place. Same reason it cannot be applied by the caller. */
   zoneExactKey?: string | null
+  /** other place-fold keys the zone table says are this place (`RangeStatsArgs.zoneSameKeys`) */
+  zoneSameKeys?: ReadonlySet<string> | null
 }
 
 /**

@@ -10,12 +10,16 @@
  * it has to survive the view unmounting.
  *
  * THE LOG is tests/fixtures/e2e-leveling.log: Burst of Power bought to 3/3, Healing Boon to 1/3,
- * two Unbound ranks auto-granted at level 50.
+ * two Unbound ranks auto-granted at level 50, and a PAL/MNK/ENC `/who` row (no race grant line).
+ *
+ * THE CHARACTER FACTS (race, respec) are per-character prefs too: the race pick cuts the race
+ * reincarnation rows, a recorded respec drops the paid ranks bought before it, Undo restores them,
+ * and a live `/who` to a trio with no tank caps Steadfast Will at 7.
  *
  * Run: `node --import tsx tests/e2e/run-all.mts aa-planner`.
  */
 import type { Page } from 'playwright-core'
-import { buildIfStale, check, countOf, dumpArtifacts, failures, reportRun, settle, settleCount } from './appHarness.mjs'
+import { buildIfStale, check, countOf, dumpArtifacts, failures, reportRun, settle, settleCount, settleGone } from './appHarness.mjs'
 import { mainWindow } from './appWindow.mjs'
 import { launchOnFixture, type FixtureLog } from './logFixture.mjs'
 
@@ -114,7 +118,74 @@ async function stepLive(page: Page, log: FixtureLog): Promise<void> {
   check('…and the plan step now costs only the rank still to buy', rows[0]?.cumulative === 9, JSON.stringify(rows))
 }
 
-/** The plan and a collapsed section survive the view unmounting. */
+const RACE_ROWS = '[data-testid="aa-planner-row"][data-name^="Race Reincarnation:"]'
+
+/** The fixture states no race grant, so every race's row is listed until the user picks one. */
+async function stepRace(page: Page): Promise<void> {
+  check('WITH NO RACE every race reincarnation AA is listed (16)', (await countOf(page, RACE_ROWS)) === 16, String(await countOf(page, RACE_ROWS)))
+  check('…and the race picker reads Not set', (await page.$eval('[data-testid="aa-planner-race"]', (el) => (el as HTMLSelectElement).selectedOptions[0]?.textContent ?? '')) === 'Not set')
+  await page.selectOption('[data-testid="aa-planner-race"]', 'Human')
+  const n = await settleCount(page, RACE_ROWS, 1, { timeoutMs: 10_000 })
+  check('PICKING A RACE lists only that race reincarnation AA', n === 1 && (await countOf(page, rowOf('Race Reincarnation: Human'))) === 1)
+  check('…and a class reincarnation AA is untouched', (await countOf(page, rowOf('Class Reincarnation: Warrior'))) === 1)
+}
+
+/**
+ * A respec drops the paid ranks bought before it; later purchases stay. (The fixture's only free
+ * grants are the Unbound ranks, which the catalog does not list, so the free-grant half is pinned in
+ * tests/aaCharacter.test.mts.)
+ */
+async function stepRespec(page: Page): Promise<void> {
+  await page.click('[data-testid="aa-planner-respec"]')
+  await page.waitForSelector('[data-testid="aa-planner-respec-when"]', { timeout: 10_000 })
+  await page.fill('[data-testid="aa-planner-respec-when"]', '2099-01-01T00:00')
+  check('A FUTURE RESPEC is refused', await confirmDisabled(page), await textOf(page, '[data-testid="aa-planner-respec-refusal"]'))
+  // after every fixture purchase (Burst of Power 3 at 21:42, Healing Boon 1 at 19:31), before the live Healing Boon 2
+  await page.fill('[data-testid="aa-planner-respec-when"]', '2026-08-04T22:00')
+  check('…a past one is accepted', !(await confirmDisabled(page)))
+  await page.click('[data-testid="aa-planner-respec-confirm"]')
+  const burst = await settle(() => attr(page, rowOf('Burst of Power'), 'data-held'), (v) => v === '0', { timeoutMs: 10_000 })
+  check('AFTER A RESPEC a rank bought before it no longer reads as held (Burst of Power 0)', burst === '0', `held=${String(burst)}`)
+  check('…a purchase AFTER it still counts (Healing Boon 2)', (await attr(page, rowOf('Healing Boon'), 'data-held')) === '2')
+  check('…and the tab shows the respec date', (await countOf(page, '[data-testid="aa-planner-respec-date"]')) === 1)
+  await page.click('[data-testid="aa-planner-respec"]')
+  await page.waitForSelector('[data-testid="aa-planner-respec-when"]', { timeout: 10_000 })
+  await page.fill('[data-testid="aa-planner-respec-when"]', '2026-08-04T20:00')
+  check('A RESPEC EARLIER THAN THE ONE IN FORCE is refused', await confirmDisabled(page), await textOf(page, '[data-testid="aa-planner-respec-refusal"]'))
+  await page.click('[data-testid="aa-planner-respec-cancel"]')
+  await settleGone(page, '[data-testid="aa-planner-respec-dialog"]', { timeoutMs: 10_000 })
+}
+
+function confirmDisabled(page: Page): Promise<boolean> {
+  return page.$eval('[data-testid="aa-planner-respec-confirm"]', (el) => (el as HTMLButtonElement).disabled)
+}
+
+async function stepUndoRespec(page: Page): Promise<void> {
+  await page.click('[data-testid="aa-planner-respec-undo"]')
+  const burst = await settle(() => attr(page, rowOf('Burst of Power'), 'data-held'), (v) => v === '3', { timeoutMs: 10_000 })
+  check('UNDO puts the refunded ranks back (Burst of Power 3)', burst === '3', `held=${String(burst)}`)
+  check('…and the respec date is gone', (await countOf(page, '[data-testid="aa-planner-respec-date"]')) === 0)
+}
+
+/** Steadfast Will's class cap: a paladin trio trains all 8; a live /who to a monk trio caps it at 7. */
+async function stepCap(page: Page, log: FixtureLog): Promise<void> {
+  await search(page, 'Steadfast Will')
+  const will = rowOf('Steadfast Will')
+  await page.waitForSelector(will, { timeout: 10_000 })
+  check('a PAL trio reaches Steadfast Will 8', (await attr(page, `${will} [data-testid="aa-planner-cap"]`, 'data-cap')) === '8')
+  log.append('[50 MNK/ENC/WIZ] Primitive (Dark Elf)  ZONE: East Freeport (freporte)  ')
+  const cap = await settle(() => attr(page, `${will} [data-testid="aa-planner-cap"]`, 'data-cap'), (v) => v === '7', { timeoutMs: 30_000 })
+  check('A MONK trio (no tank) is CAPPED at 7', cap === '7', `cap=${String(cap)}`)
+  for (let i = 0; i < 8; i++) {
+    const inc = `${will} [data-testid="aa-planner-target-inc"]`
+    if ((await page.$eval(inc, (el) => (el as HTMLButtonElement).disabled)) === true) break
+    await page.click(inc)
+  }
+  check('…the plan stepper stops at the cap', (await textOf(page, `${will} [data-testid="aa-planner-target-value"]`)) === '7')
+  await search(page, '')
+}
+
+/** The plan, a collapsed section, the race and the respec survive the view unmounting. */
 async function stepRemount(page: Page): Promise<void> {
   await page.click(`[data-testid="aa-planner-section-general"] [data-testid="aa-planner-section-toggle"]`)
   await page.click(NAV_MAPS, { timeout: 15_000 })
@@ -125,6 +196,9 @@ async function stepRemount(page: Page): Promise<void> {
   const rows = await steps(page)
   check('THE PLAN SURVIVES THE VIEW REMOUNTING, in order', n === 3 && rows.map((r) => r.name).join(',') === 'Healing Boon,Fury of Magic,Destructive Fury', JSON.stringify(rows))
   check('…and so does a collapsed section', (await attr(page, '[data-testid="aa-planner-section-general"]', 'data-collapsed')) === 'true')
+  check('…and so does the race pick', (await page.$eval('[data-testid="aa-planner-race"]', (el) => (el as HTMLSelectElement).value)) === 'Human')
+  check('…and so does the respec', (await countOf(page, '[data-testid="aa-planner-respec-date"]')) === 1)
+  await page.click(`[data-testid="aa-planner-section-general"] [data-testid="aa-planner-section-toggle"]`)
 }
 
 async function main(): Promise<void> {
@@ -139,7 +213,11 @@ async function main(): Promise<void> {
     await stepCatalog(page)
     await stepPlan(page)
     await stepLive(page, log)
+    await stepRace(page)
+    await stepRespec(page)
     await stepRemount(page)
+    await stepUndoRespec(page)
+    await stepCap(page, log)
     if (failures.length) await dumpArtifacts(page, 'aa-planner-FAIL')
   } finally {
     await close()

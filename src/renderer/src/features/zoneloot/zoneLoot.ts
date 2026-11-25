@@ -40,6 +40,7 @@ import type { PlanSlotId } from '@shared/planner/types'
 // RELATIVE value imports, per the header.
 import { dropEraSubject, dropIsOutOfEra } from '../mobs/dropEra'
 import { mobsInZone, zoneKey } from '../mobs/mobZone'
+import { zoneEntryFromAnySpelling } from '../../../../shared/zones'
 import type { EraSubject } from '../planner/plannerData'
 
 /**
@@ -68,7 +69,10 @@ export function lootItemKey(item: string): string {
 export interface ZoneOption {
   /** `mobZone.zoneKey` fold - the identity two catalog spellings merge on. */
   key: string
-  /** The FIRST-SEEN catalog spelling for that key. What the picker shows and the reader types. */
+  /**
+   * The zone table's name when the spelling resolves (shared/zones.ts), else the FIRST-SEEN
+   * catalog spelling for that key. What the picker shows and the reader types.
+   */
   zone: string
   /** Distinct catalog mobs whose `zones` reach this key. */
   mobs: number
@@ -82,8 +86,9 @@ export interface ZoneOption {
  * installed on this machine. A zone with no map file still has a bestiary, and a map file for a
  * zone the catalog has never heard of is not a pickable answer.
  *
- * The fold is `zoneKey`, so the catalog's own inconsistencies merge: `Cazic Thule` and
- * `Cazic-Thule` are one option of 30 mobs, not two options of 28 and 2. A mob spelling both
+ * The identity is the zone table first (a spelling `shared/zones.ts` resolves takes the table's
+ * name), then the `zoneKey` fold, so the catalog's own inconsistencies merge: `Cazic Thule` and
+ * `Cazic-Thule` are one option, `Temple of Cazic-Thule`, as the log spells it. A mob spelling both
  * spellings counts ONCE (the inner `seen` set), so the count is mobs and never mentions.
  *
  * ORDER is by display name, because the reader is scanning for a place they can already name. The
@@ -94,7 +99,11 @@ export function zoneOptions(catalog: readonly MobEntry[]): ZoneOption[] {
   const byKey = new Map<string, ZoneOption>()
   for (const mob of catalog) {
     const counted = new Set<string>()
-    for (const raw of mob.zones ?? []) {
+    for (const spelling of mob.zones ?? []) {
+      // A spelling the zone table resolves is offered under the table's NAME (the log's own), so
+      // `Cazic Thule` and the log's `Temple of Cazic-Thule` are one option and the log's zone
+      // finds it; anything else keeps its catalog spelling.
+      const raw = zoneEntryFromAnySpelling(spelling)?.name ?? spelling
       const key = zoneKey(raw)
       if (key === '' || counted.has(key)) continue
       counted.add(key)

@@ -246,4 +246,10 @@ export interface RangeStatsArgs {
    * exact-tier query admits exactly one spelling and therefore hands back exactly one row.
    */
   zoneExactKey?: string | null
+  /**
+   * Other place-fold keys that are the SAME place as `zoneKey` by the zone table
+   * (`shared/zones.ts zoneSameKeys`), so a zone the log spells two ways is one slice. Absent ⇒
+   * byte-identical to the read without it. Only Zone Loot hands it in today.
+   */
+  zoneSameKeys?: ReadonlySet<string> | null
 }

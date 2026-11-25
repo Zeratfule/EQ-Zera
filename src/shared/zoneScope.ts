@@ -179,7 +179,12 @@ export function zoneIdKey(name: string): string {
  * does in `zoneSegments` and `lootRates.itemZoneRows`, so a slice for a NAMED zone excludes it
  * under either membership rather than guessing where it happened (law 1).
  */
-export function zoneAdmits(name: string, key?: string | null, exact?: string | null): boolean {
-  if (key != null && zoneKey(name) !== key) return false
+export function zoneAdmits(name: string, key?: string | null, exact?: string | null, same?: ReadonlySet<string> | null): boolean {
+  if (key != null) {
+    const k = zoneKey(name)
+    // `same`: other place-fold keys the zone table says are THIS place (`zones.zoneSameKeys`) — a
+    // widening by verified rows only, and only for a caller that hands them in (Zone Loot).
+    if (k !== key && same?.has(k) !== true) return false
+  }
   return exact == null || zoneIdKey(name) === exact
 }

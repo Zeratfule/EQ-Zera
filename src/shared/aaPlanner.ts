@@ -5,7 +5,8 @@
 // WHAT "HELD" MEANS (law 1). EQ Legends has no AA export (shared/characterSheet.ts), so the log is
 // the only evidence: a rank is held when a purchase line for it (or a higher rank) was seen —
 // cost-0 auto-grants included, because `aaLedger` keeps those rungs. A respec prints no refund
-// line, so a refunded rank still reads as held; and a rank bought before the log began is not seen
+// line, so the user records one (shared/aaCharacter.ts) and the caller hands in only the purchase
+// lines that survive it (`spendsSinceRespec`); and a rank bought before the log began is not seen
 // at all. That second gap is what the user's own marks are for: `stated` is a rank the user says
 // they hold, kept apart from `logged` and labelled as theirs. Held is the larger of the two.
 //
@@ -16,9 +17,14 @@
 //
 // WHEN YOU CAN AFFORD IT is an ESTIMATE: the shortfall over the points-per-hour the caller hands
 // in (the AA pace, shared/aaPace.ts). Null pace ⇒ no ETA at all, never a guess.
+//
+// CLASS CAPS. A rank past what the loadout's classes can train (shared/aaRankCaps.ts) is priced
+// only up to the cap and the step carries an unmet `cap` check naming it.
 
 import { aaKey, prereqRank, rankCost, rankLevel, type AaCatalogEntry, type AaSection } from './aaCatalog'
 import type { ClassAbbr } from './classCombo'
+import { raceAllows } from './aaCharacter'
+import { rankCapFor } from './aaRankCaps'
 
 /** One ability's held rank, with where each half came from. */
 export interface AaHeld {
@@ -50,12 +56,15 @@ export interface AaPlanContext {
   allocated: number
   /** points per hour at the current pace, or null when there is no pace */
   pointsPerHour: number | null
+  /** the loadout's resolved classes and slot count, for class rank caps (shared/aaRankCaps.ts) */
+  classes?: readonly ClassAbbr[]
+  slots?: number
 }
 
 export type AaReqStatus = 'met' | 'unmet' | 'unknown'
 
 export interface AaReqCheck {
-  kind: 'level' | 'prereq' | 'points' | 'text'
+  kind: 'level' | 'prereq' | 'points' | 'cap' | 'text'
   status: AaReqStatus
   label: string
 }
@@ -158,6 +167,12 @@ function usable(e: AaCatalogEntry, classes: readonly ClassAbbr[]): boolean {
   return (e.classes ?? []).some((c) => classes.includes(c))
 }
 
+/** The race cut (shared/aaCharacter.ts raceAllows): the character's race and what it holds. */
+export interface AaRaceFilter {
+  race: string | null
+  held: ReadonlyMap<string, AaHeld>
+}
+
 /**
  * The catalog cut to what the trio can use, in section order, each section alphabetical.
  *
@@ -168,12 +183,14 @@ function usable(e: AaCatalogEntry, classes: readonly ClassAbbr[]): boolean {
 export function plannerSections(
   entries: readonly AaCatalogEntry[],
   classes: readonly ClassAbbr[],
-  search: string
+  search: string,
+  race?: AaRaceFilter
 ): AaPlannerSection[] {
   const q = search.trim().toLowerCase()
   const by = new Map<AaSection, AaCatalogEntry[]>()
   for (const e of entries) {
     if (!usable(e, classes) || !matchesSearch(e, q)) continue
+    if (race && !raceAllows(e, race.race, race.held.get(aaKey(e.name))?.rank ?? 0)) continue
     const list = by.get(e.section) ?? []
     list.push(e)
     by.set(e.section, list)
@@ -253,10 +270,47 @@ function gateChecks(entry: AaCatalogEntry, spentBefore: number): AaReqCheck[] {
   return out
 }
 
+/** A target past what the loadout's classes can train is refused, and says why. */
+function capCheck(entry: AaCatalogEntry, target: number, ctx: AaPlanContext): { cap: number; check: AaReqCheck | null } {
+  const c = rankCapFor(entry, ctx.classes ?? [], ctx.slots ?? 0)
+  if (c.evidence === null) return { cap: entry.maxRank, check: null }
+  if (!c.certain) {
+    const range = c.range ? `${String(c.range[0])}-${String(c.range[1])}` : String(entry.maxRank)
+    return { cap: entry.maxRank, check: { kind: 'cap', status: 'unknown', label: `class cap: rank ${range}, depending on your classes` } }
+  }
+  const label = `your classes cap this at rank ${String(c.cap)}`
+  return { cap: c.cap, check: { kind: 'cap', status: target > c.cap ? 'unmet' : 'met', label } }
+}
+
 function etaFor(shortfall: number, pointsPerHour: number | null): number | null {
   if (shortfall <= 0) return 0
   if (pointsPerHour === null || pointsPerHour <= 0) return null
   return (shortfall / pointsPerHour) * MS_PER_HOUR
+}
+
+interface StepCtx extends PrereqCtx {
+  ctx: AaPlanContext
+  /** points allocated plus everything the plan buys before this step */
+  spentBefore: number
+}
+
+/** One step's reachable rank, its price and its checks. */
+function priceStep(
+  entry: AaCatalogEntry | null,
+  s: AaPlanStep,
+  from: number,
+  sc: StepCtx
+): { to: number; span: { cost: number; unknownRanks: number }; checks: AaReqCheck[] } {
+  if (!entry) {
+    const to = Math.max(from, s.target)
+    return { to, span: { cost: 0, unknownRanks: to - from }, checks: [{ kind: 'text', status: 'unknown', label: 'not in the catalog' }] }
+  }
+  const cap = capCheck(entry, s.target, sc.ctx)
+  // a target past the class cap is priced only up to the cap: the ranks above it cannot be bought
+  const to = Math.max(from, Math.min(s.target, cap.cap))
+  const checks = [levelCheck(entry, from, to, sc.ctx.level), ...prereqChecks(entry, from, to, sc), ...gateChecks(entry, sc.spentBefore)]
+  if (cap.check) checks.push(cap.check)
+  return { to, span: spanCost(entry, from, to), checks }
 }
 
 /** Every plan step, in plan order, with its cost, the running total, the ETA and its checks. */
@@ -274,12 +328,7 @@ export function evaluatePlan(
     const key = aaKey(s.name)
     const entry = index.get(key) ?? null
     const from = Math.max(held.get(key)?.rank ?? 0, planned.get(key)?.rank ?? 0)
-    const to = Math.max(from, s.target)
-    const span = entry ? spanCost(entry, from, to) : { cost: 0, unknownRanks: to - from }
-    const spentBefore = ctx.allocated + cumulative
-    const checks = entry
-      ? [levelCheck(entry, from, to, ctx.level), ...prereqChecks(entry, from, to, { held, index, planned }), ...gateChecks(entry, spentBefore)]
-      : [{ kind: 'text' as const, status: 'unknown' as const, label: 'not in the catalog' }]
+    const { to, span, checks } = priceStep(entry, s, from, { held, index, planned, ctx, spentBefore: ctx.allocated + cumulative })
     cumulative += span.cost
     unknownRanks += span.unknownRanks
     const shortfall = Math.max(0, cumulative - ctx.banked)
