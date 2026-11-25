@@ -1,0 +1,14 @@
+{
+  "about": "REVIEWED exceptions to the quest data health gate (scripts/questHealth.mts). One entry per page + rule, each with the reason it is legitimate, written after reading the cached page. An entry that stops firing FAILS the gate until it is deleted, whatever its rule: an exception to a before/after rule (lost-steps, lost-giver, ...) lives for the one refresh that needed it and is deleted in the same commit. The 11 'known gap' entries of the gate's first run (2026-11-25) were fixed in the parser and deleted; the stale-entry rule made the deletion compulsory.",
+  "entries": [
+    { "page": "A sealed letter", "rule": "no-steps", "reason": "An ITEM page ({{Itempage}}: Sealed Letter) filed under Category:Quests. It has no headings and no steps; its quest is Peacekeeper Staff." },
+    { "page": "Bone Chips Quests", "rule": "no-steps", "reason": "A {{Disambiguation}} hub: its bullets link nine separate bone-chip turn-in quests, each with its own page and steps." },
+    { "page": "Bone Chips Quests", "rule": "unread-list", "reason": "Those bullets are the hub's links to the nine quests, not steps." },
+    { "page": "Bread Shipment Quests", "rule": "no-steps", "reason": "A {{Disambiguation}} hub: its bullets link the ten city Bread Shipment pages; the one-line 'hand a Bag of Bread Loaves to the innkeeper' is the whole quest." },
+    { "page": "Bread Shipment Quests", "rule": "unread-list", "reason": "Those bullets are the hub's links to the ten city pages, not steps." },
+    { "page": "Cougarskin Sleeves Quest", "rule": "no-steps", "reason": "A {{Simple Quest}} template page: no headings; the one turn-in lives in the template's turn-in fields, which the catalog already carries as its required items." },
+    { "page": "The Bread Shipment", "rule": "no-steps", "reason": "A {{Namedmobpage}} (Jarlen Meadowgreen's NPC page) filed under Category:Quests. The removed original quest is prose in the mob template's description; there is no step section." },
+    { "page": "The Bread Shipment", "rule": "unread-list", "reason": "The four list lines are the mob template's empty known_loot / factions fields ('* Unknown')." },
+    { "page": "Paw of Opolla Quest", "rule": "unread-step-heading", "reason": "'Step 1:' / 'Step 2:' are the Walkthrough's two stages written at the Walkthrough's own heading level. The page's Checklist is what the parser reads, by design (the most condensed list wins)." }
+  ]
+}

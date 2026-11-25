@@ -165,7 +165,7 @@ test('A TURN-IN TO SOMEBODY ELSE DOES NOTHING', () => {
   assert.equal(p.turnedIn.size, 0)
 })
 
-test('NO requiredItems CAN NEVER AUTO-COMPLETE (157 of the 916 quests) — stated, not approximated', () => {
+test('NO requiredItems CAN NEVER AUTO-COMPLETE (155 of the 916 quests) — stated, not approximated', () => {
   const q = quest({ giver: 'Basher Nanrum', steps: ["You say, 'Hail, Basher Nanrum'"] })
   const p = questProgress(q, evidence([turnIn('Basher Nanrum', ['Anything At All'])]), [])
   assert.equal(p.complete, false)
@@ -175,7 +175,9 @@ test('NO requiredItems CAN NEVER AUTO-COMPLETE (157 of the 916 quests) — state
   // 161 of 904 until the 2026-10-07 rescrape: three new quest pages (each naming items), and six pages (Tome of Ages,
   // This Means Warrr, ...) began wiki-linking the items they ask for, so they gained requiredItems.
   // 155 -> 157 on the 2026-11-15 rescrape (the Oct 22 Castle Nektropos patch): nine new quests, two of them with no requiredItems.
-  assert.equal(none, 157, 'the count this rule is about, off the committed catalog')
+  // 157 -> 155 on 2026-11-25 (parser fix, same cache): Harvester Quest and ShadowBound Armor Quests had their turn-in
+  // checklists read as REWARDS (a heading with {{CheckboxList}} on its line was unseen); they are needed items now.
+  assert.equal(none, 155, 'the count this rule is about, off the committed catalog')
 })
 
 // ── 4. the steps the log ticks ────────────────────────────────────────────────────────────────

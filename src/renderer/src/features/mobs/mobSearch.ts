@@ -31,6 +31,7 @@ import type { MobEntry, MobKnowledge } from '@shared/types'
 // mobLookupLocal.ts is split out of mobLookup.ts. Type-only imports are erased, so they keep
 // the alias. If a fourth file needs this, teach tsx the paths instead of spreading this.
 import { scoreQuery, tokenize } from '../../../../shared/fuzzy'
+import { withShownMobNames } from '../../../../shared/mobName'
 import mobsJson from '../../data/eqlegends/mobs.json'
 
 interface MobCatalog {
@@ -41,8 +42,12 @@ interface MobCatalog {
 
 const catalog = mobsJson as unknown as MobCatalog
 
-/** Every mob the committed catalog knows, in scrape order. */
-export const MOB_CATALOG: MobEntry[] = catalog.mobs ?? []
+/**
+ * Every mob the committed catalog knows, in scrape order — a page whose `|name` is the wiki template's
+ * placeholder (`NPC_Name`, two pages today) shown by its title instead (shared/mobName.ts), so the
+ * Mobs tab, the Maps pane and the quest chips all say the same name.
+ */
+export const MOB_CATALOG: MobEntry[] = withShownMobNames(catalog.mobs ?? [])
 
 /** When the wiki was last read for this catalog, ISO. The Zone Loot tab's footer states it, the
  *  way the Quests tab states `QUEST_SCRAPED_AT` — a corpus that ages should say how old it is. */

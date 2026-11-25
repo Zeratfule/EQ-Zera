@@ -45,7 +45,7 @@ const EMPTY: QuestPins = []
 /** The document and its readiness as ONE object — `useSyncExternalStore` compares by identity. */
 interface Snapshot {
   pins: QuestPins
-  /** false until the first load settles. A data-availability flag, never an error. */
+  /** false until a read has SUCCEEDED (a failed one leaves it false: edits stay refused). */
   ready: boolean
 }
 
@@ -78,14 +78,15 @@ function load(force: boolean): void {
       emit({ pins: loaded, ready: true })
     })
     .catch(() => {
-      /* main never rejects; an unreadable store yields an empty tracker, not a crash */
+      // A FAILED READ IS NOT A READ: `ready` stays false, so edits stay refused (an edit folded over
+      // this placeholder would overwrite the stored tracker — apply() says why) and the page's
+      // controls stay disabled. The next push (`onProgress`), character switch or mount retries.
     })
     .finally(() => {
       if (mine !== generation) return
       loading = false
-      // READY EVEN WHEN THE ANSWER WAS DISCARDED: the flag says the first load SETTLED, and a
-      // superseded read settled — the document a caller would draw is the newer one either way.
-      if (!snapshot.ready) emit({ pins: snapshot.pins, ready: true })
+      // Only a SUCCESSFUL read makes the tracker ready (the `.then` above). A read superseded by a
+      // local edit needs nothing here: edits are refused until ready, so it was ready already.
     })
 }
 
@@ -124,6 +125,11 @@ function getSnapshot(): Snapshot {
  * `useWishlist` does: StrictMode double-invokes those, and an IPC write is not a thing to do twice.
  */
 function apply(edit: (prev: QuestPins) => QuestPins): void {
+  // NOT BEFORE THE FIRST READ SETTLES. The document is written WHOLE, and until the store has been
+  // read the snapshot is an empty placeholder: an edit folded over it would overwrite the character's
+  // stored tracker with one row (review 2026-11-25). The quest page disables its controls until
+  // `ready`, so a refused edit here is one no control could have made.
+  if (!snapshot.ready) return
   const next = edit(snapshot.pins)
   writes += 1
   const mine = writes
@@ -166,18 +172,31 @@ export interface QuestPinsApi {
   /** Note the instant a completion was recorded. Re-recording keeps the first instant. */
   markDone: (page: string, ts: number) => void
   clearDone: (page: string) => void
-  /** false until the first load settles */
+  /** false until a read has succeeded; the page disables its edit controls until then */
   ready: boolean
 }
 
 const API_BASE = { toggle, tick, markDone, clearDone }
 
+/** The four edit doors, outside React — for tests/questPinsReady.test.mts. */
+export const questPinDoors = API_BASE
+
+/** The current document and its readiness, outside React (the same object the hook hands out). */
+export function questPinsSnapshot(): Readonly<Snapshot> {
+  return snapshot
+}
+
+/** Subscribe to main's pushes (once) and read the store (once). What mounting the hook does. */
+export function startQuestPins(): void {
+  watch()
+  load(false)
+}
+
 /** The character's tracked quests. Mount it wherever a surface needs it: there is one document. */
 export function useQuestPins(): [QuestPins, QuestPinsApi] {
   const snap = useSyncExternalStore(subscribe, getSnapshot)
   useEffect(() => {
-    watch()
-    load(false)
+    startQuestPins()
   }, [])
   return useMemo(() => [snap.pins, { ...API_BASE, ready: snap.ready }], [snap])
 }

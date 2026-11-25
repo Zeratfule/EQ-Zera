@@ -61,7 +61,10 @@ test('PRECEDENCE: a Checklist beats a Short Walkthrough beats a Walkthrough; sub
 })
 
 test('Walkthrough fallback: hails and hand-ins are steps; replies, faction lines and exp markers are not', () => {
-  const steps = extractSteps(page(15092))
+  // Harvester Quest's own Walkthrough, read as the fallback it is when a page has no checklist: since
+  // its `== Checklist =={{CheckboxList}}` heading is SEEN (the test below), the page's steps are
+  // that checklist, so the checklist is cut away here to keep pinning the prose shape.
+  const steps = extractSteps(page(15092).replace(/== Checklist ==[\s\S]*?(?=== Walkthrough ==)/, ''))
   assert.deepEqual(steps.slice(0, 3), ["You Say 'Hail Vurgo'", "You Say 'What harvester?'", 'Hand Vurgo the Shadowed Scythe'])
   assert.ok(steps.some((s) => s.startsWith('Hand Vurgo the Note from above, the Fungus Eye, the Shadowed Knife, and Fire Opal')))
   for (const s of steps) {
@@ -84,6 +87,23 @@ test('an item page filed under Quests has no headings, so it has no steps (and n
   assert.deepEqual(extractSteps(page(60118)), []) // "A sealed letter"
   assert.deepEqual(extractSteps('== Reward ==\n{{:Some Sword}}\n'), [])
   assert.deepEqual(extractSteps('== Walkthrough ==\n=== Stage 1 ===\n'), [], 'a sub-heading with nothing under it')
+})
+
+test('A TEMPLATE ON THE HEADING LINE (`== Checklist =={{CheckboxList}}`) still makes a heading', () => {
+  // Harvester Quest: unseen, its checklist read as the Reward section and four turn-ins became REWARDS.
+  const harvester = parseQuestPage('Harvester Quest', page(15092), (t) => /Scythe|note|Fungus Eye|Knife|Fire Opal|Harvester/i.test(t))
+  assert.deepEqual(harvester.rewards, ['Harvester'])
+  for (const item of ['Shadowed Scythe', 'A note', 'Fungus Eye', 'Shadowed Knife', 'Fire Opal']) {
+    assert.ok(harvester.requiredItems.includes(item), `${item} is needed, not a reward: ${JSON.stringify(harvester.requiredItems)}`)
+  }
+  assert.equal(harvester.steps[0], 'First turn-in')
+  assert.ok(harvester.steps[1].startsWith('Shadowed Scythe (drops off a shadowed man)'))
+  // Deeper headings too, and the checklist lines stay under their OWN piece, not the one above.
+  const shadowbound = parseQuestPage('ShadowBound Armor Quests', page(15779), () => true)
+  assert.ok(!shadowbound.rewards.includes('Scepter') || /Scepter/.test(page(15779).split('== ShadowBound Boots')[0]), JSON.stringify(shadowbound.rewards))
+  const dreadscale = extractSteps(page(15181))
+  assert.ok(dreadscale.includes('Dreadscale Helm:'), 'the helm is its own group line')
+  assert.deepEqual(extractSteps('== Checklist =={{CheckboxList}}\n* one\n* two\n{{End}}\n== Walkthrough ==\nprose\n'), ['one', 'two'])
 })
 
 test('parseQuestPage carries the steps', () => {

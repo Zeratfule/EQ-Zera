@@ -219,6 +219,7 @@ import {
 import questsJson from '../../renderer/src/data/eqlegends/quests.json'
 import mobsJson from '../../renderer/src/data/eqlegends/mobs.json'
 import pageEraJson from '../data/pageEra.json'
+import { withShownMobNames } from '../../shared/mobName'
 import type { ItemCraftIngredient, MobData, QuestData, QuestEntry } from '../../shared/types'
 
 /**
@@ -328,10 +329,13 @@ export function buildCatalogDroppers(catalog: MobData): Map<string, string[]> {
 let COMMITTED: EraDeriveCatalogs | null = null
 
 export function committedCatalogs(): EraDeriveCatalogs {
-  COMMITTED ??= {
+  if (COMMITTED) return COMMITTED
+  // A `|name = NPC_Name` template placeholder is never a dropper's name: its page title stands in.
+  const mobs: MobData = { ...(mobsJson as unknown as MobData), mobs: withShownMobNames((mobsJson as unknown as MobData).mobs) }
+  COMMITTED = {
     questByName: buildQuestIndex(questsJson),
-    catalogZones: buildCatalogZones(mobsJson),
-    catalogDroppers: buildCatalogDroppers(mobsJson),
+    catalogZones: buildCatalogZones(mobs),
+    catalogDroppers: buildCatalogDroppers(mobs),
     pageEra: pageEraJson as PageEraFile
   }
   return COMMITTED

@@ -31,6 +31,13 @@ export interface QuestStepLink {
   label?: string
 }
 
+/** A bare point, /loc order. */
+export interface QuestPoint {
+  ns: number
+  ew: number
+  z?: number
+}
+
 /** One coordinate the step's own words state, from prose or from a `{{Loc}}` template. */
 export interface QuestStepLoc {
   ns: number
@@ -40,6 +47,30 @@ export interface QuestStepLoc {
   zone?: string
   /** Char offset of the coordinate in the step's TEXT, so a reader can scope it to its sentence. */
   at: number
+}
+
+/**
+ * One thing a walkthrough TABLE says to pick up off the ground, at the point the table states
+ * (scripts/sources/questGroundSpawns.ts) — or, `kind: 'object'`, the world object that table's
+ * section says to combine them in. Same /loc order as `QuestStepLoc`. Facts only: which map the
+ * point is on is decided at read time (shared/questGroundSpawns.ts), as for the steps.
+ */
+export interface QuestGroundSpawn {
+  /** the item (or object) as the table names it: its link's target when the cell links one */
+  item: string
+  ns: number
+  ew: number
+  z?: number
+  /** the zone the table states for this row (a Zone column, or the row's `{{Loc}}`), VERBATIM */
+  zone?: string
+  /** the row's other cells (the area, a nearby NPC, how to reach it), plain text */
+  note?: string
+  /** the row's non-item links, the NPCs its note names — read by the zone rules like `stepLinks` */
+  links?: QuestStepLink[]
+  /** the section's heading and words BEFORE the table, plain text — the scene the table is in */
+  context?: string
+  /** 'object' (the only value written): a world object to use, a combine station, not an item to pick up. A plain string because a JSON import widens literals. */
+  kind?: string
 }
 
 /** One quest scraped from an eqlwiki quest page (Category:Quests + quest subcategories). */
@@ -52,6 +83,11 @@ export interface QuestEntry {
   startZone?: string
   /** "Quest Giver" NPC */
   giver?: string
+  /**
+   * Where the giver stands, as the page's header "Location" row states it (/loc order) — only a
+   * point it states unambiguously. A quest-page fact about the giver, resolved like any other.
+   */
+  giverLocs?: QuestPoint[]
   /** "Minimum Level" (numeric part only) */
   minLevel?: number
   /** classes the quest is offered to ("All" when unrestricted) */
@@ -80,6 +116,8 @@ export interface QuestEntry {
   stepLinks?: QuestStepLink[][]
   /** Per step, the coordinates its words state. Present only when some step states one. */
   stepLocs?: QuestStepLoc[][]
+  /** The ground spawns (and the object they combine in) the page's tables locate. Present only when some are. */
+  groundSpawns?: QuestGroundSpawn[]
 }
 
 export interface QuestData {

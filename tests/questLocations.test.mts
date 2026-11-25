@@ -23,6 +23,7 @@ import { questPinsInZone } from '../src/shared/questMapPins'
 import { ZONES, zoneKey } from '../src/shared/zones'
 import { buildSourceIndex, sourceItemKey } from '../src/renderer/src/lib/itemSources'
 import { mobsInZone } from '../src/renderer/src/features/mobs/mobZone'
+import { withShownMobNames } from '../src/shared/mobName'
 
 const quests = (questsJson as unknown as QuestData).quests
 const mobs = (mobsJson as unknown as MobData).mobs
@@ -147,7 +148,8 @@ test('PARITY: a bestiary chip placed in a map is a mob the Maps tab lists for th
   const listed = (stem: string): Set<string> => {
     let s = inZone.get(stem)
     if (!s) {
-      s = new Set(mobsInZone(nameOf.get(stem) ?? stem, mobs).map((m) => m.name))
+      // The Maps tab lists MOB_CATALOG, whose placeholder names read as their page titles (shared/mobName.ts).
+      s = new Set(mobsInZone(nameOf.get(stem) ?? stem, withShownMobNames(mobs)).map((m) => m.name))
       inZone.set(stem, s)
     }
     return s

@@ -16,13 +16,19 @@
 import { ipcMain } from 'electron'
 import { IPC } from '../../shared/ipc'
 import { getLastSeenNotesVersion, setLastSeenNotesVersion } from '../store'
+import { legacyBaseline } from '../launchVersion'
 
 export function registerReleaseNotesIpc(): void {
+  // At boot, before anything can stamp the notes: this build's tracker baseline is captured (and on
+  // its first launch, stored) from the value the store held when the app started (launchVersion.ts).
+  legacyBaseline()
   ipcMain.handle(IPC.releaseNotesSeenGet, () => getLastSeenNotesVersion())
   // Anything that is not a string reads as "clear it" — the fresh-install state — rather than
   // as a silent no-op, so the renderer's `null` and an accidental `undefined` mean the same
   // thing and neither leaves a stale stamp behind.
-  ipcMain.handle(IPC.releaseNotesSeenSet, (_e, version: unknown) =>
-    setLastSeenNotesVersion(typeof version === 'string' ? version : null)
-  )
+  ipcMain.handle(IPC.releaseNotesSeenSet, (_e, version: unknown) => {
+    // Remember what this launch found BEFORE the first write moves it (src/main/launchVersion.ts).
+    legacyBaseline()
+    return setLastSeenNotesVersion(typeof version === 'string' ? version : null)
+  })
 }

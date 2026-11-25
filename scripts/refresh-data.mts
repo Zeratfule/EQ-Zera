@@ -14,6 +14,14 @@
  * disappeared. A scraper that exits non-zero stops the whole run non-zero; a half-refreshed
  * tree is not something to discover at release time.
  *
+ * THE QUEST HEALTH GATE (scripts/questHealth.mts). The quests step is judged before it counts: a
+ * catalog that lost steps, start zones, givers, rewards, items or whole quests against the file it
+ * replaces, fell under a measured floor, or left a heading / label of its wiki pages unread, FAILS —
+ * the previous file is put back, the rejected one saved to the temp dir, and the run exits non-zero
+ * with the list. `npm run check:quests` runs the same gate alone, offline. A quests step that passes
+ * also regenerates src/shared/questStepsChanged.json (`npm run gen:quest-steps-changed`, the tracker's
+ * tick reconcile reads it); commit it with quests.json.
+ *
  * THE STAMP RULE (why this script writes files at all). Every scraper stamps
  * `scrapedAt: new Date().toISOString()` UNCONDITIONALLY, so a re-scrape that learned nothing
  * still rewrites the file and `git status` still goes red. That turns "did the wiki change?"
@@ -39,6 +47,7 @@
 
 import { spawnSync } from 'node:child_process'
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
 import { dirname, join, relative } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import {
@@ -50,6 +59,9 @@ import {
 } from './refreshDiff.mjs'
 import type { ItemDbFile } from '../src/main/itemsDb'
 import type { MobData, QuestData } from '../src/shared/types'
+import { checkQuestHealth } from './check-quest-health.mjs'
+import { formatHealth } from './questHealth.mjs'
+import { generateQuestStepsChanged } from './gen-quest-steps-changed.mjs'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 /** The same runner `npm run scrape:*` uses, invoked directly so npm need not be on PATH. */
@@ -69,6 +81,11 @@ interface Source {
   out: string
   /** `prev` is null the first time a file is scraped (nothing on disk yet). */
   report: (prev: unknown, next: unknown) => Report
+  /**
+   * A data HEALTH GATE (quests: scripts/questHealth.mts). A file that fails it is put back to what
+   * it was, the rejected one is saved aside, and the run stops non-zero with the list.
+   */
+  gate?: (prev: unknown, next: unknown) => { ok: boolean; lines: string[] }
 }
 
 /** items.json is a keyed MAP, so the diff names item keys rather than the four file fields. */
@@ -90,6 +107,16 @@ function mobsReport(prev: unknown, next: unknown): Report {
     diff: diffByPage(before, after),
     notes: [`  drop edges: +${edges.added} / -${edges.removed}`]
   }
+}
+
+/** The quest data health gate over the file before and after the scrape. */
+function questsGate(prev: unknown, next: unknown): { ok: boolean; lines: string[] } {
+  const result = checkQuestHealth((prev as QuestData | null)?.quests ?? null, (next as QuestData).quests)
+  const lines = formatHealth(result)
+  // A file that passed is the one that ships: regenerate what the tracker's tick reconcile reads
+  // from it (src/shared/questStepsChanged.json), so the quests refresh can never leave it stale.
+  if (result.ok) lines.push(`  ${generateQuestStepsChanged()}`)
+  return { ok: result.ok, lines }
 }
 
 function questsReport(prev: unknown, next: unknown): Report {
@@ -115,7 +142,8 @@ const SOURCES: Source[] = [
     id: 'quests',
     script: join(ROOT, 'scripts', 'scrape-quests.ts'),
     out: join(ROOT, 'src', 'renderer', 'src', 'data', 'eqlegends', 'quests.json'),
-    report: questsReport
+    report: questsReport,
+    gate: questsGate
   }
 ]
 
@@ -185,6 +213,26 @@ interface SourceResult {
   restored: boolean
 }
 
+/** A file that failed its gate: say why, keep the rejected bytes aside, put the old file back, stop. */
+function refuse(source: Source, before: Snapshot | null, after: Snapshot, lines: readonly string[]): never {
+  for (const line of lines) console.log(line)
+  const aside = join(tmpdir(), `${source.id}.rejected.json`)
+  writeFileSync(aside, after.bytes)
+  if (before) writeFileSync(source.out, before.bytes)
+  const kept = before
+    ? 'the previous file was put back'
+    : 'there was no previous file, so the rejected one is still in place - do not commit it'
+  throw new Error(`${source.id} FAILED its data health gate (list above). Rejected file: ${aside}; ${kept}.`)
+}
+
+/** The source's gate over the scrape: its report lines when it passes; a refusal when it does not. */
+function passGate(source: Source, before: Snapshot | null, after: Snapshot): string[] {
+  if (!source.gate) return []
+  const gate = source.gate(before?.data ?? null, after.data)
+  if (!gate.ok) refuse(source, before, after, gate.lines)
+  return gate.lines
+}
+
 function refreshOne(source: Source, passthrough: readonly string[]): SourceResult {
   console.log(`\n===== ${source.id}: ${relative(ROOT, source.out)} =====`)
   const before = readSnapshot(source.out)
@@ -192,6 +240,7 @@ function refreshOne(source: Source, passthrough: readonly string[]): SourceResul
   const after = readSnapshot(source.out)
   if (after === null) throw new Error(`scrape:${source.id} left no ${source.out}.`)
   const report = source.report(before?.data ?? null, after.data)
+  report.notes.push(...passGate(source, before, after))
   // The stamp rule: an unchanged payload keeps its old stamp, so `git diff` stays clean.
   const restored = report.diff.stampOnly && before !== null && !before.bytes.equals(after.bytes)
   if (restored && before) writeFileSync(source.out, before.bytes)

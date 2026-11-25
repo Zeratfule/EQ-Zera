@@ -1,5 +1,5 @@
 {
-  "scrapedAt": "2026-11-25T06:59:31.774Z",
+  "scrapedAt": "2026-11-25T09:38:32.034Z",
   "source": "eqlwiki.com — Category:Quests + quest subcategories",
   "quests": [
     {
@@ -1562,6 +1562,29 @@
         "a sand giant",
         "an ancille cook"
       ],
+      "rewards": [
+        {
+          "name": "Helm of Ro"
+        },
+        {
+          "name": "Breastplate of Ro"
+        },
+        {
+          "name": "Vambraces of Ro"
+        },
+        {
+          "name": "Bracer of Ro"
+        },
+        {
+          "name": "Gauntlets of Ro"
+        },
+        {
+          "name": "Greaves of Ro"
+        },
+        {
+          "name": "Boots of Ro"
+        }
+      ],
       "requiredItems": [
         "A Bar of Ronium",
         "Mold of Ro Boots",
@@ -1912,13 +1935,27 @@
         "Dwigus Lowater",
         "Sludge Dankmire"
       ],
+      "rewards": [
+        {
+          "name": "Chestplate of the Constant"
+        },
+        {
+          "name": "Greaves of the Penitent"
+        },
+        {
+          "name": "Vambraces of the Fervent"
+        },
+        {
+          "name": "Gauntlets of the Ardent"
+        },
+        {
+          "name": "Boots of the Reliant"
+        },
+        {
+          "name": "Bracers of the Reverent"
+        }
+      ],
       "requiredItems": [
-        "Greaves of the Penitent",
-        "Vambraces of the Fervent",
-        "Boots of the Reliant",
-        "Gauntlets of the Ardent",
-        "Chestplate of the Constant",
-        "Bracers of the Reverent",
         "Icon of the Penitent",
         "Ingot of the Penitent",
         "Magnetized Platinum Bar",
@@ -3502,26 +3539,42 @@
       "relatedNpcs": [
         "Dragons (West Wing)"
       ],
+      "rewards": [
+        {
+          "name": "Troubadour's Helm"
+        },
+        {
+          "name": "Troubadour's Breastplate"
+        },
+        {
+          "name": "Troubadour's Vambraces"
+        },
+        {
+          "name": "Troubadour's Bracer"
+        },
+        {
+          "name": "Troubadour's Gauntlets"
+        },
+        {
+          "name": "Troubadour's Greaves"
+        },
+        {
+          "name": "Troubadour's Boots"
+        }
+      ],
       "requiredItems": [
-        "Troubadour's Helm",
         "Ancient Tarnished Plate Helmet",
         "Crushed Coral",
-        "Troubadour's Breastplate",
         "Ancient Tarnished Breastplate",
         "Flawless Diamond",
-        "Troubadour's Vambraces",
         "Ancient Tarnished Vambraces",
         "Flawed Emerald",
-        "Troubadour's Bracer",
         "Ancient Tarnished Plate Bracelet",
         "Crushed Flame Emerald",
-        "Troubadour's Gauntlets",
         "Ancient Tarnished Plate Gauntlets",
         "Crushed Topaz",
-        "Troubadour's Greaves",
         "Ancient Tarnished Greaves",
         "Flawed Sea Sapphire",
-        "Troubadour's Boots",
         "Ancient Tarnished Plate Boots",
         "Crushed Black Marble"
       ],
@@ -4028,26 +4081,42 @@
       "relatedNpcs": [
         "Dragons (ToV East)"
       ],
+      "rewards": [
+        {
+          "name": "Helm of Twilight"
+        },
+        {
+          "name": "Breastplate of Twilight"
+        },
+        {
+          "name": "Vambraces of Twilight"
+        },
+        {
+          "name": "Bracer of Twilight"
+        },
+        {
+          "name": "Gauntlets of Twilight"
+        },
+        {
+          "name": "Greaves of Twilight"
+        },
+        {
+          "name": "Boots of Twilight"
+        }
+      ],
       "requiredItems": [
-        "Helm of Twilight",
         "Unadorned Plate Helmet",
         "Crushed Coral",
-        "Breastplate of Twilight",
         "Unadorned Breastplate",
         "Flawless Diamond",
-        "Vambraces of Twilight",
         "Unadorned Plate Vambraces",
         "Flawed Emerald",
-        "Bracer of Twilight",
         "Unadorned Plate Bracer",
         "Crushed Flame Emerald",
-        "Gauntlets of Twilight",
         "Unadorned Plate Gauntlets",
         "Crushed Topaz",
-        "Greaves of Twilight",
         "Unadorned Plate Greaves",
         "Flawed Sea Sapphire",
-        "Boots of Twilight",
         "Unadorned Plate Boots",
         "Crushed Black Marble"
       ],
@@ -4095,26 +4164,42 @@
       "relatedNpcs": [
         "Giants"
       ],
+      "rewards": [
+        {
+          "name": "Resonant Helm"
+        },
+        {
+          "name": "Resonant Breastplate"
+        },
+        {
+          "name": "Resonant Vambraces"
+        },
+        {
+          "name": "Resonant Bracer"
+        },
+        {
+          "name": "Resonant Gauntlets"
+        },
+        {
+          "name": "Resonant Greaves"
+        },
+        {
+          "name": "Resonant Boots"
+        }
+      ],
       "requiredItems": [
-        "Resonant Helm",
         "Corroded Plate Helmet",
         "Crushed Coral",
-        "Resonant Breastplate",
         "Corroded Breastplate",
         "Flawless Diamond",
-        "Resonant Vambraces",
         "Corroded Plate Vambraces",
         "Flawed Emerald",
-        "Resonant Bracer",
         "Corroded Plate Bracer",
         "Crushed Flame Emerald",
-        "Resonant Gauntlets",
         "Corroded Plate Gauntlets",
         "Crushed Topaz",
-        "Resonant Greaves",
         "Corroded Plate Greaves",
         "Flawed Sea Sapphire",
-        "Resonant Boots",
         "Corroded Plate Boots",
         "Crushed Black Marble"
       ],
@@ -7158,6 +7243,12 @@
       ],
       "relatedZones": [
         "North Kaladim"
+      ],
+      "relatedNpcs": [
+        "Myre",
+        "Cleaner VII",
+        "Giant Rat",
+        "Infected Rat"
       ],
       "requiredItems": [
         "scrap metal",
@@ -10395,26 +10486,42 @@
       "relatedNpcs": [
         "Dragons (West Wing)"
       ],
+      "rewards": [
+        {
+          "name": "Templar's Crown"
+        },
+        {
+          "name": "Templar's Chestplate"
+        },
+        {
+          "name": "Templar's Vambraces"
+        },
+        {
+          "name": "Templar's Bracer"
+        },
+        {
+          "name": "Templar's Gauntlets"
+        },
+        {
+          "name": "Templar's Leggings"
+        },
+        {
+          "name": "Templar's Boots"
+        }
+      ],
       "requiredItems": [
-        "Templar's Crown",
         "Ancient Tarnished Plate Helmet",
         "Crushed Onyx Sapphire",
-        "Templar's Chestplate",
         "Ancient Tarnished Breastplate",
         "Black Marble",
-        "Templar's Vambraces",
         "Ancient Tarnished Vambraces",
         "Jaundice Gem",
-        "Templar's Bracer",
         "Ancient Tarnished Plate Bracelet",
         "Crushed Opal",
-        "Templar's Gauntlets",
         "Ancient Tarnished Plate Gauntlets",
         "Crushed Lava Ruby",
-        "Templar's Leggings",
         "Ancient Tarnished Greaves",
         "Chipped Onyx Sapphire",
-        "Templar's Boots",
         "Ancient Tarnished Plate Boots",
         "Crushed Flame Emerald"
       ],
@@ -10462,26 +10569,42 @@
       "relatedNpcs": [
         "ToV East"
       ],
+      "rewards": [
+        {
+          "name": "Akkirus' Crown of the Risen"
+        },
+        {
+          "name": "Akkirus' Chestplate of the Risen"
+        },
+        {
+          "name": "Akkirus' Vambraces of the Risen"
+        },
+        {
+          "name": "Akkirus' Bracelet of the Risen"
+        },
+        {
+          "name": "Akkirus' Gauntlets of the Risen"
+        },
+        {
+          "name": "Akkirus' Greaves of the Risen"
+        },
+        {
+          "name": "Akkirus' Boots of the Risen"
+        }
+      ],
       "requiredItems": [
-        "Akkirus' Crown of the Risen",
         "Unadorned Plate Helmet",
         "Crushed Onyx Sapphire",
-        "Akkirus' Chestplate of the Risen",
         "Unadorned Breastplate",
         "Black Marble",
-        "Akkirus' Vambraces of the Risen",
         "Unadorned Plate Vambraces",
         "Jaundice Gem",
-        "Akkirus' Bracelet of the Risen",
         "Unadorned Plate Bracer",
         "Crushed Opal",
-        "Akkirus' Gauntlets of the Risen",
         "Unadorned Plate Gauntlets",
         "Crushed Lava Ruby",
-        "Akkirus' Greaves of the Risen",
         "Unadorned Plate Greaves",
         "Chipped Onyx Sapphire",
-        "Akkirus' Boots of the Risen",
         "Unadorned Plate Boots",
         "Crushed Flame Emerald"
       ],
@@ -10723,26 +10846,42 @@
       "relatedNpcs": [
         "Giants"
       ],
+      "rewards": [
+        {
+          "name": "Crown of Forbidden Rites"
+        },
+        {
+          "name": "Breastplate of Forbidden Rites"
+        },
+        {
+          "name": "Vambraces of Forbidden Rites"
+        },
+        {
+          "name": "Bracers of Forbidden Rites"
+        },
+        {
+          "name": "Gauntlets of Forbidden Rites"
+        },
+        {
+          "name": "Greaves of Forbidden Rites"
+        },
+        {
+          "name": "Boots of Forbidden Rites"
+        }
+      ],
       "requiredItems": [
-        "Crown of Forbidden Rites",
         "Corroded Plate Helmet",
         "Crushed Onyx Sapphire",
-        "Breastplate of Forbidden Rites",
         "Corroded Breastplate",
         "Black Marble",
-        "Vambraces of Forbidden Rites",
         "Corroded Plate Vambraces",
         "Jaundice Gem",
-        "Bracers of Forbidden Rites",
         "Corroded Plate Bracer",
         "Crushed Opal",
-        "Gauntlets of Forbidden Rites",
         "Corroded Plate Gauntlets",
         "Crushed Lava Ruby",
-        "Greaves of Forbidden Rites",
         "Corroded Plate Greaves",
         "Chipped Onyx Sapphire",
-        "Boots of Forbidden Rites",
         "Corroded Plate Boots",
         "Crushed Flame Emerald"
       ],
@@ -12706,15 +12845,33 @@
         "An Evil Eye (Lower Guk)",
         "Trazdon"
       ],
+      "rewards": [
+        {
+          "name": "Crafted Breastplate"
+        },
+        {
+          "name": "Crafted Plate Boots"
+        },
+        {
+          "name": "Crafted Vambraces"
+        },
+        {
+          "name": "Crafted Gauntlets"
+        },
+        {
+          "name": "Crafted Bracers"
+        },
+        {
+          "name": "Crafted Greaves"
+        },
+        {
+          "name": "Crafted Helm"
+        },
+        {
+          "name": "Crafted Pauldron"
+        }
+      ],
       "requiredItems": [
-        "Crafted Vambraces",
-        "Crafted Plate Boots",
-        "Crafted Gauntlets",
-        "Crafted Helm",
-        "Crafted Breastplate",
-        "Crafted Bracers",
-        "Crafted Greaves",
-        "Crafted Pauldron",
         "Fire Emerald",
         "Griffon Eye",
         "Sapphire",
@@ -14423,6 +14580,41 @@
         "a scaled wolf cub",
         "a scaled wolf pup"
       ],
+      "rewards": [
+        {
+          "name": "Curscale Belt"
+        },
+        {
+          "name": "Curscale Boots"
+        },
+        {
+          "name": "Curscale Cape"
+        },
+        {
+          "name": "Curscale Choker"
+        },
+        {
+          "name": "Curscale Gloves"
+        },
+        {
+          "name": "Curscale Leggings"
+        },
+        {
+          "name": "Curscale Shawl"
+        },
+        {
+          "name": "Curscale Skullcap"
+        },
+        {
+          "name": "Curscale Sleeves"
+        },
+        {
+          "name": "Curscale Snout Mount"
+        },
+        {
+          "name": "Curscale Tunic"
+        }
+      ],
       "requiredItems": [
         "Empty Curskin Bag",
         "scaled curskin",
@@ -15004,14 +15196,30 @@
         "Minotaur Lord",
         "Guard Shilster"
       ],
+      "rewards": [
+        {
+          "name": "Darkforge Bracer"
+        },
+        {
+          "name": "Darkforge Breastplate"
+        },
+        {
+          "name": "Darkforge Boots"
+        },
+        {
+          "name": "Darkforge Gauntlets"
+        },
+        {
+          "name": "Darkforge Greaves"
+        },
+        {
+          "name": "Darkforge Helm"
+        },
+        {
+          "name": "Darkforge Vambraces"
+        }
+      ],
       "requiredItems": [
-        "Darkforge Bracer",
-        "Darkforge Breastplate",
-        "Darkforge Helm",
-        "Darkforge Vambraces",
-        "Darkforge Boots",
-        "Darkforge Gauntlets",
-        "Darkforge Greaves",
         "Decayed Left Bracer",
         "Decayed Right Bracer",
         "Broken Minotaur Lord's Horn",
@@ -15699,6 +15907,12 @@
         "Ergrez does not respond to hails at indifferent faction.",
         "Upon handing in the items, you receive Direwolf Fur Cloak and the message of:",
         "\"Ergrez Shortpaw works with the fur for awhile by skinning it and sewing it.\""
+      ],
+      "giverLocs": [
+        {
+          "ns": 1064,
+          "ew": 2409
+        }
       ]
     },
     {
@@ -15949,6 +16163,32 @@
       "relatedNpcs": [
         "Various"
       ],
+      "rewards": [
+        {
+          "name": "Dreadscale Helm"
+        },
+        {
+          "name": "Dreadscale Gauntlets"
+        },
+        {
+          "name": "Dreadscale Boots"
+        },
+        {
+          "name": "Dreadscale Vambraces"
+        },
+        {
+          "name": "Dreadscale Bracer"
+        },
+        {
+          "name": "Dreadscale Mask"
+        },
+        {
+          "name": "Dreadscale Greaves"
+        },
+        {
+          "name": "Dreadscale Breastplate"
+        }
+      ],
       "requiredItems": [
         "Sarnak Berserker Head",
         "Sarnak Knight's Sword",
@@ -15979,7 +16219,7 @@
         "Sirtha Scarscale says, 'Very good. We are smiths for the Crusaders of the Greenmist and I shall make [armor] for you, provided you prove your worth. Fail these simple tasks, and you shall not be worthy to bear the title of crusader!'",
         "You say, 'what armor'",
         "Sirtha Scarscale says, 'I will make [helms], [gauntlets], [boots], and [vambraces]. My broodmate shall make the bracers, greaves, masks, and breastplate.'",
-        "==== Dreadscale Helm ====",
+        "Dreadscale Helm:",
         "You say, 'what helms'",
         "Sirtha Scarscale says, 'The sarnak are a mockery of the Iksar. They are nothing more than beasts fit only to do our bidding! I require you to bring me the sword of one of their Order of Knights and the head of a sarnak berserker. These beasts have been attacking our patrols of late. I also require a stone called a ruby and a banded helm. Do this and I shall make a helm for you.'",
         "Requires:",
@@ -16454,26 +16694,42 @@
       "relatedNpcs": [
         "Dragons (West Wing)"
       ],
+      "rewards": [
+        {
+          "name": "Nature Walker's Circlet"
+        },
+        {
+          "name": "Nature Walker's Chestguard"
+        },
+        {
+          "name": "Nature Walker's Vambraces"
+        },
+        {
+          "name": "Nature Walker's Bracer"
+        },
+        {
+          "name": "Nature Walker's Gauntlets"
+        },
+        {
+          "name": "Nature Walker's Greaves"
+        },
+        {
+          "name": "Nature Walker's Boots"
+        }
+      ],
       "requiredItems": [
-        "Nature Walker's Circlet",
         "Ancient Leather Cap",
         "Crushed Onyx Sapphire",
-        "Nature Walker's Chestguard",
         "Ancient Leather Tunic",
         "Black Marble",
-        "Nature Walker's Vambraces",
         "Ancient Leather Sleeves",
         "Jaundice Gem",
-        "Nature Walker's Bracer",
         "Ancient Leather Bracelet",
         "Crushed Opal",
-        "Nature Walker's Gauntlets",
         "Ancient Leather Gloves",
         "Crushed Lava Ruby",
-        "Nature Walker's Greaves",
         "Ancient Leather Leggings",
         "Chipped Onyx Sapphire",
-        "Nature Walker's Boots",
         "Ancient Leather Boots",
         "Crushed Flame Emerald"
       ],
@@ -16521,26 +16777,42 @@
       "relatedNpcs": [
         "Dragons (ToV East)"
       ],
+      "rewards": [
+        {
+          "name": "Woven Grass Headband"
+        },
+        {
+          "name": "Woven Grass Chestguard"
+        },
+        {
+          "name": "Woven Grass Vambraces"
+        },
+        {
+          "name": "Woven Grass Bracelet"
+        },
+        {
+          "name": "Woven Grass Gauntlets"
+        },
+        {
+          "name": "Woven Grass Greaves"
+        },
+        {
+          "name": "Woven Grass Boots"
+        }
+      ],
       "requiredItems": [
-        "Woven Grass Headband",
         "Unadorned Leather Cap",
         "Crushed Onyx Sapphire",
-        "Woven Grass Chestguard",
         "Unadorned Leather Tunic",
         "Black Marble",
-        "Woven Grass Vambraces",
         "Unadorned Leather Sleeves",
         "Jaundice Gem",
-        "Woven Grass Bracelet",
         "Unadorned Leather Bracelet",
         "Crushed Opal",
-        "Woven Grass Gauntlets",
         "Unadorned Leather Gloves",
         "Crushed Lava Ruby",
-        "Woven Grass Greaves",
         "Unadorned Leather Leggings",
         "Chipped Onyx Sapphire",
-        "Woven Grass Boots",
         "Unadorned Leather Boots",
         "Crushed Flame Emerald"
       ],
@@ -16588,26 +16860,42 @@
       "relatedNpcs": [
         "Giants"
       ],
+      "rewards": [
+        {
+          "name": "Rowyl's Circlet of Nature"
+        },
+        {
+          "name": "Rowyl's Chestguard of Nature"
+        },
+        {
+          "name": "Rowyl's Vambraces of Nature"
+        },
+        {
+          "name": "Rowyl's Bracer of Nature"
+        },
+        {
+          "name": "Rowyl's Gauntlets of Nature"
+        },
+        {
+          "name": "Rowyl's Greaves of Nature"
+        },
+        {
+          "name": "Rowyl's Boots of Nature"
+        }
+      ],
       "requiredItems": [
-        "Rowyl's Circlet of Nature",
         "Eroded Leather Cap",
         "Crushed Onyx Sapphire",
-        "Rowyl's Chestguard of Nature",
         "Eroded Leather Tunic",
         "Black Marble",
-        "Rowyl's Vambraces of Nature",
         "Eroded Leather Sleeves",
         "Jaundice Gem",
-        "Rowyl's Bracer of Nature",
         "Eroded Leather Bracelet",
         "Crushed Opal",
-        "Rowyl's Gauntlets of Nature",
         "Eroded Leather Gloves",
         "Crushed Lava Ruby",
-        "Rowyl's Greaves of Nature",
         "Eroded Leather Leggings",
         "Chipped Onyx Sapphire",
-        "Rowyl's Boots of Nature",
         "Eroded Leather Boots",
         "Crushed Flame Emerald"
       ],
@@ -17637,26 +17925,42 @@
       "relatedNpcs": [
         "Dragons (West Wing)"
       ],
+      "rewards": [
+        {
+          "name": "Dazzling Circlet"
+        },
+        {
+          "name": "Dazzling Robe"
+        },
+        {
+          "name": "Dazzling Sleeves"
+        },
+        {
+          "name": "Dazzling Wristguard"
+        },
+        {
+          "name": "Dazzling Gloves"
+        },
+        {
+          "name": "Dazzling Trousers"
+        },
+        {
+          "name": "Dazzling Slippers"
+        }
+      ],
       "requiredItems": [
-        "Dazzling Circlet",
         "Ancient Silk Turban",
         "Crushed Flame Opal",
-        "Dazzling Robe",
         "Ancient Silk Robe",
         "Pristine Emerald",
-        "Dazzling Sleeves",
         "Ancient Silk Sleeves",
         "Flawed Topaz",
-        "Dazzling Wristguard",
         "Ancient Silk Wristband",
         "Crushed Onyx Sapphire",
-        "Dazzling Gloves",
         "Ancient Silk Gloves",
         "Crushed Topaz",
-        "Dazzling Trousers",
         "Ancient Silk Pantaloons",
         "Nephrite",
-        "Dazzling Slippers",
         "Ancient Silk Boots",
         "Crushed Jaundice Gem"
       ],
@@ -17822,26 +18126,42 @@
       "relatedNpcs": [
         "ToV East Mobs"
       ],
+      "rewards": [
+        {
+          "name": "Illusionist's Headband"
+        },
+        {
+          "name": "Illusionist's Robe"
+        },
+        {
+          "name": "Illusionist's Sleeves"
+        },
+        {
+          "name": "Illusionist's Wristguard"
+        },
+        {
+          "name": "Illusionist's Gloves"
+        },
+        {
+          "name": "Illusionist's Pantaloons"
+        },
+        {
+          "name": "Illusionist's Slippers"
+        }
+      ],
       "requiredItems": [
-        "Illusionist's Headband",
         "Tattered Silk Turban",
         "Crushed Flame Opal",
-        "Illusionist's Robe",
         "Tattered Silk Robe",
         "Pristine Emerald",
-        "Illusionist's Sleeves",
         "Tattered Silk Sleeves",
         "Flawed Topaz",
-        "Illusionist's Wristguard",
         "Tattered Silk Wristband",
         "Crushed Onyx Sapphire",
-        "Illusionist's Gloves",
         "Tattered Silk Gloves",
         "Crushed Topaz",
-        "Illusionist's Pantaloons",
         "Tattered Silk Pantaloons",
         "Nephrite",
-        "Illusionist's Slippers",
         "Tattered Silk Boots",
         "Crushed Jaundice Gem"
       ],
@@ -18003,26 +18323,42 @@
       "relatedNpcs": [
         "Giants"
       ],
+      "rewards": [
+        {
+          "name": "Beguiler's Crown"
+        },
+        {
+          "name": "Beguiler's Robe"
+        },
+        {
+          "name": "Beguiler's Sleeves"
+        },
+        {
+          "name": "Beguiler's Wristguard"
+        },
+        {
+          "name": "Beguiler's Gloves"
+        },
+        {
+          "name": "Beguiler's Trousers"
+        },
+        {
+          "name": "Beguiler's Slippers"
+        }
+      ],
       "requiredItems": [
-        "Beguiler's Crown",
         "Torn Enchanted Silk Turban",
         "Crushed Flame Opal",
-        "Beguiler's Robe",
         "Torn Enchanted Silk Robe",
         "Pristine Emerald",
-        "Beguiler's Sleeves",
         "Torn Enchanted Silk Sleeves",
         "Flawed Topaz",
-        "Beguiler's Wristguard",
         "Torn Enchanted Silk Wristband",
         "Crushed Onyx Sapphire",
-        "Beguiler's Gloves",
         "Torn Enchanted Silk Gloves",
         "Crushed Topaz",
-        "Beguiler's Trousers",
         "Torn Enchanted Silk Pantaloons",
         "Nephrite",
-        "Beguiler's Slippers",
         "Torn Enchanted Silk Boots",
         "Crushed Jaundice Gem"
       ],
@@ -22773,6 +23109,38 @@
       "relatedNpcs": [
         "goblin battlemaster"
       ],
+      "rewards": [
+        {
+          "name": "Faydark Ringmail Boots"
+        },
+        {
+          "name": "Faydark Ringmail Bracer"
+        },
+        {
+          "name": "Faydark Ringmail Coat"
+        },
+        {
+          "name": "Faydark Ringmail Coif"
+        },
+        {
+          "name": "Faydark Ringmail Collar"
+        },
+        {
+          "name": "Faydark Ringmail Gloves"
+        },
+        {
+          "name": "Faydark Ringmail Mantle"
+        },
+        {
+          "name": "Faydark Ringmail Pants"
+        },
+        {
+          "name": "Faydark Ringmail Skirt"
+        },
+        {
+          "name": "Faydark Ringmail Sleeves"
+        }
+      ],
       "requiredItems": [
         "Goblin Bracer"
       ],
@@ -23204,6 +23572,12 @@
             "page": "Swamp of No Hope"
           }
         ]
+      ],
+      "giverLocs": [
+        {
+          "ns": 890,
+          "ew": -75
+        }
       ]
     },
     {
@@ -27805,36 +28179,71 @@
       "rewards": [
         {
           "name": "Harvester"
-        },
-        {
-          "name": "Shadowed Scythe"
-        },
-        {
-          "name": "A note"
-        },
-        {
-          "name": "Fungus Eye"
-        },
-        {
-          "name": "Fire Opal"
         }
+      ],
+      "requiredItems": [
+        "Shadowed Scythe",
+        "A note",
+        "Fungus Eye",
+        "Fire Opal"
       ],
       "expReward": true,
       "steps": [
-        "You Say 'Hail Vurgo'",
-        "You Say 'What harvester?'",
-        "Hand Vurgo the Shadowed Scythe",
-        "Hand Vurgo the Note from above, the Fungus Eye, the Shadowed Knife, and Fire Opal, all at the same time."
+        "First turn-in",
+        "Shadowed Scythe (drops off a shadowed man)",
+        "Second Turn-in",
+        "A note (given by turning in the shadowed scythe to Vurgo)",
+        "Fungus Eye (drops from Mortuary Fungus behind the trick wall in the basement of The Estate of Unrest)",
+        "Shadowed Knife (drops from A goblin headmaster in Ocean of Tears Loc -1221, -8581 PH is an island goblin headhunter at the hut near the stone column)",
+        "Fire Opal (Buyable in the Solusek Ro Temple for 550gp (NOT 55pp!) from Genni.) OR (drops from specters in Oasis of Marr, and seafury cyclops)."
       ],
       "stepLinks": [
+        [],
+        [
+          {
+            "page": "a shadowed man"
+          }
+        ],
+        [],
+        [],
+        [
+          {
+            "page": "Mortuary Fungus"
+          },
+          {
+            "page": "The Estate of Unrest"
+          }
+        ],
+        [
+          {
+            "page": "Shadowed Knife"
+          },
+          {
+            "page": "A goblin headmaster"
+          },
+          {
+            "page": "Ocean of Tears"
+          },
+          {
+            "page": "an island goblin headhunter"
+          }
+        ],
+        []
+      ],
+      "stepLocs": [
+        [],
+        [],
         [],
         [],
         [],
         [
           {
-            "page": "Shadowed Knife"
+            "ns": -1221,
+            "ew": -8581,
+            "at": 69
           }
-        ]
+        ],
+        []
       ]
     },
     {
@@ -30764,9 +31173,18 @@
         "Mizr N`Mar",
         "Madame Serena"
       ],
+      "rewards": [
+        {
+          "name": "Incandescent Mask"
+        },
+        {
+          "name": "Incandescent Gloves"
+        },
+        {
+          "name": "Incandescent Wand"
+        }
+      ],
       "requiredItems": [
-        "Incandescent Gloves",
-        "Incandescent Mask",
         "Glowing Gloves",
         "Radiant Gloves",
         "Enchanted Gloves",
@@ -30777,8 +31195,7 @@
         "Pouch of Silver Dust",
         "Glowing Silver Wand",
         "Blessed Silver Wand",
-        "Silver Wand",
-        "Incandescent Wand"
+        "Silver Wand"
       ],
       "expReward": true,
       "steps": [
@@ -31747,6 +32164,29 @@
         "Meldrath The Malignant",
         "Thistle Underbrush"
       ],
+      "rewards": [
+        {
+          "name": "Ivy Etched Tunic"
+        },
+        {
+          "name": "Ivy Etched Helm"
+        },
+        {
+          "name": "Ivy Etched Bracer"
+        },
+        {
+          "name": "Ivy Etched Sleeves"
+        },
+        {
+          "name": "Ivy Etched Boots"
+        },
+        {
+          "name": "Ivy Etched Gauntlets"
+        },
+        {
+          "name": "Ivy Etched Leggings"
+        }
+      ],
       "requiredItems": [
         "Skull of Meldrath",
         "Rune of Ivy",
@@ -31775,7 +32215,7 @@
         "Gandari:",
         "Faction note: Please be at least Indifferent and when you hail her, she should give you the quest information. If below Indifferent she will eat your quest items.",
         "Quests that Gandari completes. Turn in these items to her.",
-        "===Ivy Etched Tunic===",
+        "Ivy Etched Tunic:",
         "Skull of Meldrath (from Meldrath The Malignant in Steamfont Mountains)",
         "Right Rune of Ivy (from the named Brownie, Thistle Underbrush, in Lesser Faydark)",
         "Two Rubies",
@@ -32649,6 +33089,11 @@
       "relatedNpcs": [
         "A Goblin Soothsayer",
         "Goblin Spirit Caller"
+      ],
+      "rewards": [
+        {
+          "name": "Intensify Death"
+        }
       ],
       "steps": [
         "A Goblin Soothsayer and Goblin Spirit Caller in Warsliks Woods randomly drop an Illegible Note. There are 4 types which identify as Notepage 1-4 of Rott. Hand in all four to Keeper Rott, who is located in the alcove near the West Cabilis arena. Note that you don't have to be a necromancer to complete the quest but you will need high amiable faction.",
@@ -33983,6 +34428,29 @@
       ],
       "relatedNpcs": [
         "Various"
+      ],
+      "rewards": [
+        {
+          "name": "Lambent Breastplate"
+        },
+        {
+          "name": "Lambent Helm"
+        },
+        {
+          "name": "Lambent Vambraces"
+        },
+        {
+          "name": "Lambent Bracers"
+        },
+        {
+          "name": "Lambent Greaves"
+        },
+        {
+          "name": "Lambent Boots"
+        },
+        {
+          "name": "Lambent Gauntlets"
+        }
       ],
       "requiredItems": [
         "Lambent Stone",
@@ -36726,26 +37194,42 @@
       "relatedNpcs": [
         "Dragons (West Wing)"
       ],
+      "rewards": [
+        {
+          "name": "Summoner's Circlet"
+        },
+        {
+          "name": "Summoner's Robe"
+        },
+        {
+          "name": "Summoner's Sleeves"
+        },
+        {
+          "name": "Summoner's Warband"
+        },
+        {
+          "name": "Summoner's Gloves"
+        },
+        {
+          "name": "Summoner's Pantaloons"
+        },
+        {
+          "name": "Summoner's Boots"
+        }
+      ],
       "requiredItems": [
-        "Summoner's Circlet",
         "Ancient Silk Turban",
         "Crushed Flame Opal",
-        "Summoner's Robe",
         "Ancient Silk Robe",
         "Pristine Emerald",
-        "Summoner's Sleeves",
         "Ancient Silk Sleeves",
         "Flawed Topaz",
-        "Summoner's Warband",
         "Ancient Silk Wristband",
         "Crushed Onyx Sapphire",
-        "Summoner's Gloves",
         "Ancient Silk Gloves",
         "Crushed Topaz",
-        "Summoner's Pantaloons",
         "Ancient Silk Pantaloons",
         "Nephrite",
-        "Summoner's Boots",
         "Ancient Silk Boots",
         "Crushed Jaundice Gem"
       ],
@@ -36792,26 +37276,42 @@
       "relatedNpcs": [
         "ToV East Mobs"
       ],
+      "rewards": [
+        {
+          "name": "Prestidigitator's Headband"
+        },
+        {
+          "name": "Prestidigitator's Robe"
+        },
+        {
+          "name": "Prestidigitator's Sleeves"
+        },
+        {
+          "name": "Prestidigitator's Wristband"
+        },
+        {
+          "name": "Prestidigitator's Gloves"
+        },
+        {
+          "name": "Prestidigitator's Trousers"
+        },
+        {
+          "name": "Prestidigitator's Boots"
+        }
+      ],
       "requiredItems": [
-        "Prestidigitator's Headband",
         "Tattered Silk Turban",
         "Crushed Flame Opal",
-        "Prestidigitator's Robe",
         "Tattered Silk Robe",
         "Pristine Emerald",
-        "Prestidigitator's Sleeves",
         "Tattered Silk Sleeves",
         "Flawed Topaz",
-        "Prestidigitator's Wristband",
         "Tattered Silk Wristband",
         "Crushed Onyx Sapphire",
-        "Prestidigitator's Gloves",
         "Tattered Silk Gloves",
         "Crushed Topaz",
-        "Prestidigitator's Trousers",
         "Tattered Silk Pantaloons",
         "Nephrite",
-        "Prestidigitator's Boots",
         "Tattered Silk Boots",
         "Crushed Jaundice Gem"
       ],
@@ -37018,26 +37518,42 @@
       "relatedNpcs": [
         "Giants"
       ],
+      "rewards": [
+        {
+          "name": "Arch Mage's Crown"
+        },
+        {
+          "name": "Arch Mage's Robe"
+        },
+        {
+          "name": "Arch Mage's Sleeves"
+        },
+        {
+          "name": "Arch Mage's Warband"
+        },
+        {
+          "name": "Arch Mage's Gloves"
+        },
+        {
+          "name": "Arch Mage's Pantaloons"
+        },
+        {
+          "name": "Arch Mage's Boots"
+        }
+      ],
       "requiredItems": [
-        "Arch Mage's Crown",
         "Torn Enchanted Silk Turban",
         "Crushed Flame Opal",
-        "Arch Mage's Robe",
         "Torn Enchanted Silk Robe",
         "Pristine Emerald",
-        "Arch Mage's Sleeves",
         "Torn Enchanted Silk Sleeves",
         "Flawed Topaz",
-        "Arch Mage's Warband",
         "Torn Enchanted Silk Wristband",
         "Crushed Onyx Sapphire",
-        "Arch Mage's Gloves",
         "Torn Enchanted Silk Gloves",
         "Crushed Topaz",
-        "Arch Mage's Pantaloons",
         "Torn Enchanted Silk Pantaloons",
         "Nephrite",
-        "Arch Mage's Boots",
         "Torn Enchanted Silk Boots",
         "Crushed Jaundice Gem"
       ],
@@ -37247,6 +37763,23 @@
       ],
       "relatedNpcs": [
         "an iksar marauder"
+      ],
+      "rewards": [
+        {
+          "name": "Leech Husk Boots"
+        },
+        {
+          "name": "Leech Husk Gloves"
+        },
+        {
+          "name": "Leech Husk Leggings"
+        },
+        {
+          "name": "Leech Husk Tunic"
+        },
+        {
+          "name": "Leech Husk Wrist Bands"
+        }
       ],
       "requiredItems": [
         "Marauder Snout Ring 'MM'"
@@ -39685,26 +40218,42 @@
       "relatedNpcs": [
         "Dragons (West Wing)"
       ],
+      "rewards": [
+        {
+          "name": "Golden Star Headband"
+        },
+        {
+          "name": "Golden Star Chest Wraps"
+        },
+        {
+          "name": "Golden Star Arm Wraps"
+        },
+        {
+          "name": "Golden Star Wrist Wraps"
+        },
+        {
+          "name": "Fist of the Golden Star"
+        },
+        {
+          "name": "Golden Star Pants"
+        },
+        {
+          "name": "Golden Star Slippers"
+        }
+      ],
       "requiredItems": [
-        "Golden Star Headband",
         "Ancient Leather Cap",
         "Crushed Coral",
-        "Golden Star Chest Wraps",
         "Ancient Leather Tunic",
         "Flawless Diamond",
-        "Golden Star Arm Wraps",
         "Ancient Leather Sleeves",
         "Flawed Emerald",
-        "Golden Star Wrist Wraps",
         "Ancient Leather Bracelet",
         "Crushed Flame Emerald",
-        "Fist of the Golden Star",
         "Ancient Leather Gloves",
         "Crushed Topaz",
-        "Golden Star Pants",
         "Ancient Leather Leggings",
         "Flawed Sea Sapphire",
-        "Golden Star Slippers",
         "Ancient Leather Boots",
         "Crushed Black Marble"
       ],
@@ -40240,26 +40789,42 @@
       "relatedNpcs": [
         "Dragons (ToV East)"
       ],
+      "rewards": [
+        {
+          "name": "White Lotus Headband"
+        },
+        {
+          "name": "White Lotus Chest Wraps"
+        },
+        {
+          "name": "White Lotus Arm Wraps"
+        },
+        {
+          "name": "White Lotus Wrist Wraps"
+        },
+        {
+          "name": "Fist of the White Lotus"
+        },
+        {
+          "name": "White Lotus Pants"
+        },
+        {
+          "name": "White Lotus Slippers"
+        }
+      ],
       "requiredItems": [
-        "White Lotus Headband",
         "Unadorned Leather Cap",
         "Crushed Coral",
-        "White Lotus Chest Wraps",
         "Unadorned Leather Tunic",
         "Flawless Diamond",
-        "White Lotus Arm Wraps",
         "Unadorned Leather Sleeves",
         "Flawed Emerald",
-        "White Lotus Wrist Wraps",
         "Unadorned Leather Bracelet",
         "Crushed Flame Emerald",
-        "Fist of the White Lotus",
         "Unadorned Leather Gloves",
         "Crushed Topaz",
-        "White Lotus Pants",
         "Unadorned Leather Leggings",
         "Flawed Sea Sapphire",
-        "White Lotus Slippers",
         "Unadorned Leather Boots",
         "Crushed Black Marble"
       ],
@@ -40306,26 +40871,42 @@
       "relatedNpcs": [
         "Giants"
       ],
+      "rewards": [
+        {
+          "name": "Grand Master's Headband"
+        },
+        {
+          "name": "Grand Master's Chest Wraps"
+        },
+        {
+          "name": "Grand Master's Arm Wraps"
+        },
+        {
+          "name": "Grand Master's Wrist Wraps"
+        },
+        {
+          "name": "Fist of the Grand Master"
+        },
+        {
+          "name": "Grand Master's Leg Wraps"
+        },
+        {
+          "name": "Grand Master's Slippers"
+        }
+      ],
       "requiredItems": [
-        "Grand Master's Headband",
         "Eroded Leather Cap",
         "Crushed Coral",
-        "Grand Master's Chest Wraps",
         "Eroded Leather Tunic",
         "Flawless Diamond",
-        "Grand Master's Arm Wraps",
         "Eroded Leather Sleeves",
         "Flawed Emerald",
-        "Grand Master's Wrist Wraps",
         "Eroded Leather Bracelet",
         "Crushed Flame Emerald",
-        "Fist of the Grand Master",
         "Eroded Leather Gloves",
         "Crushed Topaz",
-        "Grand Master's Leg Wraps",
         "Eroded Leather Leggings",
         "Flawed Sea Sapphire",
-        "Grand Master's Slippers",
         "Eroded Leather Boots",
         "Crushed Black Marble"
       ],
@@ -41382,26 +41963,42 @@
       "relatedNpcs": [
         "Dragons (West Wing)"
       ],
+      "rewards": [
+        {
+          "name": "Plague Bearer's Circlet"
+        },
+        {
+          "name": "Plague Bearer's Robe"
+        },
+        {
+          "name": "Plague Bearer's Sleeves"
+        },
+        {
+          "name": "Plague Bearer's Wristguard"
+        },
+        {
+          "name": "Plague Bearer's Gloves"
+        },
+        {
+          "name": "Plague Bearer's Trousers"
+        },
+        {
+          "name": "Plague Bearer's Boots"
+        }
+      ],
       "requiredItems": [
-        "Plague Bearer's Circlet",
         "Ancient Silk Turban",
         "Crushed Flame Opal",
-        "Plague Bearer's Robe",
         "Ancient Silk Robe",
         "Pristine Emerald",
-        "Plague Bearer's Sleeves",
         "Ancient Silk Sleeves",
         "Flawed Topaz",
-        "Plague Bearer's Wristguard",
         "Ancient Silk Wristband",
         "Crushed Onyx Sapphire",
-        "Plague Bearer's Gloves",
         "Ancient Silk Gloves",
         "Crushed Topaz",
-        "Plague Bearer's Trousers",
         "Ancient Silk Pantaloons",
         "Nephrite",
-        "Plague Bearer's Boots",
         "Ancient Silk Boots",
         "Crushed Jaundice Gem"
       ],
@@ -42020,26 +42617,42 @@
       "relatedNpcs": [
         "ToV East Mobs"
       ],
+      "rewards": [
+        {
+          "name": "Rotting Crown"
+        },
+        {
+          "name": "Rotting Robe"
+        },
+        {
+          "name": "Rotting Sleeves"
+        },
+        {
+          "name": "Rotting Wristguard"
+        },
+        {
+          "name": "Rotting Gloves"
+        },
+        {
+          "name": "Rotting Trousers"
+        },
+        {
+          "name": "Rotting Boots"
+        }
+      ],
       "requiredItems": [
-        "Rotting Crown",
         "Tattered Silk Turban",
         "Crushed Flame Opal",
-        "Rotting Robe",
         "Tattered Silk Robe",
         "Pristine Emerald",
-        "Rotting Sleeves",
         "Tattered Silk Sleeves",
         "Flawed Topaz",
-        "Rotting Wristguard",
         "Tattered Silk Wristband",
         "Crushed Onyx Sapphire",
-        "Rotting Gloves",
         "Tattered Silk Gloves",
         "Crushed Topaz",
-        "Rotting Trousers",
         "Tattered Silk Pantaloons",
         "Nephrite",
-        "Rotting Boots",
         "Tattered Silk Boots",
         "Crushed Jaundice Gem"
       ],
@@ -42132,26 +42745,42 @@
       "relatedNpcs": [
         "Giants"
       ],
+      "rewards": [
+        {
+          "name": "Warlock's Crown"
+        },
+        {
+          "name": "Warlock's Robe"
+        },
+        {
+          "name": "Warlock's Sleeves"
+        },
+        {
+          "name": "Warlock's Wristguard"
+        },
+        {
+          "name": "Warlock's Gloves"
+        },
+        {
+          "name": "Warlock's Pantaloons"
+        },
+        {
+          "name": "Warlock's Boots"
+        }
+      ],
       "requiredItems": [
-        "Warlock's Crown",
         "Torn Enchanted Silk Turban",
         "Crushed Flame Opal",
-        "Warlock's Robe",
         "Torn Enchanted Silk Robe",
         "Pristine Emerald",
-        "Warlock's Sleeves",
         "Torn Enchanted Silk Sleeves",
         "Flawed Topaz",
-        "Warlock's Wristguard",
         "Torn Enchanted Silk Wristband",
         "Crushed Onyx Sapphire",
-        "Warlock's Gloves",
         "Torn Enchanted Silk Gloves",
         "Crushed Topaz",
-        "Warlock's Pantaloons",
         "Torn Enchanted Silk Pantaloons",
         "Nephrite",
-        "Warlock's Boots",
         "Torn Enchanted Silk Boots",
         "Crushed Jaundice Gem"
       ],
@@ -44963,26 +45592,42 @@
       "relatedNpcs": [
         "Dragons (West Wing)"
       ],
+      "rewards": [
+        {
+          "name": "Shining Helm"
+        },
+        {
+          "name": "Shining Breastplate"
+        },
+        {
+          "name": "Shining Vambraces"
+        },
+        {
+          "name": "Shining Bracer"
+        },
+        {
+          "name": "Shining Gauntlets"
+        },
+        {
+          "name": "Shining Greaves"
+        },
+        {
+          "name": "Shining Boots"
+        }
+      ],
       "requiredItems": [
-        "Shining Helm",
         "Ancient Tarnished Plate Helmet",
         "Crushed Coral",
-        "Shining Breastplate",
         "Ancient Tarnished Breastplate",
         "Flawless Diamond",
-        "Shining Vambraces",
         "Ancient Tarnished Vambraces",
         "Flawed Emerald",
-        "Shining Bracer",
         "Ancient Tarnished Plate Bracelet",
         "Crushed Flame Emerald",
-        "Shining Gauntlets",
         "Ancient Tarnished Plate Gauntlets",
         "Crushed Topaz",
-        "Shining Greaves",
         "Ancient Tarnished Greaves",
         "Flawed Sea Sapphire",
-        "Shining Boots",
         "Ancient Tarnished Plate Boots",
         "Crushed Black Marble"
       ],
@@ -45290,26 +45935,42 @@
       "relatedNpcs": [
         "ToV East"
       ],
+      "rewards": [
+        {
+          "name": "Scaled Knight's Helm"
+        },
+        {
+          "name": "Scaled Knight's Breastplate"
+        },
+        {
+          "name": "Scaled Knight's Vambraces"
+        },
+        {
+          "name": "Scaled Knight's Bracer"
+        },
+        {
+          "name": "Scaled Knight's Gauntlets"
+        },
+        {
+          "name": "Scaled Knight's Greaves"
+        },
+        {
+          "name": "Scaled Knight's Boots"
+        }
+      ],
       "requiredItems": [
-        "Scaled Knight's Helm",
         "Unadorned Plate Helmet",
         "Crushed Coral",
-        "Scaled Knight's Breastplate",
         "Unadorned Breastplate",
         "Flawless Diamond",
-        "Scaled Knight's Vambraces",
         "Unadorned Plate Vambraces",
         "Flawed Emerald",
-        "Scaled Knight's Bracer",
         "Unadorned Plate Bracer",
         "Crushed Flame Emerald",
-        "Scaled Knight's Gauntlets",
         "Unadorned Plate Gauntlets",
         "Crushed Topaz",
-        "Scaled Knight's Greaves",
         "Unadorned Plate Greaves",
         "Flawed Sea Sapphire",
-        "Scaled Knight's Boots",
         "Unadorned Plate Boots",
         "Crushed Black Marble"
       ],
@@ -45356,26 +46017,42 @@
       "relatedNpcs": [
         "Giants"
       ],
+      "rewards": [
+        {
+          "name": "Runed Protector's Helm"
+        },
+        {
+          "name": "Runed Protector's Breastplate"
+        },
+        {
+          "name": "Runed Protector's Vambraces"
+        },
+        {
+          "name": "Runed Protector's Bracer"
+        },
+        {
+          "name": "Runed Protector's Gauntlets"
+        },
+        {
+          "name": "Runed Protector's Greaves"
+        },
+        {
+          "name": "Runed Protector's Boots"
+        }
+      ],
       "requiredItems": [
-        "Runed Protector's Helm",
         "Corroded Plate Helmet",
         "Crushed Coral",
-        "Runed Protector's Breastplate",
         "Corroded Breastplate",
         "Flawless Diamond",
-        "Runed Protector's Vambraces",
         "Corroded Plate Vambraces",
         "Flawed Emerald",
-        "Runed Protector's Bracer",
         "Corroded Plate Bracer",
         "Crushed Flame Emerald",
-        "Runed Protector's Gauntlets",
         "Corroded Plate Gauntlets",
         "Crushed Topaz",
-        "Runed Protector's Greaves",
         "Corroded Plate Greaves",
         "Flawed Sea Sapphire",
-        "Runed Protector's Boots",
         "Corroded Plate Boots",
         "Crushed Black Marble"
       ],
@@ -49089,26 +49766,42 @@
       "relatedNpcs": [
         "Dragons (ToV West)"
       ],
+      "rewards": [
+        {
+          "name": "Forest Stalker's Coif"
+        },
+        {
+          "name": "Forest Stalker's Breastplate"
+        },
+        {
+          "name": "Forest Stalker's Vambraces"
+        },
+        {
+          "name": "Forest Stalker's Bracer"
+        },
+        {
+          "name": "Forest Stalker's Gauntlets"
+        },
+        {
+          "name": "Forest Stalker's Greaves"
+        },
+        {
+          "name": "Forest Stalker's Boots"
+        }
+      ],
       "requiredItems": [
-        "Forest Stalker's Coif",
         "Ancient Tarnished Chain Coif",
         "Crushed Coral",
-        "Forest Stalker's Breastplate",
         "Ancient Tarnished Chain Tunic",
         "Flawless Diamond",
-        "Forest Stalker's Vambraces",
         "Ancient Tarnished Chain Sleeves",
         "Flawed Emerald",
-        "Forest Stalker's Bracer",
         "Ancient Tarnished Chain Bracer",
         "Crushed Flame Emerald",
-        "Forest Stalker's Gauntlets",
         "Ancient Tarnished Chain Gauntlets",
         "Crushed Topaz",
-        "Forest Stalker's Greaves",
         "Ancient Tarnished Chain Leggings",
         "Flawed Sea Sapphire",
-        "Forest Stalker's Boots",
         "Ancient Tarnished Chain Boots",
         "Crushed Black Marble"
       ],
@@ -49155,26 +49848,42 @@
       "relatedNpcs": [
         "ToV East Mobs"
       ],
+      "rewards": [
+        {
+          "name": "Golden Leaf Helm"
+        },
+        {
+          "name": "Golden Leaf Breastplate"
+        },
+        {
+          "name": "Golden Leaf Vambraces"
+        },
+        {
+          "name": "Golden Leaf Bracer"
+        },
+        {
+          "name": "Golden Leaf Gauntlets"
+        },
+        {
+          "name": "Golden Leaf Greaves"
+        },
+        {
+          "name": "Golden Leaf Boots"
+        }
+      ],
       "requiredItems": [
-        "Golden Leaf Helm",
         "Unadorned Chain Coif",
         "Crushed Coral",
-        "Golden Leaf Breastplate",
         "Unadorned Chain Tunic",
         "Flawless Diamond",
-        "Golden Leaf Vambraces",
         "Unadorned Chain Sleeves",
         "Flawed Emerald",
-        "Golden Leaf Bracer",
         "Unadorned Chain Bracer",
         "Crushed Flame Emerald",
-        "Golden Leaf Gauntlets",
         "Unadorned Chain Gauntlets",
         "Crushed Topaz",
-        "Golden Leaf Greaves",
         "Unadorned Chain Leggings",
         "Flawed Sea Sapphire",
-        "Golden Leaf Boots",
         "Unadorned Chain Boots",
         "Crushed Black Marble"
       ],
@@ -49221,26 +49930,42 @@
       "relatedNpcs": [
         "Giants"
       ],
+      "rewards": [
+        {
+          "name": "Runed Scout's Helm"
+        },
+        {
+          "name": "Runed Scout's Breastplate"
+        },
+        {
+          "name": "Runed Scout's Vambraces"
+        },
+        {
+          "name": "Runed Scout's Bracer"
+        },
+        {
+          "name": "Runed Scout's Gauntlets"
+        },
+        {
+          "name": "Runed Scout's Greaves"
+        },
+        {
+          "name": "Runed Scout's Boots"
+        }
+      ],
       "requiredItems": [
-        "Runed Scout's Helm",
         "Corroded Chain Coif",
         "Crushed Coral",
-        "Runed Scout's Breastplate",
         "Corroded Chain Tunic",
         "Flawless Diamond",
-        "Runed Scout's Vambraces",
         "Corroded Chain Sleeves",
         "Flawed Emerald",
-        "Runed Scout's Bracer",
         "Corroded Chain Bracer",
         "Crushed Flame Emerald",
-        "Runed Scout's Gauntlets",
         "Corroded Chain Gauntlets",
         "Crushed Topaz",
-        "Runed Scout's Greaves",
         "Corroded Chain Leggings",
         "Flawed Sea Sapphire",
-        "Runed Scout's Boots",
         "Corroded Chain Boots",
         "Crushed Black Marble"
       ],
@@ -51448,26 +52173,42 @@
       "relatedNpcs": [
         "Dragons (ToV West)"
       ],
+      "rewards": [
+        {
+          "name": "Deceiver's Crown"
+        },
+        {
+          "name": "Deceiver's Chestguard"
+        },
+        {
+          "name": "Deceiver's Vambraces"
+        },
+        {
+          "name": "Deceiver's Bracer"
+        },
+        {
+          "name": "Deceiver's Gauntlets"
+        },
+        {
+          "name": "Deceiver's Greaves"
+        },
+        {
+          "name": "Deceiver's Boots"
+        }
+      ],
       "requiredItems": [
-        "Deceiver's Crown",
         "Ancient Tarnished Chain Coif",
         "Crushed Coral",
-        "Deceiver's Chestguard",
         "Ancient Tarnished Chain Tunic",
         "Flawless Diamond",
-        "Deceiver's Vambraces",
         "Ancient Tarnished Chain Sleeves",
         "Flawed Emerald",
-        "Deceiver's Bracer",
         "Ancient Tarnished Chain Bracer",
         "Crushed Flame Emerald",
-        "Deceiver's Gauntlets",
         "Ancient Tarnished Chain Gauntlets",
         "Crushed Topaz",
-        "Deceiver's Greaves",
         "Ancient Tarnished Chain Leggings",
         "Flawed Sea Sapphire",
-        "Deceiver's Boots",
         "Ancient Tarnished Chain Boots",
         "Crushed Black Marble"
       ],
@@ -51691,26 +52432,42 @@
       "relatedNpcs": [
         "ToV East Mobs"
       ],
+      "rewards": [
+        {
+          "name": "Shadow Crown"
+        },
+        {
+          "name": "Shadow Chestguard"
+        },
+        {
+          "name": "Shadow Vambraces"
+        },
+        {
+          "name": "Shadow Bracer"
+        },
+        {
+          "name": "Shadow Gauntlets"
+        },
+        {
+          "name": "Shadow Greaves"
+        },
+        {
+          "name": "Shadow Boots"
+        }
+      ],
       "requiredItems": [
-        "Shadow Crown",
         "Unadorned Chain Coif",
         "Crushed Coral",
-        "Shadow Chestguard",
         "Unadorned Chain Tunic",
         "Flawless Diamond",
-        "Shadow Vambraces",
         "Unadorned Chain Sleeves",
         "Flawed Emerald",
-        "Shadow Bracer",
         "Unadorned Chain Bracer",
         "Crushed Flame Emerald",
-        "Shadow Gauntlets",
         "Unadorned Chain Gauntlets",
         "Crushed Topaz",
-        "Shadow Greaves",
         "Unadorned Chain Leggings",
         "Flawed Sea Sapphire",
-        "Shadow Boots",
         "Unadorned Chain Boots",
         "Crushed Black Marble"
       ],
@@ -51757,26 +52514,42 @@
       "relatedNpcs": [
         "Giants"
       ],
+      "rewards": [
+        {
+          "name": "Brigand's Circlet"
+        },
+        {
+          "name": "Brigand's Chestguard"
+        },
+        {
+          "name": "Brigand's Vambraces"
+        },
+        {
+          "name": "Brigand's Bracer"
+        },
+        {
+          "name": "Brigand's Gauntlets"
+        },
+        {
+          "name": "Brigand's Greaves"
+        },
+        {
+          "name": "Brigand's Boots"
+        }
+      ],
       "requiredItems": [
-        "Brigand's Circlet",
         "Corroded Chain Coif",
         "Crushed Coral",
-        "Brigand's Chestguard",
         "Corroded Chain Tunic",
         "Flawless Diamond",
-        "Brigand's Vambraces",
         "Corroded Chain Sleeves",
         "Flawed Emerald",
-        "Brigand's Bracer",
         "Corroded Chain Bracer",
         "Crushed Flame Emerald",
-        "Brigand's Gauntlets",
         "Corroded Chain Gauntlets",
         "Crushed Topaz",
-        "Brigand's Greaves",
         "Corroded Chain Leggings",
         "Flawed Sea Sapphire",
-        "Brigand's Boots",
         "Corroded Chain Boots",
         "Crushed Black Marble"
       ],
@@ -52486,6 +53259,32 @@
       "relatedNpcs": [
         "Various"
       ],
+      "rewards": [
+        {
+          "name": "Scaled Mystic Breastplate"
+        },
+        {
+          "name": "Scaled Mystic Greaves"
+        },
+        {
+          "name": "Scaled Mystic Gauntlets"
+        },
+        {
+          "name": "Scaled Mystic Cloak"
+        },
+        {
+          "name": "Scaled Mystic Boots"
+        },
+        {
+          "name": "Scaled Mystic Bracers"
+        },
+        {
+          "name": "Scaled Mystic Helm"
+        },
+        {
+          "name": "Scaled Mystic Vambraces"
+        }
+      ],
       "requiredItems": [
         "Banded Mail",
         "Star Ruby",
@@ -52518,7 +53317,7 @@
       ],
       "steps": [
         "Armor pieces are ordered in their general order of availability based on the level of mobs required to obtain the necessary items. You can start the quests by saying \"Oxyn sent me.\" to either of the NPCs. EDIt: Addionally they will not return the item if your ending statement to them is not \"Payment\" make sure that this is the last dialogue option done before giving the items otherwise they will eat the items and not give the amour piece.",
-        "=== Breastplate ===",
+        "Breastplate:",
         "Talk to Shezlie Furscale in East Cabilis. You need:",
         "Banded Mail",
         "Star Ruby",
@@ -54741,29 +55540,24 @@
       ],
       "rewards": [
         {
-          "name": "Scepter"
+          "name": "ShadowBound Boots"
         },
         {
-          "name": "Eye of Shadow"
+          "name": "ShadowBound Gloves"
         },
         {
-          "name": "Shadow Silk"
-        },
-        {
-          "name": "Hand of Shadow"
-        },
-        {
-          "name": "Inky Shadow Silk"
-        },
-        {
-          "name": "Globe of Shadow"
-        },
-        {
-          "name": "Mask of Shadow"
-        },
-        {
-          "name": "Large Shadow Silk"
+          "name": "Robe of Enshroudment"
         }
+      ],
+      "requiredItems": [
+        "Scepter",
+        "Eye of Shadow",
+        "Shadow Silk",
+        "Hand of Shadow",
+        "Inky Shadow Silk",
+        "Globe of Shadow",
+        "Mask of Shadow",
+        "Large Shadow Silk"
       ],
       "steps": [
         "You say, 'Hail, Syllina'",
@@ -54796,26 +55590,42 @@
       "relatedNpcs": [
         "Dragons (ToV West Wing)"
       ],
+      "rewards": [
+        {
+          "name": "Malevolent Crown"
+        },
+        {
+          "name": "Malevolent Breastplate"
+        },
+        {
+          "name": "Malevolent Vambraces"
+        },
+        {
+          "name": "Malevolent Bracer"
+        },
+        {
+          "name": "Malevolent Gauntlets"
+        },
+        {
+          "name": "Malevolent Greaves"
+        },
+        {
+          "name": "Malevolent Boots"
+        }
+      ],
       "requiredItems": [
-        "Malevolent Crown",
         "Ancient Tarnished Plate Helmet",
         "Crushed Coral",
-        "Malevolent Breastplate",
         "Ancient Tarnished Breastplate",
         "Flawless Diamond",
-        "Malevolent Vambraces",
         "Ancient Tarnished Vambraces",
         "Flawed Emerald",
-        "Malevolent Bracer",
         "Ancient Tarnished Plate Bracelet",
         "Crushed Flame Emerald",
-        "Malevolent Gauntlets",
         "Ancient Tarnished Plate Gauntlets",
         "Crushed Topaz",
-        "Malevolent Greaves",
         "Ancient Tarnished Greaves",
         "Flawed Sea Sapphire",
-        "Malevolent Boots",
         "Ancient Tarnished Plate Boots",
         "Crushed Black Marble"
       ],
@@ -54862,26 +55672,42 @@
       "relatedNpcs": [
         "ToV East Mobs"
       ],
+      "rewards": [
+        {
+          "name": "Blood Lord's Crown"
+        },
+        {
+          "name": "Blood Lord's Breastplate"
+        },
+        {
+          "name": "Blood Lord's Vambraces"
+        },
+        {
+          "name": "Blood Lord's Bracer"
+        },
+        {
+          "name": "Blood Lord's Gauntlets"
+        },
+        {
+          "name": "Blood Lord's Greaves"
+        },
+        {
+          "name": "Blood Lord's Boots"
+        }
+      ],
       "requiredItems": [
-        "Blood Lord's Crown",
         "Unadorned Plate Helmet",
         "Crushed Coral",
-        "Blood Lord's Breastplate",
         "Unadorned Breastplate",
         "Flawless Diamond",
-        "Blood Lord's Vambraces",
         "Unadorned Plate Vambraces",
         "Flawed Emerald",
-        "Blood Lord's Bracer",
         "Unadorned Plate Bracer",
         "Crushed Flame Emerald",
-        "Blood Lord's Gauntlets",
         "Unadorned Plate Gauntlets",
         "Crushed Topaz",
-        "Blood Lord's Greaves",
         "Unadorned Plate Greaves",
         "Flawed Sea Sapphire",
-        "Blood Lord's Boots",
         "Unadorned Plate Boots",
         "Crushed Black Marble"
       ],
@@ -54928,26 +55754,42 @@
       "relatedNpcs": [
         "Various (Giants)"
       ],
+      "rewards": [
+        {
+          "name": "Dark Runed Crown"
+        },
+        {
+          "name": "Dark Runed Breastplate"
+        },
+        {
+          "name": "Dark Runed Vambraces"
+        },
+        {
+          "name": "Dark Runed Bracer"
+        },
+        {
+          "name": "Dark Runed Gauntlets"
+        },
+        {
+          "name": "Dark Runed Greaves"
+        },
+        {
+          "name": "Dark Runed Boots"
+        }
+      ],
       "requiredItems": [
-        "Dark Runed Crown",
         "Corroded Plate Helmet",
         "Crushed Coral",
-        "Dark Runed Breastplate",
         "Corroded Breastplate",
         "Flawless Diamond",
-        "Dark Runed Vambraces",
         "Corroded Plate Vambraces",
         "Flawed Emerald",
-        "Dark Runed Bracer",
         "Corroded Plate Bracer",
         "Crushed Flame Emerald",
-        "Dark Runed Gauntlets",
         "Corroded Plate Gauntlets",
         "Crushed Topaz",
-        "Dark Runed Greaves",
         "Corroded Plate Greaves",
         "Flawed Sea Sapphire",
-        "Dark Runed Boots",
         "Corroded Plate Boots",
         "Crushed Black Marble"
       ],
@@ -55368,26 +56210,42 @@
       "relatedNpcs": [
         "Dragons (ToV West)"
       ],
+      "rewards": [
+        {
+          "name": "Spirit Caller's Helm"
+        },
+        {
+          "name": "Spirit Caller's Breastplate"
+        },
+        {
+          "name": "Spirit Caller's Vambraces"
+        },
+        {
+          "name": "Spirit Caller's Bracer"
+        },
+        {
+          "name": "Spirit Caller's Gauntlets"
+        },
+        {
+          "name": "Spirit Caller's Greaves"
+        },
+        {
+          "name": "Spirit Caller's Boots"
+        }
+      ],
       "requiredItems": [
-        "Spirit Caller's Helm",
         "Ancient Tarnished Chain Coif",
         "Crushed Onyx Sapphire",
-        "Spirit Caller's Breastplate",
         "Ancient Tarnished Chain Tunic",
         "Black Marble",
-        "Spirit Caller's Vambraces",
         "Ancient Tarnished Chain Sleeves",
         "Jaundice Gem",
-        "Spirit Caller's Bracer",
         "Ancient Tarnished Chain Bracer",
         "Crushed Opal",
-        "Spirit Caller's Gauntlets",
         "Ancient Tarnished Chain Gauntlets",
         "Crushed Lava Ruby",
-        "Spirit Caller's Greaves",
         "Ancient Tarnished Chain Leggings",
         "Chipped Onyx Sapphire",
-        "Spirit Caller's Boots",
         "Ancient Tarnished Chain Boots",
         "Crushed Flame Emerald"
       ],
@@ -55841,26 +56699,42 @@
       "relatedNpcs": [
         "ToV East Mobs"
       ],
+      "rewards": [
+        {
+          "name": "Wolf Caller's Helm"
+        },
+        {
+          "name": "Wolf Caller's Breastplate"
+        },
+        {
+          "name": "Wolf Caller's Vambraces"
+        },
+        {
+          "name": "Wolf Caller's Bracer"
+        },
+        {
+          "name": "Wolf Caller's Gauntlets"
+        },
+        {
+          "name": "Wolf Caller's Greaves"
+        },
+        {
+          "name": "Wolf Caller's Boots"
+        }
+      ],
       "requiredItems": [
-        "Wolf Caller's Helm",
         "Unadorned Chain Coif",
         "Crushed Onyx Sapphire",
-        "Wolf Caller's Breastplate",
         "Unadorned Chain Tunic",
         "Black Marble",
-        "Wolf Caller's Vambraces",
         "Unadorned Chain Sleeves",
         "Jaundice Gem",
-        "Wolf Caller's Bracer",
         "Unadorned Chain Bracer",
         "Crushed Opal",
-        "Wolf Caller's Gauntlets",
         "Unadorned Chain Gauntlets",
         "Crushed Lava Ruby",
-        "Wolf Caller's Greaves",
         "Unadorned Chain Leggings",
         "Chipped Onyx Sapphire",
-        "Wolf Caller's Boots",
         "Unadorned Chain Boots",
         "Crushed Flame Emerald"
       ],
@@ -56068,26 +56942,42 @@
       "relatedNpcs": [
         "Giants"
       ],
+      "rewards": [
+        {
+          "name": "Rune Crafter's Helm"
+        },
+        {
+          "name": "Rune Crafter's Breastplate"
+        },
+        {
+          "name": "Rune Crafter's Vambraces"
+        },
+        {
+          "name": "Rune Crafter's Bracer"
+        },
+        {
+          "name": "Rune Crafter's Gauntlets"
+        },
+        {
+          "name": "Rune Crafter's Greaves"
+        },
+        {
+          "name": "Rune Crafter's Boots"
+        }
+      ],
       "requiredItems": [
-        "Rune Crafter's Helm",
         "Corroded Chain Coif",
         "Crushed Onyx Sapphire",
-        "Rune Crafter's Breastplate",
         "Corroded Chain Tunic",
         "Black Marble",
-        "Rune Crafter's Vambraces",
         "Corroded Chain Sleeves",
         "Jaundice Gem",
-        "Rune Crafter's Bracer",
         "Corroded Chain Bracer",
         "Crushed Opal",
-        "Rune Crafter's Gauntlets",
         "Corroded Chain Gauntlets",
         "Crushed Lava Ruby",
-        "Rune Crafter's Greaves",
         "Corroded Chain Leggings",
         "Chipped Onyx Sapphire",
-        "Rune Crafter's Boots",
         "Corroded Chain Boots",
         "Crushed Flame Emerald"
       ],
@@ -57848,6 +58738,38 @@
         "a swamp leech",
         "The Toilmaster"
       ],
+      "rewards": [
+        {
+          "name": "Sparring Arm Guards"
+        },
+        {
+          "name": "Sparring Clogs"
+        },
+        {
+          "name": "Sparring Collar"
+        },
+        {
+          "name": "Sparring Facemask"
+        },
+        {
+          "name": "Sparring Grappler Gloves"
+        },
+        {
+          "name": "Sparring Harness"
+        },
+        {
+          "name": "Sparring Headgear"
+        },
+        {
+          "name": "Sparring Rib Pad"
+        },
+        {
+          "name": "Sparring Shin Guards"
+        },
+        {
+          "name": "Sparring Shoulder Pads"
+        }
+      ],
       "requiredItems": [
         "Leech Husk Pouch",
         "Leech Husk",
@@ -59243,6 +60165,157 @@
             "page": "Unrest"
           }
         ]
+      ],
+      "groundSpawns": [
+        {
+          "item": "Azia",
+          "ns": -1159,
+          "ew": 2329,
+          "zone": "Erud's Crossing",
+          "note": "Underwater on the ocean floor past the shipwreck with the zombie sailors, just after the ledge. Use invis and avoid the five zombie sailors inside the ship. BEWARE! Lvl 40 \"a killer shark\"s see invis and dispel!; Enduring breath recommended: Yes",
+          "links": [
+            {
+              "page": "Erud's Crossing"
+            }
+          ],
+          "context": "Locations: NOTE: All rods can be picked up while Invisibility is active and it does not break invis."
+        },
+        {
+          "item": "Beza",
+          "ns": 5000,
+          "ew": -5100,
+          "zone": "Everfrost Peaks",
+          "note": "Floor of the house in the back of the hidden cave entered through the frozen river. The house is located in the northeast portion of the caves. Three ice boned skeletons spawn inside. Enter the river through the closest hole Everfrost Peaks (2417, -4068) and swim up against the ice to breathe. The Lich of Miragul wanders the caves, but it is not aggressive.; Enduring breath recommended: No",
+          "links": [
+            {
+              "page": "Everfrost Peaks"
+            }
+          ],
+          "context": "Locations: NOTE: All rods can be picked up while Invisibility is active and it does not break invis."
+        },
+        {
+          "item": "Caza",
+          "ns": 2782,
+          "ew": 142,
+          "z": -372,
+          "zone": "Lake Rathetear",
+          "note": "Underwater on the top floor of the stone tower in the hidden cave underneath the first island out from Rathe Mountains island #15 on the map. Cave entrance is at Lake Rathetear (2826, -907, -171). Other cave entrance is south-southwest of the South Karana zone line, which is also the Evac location.; Enduring breath recommended: Yes",
+          "links": [
+            {
+              "page": "Lake Rathetear"
+            },
+            {
+              "page": "Rathe Mountains"
+            },
+            {
+              "page": "South Karana"
+            }
+          ],
+          "context": "Locations: NOTE: All rods can be picked up while Invisibility is active and it does not break invis."
+        },
+        {
+          "item": "Dena",
+          "ns": -890,
+          "ew": -740,
+          "z": -431,
+          "zone": "Dagnor's Cauldron",
+          "note": "Underwater in a small gully on the lake floor out and to the west of Kedge Keep (near the island), directly out from Unrest.; Enduring breath recommended: Yes",
+          "links": [
+            {
+              "page": "Dagnor's Cauldron"
+            }
+          ],
+          "context": "Locations: NOTE: All rods can be picked up while Invisibility is active and it does not break invis."
+        },
+        {
+          "item": "Ena",
+          "ns": 1145,
+          "ew": -690,
+          "z": -122,
+          "zone": "Lower Guk",
+          "note": "On the floor of the a reanimated hand (Lower Guk) room.; Enduring breath recommended: No",
+          "links": [
+            {
+              "page": "Lower Guk"
+            },
+            {
+              "page": "a reanimated hand (Lower Guk)"
+            }
+          ],
+          "context": "Locations: NOTE: All rods can be picked up while Invisibility is active and it does not break invis."
+        },
+        {
+          "item": "Fana",
+          "ns": -790,
+          "ew": -60,
+          "zone": "Oasis of Marr",
+          "note": "Underwater on the top floor of the stone tower in the lake.; Enduring breath recommended: No",
+          "links": [
+            {
+              "page": "Oasis of Marr"
+            }
+          ],
+          "context": "Locations: NOTE: All rods can be picked up while Invisibility is active and it does not break invis."
+        },
+        {
+          "item": "Geza",
+          "ns": -207,
+          "ew": 433,
+          "z": -18,
+          "zone": "Highpass Hold",
+          "note": "Beneath the waterfall near The Tiger's Roar patio.; Enduring breath recommended: No",
+          "links": [
+            {
+              "page": "Highpass Hold"
+            }
+          ],
+          "context": "Locations: NOTE: All rods can be picked up while Invisibility is active and it does not break invis."
+        },
+        {
+          "item": "Heda",
+          "ns": 670,
+          "ew": 60,
+          "zone": "Qeynos Aqueducts",
+          "note": "Underwater on the tile floor of the shark pit. 14 on map.; Enduring breath recommended: No",
+          "links": [
+            {
+              "page": "Qeynos Aqueducts"
+            }
+          ],
+          "context": "Locations: NOTE: All rods can be picked up while Invisibility is active and it does not break invis."
+        },
+        {
+          "item": "Izah",
+          "ns": 0.89,
+          "ew": -803.9,
+          "zone": "Neriak Commons",
+          "note": "Underwater on the river floor immediately outside The Blind Fish windows. The Blind Fish is the underground bar near the Bank, with four large windows looking out below the surface.; Enduring breath recommended: No",
+          "links": [
+            {
+              "page": "Neriak"
+            }
+          ],
+          "context": "Locations: NOTE: All rods can be picked up while Invisibility is active and it does not break invis."
+        },
+        {
+          "item": "Jaka",
+          "ns": 520,
+          "ew": -285,
+          "zone": "Unrest",
+          "note": "Underwater on the hidden cavern floor to the right of the manor. Near Serra and a gnomish spelunker, but in a cubby between them and the gazebo.; Enduring breath recommended: No",
+          "links": [
+            {
+              "page": "Unrest"
+            },
+            {
+              "page": "Serra"
+            },
+            {
+              "page": "a gnomish spelunker"
+            }
+          ],
+          "context": "Locations: NOTE: All rods can be picked up while Invisibility is active and it does not break invis."
+        }
       ]
     },
     {
@@ -68604,6 +69677,54 @@
         [],
         [],
         []
+      ],
+      "groundSpawns": [
+        {
+          "item": "Harpsichord Black Key",
+          "ns": -37,
+          "ew": 130,
+          "note": "Southwest, on the chessboard in front of The Game Master; the NPC is at (-34, 118, -7).",
+          "links": [
+            {
+              "page": "The Game Master"
+            }
+          ],
+          "context": "Castle Access and Library Key: Complete Hate, Betrayal, and Trust to enter Nektropos Castle. Inside, hail Lord Ollix Everling and follow his dialogue. He is near the ruined harpsichord in the main hall; his exact NPC coordinates have not yet been recorded. For the Nektropos Library Key, collect these four glowing ground items. The coordinates are the items' ground-spawn positions, not the nearby…"
+        },
+        {
+          "item": "Harpsichord White Key",
+          "ns": 710,
+          "ew": 105,
+          "note": "Northwest storage area with lots of boxes.",
+          "context": "Castle Access and Library Key: Complete Hate, Betrayal, and Trust to enter Nektropos Castle. Inside, hail Lord Ollix Everling and follow his dialogue. He is near the ruined harpsichord in the main hall; his exact NPC coordinates have not yet been recorded. For the Nektropos Library Key, collect these four glowing ground items. The coordinates are the items' ground-spawn positions, not the nearby…"
+        },
+        {
+          "item": "Harpsichord String",
+          "ns": 120,
+          "ew": -151,
+          "note": "Southeast Tormentor room; Tormentor Utzain is at (142, -146, -7).",
+          "links": [
+            {
+              "page": "Tormentor Utzain"
+            }
+          ],
+          "context": "Castle Access and Library Key: Complete Hate, Betrayal, and Trust to enter Nektropos Castle. Inside, hail Lord Ollix Everling and follow his dialogue. He is near the ruined harpsichord in the main hall; his exact NPC coordinates have not yet been recorded. For the Nektropos Library Key, collect these four glowing ground items. The coordinates are the items' ground-spawn positions, not the nearby…"
+        },
+        {
+          "item": "Harpsichord Plectrum",
+          "ns": -23,
+          "ew": -100,
+          "note": "Southeast Priestess of Ulkorruuk room.",
+          "context": "Castle Access and Library Key: Complete Hate, Betrayal, and Trust to enter Nektropos Castle. Inside, hail Lord Ollix Everling and follow his dialogue. He is near the ruined harpsichord in the main hall; his exact NPC coordinates have not yet been recorded. For the Nektropos Library Key, collect these four glowing ground items. The coordinates are the items' ground-spawn positions, not the nearby…"
+        },
+        {
+          "item": "ruined harpsichord",
+          "ns": 368,
+          "ew": 65,
+          "kind": "object",
+          "note": "Combine the four components in the ruined harpsichord at (368, 65), in the main lobby near Lord Ollix Everling. It is directly to the left while facing the staircase.",
+          "context": "Castle Access and Library Key: Complete Hate, Betrayal, and Trust to enter Nektropos Castle. Inside, hail Lord Ollix Everling and follow his dialogue. He is near the ruined harpsichord in the main hall; his exact NPC coordinates have not yet been recorded. For the Nektropos Library Key, collect these four glowing ground items. The coordinates are the items' ground-spawn positions, not the nearby…"
+        }
       ]
     },
     {
@@ -71160,15 +72281,33 @@
       "relatedNpcs": [
         "Various"
       ],
+      "rewards": [
+        {
+          "name": "Totemic Boots"
+        },
+        {
+          "name": "Totemic Bracers"
+        },
+        {
+          "name": "Totemic Breastplate"
+        },
+        {
+          "name": "Totemic Cloak"
+        },
+        {
+          "name": "Totemic Gauntlets"
+        },
+        {
+          "name": "Totemic Greaves"
+        },
+        {
+          "name": "Totemic Helm"
+        },
+        {
+          "name": "Totemic Vambraces"
+        }
+      ],
       "requiredItems": [
-        "Totemic Boots",
-        "Totemic Gauntlets",
-        "Totemic Vambraces",
-        "Totemic Greaves",
-        "Totemic Bracers",
-        "Totemic Breastplate",
-        "Totemic Helm",
-        "Totemic Cloak",
         "Banded Boots",
         "Dufrenite",
         "Terror Spines",
@@ -71803,6 +72942,32 @@
       ],
       "relatedNpcs": [
         "Various"
+      ],
+      "rewards": [
+        {
+          "name": "Trooper Scale Boots"
+        },
+        {
+          "name": "Trooper Scale Bracers"
+        },
+        {
+          "name": "Trooper Scale Gauntlets"
+        },
+        {
+          "name": "Trooper Scale Greaves"
+        },
+        {
+          "name": "Trooper Scale Breastplate"
+        },
+        {
+          "name": "Trooper Scale Helm"
+        },
+        {
+          "name": "Trooper Scale Pauldron"
+        },
+        {
+          "name": "Trooper Scale Vambraces"
+        }
       ],
       "requiredItems": [
         "Fire Emerald",
@@ -75124,26 +76289,42 @@
       "relatedNpcs": [
         "ToV East Mobs"
       ],
+      "rewards": [
+        {
+          "name": "Crown of the Myrmidon"
+        },
+        {
+          "name": "Breastplate of the Myrmidon"
+        },
+        {
+          "name": "Vambraces of the Myrmidon"
+        },
+        {
+          "name": "Bracer of the Myrmidon"
+        },
+        {
+          "name": "Gauntlets of the Myrmidon"
+        },
+        {
+          "name": "Greaves of the Myrmidon"
+        },
+        {
+          "name": "Boots of the Myrmidon"
+        }
+      ],
       "requiredItems": [
-        "Crown of the Myrmidon",
         "Unadorned Plate Helmet",
         "Crushed Coral",
-        "Breastplate of the Myrmidon",
         "Unadorned Breastplate",
         "Flawless Diamond",
-        "Vambraces of the Myrmidon",
         "Unadorned Plate Vambraces",
         "Flawed Emerald",
-        "Bracer of the Myrmidon",
         "Unadorned Plate Bracer",
         "Crushed Flame Emerald",
-        "Gauntlets of the Myrmidon",
         "Unadorned Plate Gauntlets",
         "Crushed Topaz",
-        "Greaves of the Myrmidon",
         "Unadorned Plate Greaves",
         "Flawed Sea Sapphire",
-        "Boots of the Myrmidon",
         "Unadorned Plate Boots",
         "Crushed Black Marble"
       ],
@@ -75190,26 +76371,42 @@
       "relatedNpcs": [
         "Giants"
       ],
+      "rewards": [
+        {
+          "name": "Champion's Crown"
+        },
+        {
+          "name": "Champion's Breastplate"
+        },
+        {
+          "name": "Champion's Vambraces"
+        },
+        {
+          "name": "Champion's Bracer"
+        },
+        {
+          "name": "Champion's Gauntlets"
+        },
+        {
+          "name": "Champion's Greaves"
+        },
+        {
+          "name": "Champion's Boots"
+        }
+      ],
       "requiredItems": [
-        "Champion's Crown",
         "Corroded Plate Helmet",
         "Crushed Coral",
-        "Champion's Breastplate",
         "Corroded Breastplate",
         "Flawless Diamond",
-        "Champion's Vambraces",
         "Corroded Plate Vambraces",
         "Flawed Emerald",
-        "Champion's Bracer",
         "Corroded Plate Bracer",
         "Crushed Flame Emerald",
-        "Champion's Gauntlets",
         "Corroded Plate Gauntlets",
         "Crushed Topaz",
-        "Champion's Greaves",
         "Corroded Plate Greaves",
         "Flawed Sea Sapphire",
-        "Champion's Boots",
         "Corroded Plate Boots",
         "Crushed Black Marble"
       ],
@@ -76431,26 +77628,42 @@
       "relatedNpcs": [
         "Dragons (West Wing)"
       ],
+      "rewards": [
+        {
+          "name": "Circlet of the Invoker"
+        },
+        {
+          "name": "Robe of the Invoker"
+        },
+        {
+          "name": "Sleeves of the Invoker"
+        },
+        {
+          "name": "Bangle of the Invoker"
+        },
+        {
+          "name": "Gloves of the Invoker"
+        },
+        {
+          "name": "Pants of the Invoker"
+        },
+        {
+          "name": "Boots of the Invoker"
+        }
+      ],
       "requiredItems": [
-        "Circlet of the Invoker",
         "Ancient Silk Turban",
         "Crushed Flame Opal",
-        "Robe of the Invoker",
         "Ancient Silk Robe",
         "Pristine Emerald",
-        "Sleeves of the Invoker",
         "Ancient Silk Sleeves",
         "Flawed Topaz",
-        "Bangle of the Invoker",
         "Ancient Silk Wristband",
         "Crushed Onyx Sapphire",
-        "Gloves of the Invoker",
         "Ancient Silk Gloves",
         "Crushed Topaz",
-        "Pants of the Invoker",
         "Ancient Silk Pantaloons",
         "Nephrite",
-        "Boots of the Invoker",
         "Ancient Silk Boots",
         "Crushed Jaundice Gem"
       ],
@@ -76497,26 +77710,42 @@
       "relatedNpcs": [
         "ToV East Mobs"
       ],
+      "rewards": [
+        {
+          "name": "Icicle Circlet"
+        },
+        {
+          "name": "Robe of Icicles"
+        },
+        {
+          "name": "Icicle Sleeves"
+        },
+        {
+          "name": "Icicle Bracelet"
+        },
+        {
+          "name": "Icicle Gloves"
+        },
+        {
+          "name": "Icicle Pantaloons"
+        },
+        {
+          "name": "Icicle Boots"
+        }
+      ],
       "requiredItems": [
-        "Icicle Circlet",
         "Tattered Silk Turban",
         "Crushed Flame Opal",
-        "Robe of Icicles",
         "Tattered Silk Robe",
         "Pristine Emerald",
-        "Icicle Sleeves",
         "Tattered Silk Sleeves",
         "Flawed Topaz",
-        "Icicle Bracelet",
         "Tattered Silk Wristband",
         "Crushed Onyx Sapphire",
-        "Icicle Gloves",
         "Tattered Silk Gloves",
         "Crushed Topaz",
-        "Icicle Pantaloons",
         "Tattered Silk Pantaloons",
         "Nephrite",
-        "Icicle Boots",
         "Tattered Silk Boots",
         "Crushed Jaundice Gem"
       ],
@@ -76673,26 +77902,42 @@
       "relatedNpcs": [
         "Giants"
       ],
+      "rewards": [
+        {
+          "name": "Sage's Crown"
+        },
+        {
+          "name": "Sage's Robe"
+        },
+        {
+          "name": "Sage's Sleeves"
+        },
+        {
+          "name": "Sage's Bracelet"
+        },
+        {
+          "name": "Sage's Gloves"
+        },
+        {
+          "name": "Sage's Pantaloons"
+        },
+        {
+          "name": "Sage's Boots"
+        }
+      ],
       "requiredItems": [
-        "Sage's Crown",
         "Torn Enchanted Silk Turban",
         "Crushed Flame Opal",
-        "Sage's Robe",
         "Torn Enchanted Silk Robe",
         "Pristine Emerald",
-        "Sage's Sleeves",
         "Torn Enchanted Silk Sleeves",
         "Flawed Topaz",
-        "Sage's Bracelet",
         "Torn Enchanted Silk Wristband",
         "Crushed Onyx Sapphire",
-        "Sage's Gloves",
         "Torn Enchanted Silk Gloves",
         "Crushed Topaz",
-        "Sage's Pantaloons",
         "Torn Enchanted Silk Pantaloons",
         "Nephrite",
-        "Sage's Boots",
         "Torn Enchanted Silk Boots",
         "Crushed Jaundice Gem"
       ],

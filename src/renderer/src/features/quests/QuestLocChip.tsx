@@ -37,8 +37,19 @@ function hover(c: Loc): string {
   return `${provenance(c)}. Show on the map`
 }
 
-export function QuestLocChip({ chip, quest, onOpenMap }: { chip: Loc; quest: string; onOpenMap?: (a: MapAnchor) => void }): JSX.Element {
-  const label = chipLabel(chip)
+export function QuestLocChip({
+  chip,
+  quest,
+  onOpenMap,
+  lead
+}: {
+  chip: Loc
+  quest: string
+  onOpenMap?: (a: MapAnchor) => void
+  /** words shown in place of the chip's name ("ground spawn" beside the item it is for); the map still names the thing */
+  lead?: string
+}): JSX.Element {
+  const label = chipLabel({ ...chip, name: lead ?? chip.name })
   const zone = chip.zone
   const jump =
     zone !== undefined && onOpenMap

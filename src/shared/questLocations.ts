@@ -26,6 +26,7 @@ import type { MobEntry, MobLoc } from './mobTypes'
 import type { QuestEntry, QuestStepLink } from './types'
 import { coordZone, isBoundary, isPlaceholderZone, linksIn, nextTrail, npcZone, questItemNames, sentenceSpan, type NpcZone, type ZoneMention } from './questLocZones'
 import type { MobIndex } from './bestiaryIndex'
+import { groundSpawnLocs, type GroundSpawnLoc } from './questGroundSpawns'
 // The bestiary index lives in ./bestiaryIndex.ts; re-exported so callers keep one import.
 export { buildMobIndex, dropKey, type MobIndex } from './bestiaryIndex'
 
@@ -83,6 +84,8 @@ export interface QuestLocations {
   npcs: { name: string; chips: QuestLocChip[] }[]
   /** one entry per required item that SOME mob drops */
   items: QuestItemSources[]
+  /** the ground spawns (and objects) the page's tables locate, each with its chip (./questGroundSpawns.ts) */
+  groundSpawns: GroundSpawnLoc[]
 }
 
 export const MAX_ITEM_SOURCES = 3
@@ -286,7 +289,24 @@ function npcChips(quest: QuestEntry, index: MobIndex): QuestLocations['npcs'] {
   const names = [...new Set([quest.giver, ...(quest.relatedNpcs ?? [])].filter((n): n is string => n !== undefined))]
   return names.map((name) => {
     const entry = index.npc(name)
-    return { name, chips: entry ? bestiaryChips({ entry, link: { page: name }, quest, index, key: `npc:${name}` }) : [] }
+    const chips = name === quest.giver ? giverChips(quest, name, index) : []
+    for (const c of entry ? bestiaryChips({ entry, link: { page: name }, quest, index, key: `npc:${name}` }) : []) addChip(chips, c)
+    return { name, chips }
+  })
+}
+
+/**
+ * The giver's spot as the QUEST PAGE's header states it ("Location: 50% @ (1064, 2409)"), each point
+ * read as the step "<giver> at (a, b)." through the same resolver as every step coordinate — the
+ * giver linked, so the bestiary's one zone for them, or the quest's start zone for a giver it does not
+ * place; then the cross-check, the zone's spread and the map file's extent.
+ */
+function giverChips(quest: QuestEntry, giver: string, index: MobIndex): QuestLocChip[] {
+  return (quest.giverLocs ?? []).map((l, i) => {
+    const lead = `${giver} at `
+    const text = `${lead}(${[l.ns, l.ew, ...(l.z === undefined ? [] : [l.z])].join(', ')}).`
+    const v = coordZone({ text, at: lead.length, templateZone: undefined, links: [{ page: giver }], quest, lookup: index, point: l, neighbours: text })
+    return chip({ name: giver, ...fromMention(v.zone), loc: point(l), sources: ['quest'], why: v.why }, `npc:${giver}:q${String(i)}`)
   })
 }
 
@@ -306,6 +326,7 @@ export function questLocations(quest: QuestEntry, index: MobIndex): QuestLocatio
   return {
     steps,
     npcs: npcChips(quest, index),
-    items: itemSources(quest, index)
+    items: itemSources(quest, index),
+    groundSpawns: groundSpawnLocs(quest, index)
   }
 }

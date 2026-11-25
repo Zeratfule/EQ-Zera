@@ -21,16 +21,28 @@
 // one document.
 
 import { sanitizeQuestPins, type QuestPins } from '../shared/questPins'
+import { adoptStepsKeys, legacyRule, reconcileQuestTicks } from '../shared/questStepsSig'
+import { legacyBaseline } from './launchVersion'
+import { questStepsOf } from './questCatalog'
 import { getProgress, setProgress } from './store'
 
-/** This character's tracked quests ([] when it has none, or the stored value is unusable). */
+/**
+ * This character's tracked quests ([] when it has none, or the stored value is unusable). Hand ticks
+ * made on a step list the catalog has since changed are dropped HERE, on the read, and the result is
+ * written back so it happens once (shared/questStepsSig.ts; the additive `stepsKey` key needs no
+ * schema step, for the reason above).
+ */
 export function getQuestPins(charId: string): QuestPins {
-  return sanitizeQuestPins(getProgress(charId).questPins)
+  const stored = sanitizeQuestPins(getProgress(charId).questPins)
+  const pins = reconcileQuestTicks(stored, questStepsOf, legacyRule(legacyBaseline()))
+  if (pins !== stored) setProgress(charId, { ...getProgress(charId), questPins: pins })
+  return pins
 }
 
 /** Replace the whole tracker for a character. Returns what was actually stored. */
 export function setQuestPins(charId: string, pins: QuestPins): QuestPins {
-  const next = sanitizeQuestPins(pins)
+  // The renderer ticked against the catalog this build ships: stamp it, never judge it.
+  const next = adoptStepsKeys(sanitizeQuestPins(pins), questStepsOf)
   setProgress(charId, { ...getProgress(charId), questPins: next })
   return next
 }

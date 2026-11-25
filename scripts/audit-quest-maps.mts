@@ -45,7 +45,8 @@ for (const q of quests) {
   const chips: [string, QuestLocChip][] = [
     ...l.steps.flatMap((s, i) => s.map((c): [string, QuestLocChip] => [`step ${String(i + 1)}`, c])),
     ...l.npcs.flatMap((n) => n.chips.map((c): [string, QuestLocChip] => [`NPC ${n.name}`, c])),
-    ...l.items.flatMap((it) => it.chips.map((c): [string, QuestLocChip] => [`item ${it.item}`, c]))
+    ...l.items.flatMap((it) => it.chips.map((c): [string, QuestLocChip] => [`item ${it.item}`, c])),
+    ...l.groundSpawns.map((g): [string, QuestLocChip] => [`ground spawn ${g.spawn.item}`, g.chip])
   ]
   for (const [where, c] of chips) {
     if (c.zone === undefined || c.loc === undefined) continue

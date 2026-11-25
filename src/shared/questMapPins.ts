@@ -48,6 +48,10 @@ function placed(q: QuestForPins): Placed[] {
   for (const it of q.locs.items) {
     for (const r of it.rows) for (const c of r.chips) out.push({ zone: c.zone, loc: c.loc, label: `${q.name} - ${it.item} drops from ${r.mob}` })
   }
+  for (const g of q.locs.groundSpawns) {
+    const what = g.spawn.kind === 'object' ? g.spawn.item : `${g.spawn.item} (ground spawn)`
+    out.push({ zone: g.chip.zone, loc: g.chip.loc, label: `${q.name} - ${what}` })
+  }
   return out
 }
 

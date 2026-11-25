@@ -22,6 +22,10 @@
  * one (logFixture `{ maps: true }`). With none, the quest-page half still runs and the Maps half
  * says so and skips — the maps.e2e.mts branch.
  *
+ * GROUND SPAWNS ride the same launch: "The Tragic Tale of House Everling" shows its four harpsichord
+ * pieces (a wiki table the step list never read) as ground-spawn chips, and one jumps to Nektropos
+ * Castle with the target marker.
+ *
  * Run: `node --import tsx tests/e2e/run-all.mts quest-locations`.
  */
 import { mkdirSync, writeFileSync } from 'node:fs'
@@ -275,6 +279,56 @@ async function stepOffMap(page: Page): Promise<void> {
   if (APP) await capture(APP, page, 'maps-offmap-shot')
 }
 
+const SPAWN = '[data-testid="quest-ground-spawn"]'
+const TRAGIC = 'The Tragic Tale of House Everling'
+
+/**
+ * GROUND SPAWNS. "The Tragic Tale of House Everling" lists its four harpsichord pieces in a wiki
+ * TABLE; the page shows each under "Where to get it" as a ground spawn with its point, the ruined
+ * harpsichord they combine in as its own block, and a chip jumps to Nektropos Castle with the target
+ * marker on the piece — while the quest layer pins the other pieces beside it.
+ */
+async function stepGroundSpawns(page: Page, maps: boolean): Promise<void> {
+  await page.click(NAV_LOOT, { timeout: 15_000 })
+  if (!(await openQuestPage(page, TRAGIC))) return
+  const lines = await page.evaluate(
+    (sel) =>
+      [...document.querySelectorAll(sel)].map((el) => {
+        const c = el.querySelector('[data-testid="quest-loc-chip"]')
+        return `${el.getAttribute('data-item') ?? ''}|${c?.getAttribute('data-zone') ?? ''}|${c?.getAttribute('data-loc') ?? ''}|${(c as HTMLElement | null)?.innerText.trim() ?? ''}`
+      }),
+    SPAWN
+  )
+  const want = [
+    'Harpsichord Black Key|nektropos|(-37, 130)|ground spawn · Nektropos Castle (-37, 130)',
+    'Harpsichord White Key|nektropos|(710, 105)|ground spawn · Nektropos Castle (710, 105)',
+    'Harpsichord String|nektropos|(120, -151)|ground spawn · Nektropos Castle (120, -151)',
+    'Harpsichord Plectrum|nektropos|(-23, -100)|ground spawn · Nektropos Castle (-23, -100)',
+    'ruined harpsichord|nektropos|(368, 65)|object · Nektropos Castle (368, 65)'
+  ]
+  check('THE FOUR HARPSICHORD PIECES are ground spawns at their table points, and the harpsichord an object', JSON.stringify(lines) === JSON.stringify(want), JSON.stringify(lines))
+  const under = await countOf(page, `[data-testid="quest-item-sources"] ${SPAWN}`)
+  check('…the four pieces under "Where to get it", the harpsichord in its own block', under === 4 && (await countOf(page, `[data-testid="quest-ground-spawns"] ${SPAWN}`)) === 1)
+  const hover = await page.evaluate((sel) => document.querySelector(`${sel} [data-testid="quest-loc-chip"]`)?.getAttribute('data-sources') ?? '', SPAWN)
+  check('…each from the quest page', hover === 'quest', hover)
+  await dumpArtifacts(page, 'quest-ground-spawns')
+  if (APP) await capture(APP, page, 'quest-ground-spawns-shot')
+  if (!maps) return
+  await page.click(`${SPAWN}[data-item="Harpsichord Black Key"] ${CHIP}`, { timeout: 15_000 })
+  check('the Black Key chip opens Nektropos Castle', (await settle(() => zoneOf(page), (z) => z === 'nektropos', { timeoutMs: 30_000 })) === 'nektropos')
+  check('…with the target marker on the key', await page.waitForSelector(TARGET, { timeout: 20_000 }).then(() => true, () => false))
+  check('…at (-37, 130)', (await attr(page, TARGET, 'data-loc')) === '(-37, 130)')
+  const banner = await page.evaluate((sel) => (document.querySelector(sel) as HTMLElement | null)?.innerText ?? '', BANNER)
+  check('…and the card names the piece', banner.includes('Harpsichord Black Key'), banner)
+  const pins = await settle(
+    () => page.evaluate((sel) => [...document.querySelectorAll(sel)].map((el) => el.getAttribute('data-loc')), QPIN),
+    (p) => p.includes('(710, 105)'),
+    { timeoutMs: 10_000 }
+  )
+  check('the quest layer pins the other pieces beside it', ['(710, 105)', '(120, -151)', '(-23, -100)', '(368, 65)'].every((p) => pins.includes(p)), JSON.stringify(pins))
+  if (APP) await capture(APP, page, 'maps-ground-spawn-shot')
+}
+
 /** The quest page, then the jump and everything after it (skipped, and said so, with no map packs). */
 async function runSteps(page: Page): Promise<void> {
   if (!(await openQuestPage(page))) return
@@ -282,12 +336,14 @@ async function runSteps(page: Page): Promise<void> {
   const packs = await page.evaluate(() => document.querySelector('[data-testid="nav-maps"]') !== null)
   if (!packs) {
     note('no Maps tab on this build — the jump half is skipped')
+    await stepGroundSpawns(page, false)
     return
   }
   if (!(await stepJump(page))) return
   await stepLifecycles(page)
   await stepTrackedPins(page)
   await stepOffMap(page)
+  await stepGroundSpawns(page, true)
 }
 
 async function main(): Promise<void> {
