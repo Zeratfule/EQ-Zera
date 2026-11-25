@@ -140,7 +140,8 @@ export function windowStateOf(w: WindowLike): WindowBounds | null {
  * This is the debounced saver's EXACT question (slack 0): "is there anything new to write". The
  * applied-bounds marker asks a different one — "is the window still where WE put it, give or take
  * the display's rounding" — and that one is `withinPlacementEnvelope`, because the rounding is
- * one-sided (a placement only ever comes back LARGER) and a symmetric slack cannot say so.
+ * lopsided (a placement comes back up to eight DIP LARGER, measured; it was never seen smaller or
+ * moved) and one symmetric slack cannot say so.
  *
  * `maximized` is compared as a FACT, never with slack: it is the half of the state that a
  * rectangle comparison cannot see, and it is exactly the transition (maximize a window without
@@ -194,13 +195,20 @@ const armWithTimeout: ArmTimer = (fire, delayMs) => {
  * The envelope is therefore:
  *
  *   grow   min(ROUNDING_GROWTH_CAP_PX, 2*step + 3):  whole 5 · half 7 · quarter (and unknown) 9
- *   shrink 1   (never measured; one DIP of margin for a conversion nobody has seen)
- *   move   2   (never measured; a one-DIP origin rounding on a secondary display, doubled)
+ *   shrink 4   (KEPT at the previous fixed envelope, deliberately not narrowed)
+ *   move   4   (KEPT at the previous fixed envelope, deliberately not narrowed)
+ *
+ * Shrink and move were never seen above zero, but every measurement above is ONE uniform display
+ * (real or forced) with its origin at 0,0. A mixed-DPI secondary monitor with a non-zero origin —
+ * where an origin conversion is the likeliest thing to round — was not measured, so those two
+ * stay at the four DIP that is known to work there rather than at a number nobody has tested.
+ * Only GROWTH, the axis that was measured, is sized from the measurement.
  *
  * THE BOUNDARY, stated exactly because it is the user's half of the bargain: at EVERY scale
- * factor, a gesture that grows the window by 10 DIP or more on either axis, shrinks it by 2 or
- * more, or moves it by 3 or more is the USER'S, and is recorded. Smaller ones are absorbed only
- * while the marker stands — the first geometry report after the app placed the window — and the
+ * factor, a gesture that grows the window by 10 DIP or more on either axis, shrinks it by 5 or
+ * more, or moves it by 5 or more is the USER'S, and is recorded. Smaller ones are absorbed while
+ * the marker stands: from the app's placement UNTIL A REPORT LEAVES THE ENVELOPE — any number of
+ * in-envelope reports, and the close flush, are all treated as the app's own placement — and the
  * marker is dropped the moment anything outside the envelope arrives. The cap is what holds the
  * 10-DIP promise on a display whose step was not measured (Windows' custom scaling, say 110%),
  * where the envelope is the widest one rather than a guess. Pinned: tests/windowState.test.mts.
@@ -208,9 +216,9 @@ const armWithTimeout: ArmTimer = (fire, delayMs) => {
 export interface PlacementEnvelope {
   /** Largest growth of width or height, in DIP, that still counts as our own placement. */
   readonly grow: number
-  /** Largest SHRINK of width or height that still counts (the rounding never shrinks). */
+  /** Largest SHRINK of width or height that still counts (never measured above 0; kept at 4). */
   readonly shrink: number
-  /** Largest move of x or y that still counts (the rounding never moves). */
+  /** Largest move of x or y that still counts (never measured above 0; kept at 4). */
   readonly move: number
 }
 
@@ -235,7 +243,7 @@ export function scaleStep(scaleFactor: number | null | undefined): 1 | 2 | 4 | n
 export function placementEnvelope(scaleFactor: number | null | undefined): PlacementEnvelope {
   const step = scaleStep(scaleFactor)
   const grow = step === null ? ROUNDING_GROWTH_CAP_PX : Math.min(ROUNDING_GROWTH_CAP_PX, 2 * step + 3)
-  return { grow, shrink: 1, move: 2 }
+  return { grow, shrink: 4, move: 4 }
 }
 
 /**

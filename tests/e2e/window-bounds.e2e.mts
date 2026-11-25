@@ -34,8 +34,8 @@
  * placement comes back 1046x722 for 1040x720 on the owner's 2.25 display.)
  *
  * So: anywhere a SHOWN window is compared against a size somebody REQUESTED, the comparison
- * carries the PRODUCT's envelope for the display the window is on (`placementEnvelope`, one-sided,
- * sized by that display's scale factor). Anywhere the STORE is compared, the comparison is
+ * carries the PRODUCT's envelope for the display the window is on (`placementEnvelope`: growth
+ * sized by that display's scale factor, shrink and move four DIP). Anywhere the STORE is compared, the comparison is
  * byte-exact and always will be, because that is the claim: the file holds the rectangle the user
  * left the window at, unrounded and undrifted, however many times the app has re-placed the window
  * since. Widening a store comparison would hide exactly the defect this spec caught, which is that
@@ -155,8 +155,8 @@ function writeStoredBounds(userData: string, bounds: Bounds): void {
 /**
  * The DPI-rounding envelope: how far the window that APPEARS may be from the rectangle that was
  * asked for. It is the PRODUCT's own envelope (`placementEnvelope`, src/main/windowState.ts) for
- * the display the window is on — one-sided (the rounding only grows a window) and sized by that
- * display's scale factor — so this spec and the saver can never disagree about what is rounding.
+ * the display the window is on — growth sized by that display's scale factor, shrink and move the
+ * previous four DIP — so this spec and the saver can never disagree about what is rounding.
  */
 const envelopeOf = (shown: Placement): PlacementEnvelope => placementEnvelope(shown.scaleFactor)
 

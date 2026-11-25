@@ -270,8 +270,8 @@ const MEASURED_WORST: readonly (readonly [scale: number, worstGrowth: number])[]
 
 /** The user's half of the bargain, stated in windowState.ts: always recorded, at every scale. */
 const USER_GROWS_PX = 10
-const USER_SHRINKS_PX = 2
-const USER_MOVES_PX = 3
+const USER_SHRINKS_PX = 5
+const USER_MOVES_PX = 5
 
 test('the rounding step is read from the scale factor: whole, half, quarter — or unknown', () => {
   assert.equal(scaleStep(1), 1)
@@ -289,11 +289,11 @@ test('the rounding step is read from the scale factor: whole, half, quarter — 
 })
 
 test('the envelope: whole 5 · half 7 · quarter 9 · unknown 9, and never wider than the cap', () => {
-  assert.deepEqual(placementEnvelope(1), { grow: 5, shrink: 1, move: 2 })
-  assert.deepEqual(placementEnvelope(1.5), { grow: 7, shrink: 1, move: 2 })
-  assert.deepEqual(placementEnvelope(2.25), { grow: 9, shrink: 1, move: 2 })
-  assert.deepEqual(placementEnvelope(1.1), { grow: 9, shrink: 1, move: 2 })
-  assert.deepEqual(placementEnvelope(null), { grow: 9, shrink: 1, move: 2 }, 'unknown is the WIDEST')
+  assert.deepEqual(placementEnvelope(1), { grow: 5, shrink: 4, move: 4 })
+  assert.deepEqual(placementEnvelope(1.5), { grow: 7, shrink: 4, move: 4 })
+  assert.deepEqual(placementEnvelope(2.25), { grow: 9, shrink: 4, move: 4 })
+  assert.deepEqual(placementEnvelope(1.1), { grow: 9, shrink: 4, move: 4 })
+  assert.deepEqual(placementEnvelope(null), { grow: 9, shrink: 4, move: 4 }, 'unknown is the WIDEST')
   for (const s of [0.5, 1, 1.1, 1.25, 1.5, 3.5, 4, 5]) {
     assert.ok(placementEnvelope(s).grow <= ROUNDING_GROWTH_CAP_PX, String(s))
   }
@@ -314,20 +314,56 @@ for (const [scale, worst] of MEASURED_WORST) {
     // The USER: 10 DIP bigger, 2 smaller or 3 moved, on any one axis, is a gesture to record.
     for (const k of ['width', 'height'] as const) {
       assert.equal(withinPlacementEnvelope(placed, { ...placed, [k]: placed[k] + USER_GROWS_PX }, env), false, `${k} +10`)
-      assert.equal(withinPlacementEnvelope(placed, { ...placed, [k]: placed[k] - USER_SHRINKS_PX }, env), false, `${k} -2`)
+      assert.equal(withinPlacementEnvelope(placed, { ...placed, [k]: placed[k] - USER_SHRINKS_PX }, env), false, `${k} -5`)
     }
     for (const k of ['x', 'y'] as const) {
-      assert.equal(withinPlacementEnvelope(placed, { ...placed, [k]: placed[k] + USER_MOVES_PX }, env), false, `${k} +3`)
-      assert.equal(withinPlacementEnvelope(placed, { ...placed, [k]: placed[k] - USER_MOVES_PX }, env), false, `${k} -3`)
+      assert.equal(withinPlacementEnvelope(placed, { ...placed, [k]: placed[k] + USER_MOVES_PX }, env), false, `${k} +5`)
+      assert.equal(withinPlacementEnvelope(placed, { ...placed, [k]: placed[k] - USER_MOVES_PX }, env), false, `${k} -5`)
     }
   })
 }
 
-test('the envelope is one-sided: the rounding only ever GROWS a window, so a shrink is a gesture', () => {
+test('growth is sized from the scale; shrink and move keep the previous, known-good four DIP', () => {
   const env = placementEnvelope(2.25)
   assert.ok(withinPlacementEnvelope(CHOSEN, { ...CHOSEN, width: CHOSEN.width + 9 }, env))
   assert.equal(withinPlacementEnvelope(CHOSEN, { ...CHOSEN, width: CHOSEN.width - 9 }, env), false)
-  assert.ok(withinPlacementEnvelope(CHOSEN, { ...CHOSEN, width: CHOSEN.width - 1 }, env), 'one DIP of margin')
+  assert.ok(withinPlacementEnvelope(CHOSEN, { ...CHOSEN, width: CHOSEN.width - 4 }, env), 'four DIP of shrink, as before')
+  assert.equal(withinPlacementEnvelope(CHOSEN, { ...CHOSEN, height: CHOSEN.height - 5 }, env), false)
+  assert.ok(withinPlacementEnvelope(CHOSEN, { ...CHOSEN, x: CHOSEN.x - 4, y: CHOSEN.y + 4 }, env), 'four DIP of move')
+  assert.equal(withinPlacementEnvelope(CHOSEN, { ...CHOSEN, x: CHOSEN.x + 5 }, env), false)
+  // …and on a whole-scale display, where growth is tight, shrink and move are still the old four.
+  const whole = placementEnvelope(1)
+  assert.ok(withinPlacementEnvelope(CHOSEN, { ...CHOSEN, width: CHOSEN.width - 4, y: CHOSEN.y + 4 }, whole))
+})
+
+test('the marker stands UNTIL A REPORT LEAVES THE ENVELOPE: many in-envelope reports and the close flush are ours', () => {
+  const writes: WindowBounds[] = []
+  const timer = fakeTimer()
+  const saver = createWindowStateSaver((s) => writes.push(s), { arm: timer.arm })
+  const placed = { x: 391, y: 96, width: 1040, height: 720 }
+  saver.applied(placed, false, 2.25)
+  // Several geometry reports inside the envelope (the constructor's rounding, a re-layout, a
+  // four-DIP nudge): none is written, and none drops the marker.
+  for (const shown of [
+    { ...placed, width: 1046, height: 722 },
+    { ...placed, width: 1044, height: 722 },
+    { ...placed, x: 395, width: 1046, height: 722 },
+    { ...placed, width: 1049, height: 729 }
+  ]) {
+    saver.queue(shown)
+  }
+  assert.equal(timer.armed(), 0, 'no in-envelope report arms a write')
+  saver.flush()
+  assert.deepEqual(writes, [], 'the close flush writes nothing either — the store keeps the user rectangle')
+  // The first report OUTSIDE the envelope is the user's, is written, and ends the marker…
+  const outside = { ...placed, width: 1050 }
+  saver.queue(outside)
+  saver.flush()
+  assert.deepEqual(writes, [outside])
+  // …so a later report back inside the old envelope is the user's too.
+  saver.queue({ ...placed, width: 1044 })
+  saver.flush()
+  assert.deepEqual(writes, [outside, { ...placed, width: 1044 }])
 })
 
 test('maximized stays a FACT inside the envelope, and nothing matches nothing', () => {
