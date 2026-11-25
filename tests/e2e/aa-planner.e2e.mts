@@ -19,7 +19,7 @@
  * Run: `node --import tsx tests/e2e/run-all.mts aa-planner`.
  */
 import type { Page } from 'playwright-core'
-import { buildIfStale, check, countOf, dumpArtifacts, failures, reportRun, settle, settleCount } from './appHarness.mjs'
+import { buildIfStale, check, countOf, dumpArtifacts, failures, reportRun, settle, settleCount, settleGone } from './appHarness.mjs'
 import { mainWindow } from './appWindow.mjs'
 import { launchOnFixture, type FixtureLog } from './logFixture.mjs'
 
@@ -138,13 +138,26 @@ async function stepRace(page: Page): Promise<void> {
 async function stepRespec(page: Page): Promise<void> {
   await page.click('[data-testid="aa-planner-respec"]')
   await page.waitForSelector('[data-testid="aa-planner-respec-when"]', { timeout: 10_000 })
+  await page.fill('[data-testid="aa-planner-respec-when"]', '2099-01-01T00:00')
+  check('A FUTURE RESPEC is refused', await confirmDisabled(page), await textOf(page, '[data-testid="aa-planner-respec-refusal"]'))
   // after every fixture purchase (Burst of Power 3 at 21:42, Healing Boon 1 at 19:31), before the live Healing Boon 2
   await page.fill('[data-testid="aa-planner-respec-when"]', '2026-08-04T22:00')
+  check('…a past one is accepted', !(await confirmDisabled(page)))
   await page.click('[data-testid="aa-planner-respec-confirm"]')
   const burst = await settle(() => attr(page, rowOf('Burst of Power'), 'data-held'), (v) => v === '0', { timeoutMs: 10_000 })
   check('AFTER A RESPEC a rank bought before it no longer reads as held (Burst of Power 0)', burst === '0', `held=${String(burst)}`)
   check('…a purchase AFTER it still counts (Healing Boon 2)', (await attr(page, rowOf('Healing Boon'), 'data-held')) === '2')
   check('…and the tab shows the respec date', (await countOf(page, '[data-testid="aa-planner-respec-date"]')) === 1)
+  await page.click('[data-testid="aa-planner-respec"]')
+  await page.waitForSelector('[data-testid="aa-planner-respec-when"]', { timeout: 10_000 })
+  await page.fill('[data-testid="aa-planner-respec-when"]', '2026-08-04T20:00')
+  check('A RESPEC EARLIER THAN THE ONE IN FORCE is refused', await confirmDisabled(page), await textOf(page, '[data-testid="aa-planner-respec-refusal"]'))
+  await page.click('[data-testid="aa-planner-respec-cancel"]')
+  await settleGone(page, '[data-testid="aa-planner-respec-dialog"]', { timeoutMs: 10_000 })
+}
+
+function confirmDisabled(page: Page): Promise<boolean> {
+  return page.$eval('[data-testid="aa-planner-respec-confirm"]', (el) => (el as HTMLButtonElement).disabled)
 }
 
 async function stepUndoRespec(page: Page): Promise<void> {

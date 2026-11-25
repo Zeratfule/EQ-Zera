@@ -17,7 +17,10 @@
 // still held after the respec exactly as it was before it. (A reincarnation AFTER the respec is
 // later than it anyway, so either reading keeps it; the rule only decides the earlier ones.) The
 // respec also clears the user's own "I hold" marks on bought AAs — they describe ranks the respec
-// refunded — and remembers them, so Undo puts back exactly what it took.
+// refunded — and remembers them, so Undo puts back exactly what it took. A new respec must be later
+// than the one in force and not in the future (`respecRefusal`), so the history is one order and
+// Undo always removes the one recorded last; a respec covers lines through the END of the second it
+// names (`respecInstant`).
 
 import type { AASpendLike } from './aa'
 import { aaKey, type AaCatalogEntry } from './aaCatalog'
@@ -171,8 +174,33 @@ function refundable(entry: AaCatalogEntry | undefined, rank: number): boolean {
 }
 
 /**
+ * The instant a respec typed as `localMs` (a `datetime-local` value read as local wall-clock ms)
+ * covers: THROUGH THE END OF THAT SECOND. Log stamps are whole seconds, so a refunded purchase line
+ * printed in the very second the user names is before the respec, never after it.
+ */
+export function respecInstant(localMs: number): number {
+  return Math.floor(localMs / 1000) * 1000 + 999
+}
+
+/**
+ * Why a respec at `at` cannot be recorded, or null when it can. Two refusals, both about keeping
+ * ONE ORDER: a respec in the FUTURE has not happened, and one AT OR BEFORE the respec in force
+ * would be a second opinion about the past (it would not be the one in force, so it could clear
+ * nothing honestly, and Undo would no longer step back through what was recorded). Recordings are
+ * therefore always the latest, and record order IS date order.
+ */
+export function respecRefusal(h: AaRespecHistory, at: number, now: number): string | null {
+  if (!Number.isFinite(at) || at <= 0) return 'Pick a date and time.'
+  if (at - 999 > now) return 'That time has not happened yet.'
+  const last = lastRespec(h)
+  if (last !== null && at <= last.at) return 'Your recorded respec is later than that. Undo it first to record an earlier one.'
+  return null
+}
+
+/**
  * Record a respec at `at`. Returns the new history and the "I hold" marks that survive it (granted
- * and free ranks); the ones it cleared ride in the record for Undo.
+ * and free ranks); the ones it cleared ride in the record for Undo. A respec at or before the one
+ * in force is REFUSED here too (unchanged history and marks) — see `respecRefusal`.
  */
 export function recordRespec(
   h: AaRespecHistory,
@@ -180,14 +208,15 @@ export function recordRespec(
   stated: Readonly<Record<string, number>>,
   index: ReadonlyMap<string, AaCatalogEntry>
 ): { history: AaRespecHistory; stated: Record<string, number> } {
+  const last = lastRespec(h)
+  if (last !== null && at <= last.at) return { history: h, stated: { ...stated } }
   const kept: Record<string, number> = {}
   const cleared: Record<string, number> = {}
   for (const [name, rank] of Object.entries(stated)) {
     if (refundable(index.get(aaKey(name)), rank)) cleared[name] = rank
     else kept[name] = rank
   }
-  const respecs = [...h.respecs, { at, clearedStated: cleared }].sort((a, b) => a.at - b.at)
-  return { history: { respecs }, stated: kept }
+  return { history: { respecs: [...h.respecs, { at, clearedStated: cleared }] }, stated: kept }
 }
 
 /** Undo the respec in force: drop it and hand back the marks it cleared (current marks win). */

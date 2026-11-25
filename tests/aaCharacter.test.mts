@@ -21,6 +21,8 @@ import {
   raceAllows,
   raceOfAa,
   recordRespec,
+  respecInstant,
+  respecRefusal,
   serializeRace,
   serializeRespecs,
   spendsSinceRespec,
@@ -126,8 +128,38 @@ test('a second respec stacks; undo steps back to the first', () => {
   assert.equal(lastRespec(undoRespec(two, {}).history)?.at, 200)
 })
 
+test('A BACKDATED RESPEC (earlier than the one in force) is refused: no record, no marks cleared', () => {
+  const one = recordRespec(EMPTY_RESPECS, 300, {}, INDEX).history
+  const marks = { 'Innate Regeneration': 2 }
+  const back = recordRespec(one, 200, marks, INDEX)
+  assert.deepEqual(back.history, one)
+  assert.deepEqual(back.stated, marks)
+  assert.deepEqual(recordRespec(one, 300, marks, INDEX).history, one, 'the same instant is not a new respec')
+  assert.match(respecRefusal(one, 200, 10_000) ?? '', /later than that/)
+  assert.equal(respecRefusal(one, 301, 10_000), null)
+})
+
+test('UNDO removes the respec RECORDED last, whatever the order of entry', () => {
+  const two = recordRespec(recordRespec(EMPTY_RESPECS, 200, { 'Innate Regeneration': 2 }, INDEX).history, 300, { 'Steadfast Will': 3 }, INDEX)
+  const u = undoRespec(two.history, two.stated)
+  assert.equal(lastRespec(u.history)?.at, 200)
+  assert.deepEqual(u.stated, { 'Steadfast Will': 3 }, 'only the marks the LAST record cleared come back')
+})
+
+test('A FUTURE RESPEC is refused; the instant covers through the end of the named second', () => {
+  const now = Date.UTC(2026, 10, 25, 12, 0, 30, 500)
+  assert.match(respecRefusal(EMPTY_RESPECS, respecInstant(now + 2_000), now) ?? '', /not happened yet/)
+  assert.equal(respecRefusal(EMPTY_RESPECS, respecInstant(now), now), null, 'the current second is allowed')
+  assert.match(respecRefusal(EMPTY_RESPECS, Number.NaN, now) ?? '', /Pick/)
+  const at = respecInstant(Date.UTC(2026, 7, 4, 22, 0, 5))
+  assert.equal(at, Date.UTC(2026, 7, 4, 22, 0, 5, 999))
+  // a refunded purchase line stamped in that very second is before the respec, not after it
+  const kept = spendsSinceRespec([{ ts: Date.UTC(2026, 7, 4, 22, 0, 5), ability: 'Innate Regeneration', cost: 1 }], { at, clearedStated: {} })
+  assert.deepEqual(kept, [])
+})
+
 test('a stored respec history degrades: bad entries drop, the rest survive in order', () => {
-  const h = recordRespec(recordRespec(EMPTY_RESPECS, 300, {}, INDEX).history, 200, { 'Innate Regeneration': 2 }, INDEX).history
+  const h = recordRespec(recordRespec(EMPTY_RESPECS, 200, {}, INDEX).history, 300, { 'Innate Regeneration': 2 }, INDEX).history
   assert.deepEqual(parseStoredRespecs(serializeRespecs(h)), h)
   assert.deepEqual(h.respecs.map((x) => x.at), [200, 300])
   const raw = JSON.stringify({ v: 1, respecs: [{ at: 'x' }, null, { at: 50, clearedStated: { A: 2, B: -1, C: 1.5 } }] })

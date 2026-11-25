@@ -5,6 +5,7 @@
 import { type JSX, useState } from 'react'
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField, Typography } from '@mui/material'
 import { REINCARNATION_RACES } from '../../../../shared/reincarnation'
+import { respecInstant, respecRefusal, type AaRespec } from '../../../../shared/aaCharacter'
 import { formatDateTime } from '../../lib/formatDate'
 import type { AaPlannerInputs } from './useAaPlanner'
 
@@ -34,18 +35,28 @@ function RacePicker({ p }: { p: AaPlannerInputs }): JSX.Element {
 
 const pad = (n: number): string => String(n).padStart(2, '0')
 
-/** A local wall-clock instant as a `datetime-local` value (minutes). */
+/** A local wall-clock instant as a `datetime-local` value, to the SECOND (the log's resolution). */
 function toLocalInput(ts: number): string {
   const d = new Date(ts)
-  return `${String(d.getFullYear())}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
+  const date = `${String(d.getFullYear())}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
+  return `${date}T${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`
 }
 
-function RespecDialog({ open, onClose, onConfirm }: { open: boolean; onClose: () => void; onConfirm: (at: number) => void }): JSX.Element {
-  const [when, setWhen] = useState(() => toLocalInput(Date.now()))
-  const at = new Date(when).getTime()
-  const valid = Number.isFinite(at) && at > 0
+interface RespecDialogProps {
+  /** the respec in force, which a new one must be later than */
+  last: AaRespec | null
+  onClose: () => void
+  onConfirm: (at: number) => void
+}
+
+function RespecDialog({ last, onClose, onConfirm }: RespecDialogProps): JSX.Element {
+  const [now] = useState(() => Date.now())
+  const [when, setWhen] = useState(() => toLocalInput(now))
+  // covers lines through the end of the named second (shared/aaCharacter.ts respecInstant)
+  const at = respecInstant(new Date(when).getTime())
+  const refusal = respecRefusal({ respecs: last ? [last] : [] }, at, now)
   return (
-    <Dialog open={open} onClose={onClose} data-testid="aa-planner-respec-dialog">
+    <Dialog open onClose={onClose} data-testid="aa-planner-respec-dialog">
       <DialogTitle>Record a respec</DialogTitle>
       <DialogContent>
         <Stack spacing={1.5} sx={{ pt: 0.5 }}>
@@ -58,7 +69,18 @@ function RespecDialog({ open, onClose, onConfirm }: { open: boolean; onClose: ()
             label="When you respecced"
             value={when}
             onChange={(e) => setWhen(e.target.value)}
-            slotProps={{ htmlInput: { 'data-testid': 'aa-planner-respec-when' }, inputLabel: { shrink: true } }}
+            error={refusal !== null}
+            helperText={refusal ?? ' '}
+            slotProps={{
+              htmlInput: {
+                'data-testid': 'aa-planner-respec-when',
+                step: 1,
+                max: toLocalInput(now),
+                ...(last ? { min: toLocalInput(last.at + 1) } : {})
+              },
+              inputLabel: { shrink: true },
+              formHelperText: { 'data-testid': 'aa-planner-respec-refusal' } as object
+            }}
           />
         </Stack>
       </DialogContent>
@@ -66,7 +88,7 @@ function RespecDialog({ open, onClose, onConfirm }: { open: boolean; onClose: ()
         <Button onClick={onClose} data-testid="aa-planner-respec-cancel">
           Cancel
         </Button>
-        <Button variant="contained" disabled={!valid} onClick={() => onConfirm(at)} data-testid="aa-planner-respec-confirm">
+        <Button variant="contained" disabled={refusal !== null} onClick={() => onConfirm(at)} data-testid="aa-planner-respec-confirm">
           I respecced
         </Button>
       </DialogActions>
@@ -93,7 +115,7 @@ function RespecControl({ p }: { p: AaPlannerInputs }): JSX.Element {
       </Button>
       {open && (
         <RespecDialog
-          open
+          last={p.respec}
           onClose={() => setOpen(false)}
           onConfirm={(at) => {
             setOpen(false)

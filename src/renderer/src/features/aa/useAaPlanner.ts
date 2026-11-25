@@ -40,6 +40,7 @@ import {
   parseStoredRace,
   parseStoredRespecs,
   recordRespec,
+  respecRefusal,
   serializeRace,
   serializeRespecs,
   spendsSinceRespec,
@@ -122,6 +123,7 @@ function useCharacterFacts(
   const setRace = useCallback((race: string | null) => updateRace(() => race), [updateRace])
   const onRespec = useCallback(
     (at: number) => {
+      if (respecRefusal(respecs, at, Date.now()) !== null) return
       const next = recordRespec(respecs, at, plan.stated, INDEX)
       updateRespecs(() => next.history)
       updatePlan((p) => ({ ...p, stated: next.stated }))
