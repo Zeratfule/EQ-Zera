@@ -68,6 +68,47 @@ export function shaped190(i: number): string[] {
 
 export const joinRows = (rows: readonly (readonly string[])[]): string => rows.map((r) => r.join('^')).join('\r\n')
 
+/** Insert a '0' column at p and remove what was column q (unshifted coordinates), on every row. */
+export function moveColumns(rows: readonly (readonly string[])[], p: number, q: number): string[][] {
+  return rows.map((row) => {
+    const f = [...row]
+    f.splice(p, 0, '0')
+    f.splice(q >= p ? q + 1 : q, 1)
+    return f
+  })
+}
+
+/**
+ * The cross-language parity set: synthetic files both readers judge, and the verdict each must
+ * reach. Written to tests/fixtures/spellsUsShape/ (tests/spellsUsParity.test.mts keeps the files and
+ * this function in step) and read again by engine/crates/fold/src/spells_us/layout.rs's tests, so
+ * the app and the engine are held to the same answer on the same bytes.
+ */
+export function parityFixtures(): Record<string, { text: string; verdict: 'ok' | 'unrecognised' }> {
+  const n = 30
+  const base = Array.from({ length: n }, (_, i) => shaped190(i))
+  const join = (rows: readonly (readonly string[])[]): string => `${rows.map((r) => r.join('^')).join('\n')}\n`
+  const content = base.filter((_, i) => i % 10 !== 3)
+  for (let i = 0; i < 4; i++) {
+    const f = shaped190(i)
+    f[0] = String(9000 + i)
+    f[1] = `Synthetic Song ${String(i)}`
+    for (let c = 36; c <= 51; c++) f[c] = '255'
+    f[43] = String(10 + i)
+    content.push(f)
+  }
+  return {
+    'ok-190': { text: join(base), verdict: 'ok' },
+    'content-patch': { text: join(content), verdict: 'ok' },
+    'moved-20-61': { text: join(moveColumns(base, 20, 61)), verdict: 'unrecognised' },
+    'moved-5-77': { text: join(moveColumns(base, 5, 77)), verdict: 'unrecognised' },
+    'moved-40-180': { text: join(moveColumns(base, 40, 180)), verdict: 'unrecognised' },
+    'width-200': { text: join(base.map((r) => [...r, ...new Array<string>(10).fill('0')])), verdict: 'unrecognised' },
+    'dropped-172': { text: join(Array.from({ length: n }, (_, i) => shapedRow(i).slice(0, 172))), verdict: 'unrecognised' },
+    'blank-names': { text: join(base.map((r) => r.map((v, c) => (c === 1 ? '' : v)))), verdict: 'unrecognised' }
+  }
+}
+
 /** `n` rows at 190 fields, CRLF-separated, the way the client writes the file. */
 export function shapedFile190(n: number): string {
   return joinRows(Array.from({ length: n }, (_, i) => shaped190(i)))

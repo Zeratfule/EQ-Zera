@@ -55,9 +55,14 @@ export function writeSpellsUsMeta(stamp: Stamp, key: string, m: SpellsUsMeasured
     writeFileSync(`${path}.tmp`, JSON.stringify({ key, ...stamp, ...m }), 'utf8')
     renameSync(`${path}.tmp`, path)
   } catch (err) {
-    logError('main:resistTable', { message: 'spells_us layout meta write failed', err })
+    // ONCE: the table cache carries the same measurements (resist/spellTable.ts), so a sidecar
+    // that cannot be written costs a cache read per launch, not a re-parse, and is worth one line.
+    if (!metaWriteFailed) logError('main:resistTable', { message: 'spells_us layout meta write failed', err })
+    metaWriteFailed = true
   }
 }
+
+let metaWriteFailed = false
 
 /** Run one job on `resistTableWorker.js`; null when the worker failed to start or died. */
 export function runResistWorker(init: ResistTableWorkerInit): Promise<ResistTableWorkerReply | null> {

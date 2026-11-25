@@ -67,11 +67,17 @@ export const SPELL_RESIST_CACHE_VERSION = 6
  */
 const META_KEY = spellsUsMetaKey(SPELL_RESIST_CACHE_VERSION, KNOWN_ROW_LENGTHS)
 
+/**
+ * The table cache carries the measurements too, under the same parser key as the sidecar: if the
+ * sidecar cannot be written, a launch still finds both here and does not re-parse 38 MB every time.
+ */
 interface CacheFile {
   version: number
+  key?: string
   size: number
   mtimeMs: number
   table: SpellResistTable
+  measured?: SpellsUsMeasured
 }
 
 interface Parsed {
@@ -102,16 +108,18 @@ function readCache(stamp: Stamp): Parsed | null {
     const file = JSON.parse(readFileSync(cachePath(), 'utf8')) as CacheFile
     if (file.version !== SPELL_RESIST_CACHE_VERSION) return null
     if (file.size !== stamp.size || file.mtimeMs !== stamp.mtimeMs) return null
-    return { table: file.table }
+    // A cache from a build that measured differently (or not at all) is re-parsed once.
+    if (file.key !== META_KEY || !file.measured) return null
+    return { table: file.table, measured: file.measured }
   } catch {
     return null
   }
 }
 
-function writeCache(stamp: Stamp, table: SpellResistTable): void {
+function writeCache(stamp: Stamp, parsed: Parsed): void {
   const path = cachePath()
   const tmp = `${path}.tmp`
-  const file: CacheFile = { version: SPELL_RESIST_CACHE_VERSION, ...stamp, table }
+  const file: CacheFile = { version: SPELL_RESIST_CACHE_VERSION, key: META_KEY, ...stamp, ...parsed }
   try {
     mkdirSync(app.getPath('userData'), { recursive: true })
     writeFileSync(tmp, JSON.stringify(file), 'utf8')
@@ -179,23 +187,33 @@ async function load(): Promise<SpellResistTable | null> {
     return null
   }
   sourceMtime = stamp.mtimeMs
-  // No layout sidecar from THIS build means this parser has not measured this file: skip the cache,
-  // so the one worker pass produces the table and the measurements together.
-  const cached = readSpellsUsMeta(stamp, META_KEY) ? readCache(stamp) : null
+  // The cache carries this build's measurements; a cache from another parser is re-parsed once, and
+  // that one worker pass produces the table and the measurements together.
+  const cached = readCache(stamp)
   const parsed = cached ?? (await parseOnWorker(path))
-  if (parsed?.measured) writeSpellsUsMeta(stamp, META_KEY, parsed.measured)
-  // AN EMPTY TABLE IS NOT A TABLE. It is what an unmeasured layout parses to (every row skipped),
-  // and serving it as 'ok' is how a patch silently switched resist estimates off for everyone. It
-  // reads as 'unloadable', and it is never cached, so the build that learns the layout re-parses.
-  if (!parsed || Object.keys(parsed.table).length === 0) {
+  if (parsed?.measured) {
+    measuredNow = { key: stampKey(stamp), measured: parsed.measured }
+    if (!readSpellsUsMeta(stamp, META_KEY)) writeSpellsUsMeta(stamp, META_KEY, parsed.measured)
+  }
+  // A TABLE FROM A FILE THIS BUILD DOES NOT RECOGNISE IS NOT SERVED. An empty table is what an
+  // unmeasured width parses to; a full one read at moved offsets is worse, wrong numbers with a
+  // straight face. Either way the state is 'unloadable' (the mob page and con card say "spell data
+  // unavailable"), which is what makes the game-file notice's "paused" true. Never cached, so the
+  // build that learns the layout re-parses.
+  const version = fileVersion(stamp.size, stamp.mtimeMs)
+  const verdict = parsed?.measured ? spellsUsHealth({ ...parsed.measured, version }, KNOWN_ROW_LENGTHS).status : 'ok'
+  if (!parsed || Object.keys(parsed.table).length === 0 || verdict === 'unrecognised') {
     state = 'unloadable'
     return null
   }
   loaded = parsed.table
-  if (!cached) writeCache(stamp, parsed.table)
+  if (!cached) writeCache(stamp, parsed)
   state = 'ok'
   return parsed.table
 }
+
+/** This run's measurements, for the health check when the sidecar could not be written. */
+let measuredNow: { key: string; measured: SpellsUsMeasured } | null = null
 
 /**
  * The game-file health verdict on `spells_us.txt` (shared/gameFileHealth.ts). Usually WITHOUT
@@ -215,7 +233,8 @@ export async function spellsUsHealthNow(): Promise<GameFileReport> {
   let measured = readSpellsUsMeta(stamp, META_KEY)
   if (!measured) {
     await spellTable()
-    measured = readSpellsUsMeta(stamp, META_KEY)
+    const mine = measuredNow?.key === stampKey(stamp) ? measuredNow.measured : null
+    measured = readSpellsUsMeta(stamp, META_KEY) ?? mine
   }
   if (!measured) return readError('spellsUs', 'unloadable', version)
   return spellsUsHealth({ ...measured, version }, KNOWN_ROW_LENGTHS)

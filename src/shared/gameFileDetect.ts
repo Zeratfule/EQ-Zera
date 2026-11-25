@@ -17,6 +17,7 @@ import {
   type GameFileId,
   type GameFileReport
 } from './gameFileHealth'
+import CHECKS_JSON from './spellsUsChecks.json'
 
 /** Rows and their field-count histogram, the measurement both row-table detectors start from. */
 export interface RowLayout {
@@ -86,6 +87,13 @@ export interface SpellsUsSemantics {
 /** The default share of realigned rows a field check must pass (the per-check floors live with the checks). */
 export const SEMANTIC_FLOOR = 0.95
 
+/**
+ * The field checks are shares over rows, so they judge only a file with at least this many
+ * realigned rows (src/shared/spellsUsChecks.json `minRows`; the engine reads the same number). A
+ * hand-authored table of a few rows is judged on its width alone.
+ */
+export const FIELD_CHECK_MIN_ROWS: number = (CHECKS_JSON as { minRows: number }).minRows
+
 /** How many failed checks a `-moved` report names; `failed` carries the full count. */
 const MAX_FAILED_SHOWN = 8
 
@@ -114,11 +122,11 @@ export interface SpellsUsMeasure {
  * out (a report's message is capped at 200 characters after redaction). A known width that
  * parsed to no spells at all (`entries` 0: blank names, non-numeric ids) is `no-spells`.
  */
-export function spellsUsHealth(m: SpellsUsMeasure, known: ReadonlySet<number>): GameFileReport {
+export function spellsUsHealth(m: SpellsUsMeasure, known: ReadonlySet<number>, minRows = FIELD_CHECK_MIN_ROWS): GameFileReport {
   const verdict = rowTableVerdict('spellsUs', m.layout, known, m.version)
   if (verdict.status !== 'ok') return verdict
   if (m.entries === 0) return { ...verdict, status: 'unrecognised', signature: 'no-spells' }
-  if (!m.semantics) return verdict
+  if (!m.semantics || m.semantics.rows < minRows) return verdict
   const s = m.semantics
   const failed = failedChecks(s)
   const checks = Object.keys(s.pass).length

@@ -20,7 +20,7 @@ const ROWS = 40
 const base = Array.from({ length: ROWS }, (_, i) => shaped190(i))
 
 function verdictOf(text: string): string {
-  return spellsUsHealth({ layout: caretLayout(text), semantics: spellsUsSemantics(text), version: 'v' }, KNOWN_ROW_LENGTHS).status
+  return spellsUsHealth({ layout: caretLayout(text), semantics: spellsUsSemantics(text), version: 'v' }, KNOWN_ROW_LENGTHS, 0).status
 }
 
 /** Insert a '0' column at p and remove what was column q, in the unshifted row's coordinates. */
@@ -34,6 +34,41 @@ function moved(p: number, q: number): string {
     })
   )
 }
+
+/**
+ * A CONTENT patch, not a layout one, must stay ok: the proportions the review simulated on the real
+ * file (74k rows + 10k bard songs, + 10k NPC-only rows, + 5k rows in new categories, 10% deleted),
+ * scaled to a 200-row fixture. Raw 190-field indexes: 36..51 classes (43 the bard), 87 the category.
+ */
+test('a content patch (bard songs, NPC-only rows, new categories, deletions) stays ok', () => {
+  const rows = Array.from({ length: 200 }, (_, i) => shaped190(i)).filter((_, i) => i % 10 !== 3)
+  let id = 5000
+  const clone = (i: number, edit: (f: string[]) => void): string[] => {
+    const f = shaped190(i)
+    f[0] = String(id++)
+    edit(f)
+    return f
+  }
+  for (let i = 0; i < 27; i++) {
+    rows.push(
+      clone(i, (f) => {
+        f[1] = `Synthetic Song ${String(i)}`
+        for (let c = 36; c <= 51; c++) f[c] = '255'
+        f[43] = String(1 + (i % 60))
+      })
+    )
+  }
+  for (let i = 0; i < 27; i++) {
+    rows.push(
+      clone(i + 50, (f) => {
+        f[1] = `Synthetic NPC Spell ${String(i)}`
+        for (let c = 36; c <= 51; c++) f[c] = '255'
+      })
+    )
+  }
+  for (let i = 0; i < 14; i++) rows.push(clone(i + 100, (f) => (f[87] = String(250 + i))))
+  assert.equal(verdictOf(joinRows(rows)), 'ok')
+})
 
 test('the unmodified real-shaped 190-field file is ok', () => {
   assert.equal(verdictOf(joinRows(base)), 'ok')

@@ -27,7 +27,7 @@ const twenty = <T,>(make: (i: number) => T): T[] => Array.from({ length: 20 }, (
 
 function verdict(text: string, entries?: number): GameFileReport {
   const m = { layout: caretLayout(text), semantics: spellsUsSemantics(text), version: '1-2' }
-  return spellsUsHealth(entries === undefined ? m : { ...m, entries }, KNOWN_ROW_LENGTHS)
+  return spellsUsHealth(entries === undefined ? m : { ...m, entries }, KNOWN_ROW_LENGTHS, 0)
 }
 
 test('a file whose rows all lost one column (172 wide) is unrecognised, and the parser reads none of it', () => {

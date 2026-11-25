@@ -54,7 +54,7 @@ function spellFile(width: number, rows: number): string {
 }
 
 function spellsVerdict(text: string): GameFileReport {
-  return spellsUsHealth({ layout: caretLayout(text), semantics: spellsUsSemantics(text), version: '1-2' }, KNOWN_ROW_LENGTHS)
+  return spellsUsHealth({ layout: caretLayout(text), semantics: spellsUsSemantics(text), version: '1-2' }, KNOWN_ROW_LENGTHS, 0)
 }
 
 test('spells_us: the 190-field file of 2026-11-24 is ok, and every row is read', () => {
