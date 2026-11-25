@@ -139,6 +139,16 @@ function linkTitle(inner: string): string {
 }
 
 /**
+ * A loot "transclusion" that says the mob drops NOTHING, not an item called that. MEASURED on the
+ * 2026-11-25 cache: 21 mob pages write their empty loot list as `<li> {{:None}}</li>` (Scabby,
+ * Bizzzzt, Lord Ollix Everling, …), and each became a drop named "None". No item page has any of
+ * these titles (items.json, same day); the rest of the set has 0 occurrences today and is the
+ * same mistake waiting for the next refresh. A link never needs this: it counts only when it
+ * reaches an item page (`linkItem`).
+ */
+const LOOT_PLACEHOLDER_RE = /^(?:none|nothing|unknown|n\/a|\?+)$/i
+
+/**
  * Every drop anchor in the field, in page order: each `{{:Item}}` transclusion, plus each
  * `[[link]]` whose target `isItem` accepts.
  */
@@ -152,8 +162,10 @@ function lootMarks(block: string, opts: MobLootOptions | undefined): LootMark[] 
   // already said it that way), and the raw string then joined no item, so the 2026-10-07
   // rescrape left Brass Knuckles with no Sky dropper at all. Fold to the spaced form the item
   // catalog and the game both print.
-  while ((m = re.exec(block)) !== null)
-    marks.push({ item: m[1].replace(/_/g, ' ').replace(/\s+/g, ' ').trim(), start: m.index, end: re.lastIndex })
+  while ((m = re.exec(block)) !== null) {
+    const item = m[1].replace(/_/g, ' ').replace(/\s+/g, ' ').trim()
+    if (!LOOT_PLACEHOLDER_RE.test(item)) marks.push({ item, start: m.index, end: re.lastIndex })
+  }
   const isItem = opts?.isItem
   if (!isItem) return marks
   // THE LINK FORM. The wiki increasingly writes loot as `[[Item]]` / `[[Item|label]]` instead of

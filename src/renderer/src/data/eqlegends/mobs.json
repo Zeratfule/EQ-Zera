@@ -9393,9 +9393,6 @@
       "zones": [
         "Innothule Swamp"
       ],
-      "drops": [
-        "None"
-      ],
       "loc": [
         {
           "ns": -1960,
@@ -19667,9 +19664,6 @@
       "zones": [
         "Plane of Hate"
       ],
-      "drops": [
-        "None"
-      ],
       "loc": [
         {
           "ns": 130,
@@ -22482,9 +22476,6 @@
       "level": "1-5",
       "zones": [
         "Kerra Isle"
-      ],
-      "drops": [
-        "None"
       ]
     },
     {
@@ -26618,9 +26609,6 @@
       "level": "56",
       "zones": [
         "Plane of Hate"
-      ],
-      "drops": [
-        "None"
       ],
       "loc": [
         {
@@ -38472,9 +38460,6 @@
       "level": "56",
       "zones": [
         "Plane of Hate"
-      ],
-      "drops": [
-        "None"
       ]
     },
     {
@@ -58243,9 +58228,6 @@
       "level": "60",
       "zones": [
         "Plane of Sky"
-      ],
-      "drops": [
-        "None"
       ]
     },
     {
@@ -70145,9 +70127,6 @@
       "level": "70",
       "zones": [
         "Nektropos Undercrofts"
-      ],
-      "drops": [
-        "None"
       ],
       "loc": [
         {
@@ -101516,9 +101495,6 @@
       "zones": [
         "Nektropos Undercrofts"
       ],
-      "drops": [
-        "None"
-      ],
       "loc": [
         {
           "ns": 34,
@@ -104699,9 +104675,6 @@
       "level": "70",
       "zones": [
         "Nektropos Undercrofts"
-      ],
-      "drops": [
-        "None"
       ],
       "loc": [
         {
@@ -109252,9 +109225,6 @@
       "level": "63",
       "zones": [
         "Nektropos Castle"
-      ],
-      "drops": [
-        "None"
       ],
       "loc": [
         {
@@ -113933,9 +113903,6 @@
       "zones": [
         "Nektropos Castle"
       ],
-      "drops": [
-        "None"
-      ],
       "loc": [
         {
           "ns": 354,
@@ -115950,9 +115917,6 @@
       "zones": [
         "Nektropos Undercrofts"
       ],
-      "drops": [
-        "None"
-      ],
       "loc": [
         {
           "ns": 33,
@@ -116657,9 +116621,6 @@
       "level": "70",
       "zones": [
         "Rathe Mountains"
-      ],
-      "drops": [
-        "None"
       ],
       "loc": [
         {
@@ -126110,9 +126071,6 @@
       "zones": [
         "Neriak - Commons"
       ],
-      "drops": [
-        "None"
-      ],
       "loc": [
         {
           "ns": 53,
@@ -132804,9 +132762,6 @@
       "zones": [
         "Nektropos Undercrofts"
       ],
-      "drops": [
-        "None"
-      ],
       "loc": [
         {
           "ns": 32,
@@ -137574,9 +137529,6 @@
       "zones": [
         "Nektropos Undercrofts"
       ],
-      "drops": [
-        "None"
-      ],
       "loc": [
         {
           "ns": 41,
@@ -139208,9 +139160,6 @@
       "level": "70",
       "zones": [
         "Nektropos Undercrofts"
-      ],
-      "drops": [
-        "None"
       ],
       "loc": [
         {
@@ -150740,9 +150689,6 @@
       "zones": [
         "East Freeport"
       ],
-      "drops": [
-        "None"
-      ],
       "loc": [
         {
           "ns": -25,
@@ -154041,9 +153987,6 @@
       "zones": [
         "Nektropos Undercrofts"
       ],
-      "drops": [
-        "None"
-      ],
       "loc": [
         {
           "ns": -112,
@@ -154510,9 +154453,6 @@
       "level": "50",
       "zones": [
         "Neriak Foreign Quarter"
-      ],
-      "drops": [
-        "None"
       ],
       "loc": [
         {
@@ -156009,9 +155949,6 @@
       "level": "30",
       "zones": [
         "Nektropos Undercrofts"
-      ],
-      "drops": [
-        "None"
       ],
       "loc": [
         {

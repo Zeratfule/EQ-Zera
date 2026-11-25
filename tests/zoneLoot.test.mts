@@ -234,11 +234,15 @@ test('zoneLootRows over the REAL catalog: Nektropos Castle is in era, drop for d
   for (const r of rows) assert.equal(eraChip(r.era), null, `${r.item} off ${r.mob} should read in era`)
   assert.equal(zoneLootSummary(rows).outOfEra, 0)
   // And its two neighbours from the same patch.
-  for (const zone of ['Lake Nerius', 'Nektropos Undercrofts']) {
-    const near = zoneLootRows({ zone, catalog: REAL, seenByItem: NO_SEEN })
-    assert.ok(near.length > 0, zone)
-    for (const r of near) assert.equal(eraChip(r.era), null, `${zone}: ${r.item} should read in era`)
-  }
+  const nerius = zoneLootRows({ zone: 'Lake Nerius', catalog: REAL, seenByItem: NO_SEEN })
+  assert.ok(nerius.length > 0, 'Lake Nerius')
+  for (const r of nerius) assert.equal(eraChip(r.era), null, `Lake Nerius: ${r.item} should read in era`)
+  // The Undercrofts' 24 mob pages state NO loot (2026-11-25 cache): the nine rows it used to show
+  // were all "None", the `{{:None}}` placeholder read as an item, which the loot parser now refuses.
+  // So no non-empty check here; whatever the wiki adds later must still read in era.
+  const crofts = zoneLootRows({ zone: 'Nektropos Undercrofts', catalog: REAL, seenByItem: NO_SEEN })
+  assert.ok(crofts.every((r) => r.item !== 'None'), 'a placeholder reached the Undercrofts table')
+  for (const r of crofts) assert.equal(eraChip(r.era), null, `Nektropos Undercrofts: ${r.item} should read in era`)
 })
 
 test('filterRows over the REAL catalog: the search narrows within the era fold', () => {
