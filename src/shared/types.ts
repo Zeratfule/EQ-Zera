@@ -493,51 +493,8 @@ export interface PoskyData {
   quests: PoskyQuest[]
 }
 
-// ----- Wiki quest catalog (produced by scripts/scrape-quests.ts) -----
-//
-// The SECOND local-first source for item knowledge. Item pages only carry a quest
-// association when someone filled in their `|relatedquests` field, so classic turn-in
-// items (Dwarven Ale, Guard Bracelet, …) look quest-less from the item side. The linkage
-// actually lives on the QUEST pages, which this catalog indexes item-first.
-
-/** One quest scraped from an eqlwiki quest page (Category:Quests + quest subcategories). */
-export interface QuestEntry {
-  /** display name (the wiki page title) */
-  name: string
-  /** wiki page title (linkable) */
-  page: string
-  /** "Start Zone" cell */
-  startZone?: string
-  /** "Quest Giver" NPC */
-  giver?: string
-  /** "Minimum Level" (numeric part only) */
-  minLevel?: number
-  /** classes the quest is offered to ("All" when unrestricted) */
-  classes?: string[]
-  /** "Related Zones" cell */
-  relatedZones?: string[]
-  /** "Related NPCs" cell */
-  relatedNpcs?: string[]
-  /** reward items (from the Reward section's item boxes/links) */
-  rewards?: { name: string }[]
-  /** items the quest body references (turn-ins / collectibles), reward items excluded */
-  requiredItems?: string[]
-  /** page carries an experience-reward marker */
-  expReward?: boolean
-  /**
-   * The quest's steps as plain text, one per line, from the wiki's Quick List / Checklist /
-   * Short Walkthrough when the page has one, else its Walkthrough with the NPC dialogue,
-   * faction lines and exp markers stripped (scripts/sources/questPage.ts `extractSteps`).
-   */
-  steps?: string[]
-}
-
-export interface QuestData {
-  scrapedAt: string
-  /** human-readable provenance, e.g. "eqlwiki.com Category:Quests (+ subcategories)" */
-  source: string
-  quests: QuestEntry[]
-}
+// ----- Wiki quest catalog: `QuestEntry` / `QuestData` and the per-step location facts live in
+// ./questTypes.ts (moved out at this barrel's 400-code-line ceiling), re-exported below. -----
 
 // ----- Item knowledge ("what's this lore/quest item for", Task #53) -----
 
@@ -688,6 +645,7 @@ export interface ItemKnowledge {
 // when the map viewer added spawn coordinates, and the block moved out rather than the rule
 // moving up. Re-exported here so every existing `@shared/types` import keeps working.
 export type * from './mobTypes'
+export type * from './questTypes'
 
 // ----- consider module (Task #63) -----
 

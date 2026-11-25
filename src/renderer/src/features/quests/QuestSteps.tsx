@@ -13,11 +13,18 @@
 // and wash QuestPage has always drawn: the two signals are different questions ("you hold what this
 // asks for" vs "this is done"), and a step can be lit without being ticked all the way up to the
 // moment you hand it over.
+//
+// WHERE, UNDER THE STEP THAT SAYS IT (quest locations wave). A step that states a coordinate, or
+// links an NPC whose wiki page states one, carries one small chip per place under its text
+// (./QuestLocChip.tsx). A step that says nothing about where carries nothing — no empty row.
 
 import { type JSX } from 'react'
 import { Box, Checkbox, Stack, Typography } from '@mui/material'
 import type { QuestProgress } from '../../../../shared/questProgress'
+import type { QuestLocChip as Loc } from '../../../../shared/questLocations'
 import { FONTS, PALETTE, withAlpha } from '../../../../shared/palette'
+import type { MapAnchor } from '../maps/mapTarget'
+import { QuestLocChip } from './QuestLocChip'
 
 export interface QuestStepsProps {
   steps: readonly string[]
@@ -26,6 +33,23 @@ export interface QuestStepsProps {
   ticks: readonly number[]
   /** null when the quest is not tracked — the boxes are read-only and the page says why */
   onTick: ((step: number, on: boolean) => void) | null
+  /** per step, where it happens (index-aligned with `steps`); absent ⇒ no chips */
+  chips?: readonly (readonly Loc[])[]
+  /** the quest's page, carried on a jump so the map can draw its pins */
+  quest?: string
+  onOpenMap?: (a: MapAnchor) => void
+}
+
+/** The chips under one step, or nothing at all when it names no place. */
+function StepChips({ chips, quest, onOpenMap }: { chips: readonly Loc[]; quest: string; onOpenMap?: (a: MapAnchor) => void }): JSX.Element | null {
+  if (chips.length === 0) return null
+  return (
+    <Stack direction="row" spacing={0.5} useFlexGap flexWrap="wrap" sx={{ mt: 0.25 }} data-testid="quest-step-locs">
+      {chips.map((c) => (
+        <QuestLocChip key={c.key} chip={c} quest={quest} onOpenMap={onOpenMap} />
+      ))}
+    </Stack>
+  )
 }
 
 /** One row: its box, its state, and where that state came from. */
@@ -35,7 +59,8 @@ function StepRow({
   auto,
   lit,
   checked,
-  onTick
+  onTick,
+  where
 }: {
   step: string
   index: number
@@ -43,6 +68,7 @@ function StepRow({
   lit: boolean
   checked: boolean
   onTick: ((step: number, on: boolean) => void) | null
+  where: JSX.Element | null
 }): JSX.Element {
   return (
     <Stack
@@ -70,23 +96,26 @@ function StepRow({
         onChange={(e) => onTick?.(index, e.target.checked)}
         sx={{ p: 0.25, mt: -0.25 }}
       />
-      <Typography variant="body2" sx={{ flexGrow: 1, minWidth: 0 }}>
-        <Typography component="span" variant="caption" sx={{ color: 'text.disabled', fontFamily: FONTS.mono, mr: 0.75 }}>
-          {index + 1}
-        </Typography>
-        {step}
-        {auto && (
-          <Typography component="span" variant="caption" sx={{ color: 'success.main', ml: 0.75 }} data-testid="quest-step-auto">
-            from the log
+      <Box sx={{ flexGrow: 1, minWidth: 0 }}>
+        <Typography variant="body2">
+          <Typography component="span" variant="caption" sx={{ color: 'text.disabled', fontFamily: FONTS.mono, mr: 0.75 }}>
+            {index + 1}
           </Typography>
-        )}
-      </Typography>
+          {step}
+          {auto && (
+            <Typography component="span" variant="caption" sx={{ color: 'success.main', ml: 0.75 }} data-testid="quest-step-auto">
+              from the log
+            </Typography>
+          )}
+        </Typography>
+        {where}
+      </Box>
     </Stack>
   )
 }
 
 /** The checklist. Nothing at all when the wiki page carried no walkthrough. */
-export function QuestSteps({ steps, progress, ticks, onTick }: QuestStepsProps): JSX.Element {
+export function QuestSteps({ steps, progress, ticks, onTick, chips, quest = '', onOpenMap }: QuestStepsProps): JSX.Element {
   if (steps.length === 0) {
     return (
       <Typography variant="caption" color="text.disabled">
@@ -99,6 +128,7 @@ export function QuestSteps({ steps, progress, ticks, onTick }: QuestStepsProps):
     <Box sx={{ display: 'grid', gap: 0.5 }} data-testid="quest-steps">
       {steps.map((step, i) => {
         const auto = progress?.auto.has(i) ?? false
+        const here = chips?.[i] ?? []
         return (
           <StepRow
             key={i}
@@ -108,6 +138,7 @@ export function QuestSteps({ steps, progress, ticks, onTick }: QuestStepsProps):
             lit={progress?.lit.has(i) ?? false}
             checked={auto || hand.has(i)}
             onTick={onTick}
+            where={<StepChips chips={here} quest={quest} onOpenMap={onOpenMap} />}
           />
         )
       })}

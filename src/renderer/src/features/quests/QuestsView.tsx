@@ -28,6 +28,8 @@ import { TrackedQuests } from './TrackedQuests'
 import { useQuestItems } from './useQuestItems'
 import { useQuestPins } from './useQuestPins'
 import { useQuestProgress } from './useQuestProgress'
+import { forgetQuestPage, peekQuestPage } from './questResume'
+import type { MapAnchor } from '../maps/mapTarget'
 
 /** The browse list is capped: past this the answer is a narrower filter, not a longer scroll. */
 const BROWSE_CAP = 250
@@ -193,16 +195,23 @@ interface QuestsViewProps {
   anchor?: string | null
   anchorNonce?: number
   onAnchorApplied?: () => void
+  /** a location chip's jump to the Maps tab */
+  onOpenMap?: (anchor: MapAnchor) => void
 }
 
-export default function QuestsView({ onOpenLoot, anchor = null, anchorNonce = 0, onAnchorApplied }: QuestsViewProps): JSX.Element {
+export default function QuestsView({ onOpenLoot, anchor = null, anchorNonce = 0, onAnchorApplied, onOpenMap }: QuestsViewProps): JSX.Element {
   const classes = useResolvedClasses()
   const { items, byQuest } = useQuestItems()
   const [query, setQuery] = useState('')
   const deferred = useDeferredValue(query)
   const [myClasses, setMyClasses] = useState(true)
   const [zone, setZone] = useState('')
-  const [open, setOpen] = useState<QuestEntry | null>(null)
+  // A location chip left for the map from a page: coming back reopens it (questResume.ts).
+  // Read in the initializer (pure: StrictMode may run it twice), retired after the mount.
+  const [open, setOpen] = useState<QuestEntry | null>(() => QUEST_BY_PAGE.get(peekQuestPage() ?? '') ?? null)
+  useEffect(() => {
+    forgetQuestPage()
+  }, [])
   // The tracker, and its progress. Loops rather than `.map` over the pins is not required here —
   // a projection is what a renderer is for — but the page list is memoised so `useQuestProgress`
   // is not handed a fresh array on every keystroke in the search box.
@@ -232,7 +241,9 @@ export default function QuestsView({ onOpenLoot, anchor = null, anchorNonce = 0,
 
   if (open) {
     const quest = QUEST_BY_PAGE.get(open.page) ?? open
-    return <QuestPage quest={quest} held={byQuest.get(quest.page) ?? []} onBack={() => setOpen(null)} onOpenLoot={onOpenLoot} />
+    return (
+      <QuestPage quest={quest} held={byQuest.get(quest.page) ?? []} onBack={() => setOpen(null)} onOpenLoot={onOpenLoot} onOpenMap={onOpenMap} />
+    )
   }
 
   const searching = deferred.trim() !== ''
@@ -277,7 +288,8 @@ export function QuestsBranch({
   onOpenLoot,
   anchor,
   anchorNonce,
-  onAnchorApplied
+  onAnchorApplied,
+  onOpenMap
 }: {
   view: string
   viewKey: string
@@ -286,8 +298,17 @@ export function QuestsBranch({
   anchor: string | null
   anchorNonce: number
   onAnchorApplied: () => void
+  /** `AppRouting.openMap` — a location chip's jump */
+  onOpenMap: (anchor: MapAnchor) => void
 }): JSX.Element | null {
   return view === 'quests' ? (
-    <QuestsView key={viewKey} onOpenLoot={onOpenLoot} anchor={anchor} anchorNonce={anchorNonce} onAnchorApplied={onAnchorApplied} />
+    <QuestsView
+      key={viewKey}
+      onOpenLoot={onOpenLoot}
+      anchor={anchor}
+      anchorNonce={anchorNonce}
+      onAnchorApplied={onAnchorApplied}
+      onOpenMap={onOpenMap}
+    />
   ) : null
 }

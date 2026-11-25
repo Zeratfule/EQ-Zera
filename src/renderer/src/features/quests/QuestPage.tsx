@@ -17,7 +17,11 @@ import { wikiPageUrl } from '@shared/wiki'
 import { questClasses, questItemKey, type LootedQuestItem } from '../../../../shared/questIndex'
 import type { QuestProgress } from '../../../../shared/questProgress'
 import { formatDate } from '../../lib/formatDate'
-import { QuestSteps } from './QuestSteps'
+import { QuestSteps, type QuestStepsProps } from './QuestSteps'
+import { ItemSourcesList, NpcList } from './QuestWhere'
+import { questLocationsFor } from './questLocIndex'
+import { rememberQuestPage } from './questResume'
+import type { MapAnchor } from '../maps/mapTarget'
 import { isPinned, ticksFor, useQuestPins } from './useQuestPins'
 import { useQuestProgress } from './useQuestProgress'
 
@@ -51,8 +55,20 @@ function ItemChip({ name, held, onOpenLoot }: { name: string; held: LootedQuestI
   )
 }
 
-/** "Items needed" / "Rewards": nothing at all when the quest lists none. */
-function ItemsSection({ title, names, held, onOpenLoot }: { title: string; names: readonly string[]; held: Held; onOpenLoot: OpenLoot }): JSX.Element | null {
+/** "Items needed" / "Rewards": nothing at all when the quest lists none. `children` rides under. */
+function ItemsSection({
+  title,
+  names,
+  held,
+  onOpenLoot,
+  children
+}: {
+  title: string
+  names: readonly string[]
+  held: Held
+  onOpenLoot: OpenLoot
+  children?: ReactNode
+}): JSX.Element | null {
   if (names.length === 0) return null
   return (
     <Section title={`${title} · ${String(names.length)}`}>
@@ -61,6 +77,7 @@ function ItemsSection({ title, names, held, onOpenLoot }: { title: string; names
           <ItemChip key={name} name={name} held={held.get(questItemKey(name))} onOpenLoot={onOpenLoot} />
         ))}
       </Stack>
+      {children}
     </Section>
   )
 }
@@ -77,12 +94,15 @@ function StepsSection({
   steps,
   progress,
   ticks,
-  onTick
+  onTick,
+  where
 }: {
   steps: readonly string[]
   progress: QuestProgress | undefined
   ticks: readonly number[]
   onTick: ((step: number, on: boolean) => void) | null
+  /** the per-step location chips and the jump they make */
+  where: Pick<QuestStepsProps, 'chips' | 'quest' | 'onOpenMap'>
 }): JSX.Element {
   const done = progress?.done ?? 0
   const title = steps.length === 0 ? 'Steps' : `Steps · ${String(done)}/${String(steps.length)}`
@@ -93,7 +113,7 @@ function StepsSection({
           {progress.completeAt === undefined ? 'Completed' : `Completed ${formatDate(progress.completeAt)}`}
         </Typography>
       )}
-      <QuestSteps steps={steps} progress={progress} ticks={ticks} onTick={onTick} />
+      <QuestSteps steps={steps} progress={progress} ticks={ticks} onTick={onTick} {...where} />
     </Section>
   )
 }
@@ -138,16 +158,31 @@ export function QuestPage({
   quest,
   held,
   onBack,
-  onOpenLoot
+  onOpenLoot,
+  onOpenMap
 }: {
   quest: QuestEntry
   /** the looted items this quest needs or gives (useQuestItems().byQuest) */
   held: LootedQuestItem[]
   onBack: () => void
   onOpenLoot: OpenLoot
+  /** a location chip's jump to the Maps tab; absent ⇒ the chips are text */
+  onOpenMap?: (a: MapAnchor) => void
 }): JSX.Element {
   const heldByKey: Held = useMemo(() => new Map(held.map((h) => [h.key, h])), [held])
-  const npcs = quest.relatedNpcs ?? []
+  // WHERE (quest locations wave): resolved once per page by the pure resolver, cached per page.
+  const locs = useMemo(() => questLocationsFor(quest), [quest])
+  // Leaving for the map remembers this page, so coming back lands here (questResume.ts).
+  const openMap = useMemo(
+    () =>
+      onOpenMap
+        ? (a: MapAnchor) => {
+            rememberQuestPage(quest.page)
+            onOpenMap(a)
+          }
+        : undefined,
+    [onOpenMap, quest.page]
+  )
   const [pins, api] = useQuestPins()
   const pages = useMemo(() => [quest.page], [quest.page])
   const progress = useQuestProgress(pages).get(quest.page)
@@ -173,19 +208,20 @@ export function QuestPage({
       <Box sx={{ flexGrow: 1, minHeight: 0, overflow: 'auto', pr: 0.5 }}>
         <Stack spacing={1.5}>
           <QuestHeader quest={quest} />
-          <ItemsSection title="Items needed" names={quest.requiredItems ?? []} held={heldByKey} onOpenLoot={onOpenLoot} />
+          <ItemsSection title="Items needed" names={quest.requiredItems ?? []} held={heldByKey} onOpenLoot={onOpenLoot}>
+            <ItemSourcesList items={locs.items} quest={quest.page} onOpenMap={openMap} />
+          </ItemsSection>
           <ItemsSection title="Rewards" names={(quest.rewards ?? []).map((r) => r.name)} held={heldByKey} onOpenLoot={onOpenLoot} />
           <StepsSection
             steps={steps}
             progress={progress}
             ticks={ticks}
             onTick={pinned ? (step, on) => api.tick(quest.page, step, on) : null}
+            where={{ chips: locs.steps, quest: quest.page, onOpenMap: openMap }}
           />
-          {npcs.length > 0 && (
+          {locs.npcs.length > 0 && (
             <Section title="NPCs involved">
-              <Typography variant="body2" color="text.secondary">
-                {npcs.join(' · ')}
-              </Typography>
+              <NpcList npcs={locs.npcs} quest={quest.page} onOpenMap={openMap} />
             </Section>
           )}
         </Stack>

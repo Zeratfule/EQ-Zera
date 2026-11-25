@@ -45,7 +45,7 @@ import GearView from './features/gear/GearView'
 import WishlistView from './features/wishlist/WishlistView'
 import BossView from './features/bosses/BossView'
 import MobsView from './features/mobs/MobsView'
-import MapsView from './features/maps/MapsView'
+import { MapsBranch } from './features/maps/MapsView'
 import CombatView from './features/combat/CombatView'
 import OverviewView from './features/overview/OverviewView'
 import AlertsView from './features/alerts/AlertsView'
@@ -134,8 +134,8 @@ function PlainView({
         />
       )}
       {/* Maps remounts per character rebuild like the rest: the zone it auto-opens comes from
-          the character module, which re-hydrates under the new character anyway. */}
-      {view === 'maps' && <MapsView key={viewKey} />}
+          the character module, which re-hydrates under the new character anyway. It is mounted
+          below as a sibling (MapsBranch), since it takes a quest location chip's anchor. */}
       {/* RACES: race-unlock progress off the achievements dump. Keyed like the rest, since the
           dump and the faction fold are both one character's; its ways to raise a faction link out
           to the Mobs and Quests tabs. */}
@@ -195,6 +195,7 @@ function PlainView({
           file, not here: this switch is one branch per view and a branch needing both would have
           cost `PlainView` two points of the measured complexity ceiling. */}
       <SpellDrill view={view} viewKey={viewKey} routing={routing} />
+      <MapsBranch view={view} viewKey={viewKey} routing={routing} />
       {/* QUESTS (EQ Zera): mounted as a sibling, for the same reason SpellDrill is. */}
       <QuestsBranch
         view={view}
@@ -203,6 +204,7 @@ function PlainView({
         anchor={routing.questPage}
         anchorNonce={routing.questPageNonce}
         onAnchorApplied={routing.clearQuestPageFocus}
+        onOpenMap={routing.openMap}
       />
       {/* ZONE LOOT (EQ Zera, ROADMAP §2): the same sibling idiom. Mob names drill into the Mobs
           tab, item names into the Loot drill-down, both through the router. */}

@@ -295,6 +295,13 @@ function toQuestEntry(parsed: ParsedQuestPage): QuestEntry {
   if (parsed.requiredItems.length) entry.requiredItems = parsed.requiredItems
   if (parsed.expReward) entry.expReward = true
   if (parsed.steps.length) entry.steps = parsed.steps
+  return withStepRefs(entry, parsed)
+}
+
+/** The per-step links and coordinates: index-aligned with `steps`, so whole or not at all. */
+function withStepRefs(entry: QuestEntry, parsed: ParsedQuestPage): QuestEntry {
+  if (parsed.stepLinks.some((l) => l.length > 0)) entry.stepLinks = parsed.stepLinks
+  if (parsed.stepLocs.some((l) => l.length > 0)) entry.stepLocs = parsed.stepLocs
   return entry
 }
 

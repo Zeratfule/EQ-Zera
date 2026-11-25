@@ -58,6 +58,8 @@ import MapToolbar from './MapToolbar'
 import { zoneLabel } from './zoneOptions'
 import { loadPackPrefs, savePackPrefs, useMapData, useMapPacks } from './useMapData'
 import { useLocMarker } from './useLocMarker'
+import { useMapQuestOverlay, type MapAnchorProps } from './useMapQuestOverlay'
+import type { AppRouting } from '../../appRouting'
 import {
   loadZoneSelection,
   onCharacterZone,
@@ -355,7 +357,11 @@ function useMapOpenTracking(data: MapData | null): void {
   }, [loaded])
 }
 
-export default function MapsView(): JSX.Element {
+/**
+ * The tab. Its one inbound link is a quest page's location chip (quest locations wave): a zone, a
+ * point and a label, landed by `useMapQuestOverlay` — which also draws the quest pin layer.
+ */
+export default function MapsView(props: MapAnchorProps): JSX.Element {
   // WHERE YOU ARE. The character module owns the raw display zone off the `zone` log event; it
   // is undefined until the log prints one, and that absence is a state this view renders.
   const raw = useModule<CharacterSnap>('character')?.zone
@@ -389,6 +395,8 @@ export default function MapsView(): JSX.Element {
   // fetched: a marker attributed to a map that has not loaded would be drawn against the previous
   // zone's bounds for a frame — a dot in the wrong place, which is the one thing this must not do.
   const loc = useLocMarker(data?.zone ?? null, vp)
+  // THE QUEST LAYER: an inbound chip's target and the followed quests' pins. Never the typed /loc.
+  const questOverlay = useMapQuestOverlay({ props, vp, data, onJump })
 
   // THE SIDEBAR. Open by default, remembered in `eq.maps.pane`, closed from its own header. Its
   // filtered rows are derived ONCE and read by both the list and the surface's pins.
@@ -446,9 +454,26 @@ export default function MapsView(): JSX.Element {
         marker={marker}
         locMarker={loc.marker}
         onJump={onJump}
+        overlay={questOverlay}
       />
       {/* Reserved for the same reason and on the same condition as the toolbar's row (JOS-205). */}
       <MapCredits data={data} reserve={reserve} />
     </Stack>
   )
+}
+
+/**
+ * The App.tsx mount, a sibling of `QuestsBranch` for the same reason: App's content switch sits at
+ * its measured ceiling, and this tab now takes a deep link's anchor and the Back contract.
+ */
+export function MapsBranch({ view, viewKey, routing }: { view: string; viewKey: string; routing: AppRouting }): JSX.Element | null {
+  return view === 'maps' ? (
+    <MapsView
+      key={viewKey}
+      anchor={routing.mapAnchor}
+      anchorNonce={routing.mapNonce}
+      onAnchorApplied={routing.clearMapFocus}
+      nav={routing.nav}
+    />
+  ) : null
 }
