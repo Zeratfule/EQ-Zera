@@ -22,6 +22,7 @@
     "scrape:items": "tsx scripts/scrape-items.ts",
     "scrape:page-era": "tsx scripts/scrape-page-era.ts",
     "refresh:data": "tsx scripts/refresh-data.mts",
+    "check:quests": "tsx scripts/check-quest-health.mts",
     "fetch:images": "node --use-system-ca --import tsx scripts/fetch-wiki-images.mts",
     "fetch:item-models": "tsx scripts/fetch-item-models.mts",
     "engine:baseline": "tsx scripts/engine-baseline.mts",
