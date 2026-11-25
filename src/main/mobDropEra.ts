@@ -32,7 +32,7 @@
 // ELECTRON-FREE on purpose, the `mobLookupLocal.ts` precedent: `tests/mobDropEra.test.mts` drives
 // the real annotation over the real committed corpus under the node runner.
 
-import { corpusItemTest, itemKey, type ItemDbFile } from './itemsDb'
+import { corpusItemTest, corpusScrollTest, itemKey, type ItemDbFile } from './itemsDb'
 import type { MobDrop, MobKnowledge } from '../shared/types'
 // ES-imported so electron-vite INLINES it into the main bundle — a path-relative readFile would
 // miss in out/main/ (AGENTS.md toolchain note). Same module instance as itemLookup.ts's import.
@@ -46,6 +46,9 @@ const items = (itemsJson as unknown as ItemDbFile).items
  * identical test from the same file, so a live page and the committed catalog read links alike.
  */
 export const isCorpusItemPage = corpusItemTest(items)
+
+/** The scroll half of the same test (`corpusScrollTest`), for the same caller. */
+export const isCorpusScrollPage = corpusScrollTest(items)
 
 /**
  * ONE drop, annotated with what the ITEM PAGE says about its era. Returns the drop UNCHANGED when

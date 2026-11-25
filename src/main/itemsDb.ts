@@ -110,6 +110,22 @@ export function corpusItemTest(items: Readonly<Record<string, ItemDbEntry>>): (t
 }
 
 /**
+ * PURE: "is this wiki page title a SPELL SCROLL item page?" A scroll's statsblock is the only one
+ * that states `Mana Cost:` (measured 2026-11-25: 30 corpus pages, all scrolls). Three of them are
+ * titled without the `Spell: ` prefix (`Improved Invis vs Undead`), and a loot link labelled
+ * `Spell: Improved Invis vs Undead` reaches only that page; `Tears of Prexus`, reached the same
+ * way, is a research component and is NOT the scroll.
+ */
+export function corpusScrollTest(items: Readonly<Record<string, ItemDbEntry>>): (title: string) => boolean {
+  const pages = new Set(
+    Object.values(items)
+      .filter((e) => e.stats?.flags.some((f) => f.startsWith('Mana Cost:')) === true)
+      .map((e) => canonicalTitle(e.page))
+  )
+  return (title) => pages.has(canonicalTitle(title))
+}
+
+/**
  * PURE: the committed file → a lookup index. Kept as a function (rather than a bare
  * `Object.entries` at the use site) so the test can build the index from the COMMITTED bytes
  * exactly the way the shipped code does.

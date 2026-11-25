@@ -41,6 +41,8 @@
 //         <li>Various [[Fine Steel Weapons]] <span class="drare">(Common)</span></li>
 //       A link is read ONLY when the caller's item-corpus test says its target is an item page
 //       (`MobLootOptions.isItem`); "Fine Steel Weapons" is a group page and is ignored.
+//       A SCROLL is linked to its spell and labelled with the item, `[[Cripple|Spell: Cripple]]`,
+//       so the drop is the LABEL's item page (`Spell: Cripple`), never the spell page.
 //
 // So `rarity` is whatever text the page put in parentheses right after the item, VERBATIM
 // ("Uncommon", "Ultra Rare", "18.4%"), and absent when there was none. It is never mapped onto a
@@ -96,6 +98,28 @@ export interface MobLootOptions {
    * with `corpusItemTest` over `src/main/data/items.json`.
    */
   isItem?: (title: string) => boolean
+  /** Is this item page a spell SCROLL (`corpusScrollTest`)? Lets a scroll-labelled link whose
+   *  label has no page of its own fall back to its target, only when the target is the scroll. */
+  isScroll?: (title: string) => boolean
+}
+
+/**
+ * A loot link LABELLED with a scroll's item name. The wiki writes a scroll drop as
+ * `[[Cripple|Spell: Cripple]]`: the TARGET is the spell page, the LABEL is the item that drops.
+ * Measured on the 2026-11-25 cache: 2,382 such labels, every one `Spell:` or `Song:`.
+ */
+const SCROLL_LABEL_RE = /^(?:Spell|Song)\s*:\s*\S/
+
+/** The item a link names: its target page, or — for a scroll label — the scroll item. */
+function linkItem(inner: string, opts: MobLootOptions & { isItem: (title: string) => boolean }): string | null {
+  const title = linkTitle(inner)
+  const pipe = inner.indexOf('|')
+  const label = pipe >= 0 ? inner.slice(pipe + 1).trim() : ''
+  if (!SCROLL_LABEL_RE.test(label)) return title && opts.isItem(title) ? title : null
+  // The label decides: the target is a spell page, or (`Tears of Prexus`) an unrelated item.
+  const scroll = canonicalTitle(label.replace(/^(\w+)\s*:\s*/, '$1: '))
+  if (opts.isItem(scroll)) return scroll
+  return title && opts.isScroll?.(title) === true ? title : null
 }
 
 /** One drop's anchor in the loot field: the item it names and where its markup sits. */
@@ -118,7 +142,7 @@ function linkTitle(inner: string): string {
  * Every drop anchor in the field, in page order: each `{{:Item}}` transclusion, plus each
  * `[[link]]` whose target `isItem` accepts.
  */
-function lootMarks(block: string, isItem: ((title: string) => boolean) | undefined): LootMark[] {
+function lootMarks(block: string, opts: MobLootOptions | undefined): LootMark[] {
   const re = /\{\{:\s*([^}|]+?)\s*\}\}/g
   const marks: LootMark[] = []
   let m: RegExpExecArray | null
@@ -130,17 +154,18 @@ function lootMarks(block: string, isItem: ((title: string) => boolean) | undefin
   // catalog and the game both print.
   while ((m = re.exec(block)) !== null)
     marks.push({ item: m[1].replace(/_/g, ' ').replace(/\s+/g, ' ').trim(), start: m.index, end: re.lastIndex })
+  const isItem = opts?.isItem
   if (!isItem) return marks
   // THE LINK FORM. The wiki increasingly writes loot as `[[Item]]` / `[[Item|label]]` instead of
   // a transclusion (2026-10-18 cache: 317 mob pages list loot ONLY as links, 548 mix both, and
   // Tae Ew Archon lost every drop when its page was rewritten that way). But a loot field also
-  // links group pages ("Fine Steel Weapons"), zones and SPELL pages
-  // (`[[Cripple|Spell: Cripple]]`), so a link counts ONLY when its target is an item page. A link
-  // that is not one is ignored, never guessed.
+  // links group pages ("Fine Steel Weapons") and zones, so a link counts ONLY when it reaches an
+  // item page; a scroll link reaches the page its LABEL names (`linkItem`). A link that reaches
+  // none is ignored, never guessed.
   const linkRe = /\[\[([^\]]+?)\]\]/g
   while ((m = linkRe.exec(block)) !== null) {
-    const title = linkTitle(m[1])
-    if (title && isItem(title)) marks.push({ item: title, start: m.index, end: linkRe.lastIndex })
+    const item = linkItem(m[1], { ...opts, isItem })
+    if (item) marks.push({ item, start: m.index, end: linkRe.lastIndex })
   }
   return marks.sort((a, b) => a.start - b.start)
 }
@@ -159,7 +184,7 @@ function lootMarks(block: string, isItem: ((title: string) => boolean) | undefin
 export function parseMobLoot(block: string, opts?: MobLootOptions): MobDrop[] {
   const drops: MobDrop[] = []
   const seen = new Set<string>()
-  const marks = lootMarks(block, opts?.isItem)
+  const marks = lootMarks(block, opts)
   for (let i = 0; i < marks.length; i++) {
     const item = marks[i].item
     if (!item) continue
