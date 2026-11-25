@@ -650,3 +650,14 @@ export function zoneSpellingsFor(name: string | undefined | null): string[] {
   const e = zoneEntryFromAnySpelling(name)
   return e ? [e.name, ...(e.aliases ?? []), ...(e.mobCatalogNames ?? [])] : []
 }
+
+/**
+ * The place-fold keys of every spelling of the zone `name` resolves to, plus `name`'s own key —
+ * the `zoneSameKeys` a slice hands `zoneScope.zoneAdmits` so ANY spelling the table knows for one
+ * zone is that zone. A name the table does not carry is just its own key.
+ */
+export function zoneSameKeys(name: string | undefined | null): Set<string> {
+  const out = new Set<string>([name, ...zoneSpellingsFor(name)].map(zoneKey))
+  out.delete('')
+  return out
+}

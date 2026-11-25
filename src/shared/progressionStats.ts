@@ -104,6 +104,7 @@ export type {
 interface ZoneFilter {
   key: string | null
   exact: string | null
+  same?: ReadonlySet<string> | null
 }
 
 /** One clipped zone visit inside the range. Contiguous and gapless by construction. */
@@ -176,7 +177,7 @@ function zoneSegments(snap: ProgressionSnap, t0: number, t1: number, only?: Zone
   const segs: ZoneSeg[] = []
   const n = snap.zoneName.length
   const headEnd = Math.min(n > 0 ? snap.zoneStart[0] : t1, t1)
-  const admits = (name: string): boolean => zoneAdmits(name, only?.key, only?.exact)
+  const admits = (name: string): boolean => zoneAdmits(name, only?.key, only?.exact, only?.same)
   // The pre-first-zone remainder is a NAMED row (`unknown`) and a zone filter judges it like any
   // other: asking for one zone never quietly re-admits the stretch the log could not place.
   if (headEnd > t0 && admits(UNKNOWN_ZONE)) {
@@ -533,7 +534,7 @@ export function rangeStats(args: RangeStatsArgs): RangeStats {
   // to the one this file has answered since JOS-130 — which is what the golden windows pin.
   const zoneExactKey = args.zoneExactKey ?? null
   const filtered = zoneKey != null || zoneExactKey != null
-  const segs = zoneSegments(snap, t0, t1, { key: zoneKey ?? null, exact: zoneExactKey })
+  const segs = zoneSegments(snap, t0, t1, { key: zoneKey ?? null, exact: zoneExactKey, same: args.zoneSameKeys })
   // WHAT THE RANGE IS WORTH IN TIME. Unfiltered the segments tile `[t0,t1)` exactly, so this is
   // the wall clock it has always been; under a zone filter it is Σ of the visits, which is the
   // only denominator a per-zone rate may divide by.
