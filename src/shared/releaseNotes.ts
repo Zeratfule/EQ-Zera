@@ -135,6 +135,41 @@ export interface ReleaseNote {
  * still sees exactly the releases above it.
  */
 export const RELEASE_NOTES: readonly ReleaseNote[] = [
+  // Quest locations, game-patch detection, AA tab additions, zone and data fixes, fresh wiki data.
+  {
+    version: '1.31.0',
+    date: '2026-11-25',
+    entries: [
+      {
+        kind: 'new',
+        text: 'Quest pages now show where things are: a location chip under each step, and a "Where to get it" line for each needed item, with ground spawns. Click a chip to open the Maps tab on that spot. Only places the wiki states are shown.'
+      },
+      {
+        kind: 'new',
+        text: 'Quest pins on the Maps tab: the NPCs, drops and spots for the quests you track are marked on the map of the zone you are in. Toggle them from the map legend.'
+      },
+      {
+        kind: 'new',
+        text: "If a game patch changes a file EQ Zera reads, the app now tells you which feature is paused instead of showing wrong numbers. Mob resist estimates pause until EQ Zera updates."
+      },
+      {
+        kind: 'new',
+        text: 'AAs tab: set your race to see only your Race Reincarnation AA, plans respect the Steadfast Will rank cap for your classes, and an "I respecced" button clears refunded ranks (with undo).'
+      },
+      {
+        kind: 'fixed',
+        text: 'Zone Loot counts your loot whatever spelling the game uses for the zone, such as Northern Felwithe or East Cabilis, and Temple of Cazic-Thule and the Liberated Citadel of Runnyeye now match everywhere.'
+      },
+      {
+        kind: 'fixed',
+        text: 'Spell scrolls now show up in mob loot tables, and 56 class and armor quests show their rewards again. Wiki data is refreshed as of today.'
+      },
+      {
+        kind: 'changed',
+        text: 'Updated Electron with its latest security fixes, and the window remembers its place more reliably on high-DPI displays.'
+      }
+    ]
+  },
   // Quest steps for the Nektropos-patch quest pages, and a fresh quest scrape.
   {
     version: '1.30.1',
