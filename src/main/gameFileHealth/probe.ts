@@ -2,10 +2,11 @@
 // install root is passed in, so a test (or a throwaway script against the real install) runs it
 // as-is. Read-only, always: nothing here opens a file for writing.
 //
-// CHEAP BY DESIGN, and async throughout so nothing blocks main. The two big files are not re-read:
-// `spells_us.txt` is judged from the measurement its own worker parse already took (passed in), the
-// `.s3d` archives from their first eight bytes. The rest are small or sampled: `dbstr_us.txt` (10 MB,
-// one pass), up to a dozen map files, one EQUI XML, GlobalLoad.txt and eqclient.ini.
+// CHEAP BY DESIGN, and async throughout so nothing blocks main. The big files never touch the main
+// thread: `spells_us.txt` is judged from a small sidecar of its worker measurements (passed in),
+// `dbstr_us.txt` (10 MB) on the same worker, the `.s3d` archives from their first eight bytes. The
+// rest are small or sampled: up to a dozen map files, one EQUI XML, GlobalLoad.txt, eqclient.ini.
+// An empty file anywhere is `pending` (a patch copying in place), re-checked by the caller.
 //
 // Each probe answers for itself and none can throw past `probeGameFiles`: a read that fails for any
 // reason but "not there" is an `error` report naming the code, which is never a notice.
@@ -60,10 +61,31 @@ async function guarded(id: GameFileId, run: () => Promise<GameFileReport>): Prom
   }
 }
 
-async function probeDbstr(root: string): Promise<GameFileReport> {
-  const got = await readText(join(root, 'dbstr_us.txt'))
-  if (!got) return { id: 'dbstrUs', status: 'missing', signature: 'none', facts: {}, version: '' }
-  return dbstrHealth(got.text, got.version)
+/**
+ * The readers the caller supplies. `spellsUs` because the resist table's own machinery already
+ * measures that file; `dbstr`, when given, judges `dbstr_us.txt` OFF the main thread (main passes
+ * the resist worker's `dbstr` job). Without it the file is read and judged in-process, which is for
+ * tests only: a 10 MB split is ~26 ms of main-thread time.
+ */
+export interface ProbeDeps {
+  spellsUs: () => Promise<GameFileReport>
+  dbstr?: (path: string, version: string) => Promise<GameFileReport | null>
+}
+
+async function probeDbstr(root: string, deps: ProbeDeps): Promise<GameFileReport> {
+  const path = join(root, 'dbstr_us.txt')
+  let version: string
+  try {
+    const st = await stat(path)
+    version = fileVersion(st.size, st.mtimeMs)
+    if (st.size === 0) return { id: 'dbstrUs', status: 'pending', signature: 'empty', facts: {}, version }
+  } catch (err) {
+    if (codeOf(err) === 'ENOENT' || codeOf(err) === 'ENOTDIR') return { id: 'dbstrUs', status: 'missing', signature: 'none', facts: {}, version: '' }
+    throw err
+  }
+  if (deps.dbstr) return (await deps.dbstr(path, version)) ?? readError('dbstrUs', 'worker', version)
+  const got = await readText(path)
+  return got ? dbstrHealth(got.text, got.version) : { id: 'dbstrUs', status: 'missing', signature: 'none', facts: {}, version: '' }
 }
 
 /** `n` names spread evenly over a sorted list, so the sample is not twelve variants of one zone. */
@@ -100,6 +122,7 @@ async function probeMaps(root: string): Promise<GameFileReport> {
 async function probeUiSkin(root: string): Promise<GameFileReport> {
   for (const skin of [BASE_SKIN, FALLBACK_SKIN]) {
     const got = await readText(join(root, 'uifiles', skin, SKIN_XML))
+    if (got?.text.trim() === '') return { id: 'uiSkin', status: 'pending', signature: 'empty', facts: {}, version: got.version }
     if (got) return uiSkinHealth(parseAnimationFrames(got.text).length, got.version)
   }
   return uiSkinHealth(null, '')
@@ -147,18 +170,18 @@ async function probeEqclientIni(root: string): Promise<GameFileReport> {
 }
 
 /**
- * Every reader's verdict, in `GAME_FILE_IDS` order. `spellsUs` is supplied by the caller because
- * the resist table's own load already measured that file (resist/spellTable.ts spellsUsHealthNow).
- * An empty root (no install resolved at all) is every reader `missing`, without touching the disk.
+ * Every reader's verdict, in `GAME_FILE_IDS` order (see `ProbeDeps` for the two the caller
+ * supplies). An empty root (no install resolved at all) is every reader `missing`, without
+ * touching the disk.
  */
-export async function probeGameFiles(root: string, spellsUs: () => Promise<GameFileReport>): Promise<GameFileReport[]> {
+export async function probeGameFiles(root: string, deps: ProbeDeps): Promise<GameFileReport[]> {
   if (root === '') {
     const ids: GameFileId[] = ['spellsUs', 'dbstrUs', 'maps', 'uiSkin', 'models', 'globalLoad', 'eqclientIni']
     return ids.map((id) => ({ id, status: 'missing', signature: 'none', facts: {}, version: '' }))
   }
   return Promise.all([
-    guarded('spellsUs', spellsUs),
-    guarded('dbstrUs', () => probeDbstr(root)),
+    guarded('spellsUs', deps.spellsUs),
+    guarded('dbstrUs', () => probeDbstr(root, deps)),
     guarded('maps', () => probeMaps(root)),
     guarded('uiSkin', () => probeUiSkin(root)),
     guarded('models', () => probeModels(root)),

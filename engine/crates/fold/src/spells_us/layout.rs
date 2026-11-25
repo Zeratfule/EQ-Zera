@@ -15,15 +15,15 @@ const LAYOUT_2026_11B: usize = LAYOUT_2026_11 + 16;
 /// Where the November column went in.
 const INSERTED_BEFORE: usize = 77;
 
-/// Every row width [`realign`] reads.
-pub const KNOWN_ROW_LENGTHS: [usize; 4] =
-    [F_SLOTS, LAYOUT_2026_08, LAYOUT_2026_11, LAYOUT_2026_11B];
+/// Every row width [`realign`] reads: measured layouts only. 172 is not one (no client has written
+/// it); it is what a patch that drops a column writes.
+pub const KNOWN_ROW_LENGTHS: [usize; 3] = [LAYOUT_2026_08, LAYOUT_2026_11, LAYOUT_2026_11B];
 
 /// A row at a measured width, mapped onto the original field map; `None` for any other width, which
 /// is skipped rather than read at offsets that moved.
 pub(crate) fn realign(f: Vec<&str>) -> Option<Vec<&str>> {
     match f.len() {
-        F_SLOTS | LAYOUT_2026_08 => Some(f),
+        LAYOUT_2026_08 => Some(f),
         LAYOUT_2026_11 => {
             let mut f = f;
             f.remove(INSERTED_BEFORE);
@@ -98,6 +98,9 @@ mod tests {
     fn an_unmeasured_width_is_skipped_rather_than_read_at_moved_offsets() {
         assert!(parse_spells_us(&lifetap_at(1, 26)).is_empty(), "200 fields");
         assert!(parse_spells_us(&lifetap_at(1, 1)).is_empty(), "175 fields");
-        assert_eq!(KNOWN_ROW_LENGTHS, [172, 173, 174, 190]);
+        let full = lifetap_at(0, 0);
+        let dropped: Vec<&str> = full.split('^').skip(1).collect();
+        assert!(parse_spells_us(&dropped.join("^")).is_empty(), "172 fields");
+        assert_eq!(KNOWN_ROW_LENGTHS, [173, 174, 190]);
     }
 }

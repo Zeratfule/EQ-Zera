@@ -22,8 +22,8 @@
 //! The JavaScript semantics are the hard part. Every scalar goes through `Number(x)` or
 //! `Number(x) || 0`. The row filter is the app's `realign`: a row is read only at a width that has
 //! been measured ([`KNOWN_ROW_LENGTHS`]), the two patched layouts are mapped back onto the original
-//! field map, and every other width is skipped rather than read at the wrong offsets. A row with
-//! exactly 172 fields still passes and reads no slots. See [`js_number`] and [`realign`].
+//! field map, and every other width is skipped rather than read at the wrong offsets. See
+//! [`js_number`] and [`realign`].
 
 use eqlog::jsstr::js_trim;
 use eqlog::names::spell_canon_key;
@@ -587,8 +587,7 @@ fn row_info(f: &[&str], name: &str, class_levels: ClassLevels) -> SpellInfo {
 /// The four filters, in order:
 ///
 ///   * an empty line only — a blank-looking line of spaces falls out at the field-count test.
-///   * [`realign`]: only a measured width is read. A row with exactly 172 fields passes and then
-///     reads `undefined` for its slots, which [`parse_slots`] answers with none.
+///   * [`realign`]: only a measured width (173, 174, 190) is read.
 ///   * an empty name only — a whitespace-only name survives here and dies at the key test, because
 ///     `spellCanonKey` trims it to nothing.
 ///   * an id that is not a number. `''` is `0`, which is finite, so an empty id is kept.
@@ -1030,21 +1029,12 @@ mod tests {
     }
 
     #[test]
-    fn a_row_with_exactly_one_hundred_and_seventy_two_fields_is_kept() {
-        // `f.length < 172`, not `< 173`. The row passes and then reads `undefined` for its slots,
-        // which is no slots rather than a panic. Tightening the bound would drop rows the app
-        // keeps.
+    fn a_row_that_lost_a_column_is_dropped() {
+        // 172 fields is what a patch that DROPS a column writes, and no client has written it, so it
+        // is not a measured width: read, every field after the drop would be one off.
         let mut f = vec!["0".to_string(); 172];
         f[F_NAME] = "Short Row".to_string();
-        for i in 0..F_CLASS_COUNT {
-            f[F_CLASS_FIRST + i] = "255".to_string();
-        }
-        let table = parse_spells_us(&f.join("^"));
-        assert_eq!(table.len(), 1);
-        let info = table.into_values().next().expect("one");
-        assert!(info.hp.is_empty());
-        assert!(info.debuff_slots.is_empty());
-        assert_eq!(info.level_cap, None);
+        assert!(parse_spells_us(&f.join("^")).is_empty());
     }
 
     #[test]

@@ -21,14 +21,13 @@
 import { app } from 'electron'
 import { readFileSync, statSync, writeFileSync, renameSync, mkdirSync } from 'node:fs'
 import { join } from 'node:path'
-import { Worker } from 'node:worker_threads'
 import { effectiveEqRoot } from '../log/config'
 import { logError } from '../errorLog'
 import type { SpellResistTable } from '../../shared/resistTypes'
-import type { ResistTableWorkerReply } from '../resistTableWorker'
-import { readError, spellsUsHealth, type RowLayout } from '../../shared/gameFileDetect'
+import { readError, spellsUsHealth } from '../../shared/gameFileDetect'
 import { fileVersion, type GameFileReport } from '../../shared/gameFileHealth'
 import { KNOWN_ROW_LENGTHS } from './spellsUsParse'
+import { readSpellsUsMeta, runResistWorker, writeSpellsUsMeta, type SpellsUsMeasured, type Stamp } from './spellsUsMeta'
 
 /**
  * Bump to invalidate every cached table in the field (a parser change, not a game patch).
@@ -54,8 +53,7 @@ import { KNOWN_ROW_LENGTHS } from './spellsUsParse'
  *      `Ethereal Cleansing`, so the client curve that fixes his 40-instead-of-400 heal-over-time
  *      would simply not be there to read. Bumped in the SAME commit as the parser change, which is
  *      the whole lesson of 4.
- *   6  EQ Zera 2026-11-25 - the cache carries the file's row LAYOUT (the game-file health check),
- *      and it is the bump the 174- and 190-field layout fixes should have made. Neither did, so an
+ *   6  EQ Zera 2026-11-25 - the bump the 174- and 190-field layout fixes should have made. Neither did, so an
  *      install that read the 190-field file before the fix cached an EMPTY table under a file stamp
  *      that never changes again, and the fixed build would have kept reading that empty cache. An
  *      empty table is no longer cached at all (see `load`), so this cannot recur.
@@ -67,12 +65,11 @@ interface CacheFile {
   size: number
   mtimeMs: number
   table: SpellResistTable
-  layout?: RowLayout
 }
 
 interface Parsed {
   table: SpellResistTable
-  layout?: RowLayout
+  measured?: SpellsUsMeasured
 }
 
 /** The client file, as it sits in the install this app resolved. */
@@ -84,7 +81,7 @@ function cachePath(): string {
   return join(app.getPath('userData'), 'spell-resist-cache.json')
 }
 
-function sourceStamp(path: string): { size: number; mtimeMs: number } | null {
+function sourceStamp(path: string): Stamp | null {
   try {
     const st = statSync(path)
     return { size: st.size, mtimeMs: Math.round(st.mtimeMs) }
@@ -93,21 +90,21 @@ function sourceStamp(path: string): { size: number; mtimeMs: number } | null {
   }
 }
 
-function readCache(stamp: { size: number; mtimeMs: number }): Parsed | null {
+function readCache(stamp: Stamp): Parsed | null {
   try {
     const file = JSON.parse(readFileSync(cachePath(), 'utf8')) as CacheFile
     if (file.version !== SPELL_RESIST_CACHE_VERSION) return null
     if (file.size !== stamp.size || file.mtimeMs !== stamp.mtimeMs) return null
-    return file.layout ? { table: file.table, layout: file.layout } : { table: file.table }
+    return { table: file.table }
   } catch {
     return null
   }
 }
 
-function writeCache(stamp: { size: number; mtimeMs: number }, parsed: Parsed): void {
+function writeCache(stamp: Stamp, table: SpellResistTable): void {
   const path = cachePath()
   const tmp = `${path}.tmp`
-  const file: CacheFile = { version: SPELL_RESIST_CACHE_VERSION, ...stamp, ...parsed }
+  const file: CacheFile = { version: SPELL_RESIST_CACHE_VERSION, ...stamp, table }
   try {
     mkdirSync(app.getPath('userData'), { recursive: true })
     writeFileSync(tmp, JSON.stringify(file), 'utf8')
@@ -118,36 +115,11 @@ function writeCache(stamp: { size: number; mtimeMs: number }, parsed: Parsed): v
   }
 }
 
-function parseOnWorker(path: string): Promise<Parsed | null> {
-  return new Promise((resolve) => {
-    let worker: Worker
-    try {
-      worker = new Worker(join(__dirname, 'resistTableWorker.js'), { workerData: { path } })
-    } catch (err) {
-      logError('main:resistTable', { message: 'resist table worker failed to start', err })
-      resolve(null)
-      return
-    }
-    let settled = false
-    const finish = (parsed: Parsed | null): void => {
-      if (settled) return
-      settled = true
-      resolve(parsed)
-      void worker.terminate()
-    }
-    worker.on('message', (reply: ResistTableWorkerReply) => {
-      if (!reply.ok) logError('main:resistTable', { message: reply.error ?? 'parse failed' })
-      if (!reply.table) finish(null)
-      else finish(reply.layout ? { table: reply.table, layout: reply.layout } : { table: reply.table })
-    })
-    worker.on('error', (err) => {
-      logError('main:resistTable', { message: 'resist table worker error', err })
-      finish(null)
-    })
-    worker.on('exit', () => {
-      finish(null)
-    })
-  })
+async function parseOnWorker(path: string): Promise<Parsed | null> {
+  const reply = await runResistWorker({ path, job: 'table' })
+  if (!reply?.table) return null
+  const measured = reply.layout && reply.semantics ? { layout: reply.layout, semantics: reply.semantics } : undefined
+  return measured ? { table: reply.table, measured } : { table: reply.table }
 }
 
 /**
@@ -168,14 +140,23 @@ let pending: Promise<SpellResistTable | null> | null = null
 let loaded: SpellResistTable | null = null
 let sourceMtime: number | null = null
 let state: SpellTableState = 'loading'
+/** The stamp the last load saw, so a failed load can be retried once the file changes. */
+let loadedStampKey = ''
+
+const stampKey = (s: Stamp | null): string => (s ? `${String(s.size)}-${String(s.mtimeMs)}` : 'none')
 
 /**
  * The table, loaded at most once per app run. Null means the client file is unreadable — a
  * SUPPORTED state (see the header), never an error the caller has to handle.
+ *
+ * ONE EXCEPTION TO "ONCE": a load that found nothing usable (no file, or an empty or half-written
+ * one while a patch was copying it in) is retried when the file's size or mtime has moved since.
+ * A good table is never re-read; a patch over a good table still waits for the next launch.
  */
 export function spellTable(): Promise<SpellResistTable | null> {
   const existing = pending
-  if (existing) return existing
+  const failed = state === 'missing' || state === 'unloadable'
+  if (existing && !(failed && stampKey(sourceStamp(spellsUsPath())) !== loadedStampKey)) return existing
   const created = load()
   pending = created
   return created
@@ -184,6 +165,7 @@ export function spellTable(): Promise<SpellResistTable | null> {
 async function load(): Promise<SpellResistTable | null> {
   const path = spellsUsPath()
   const stamp = sourceStamp(path)
+  loadedStampKey = stampKey(stamp)
   if (!stamp) {
     state = 'missing'
     return null
@@ -191,10 +173,7 @@ async function load(): Promise<SpellResistTable | null> {
   sourceMtime = stamp.mtimeMs
   const cached = readCache(stamp)
   const parsed = cached ?? (await parseOnWorker(path))
-  const version = fileVersion(stamp.size, stamp.mtimeMs)
-  health = parsed?.layout
-    ? spellsUsHealth(parsed.layout, KNOWN_ROW_LENGTHS, version, Object.keys(parsed.table).length)
-    : readError('spellsUs', 'unloadable', version)
+  if (parsed?.measured) writeSpellsUsMeta(stamp, parsed.measured)
   // AN EMPTY TABLE IS NOT A TABLE. It is what an unmeasured layout parses to (every row skipped),
   // and serving it as 'ok' is how a patch silently switched resist estimates off for everyone. It
   // reads as 'unloadable', and it is never cached, so the build that learns the layout re-parses.
@@ -203,21 +182,33 @@ async function load(): Promise<SpellResistTable | null> {
     return null
   }
   loaded = parsed.table
-  if (!cached) writeCache(stamp, parsed)
+  if (!cached) writeCache(stamp, parsed.table)
   state = 'ok'
   return parsed.table
 }
 
-let health: GameFileReport | null = null
-
 /**
- * The game-file health verdict on `spells_us.txt` (shared/gameFileHealth.ts), once the load has
- * settled: `missing` when there is no file, `error` when the worker produced nothing, the layout
- * check otherwise. Waits for the one load this run makes; never starts a second.
+ * The game-file health verdict on `spells_us.txt` (shared/gameFileHealth.ts), WITHOUT loading the
+ * table: the layout measurements come from the small sidecar the last parse wrote
+ * (./spellsUsMeta.ts), and only when that is stale (a patch) from a measure-only worker pass. A
+ * table load already in flight is waited for, since it writes the same sidecar. An empty file is
+ * `pending` (a patcher mid-copy), never a verdict.
  */
 export async function spellsUsHealthNow(): Promise<GameFileReport> {
-  await spellTable()
-  return health ?? { id: 'spellsUs', status: 'missing', signature: 'none', facts: {}, version: '' }
+  if (pending) await pending
+  const path = spellsUsPath()
+  const stamp = sourceStamp(path)
+  if (!stamp) return { id: 'spellsUs', status: 'missing', signature: 'none', facts: {}, version: '' }
+  const version = fileVersion(stamp.size, stamp.mtimeMs)
+  if (stamp.size === 0) return { id: 'spellsUs', status: 'pending', signature: 'empty', facts: {}, version }
+  let measured = readSpellsUsMeta(stamp)
+  if (!measured) {
+    const reply = await runResistWorker({ path, job: 'measure' })
+    measured = reply?.layout && reply.semantics ? { layout: reply.layout, semantics: reply.semantics } : null
+    if (measured) writeSpellsUsMeta(stamp, measured)
+  }
+  if (!measured) return readError('spellsUs', 'unloadable', version)
+  return spellsUsHealth({ ...measured, version }, KNOWN_ROW_LENGTHS)
 }
 
 /** Where the table stands right now, and the path it was looked for at. See `SpellTableState`. */

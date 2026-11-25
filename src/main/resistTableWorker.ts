@@ -11,15 +11,26 @@
 // It speaks exactly once and exits. `latin1` rather than `utf8` because the file is a fixed-width
 // legacy dump with high bytes in a handful of names; latin1 never throws and never replaces a
 // byte, and every field this parser reads is ASCII.
+//
+// THREE JOBS, ONE THREAD ENTRY (the game-file health check, EQ Zera 2026-11-25). `table` is the
+// resist table plus the file's layout measurements; `measure` is the measurements alone (the health
+// check needs no table resident); `dbstr` judges `dbstr_us.txt`. A second worker entry would be a
+// build-config change; a job field is not.
 
 import { readFileSync } from 'node:fs'
 import { parentPort, workerData } from 'node:worker_threads'
 import { parseSpellsUs } from './resist/spellsUsParse'
-import { caretLayout, type RowLayout } from '../shared/gameFileDetect'
+import { spellsUsSemantics } from './resist/spellsUsSemantics'
+import { caretLayout, dbstrHealth, type RowLayout, type SpellsUsSemantics } from '../shared/gameFileDetect'
+import type { GameFileReport } from '../shared/gameFileHealth'
 import type { SpellResistTable } from '../shared/resistTypes'
 
 export interface ResistTableWorkerInit {
   path: string
+  /** Absent means `table`, the original and only job before the health check. */
+  job?: 'table' | 'measure' | 'dbstr'
+  /** The file version a `dbstr` verdict is stamped with. */
+  version?: string
 }
 
 export interface ResistTableWorkerReply {
@@ -27,16 +38,26 @@ export interface ResistTableWorkerReply {
   table?: SpellResistTable
   /** The file's row widths, measured on the same text, for the game-file health check. */
   layout?: RowLayout
+  /** Whether the fields the parser reads look like themselves (resist/spellsUsSemantics.ts). */
+  semantics?: SpellsUsSemantics
+  /** The `dbstr` job's verdict. */
+  report?: GameFileReport
   error?: string
 }
 
 const init = workerData as ResistTableWorkerInit
 const port = parentPort
 
+function run(): ResistTableWorkerReply {
+  const text = readFileSync(init.path, 'latin1')
+  if (init.job === 'dbstr') return { ok: true, report: dbstrHealth(text, init.version ?? '') }
+  const measured = { layout: caretLayout(text), semantics: spellsUsSemantics(text) }
+  return init.job === 'measure' ? { ok: true, ...measured } : { ok: true, table: parseSpellsUs(text), ...measured }
+}
+
 let reply: ResistTableWorkerReply
 try {
-  const text = readFileSync(init.path, 'latin1')
-  reply = { ok: true, table: parseSpellsUs(text), layout: caretLayout(text) }
+  reply = run()
 } catch (err) {
   reply = { ok: false, error: err instanceof Error ? err.message : String(err) }
 }

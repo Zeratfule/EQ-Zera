@@ -316,11 +316,16 @@ const LAYOUT_2026_11B = LAYOUT_2026_11 + 16
  * app says so instead of serving an empty table. The engine's own reader
  * (engine/crates/fold/src/spells_us/layout.rs `realign`) accepts exactly these too, pinned by
  * tests/spellsUsLayoutParity.test.mts. A new layout is added here, there, and in that test.
+ *
+ * ONLY MEASURED LAYOUTS. 172 used to pass too, a leftover of the old `length < 172` filter that
+ * no client has ever written; it is exactly the width a patch that DROPS one column produces, and
+ * reading it would put every field after the drop one off with no slots at all. A width belongs
+ * here only once a real file has been measured at it.
  */
-export const KNOWN_ROW_LENGTHS: ReadonlySet<number> = new Set([F_SLOTS, LAYOUT_2026_08, LAYOUT_2026_11, LAYOUT_2026_11B])
+export const KNOWN_ROW_LENGTHS: ReadonlySet<number> = new Set([LAYOUT_2026_08, LAYOUT_2026_11, LAYOUT_2026_11B])
 
 export function realign(f: string[]): string[] | null {
-  if (f.length === LAYOUT_2026_08 || f.length === F_SLOTS) return f
+  if (f.length === LAYOUT_2026_08) return f
   if (f.length === LAYOUT_2026_11) return [...f.slice(0, INSERTED_BEFORE), ...f.slice(INSERTED_BEFORE + 1)]
   if (f.length === LAYOUT_2026_11B) {
     return [...f.slice(0, INSERTED_BEFORE), ...f.slice(INSERTED_BEFORE + 1, F_SLOTS + 1), f[f.length - 1]]

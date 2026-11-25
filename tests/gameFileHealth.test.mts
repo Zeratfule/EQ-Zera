@@ -32,7 +32,8 @@ import {
   type GameFileReport
 } from '../src/shared/gameFileHealth'
 import { redactMessage } from '../src/shared/errorReport'
-import { KNOWN_ROW_LENGTHS, parseSpellsUs } from '../src/main/resist/spellsUsParse'
+import { KNOWN_ROW_LENGTHS } from '../src/main/resist/spellsUsParse'
+import { spellsUsSemantics } from '../src/main/resist/spellsUsSemantics'
 import { probeGameFiles, spread } from '../src/main/gameFileHealth/probe'
 
 /** One spell row `width` fields wide: Lifetap's id and name, every class barred but SHD. */
@@ -51,14 +52,17 @@ function spellFile(width: number, rows: number): string {
 }
 
 function spellsVerdict(text: string): GameFileReport {
-  return spellsUsHealth(caretLayout(text), KNOWN_ROW_LENGTHS, '1-2', Object.keys(parseSpellsUs(text)).length)
+  return spellsUsHealth({ layout: caretLayout(text), semantics: spellsUsSemantics(text), version: '1-2' }, KNOWN_ROW_LENGTHS)
 }
 
 test('spells_us: the 190-field file of 2026-11-24 is ok, and every row is read', () => {
   const r = spellsVerdict(spellFile(190, 20))
   assert.equal(r.status, 'ok')
   assert.equal(r.signature, 'fields-190')
-  assert.deepEqual(r.facts, { rows: 20, rowsRead: 20, rowsSkipped: 0, fields: 190, entries: 20 })
+  assert.deepEqual(
+    { rows: r.facts.rows, rowsRead: r.facts.rowsRead, rowsSkipped: r.facts.rowsSkipped, fields: r.facts.fields, categoryPct: r.facts.categoryPct },
+    { rows: 20, rowsRead: 20, rowsSkipped: 0, fields: 190, categoryPct: 100 }
+  )
   assert.deepEqual(r.histogram, { '190': 20 })
 })
 
@@ -67,12 +71,11 @@ test('spells_us: a 200-field file is unrecognised and names the width it saw', (
   assert.equal(r.status, 'unrecognised')
   assert.equal(r.signature, 'fields-200')
   assert.equal(r.facts.rowsSkipped, 20)
-  assert.equal(r.facts.entries, 0)
 })
 
-test('spells_us: an empty file is unrecognised, not missing', () => {
+test('spells_us: an empty file is pending (a patch mid-copy), not unrecognised and not missing', () => {
   const r = spellsVerdict('')
-  assert.equal(r.status, 'unrecognised')
+  assert.equal(r.status, 'pending')
   assert.equal(r.signature, 'empty')
 })
 
@@ -81,12 +84,6 @@ test('spells_us: a few odd rows in a file that reads is the file, not a new layo
   const r = spellsVerdict(text)
   assert.equal(r.status, 'ok')
   assert.equal(r.facts.rowsSkipped, 2)
-})
-
-test('spells_us: a known width that still yields no spells is unrecognised', () => {
-  const r = spellsUsHealth(caretLayout(spellFile(190, 3)), KNOWN_ROW_LENGTHS, '1-2', 0)
-  assert.equal(r.status, 'unrecognised')
-  assert.equal(r.signature, 'no-spells')
 })
 
 test('caretLayout counts carets, ignores a CR and an empty line', () => {
@@ -108,7 +105,7 @@ test('dbstr_us: the real shape is ok; a reshaped one and an empty one are not', 
   const reshaped = dbstrHealth(Array.from({ length: 40 }, (_, i) => `Word ${String(i)}|${String(i)}`).join('\n'), 'v')
   assert.equal(reshaped.status, 'unrecognised')
   assert.equal(reshaped.signature, 'fields-1')
-  assert.equal(dbstrHealth('', 'v').signature, 'empty')
+  assert.equal(dbstrHealth('', 'v').status, 'pending')
   const noCategories = dbstrHealth('1^1^Strength^0^\n2^1^Stamina^0^', 'v')
   assert.equal(noCategories.signature, 'no-spell-categories')
 })
@@ -129,11 +126,12 @@ test('maps, skin, models, GlobalLoad, eqclient.ini: missing is never unrecognise
   assert.equal(modelsHealth({ a: null }, '').status, 'missing')
   assert.equal(modelsHealth({ a: pfs('PFS ', 100, 1000), b: null }, 'v').status, 'ok')
   assert.equal(modelsHealth({ a: pfs('PFS2', 100, 1000) }, 'v').signature, 'magic')
-  assert.equal(modelsHealth({ a: pfs('PFS ', 5000, 1000) }, 'v').signature, 'directory')
+  assert.equal(modelsHealth({ a: pfs('PFS ', 5000, 1000) }, 'v').status, 'pending', 'a directory past EOF is a half-written archive')
   assert.equal(globalLoadHealth(null, false, '').status, 'missing')
   assert.equal(globalLoadHealth('x', false, 'v').signature, 'no-anchor')
   assert.equal(eqclientIniHealth(null, false, '').status, 'missing')
-  assert.equal(eqclientIniHealth('[Defaults]', false, 'v').status, 'unrecognised')
+  assert.equal(eqclientIniHealth('[Defaults]', false, 'v').status, 'missing')
+  assert.equal(eqclientIniHealth('Fullscreen 1', false, 'v').status, 'unrecognised')
 })
 
 const BROKEN: GameFileReport = {
@@ -181,20 +179,21 @@ test('the notice: several broken readers are one line, ordered, and one close di
 })
 
 test('the report: once per layout, and its message survives redaction with the signature intact', () => {
-  assert.equal(shouldReport(BROKEN, []), true)
-  assert.equal(shouldReport(BROKEN, [reportKey(BROKEN)]), false)
-  assert.equal(shouldReport({ ...BROKEN, status: 'missing' }, []), false)
-  assert.equal(shouldReport({ ...BROKEN, status: 'error' }, []), false)
+  assert.equal(shouldReport(BROKEN, [], () => true), true)
+  assert.equal(shouldReport(BROKEN, [reportKey(BROKEN)], () => true), false)
+  assert.equal(shouldReport({ ...BROKEN, status: 'missing' }, [], () => true), false)
+  assert.equal(shouldReport({ ...BROKEN, status: 'error' }, [], () => true), false)
   assert.equal(reportErrorName('spellsUs'), 'GameFileSpellsUs')
   const msg = reportMessage(BROKEN)
   const redacted = redactMessage(msg)
   assert.match(redacted, /spells_us\.txt layout fields-200/)
   assert.match(redacted, /fields=200/)
+  assert.match(redacted, /rows=74k rowsRead=0% rowsSkipped=100%/)
   assert.doesNotMatch(redacted, /<path>|<str>/, 'nothing in the message looks like a path or a quote')
 })
 
 test('probeGameFiles: an empty root is every reader missing; a staged root reads each file', async () => {
-  const none = await probeGameFiles('', () => Promise.reject(new Error('not asked')))
+  const none = await probeGameFiles('', { spellsUs: () => Promise.reject(new Error('not asked')) })
   assert.ok(none.every((r) => r.status === 'missing'))
   const root = mkdtempSync(join(tmpdir(), 'eqz-gamefiles-'))
   try {
@@ -206,7 +205,7 @@ test('probeGameFiles: an empty root is every reader missing; a staged root reads
     writeFileSync(join(root, 'Resources', 'GlobalLoad.txt'), '1,0,TFFT,foo,Loading\r\n')
     writeFileSync(join(root, 'eqclient.ini'), '[Defaults]\r\nFullscreen=1\r\n')
     const spells: GameFileReport = { ...BROKEN }
-    const got = await probeGameFiles(root, () => Promise.resolve(spells))
+    const got = await probeGameFiles(root, { spellsUs: () => Promise.resolve(spells) })
     const by = Object.fromEntries(got.map((r) => [r.id, r]))
     assert.equal(by.spellsUs.status, 'unrecognised')
     assert.equal(by.dbstrUs.status, 'ok')

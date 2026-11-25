@@ -4,11 +4,13 @@
 //
 // WHEN. A few seconds after the IPC is registered, so it never competes with the window's first
 // paint, and once: a game patch is followed by a game launch, and the client files do not change
-// under a running client. `spells_us.txt` is judged off the resist table's own load (the one
-// launch-time parse it already does), so the 38 MB file is never read twice.
+// under a running client (an empty or half-written file is the one exception, re-checked below).
+// Nothing big runs on main: `spells_us.txt` is judged from the resist cache's small layout sidecar
+// without loading the table, and `dbstr_us.txt` on the resist worker.
 //
-// WHAT IS FILED. An `unrecognised` verdict goes through `logError` ONCE PER LAYOUT, ever (the key is
-// persisted): one errors.log line with every count, which the error report carries on as an
+// WHAT IS FILED. An `unrecognised` verdict for a reader that matters to this player (the notice's
+// own gate) goes through `logError` ONCE PER LAYOUT, ever (the key is
+// persisted): one errors.log line with the counts, which the error report carries on as an
 // `errorReport` named `GameFile<Reader>` with the layout signature as its `code`, so each reader is
 // its own row and the signature is the first thing the developer reads. The message holds no path
 // and no name (shared/gameFileHealth.ts `reportMessage`). A read failure (`error`) is an info line,
@@ -22,6 +24,7 @@ import { E2E } from '../e2e'
 import { logError, logInfo } from '../errorLog'
 import { effectiveEqRoot } from '../log/config'
 import { spellsUsHealthNow } from '../resist/spellTable'
+import { runResistWorker } from '../resist/spellsUsMeta'
 import { getLuclinPrefs } from '../storeLuclin'
 import { addGameFileKeys, gameFileKeys } from '../storeGameFileHealth'
 import { sendToMain } from '../windows'
@@ -56,31 +59,53 @@ export function gameFileHealthView(): GameFileHealthView {
   return { checked, reports, notice: checked ? gameFileNotice(reports, gameFileKeys('dismissed'), noticeable) : null }
 }
 
-/** File each newly seen unrecognised layout once, and note read failures. */
+/** File each newly seen unrecognised layout once (readers that matter to this player only), and note read failures. */
 function file(found: readonly GameFileReport[]): void {
   const filed = gameFileKeys('reported')
   const fresh: string[] = []
   for (const r of found) {
     if (r.status === 'error') logInfo(`[gameFiles] ${GAME_FILE_READERS[r.id].label} could not be read (${r.signature})`)
-    if (!shouldReport(r, filed)) continue
+    if (!shouldReport(r, filed, noticeable)) continue
     logError('main:gameFiles', { name: reportErrorName(r.id), code: r.signature, message: reportMessage(r) })
     fresh.push(reportKey(r))
   }
   if (fresh.length > 0) addGameFileKeys('reported', fresh)
 }
 
-/** Run the check now (once per launch; a second call waits for the first). */
+/** `dbstr_us.txt` on the resist worker, so its 10 MB split never runs on main. */
+async function dbstrOnWorker(path: string, version: string): Promise<GameFileReport | null> {
+  return (await runResistWorker({ path, job: 'dbstr', version }))?.report ?? null
+}
+
+/**
+ * A PENDING FILE IS LOOKED AT AGAIN. An empty or half-written file is a patcher mid-copy, so the
+ * whole check re-runs after `RECHECK_MS`, a few times at most; whatever is still pending after
+ * that stays pending (never noticed, never reported) until the next launch.
+ */
+const RECHECK_MS = E2E ? 1500 : 60_000
+const MAX_RECHECKS = 3
+let rechecks = 0
+
+async function runCheck(): Promise<void> {
+  try {
+    reports = await probeGameFiles(effectiveEqRoot(), { spellsUs: spellsUsHealthNow, dbstr: dbstrOnWorker })
+    file(reports)
+  } catch (err) {
+    logError('main:gameFiles', { message: 'game-file health check failed', err })
+  }
+  checked = true
+  sendToMain(IPC.onGameFileHealth, gameFileHealthView())
+  if (reports.some((r) => r.status === 'pending') && rechecks < MAX_RECHECKS) {
+    rechecks++
+    setTimeout(() => {
+      running = runCheck()
+    }, RECHECK_MS)
+  }
+}
+
+/** Run the check now (once per launch plus pending re-checks; a second call waits for the current one). */
 export function checkGameFiles(): Promise<void> {
-  running ??= (async () => {
-    try {
-      reports = await probeGameFiles(effectiveEqRoot(), spellsUsHealthNow)
-      file(reports)
-    } catch (err) {
-      logError('main:gameFiles', { message: 'game-file health check failed', err })
-    }
-    checked = true
-    sendToMain(IPC.onGameFileHealth, gameFileHealthView())
-  })()
+  running ??= runCheck()
   return running
 }
 

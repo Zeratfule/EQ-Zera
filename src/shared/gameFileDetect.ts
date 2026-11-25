@@ -67,20 +67,56 @@ function rowTableVerdict(id: GameFileId, layout: RowLayout, known: ReadonlySet<n
   const fields = dominantFieldCount(layout.histogram)
   const facts = { rows: layout.rows, rowsRead, rowsSkipped, fields }
   const histogram = topOfHistogram(layout.histogram)
-  if (layout.rows === 0) return report(id, 'unrecognised', 'empty', { version, facts })
-  const status = rowsSkipped * 2 > layout.rows ? 'unrecognised' : 'ok'
+  // No rows at all is a file being written (a patcher mid-copy), not a layout: re-checked later.
+  if (layout.rows === 0) return report(id, 'pending', 'empty', { version, facts })
+  // The DOMINANT width must be a measured one, not merely most rows: a file of mixed widths whose
+  // commonest is unmeasured is a layout this build has not seen.
+  const status = rowsSkipped * 2 > layout.rows || !known.has(fields) ? 'unrecognised' : 'ok'
   return report(id, status, `fields-${String(fields)}`, { version, facts, histogram })
+}
+
+/** Per-check passing rows over the realigned rows (main/resist/spellsUsSemantics.ts). */
+export interface SpellsUsSemantics {
+  rows: number
+  pass: Record<string, number>
+}
+
+/**
+ * A field check passes when at least this share of realigned rows look like the field. The real
+ * install scores 99.99-100% on every check and a one-column shift scores 0-7.4% on the ones that
+ * can see it (the table is in spellsUsSemantics.ts), so 95% is margin on both sides.
+ */
+export const SEMANTIC_FLOOR = 0.95
+
+/** The checks a file failed, by name. Empty when every field looks like itself. */
+function failedChecks(s: SpellsUsSemantics): string[] {
+  if (s.rows === 0) return []
+  return Object.entries(s.pass)
+    .filter(([, n]) => n < s.rows * SEMANTIC_FLOOR)
+    .map(([k]) => k)
+}
+
+export interface SpellsUsMeasure {
+  layout: RowLayout
+  semantics?: SpellsUsSemantics
+  version: string
 }
 
 /**
  * `spells_us.txt`. `known` is the parser's own list of measured row widths
- * (`resist/spellsUsParse.ts KNOWN_ROW_LENGTHS`). `entries`, when given, is how many spells the parse
- * produced: a known layout that still yields no spells is not a working table either.
+ * (`resist/spellsUsParse.ts KNOWN_ROW_LENGTHS`). A measured width is necessary and not sufficient:
+ * when the field checks fail (`semantics`), the columns moved under an unchanged width, and the
+ * signature says so (`fields-190-moved`) with each check's pass rate as a percentage.
  */
-export function spellsUsHealth(layout: RowLayout, known: ReadonlySet<number>, version: string, entries?: number): GameFileReport {
-  const verdict = rowTableVerdict('spellsUs', layout, known, version)
-  if (verdict.status === 'ok' && entries === 0) return { ...verdict, status: 'unrecognised', signature: 'no-spells' }
-  return entries === undefined ? verdict : { ...verdict, facts: { ...verdict.facts, entries } }
+export function spellsUsHealth(m: SpellsUsMeasure, known: ReadonlySet<number>): GameFileReport {
+  const verdict = rowTableVerdict('spellsUs', m.layout, known, m.version)
+  if (verdict.status !== 'ok' || !m.semantics) return verdict
+  const s = m.semantics
+  const pct = Object.fromEntries(Object.entries(s.pass).map(([k, n]) => [`${k}Pct`, s.rows ? Math.round((n / s.rows) * 100) : 0]))
+  const failed = failedChecks(s)
+  const facts = { ...verdict.facts, ...pct }
+  if (failed.length === 0) return { ...verdict, facts }
+  return { ...verdict, status: 'unrecognised', signature: `${verdict.signature}-moved`, facts }
 }
 
 /** The spell-category namespace of `dbstr_us.txt` (engine `fold::dbstr` reads type 5). */
@@ -111,7 +147,7 @@ export function dbstrHealth(text: string, version: string): GameFileReport {
   const fields = dominantFieldCount(histogram)
   const facts = { rows, rowsRead: wellFormed, rowsSkipped: rows - wellFormed, spellCategories: categories, fields }
   const hist = topOfHistogram(histogram)
-  if (rows === 0) return report('dbstrUs', 'unrecognised', 'empty', { version, facts })
+  if (rows === 0) return report('dbstrUs', 'pending', 'empty', { version, facts })
   if ((rows - wellFormed) * 2 > rows) return report('dbstrUs', 'unrecognised', `fields-${String(fields)}`, { version, facts, histogram: hist })
   if (categories === 0) return report('dbstrUs', 'unrecognised', 'no-spell-categories', { version, facts, histogram: hist })
   return report('dbstrUs', 'ok', `fields-${String(fields)}`, { version, facts, histogram: hist })
@@ -152,35 +188,46 @@ export interface PfsHeader {
 /**
  * Does an `.s3d` start the way `eqassets/pfs.ts` needs: a directory offset inside the file and the
  * `PFS ` magic at byte 4? `archives` maps an archive name to its header, or null when absent; every
- * archive missing is `missing`, any present archive failing is `unrecognised`.
+ * archive missing is `missing`, any present archive with the wrong magic is `unrecognised`.
+ *
+ * A HALF-WRITTEN ARCHIVE IS PENDING, NOT A NEW FORMAT: shorter than its header, or a directory
+ * offset past the end of the file, is what a patcher copying in place looks like for a moment
+ * (the directory is written last). Pending is re-checked and never noticed or reported.
  */
 export function modelsHealth(archives: Readonly<Record<string, PfsHeader | null>>, version: string): GameFileReport {
   const present = Object.values(archives).filter((h): h is PfsHeader => h !== null)
   if (present.length === 0) return report('models', 'missing', 'none', { version })
   let bad = 0
-  let badDir = 0
+  let short = 0
   for (const h of present) {
-    const magic = h.head.length >= 8 ? String.fromCharCode(...h.head.subarray(4, 8)) : ''
-    if (magic !== 'PFS ') bad++
-    else if (new DataView(h.head.buffer, h.head.byteOffset, 4).getUint32(0, true) >= h.size) badDir++
+    if (h.head.length < 8 || h.size < 8) short++
+    else if (String.fromCharCode(...h.head.subarray(4, 8)) !== 'PFS ') bad++
+    else if (new DataView(h.head.buffer, h.head.byteOffset, 4).getUint32(0, true) >= h.size) short++
   }
-  const facts = { archives: present.length, badMagic: bad, badDirectory: badDir }
+  const facts = { archives: present.length, badMagic: bad, truncated: short }
   if (bad > 0) return report('models', 'unrecognised', 'magic', { version, facts })
-  if (badDir > 0) return report('models', 'unrecognised', 'directory', { version, facts })
+  if (short > 0) return report('models', 'pending', 'truncated', { version, facts })
   return report('models', 'ok', 'pfs', { version, facts })
 }
 
 /** GlobalLoad.txt: null text is missing; a file without the line the edit goes after is unrecognised. */
 export function globalLoadHealth(text: string | null, anchorFound: boolean, version: string): GameFileReport {
   if (text === null) return report('globalLoad', 'missing', 'none', { version })
+  if (text.trim() === '') return report('globalLoad', 'pending', 'empty', { version })
   if (!anchorFound) return report('globalLoad', 'unrecognised', 'no-anchor', { version })
   return report('globalLoad', 'ok', 'anchor', { version })
 }
 
-/** eqclient.ini: present but neither display-mode key readable is unrecognised. */
+/**
+ * eqclient.ini. A fresh install writes it WITHOUT the display-mode keys until the player opens the
+ * video options, so missing keys are `missing`, never a layout change. Only a non-empty file with
+ * no `[section]` header at all is not an INI this reader understands.
+ */
 export function eqclientIniHealth(text: string | null, modeKnown: boolean, version: string): GameFileReport {
   if (text === null) return report('eqclientIni', 'missing', 'none', { version })
-  if (!modeKnown) return report('eqclientIni', 'unrecognised', 'no-mode-keys', { version })
+  if (text.trim() === '') return report('eqclientIni', 'pending', 'empty', { version })
+  if (!modeKnown && !/^\s*\[[^\]\r\n]+\]/m.test(text)) return report('eqclientIni', 'unrecognised', 'no-sections', { version })
+  if (!modeKnown) return report('eqclientIni', 'missing', 'no-mode-keys', { version })
   return report('eqclientIni', 'ok', 'mode', { version })
 }
 

@@ -16,6 +16,8 @@
 //                 A supported configuration every feature already explains in its own place.
 //   error         the read itself failed (a lock, a permission). Logged, never noticed: it is not
 //                 something an app update fixes.
+//   pending       the file is empty or half-written (a patcher copying in place while the check
+//                 ran). Re-checked a little later; never noticed, never reported.
 //
 // THE REPORT CARRIES NO PATH AND NO NAME. A report is a reader id from the fixed table below, a
 // status, a short code-shaped layout signature (`fields-200`) and a handful of counts. The file
@@ -25,7 +27,7 @@
 export const GAME_FILE_IDS = ['spellsUs', 'dbstrUs', 'maps', 'uiSkin', 'models', 'globalLoad', 'eqclientIni'] as const
 export type GameFileId = (typeof GAME_FILE_IDS)[number]
 
-export type GameFileStatus = 'ok' | 'unrecognised' | 'missing' | 'error'
+export type GameFileStatus = 'ok' | 'unrecognised' | 'missing' | 'error' | 'pending'
 
 /** One reader's verdict on one version of its file. */
 export interface GameFileReport {
@@ -138,10 +140,23 @@ export function gameFileNotice(
   return { id: first.id, sentence: noticeSentence(first.id), more: live.length - 1, dismissKeys: live.map(dismissKey) }
 }
 
-/** Should this report be filed (once per layout)? Only an unrecognised layout not filed before. */
-export function shouldReport(r: GameFileReport, filed: readonly string[]): boolean {
-  return r.status === 'unrecognised' && !filed.includes(reportKey(r))
+/**
+ * Should this report be filed (once per layout)? Only an unrecognised layout not filed before, and
+ * only for a reader that matters to this player: one that can notice at all (eqclient.ini cannot)
+ * and that `noticeable` admits (GlobalLoad.txt only with Luclin models on). The same gate as the
+ * notice, so a report never exists for something the player was never told about.
+ */
+export function shouldReport(r: GameFileReport, filed: readonly string[], noticeable: (id: GameFileId) => boolean): boolean {
+  return r.status === 'unrecognised' && GAME_FILE_READERS[r.id].notice && noticeable(r.id) && !filed.includes(reportKey(r))
 }
+
+/** 74024 -> `74k`: five digits or more would be redacted to `<n>`, so a big count is rounded first. */
+function compact(n: number): string {
+  return Math.abs(n) >= 10_000 ? `${String(Math.round(n / 1000))}k` : String(n)
+}
+
+/** Row counts are sent as a share of `rows`; everything else is compacted. */
+const ROW_SHARES = new Set(['rowsRead', 'rowsSkipped'])
 
 /** `spellsUs` -> `GameFileSpellsUs`: the error name, which is what separates one reader's report from another's. */
 export function reportErrorName(id: GameFileId): string {
@@ -150,17 +165,21 @@ export function reportErrorName(id: GameFileId): string {
 
 /**
  * The report's one-line message, built to survive the error report's redaction intact: no path, no
- * quotes, and every number that matters under five digits (row totals are percentages here, since
- * the redactor turns a five-digit count into `<n>`). The full counts still reach errors.log.
+ * quotes, and no number of five digits or more (the redactor turns those into `<n>`). Read and
+ * skipped rows are percentages of `rows`, the histogram is percentages of rows, and any other big
+ * count is rounded to thousands (`74k`). tests/gameFileHealthReview.test.mts runs it through the
+ * real redactor.
  */
 export function reportMessage(r: GameFileReport): string {
   const label = GAME_FILE_READERS[r.id].label
+  const rows = r.facts.rows ?? 0
+  const share = (n: number): string => `${String(rows > 0 ? Math.round((n / rows) * 100) : 0)}%`
   const facts = Object.entries(r.facts)
-    .map(([k, v]) => `${k}=${String(v)}`)
+    .map(([k, v]) => `${k}=${ROW_SHARES.has(k) ? share(v) : compact(v)}`)
     .join(' ')
   const hist = r.histogram
     ? ` fields ${Object.entries(r.histogram)
-        .map(([k, v]) => `${k}x${String(v)}`)
+        .map(([k, v]) => `${k}x${share(v)}`)
         .join(',')}`
     : ''
   return `game file not recognised: ${label} layout ${r.signature}${facts ? ` ${facts}` : ''}${hist}`
