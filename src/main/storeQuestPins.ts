@@ -21,14 +21,14 @@
 // one document.
 
 import { sanitizeQuestPins, type QuestPins } from '../shared/questPins'
-import { adoptStepsSignatures, reconcileQuestTicks } from '../shared/questStepsSig'
+import { adoptStepsKeys, reconcileQuestTicks } from '../shared/questStepsSig'
 import { questStepsOf } from './questCatalog'
 import { getProgress, setProgress } from './store'
 
 /**
  * This character's tracked quests ([] when it has none, or the stored value is unusable). Hand ticks
  * made on a step list the catalog has since changed are dropped HERE, on the read, and the result is
- * written back so it happens once (shared/questStepsSig.ts; the additive `stepsSig` key needs no
+ * written back so it happens once (shared/questStepsSig.ts; the additive `stepsKey` key needs no
  * schema step, for the reason above).
  */
 export function getQuestPins(charId: string): QuestPins {
@@ -41,7 +41,7 @@ export function getQuestPins(charId: string): QuestPins {
 /** Replace the whole tracker for a character. Returns what was actually stored. */
 export function setQuestPins(charId: string, pins: QuestPins): QuestPins {
   // The renderer ticked against the catalog this build ships: stamp it, never judge it.
-  const next = adoptStepsSignatures(sanitizeQuestPins(pins), questStepsOf)
+  const next = adoptStepsKeys(sanitizeQuestPins(pins), questStepsOf)
   setProgress(charId, { ...getProgress(charId), questPins: next })
   return next
 }
