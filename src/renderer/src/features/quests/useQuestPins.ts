@@ -45,7 +45,7 @@ const EMPTY: QuestPins = []
 /** The document and its readiness as ONE object — `useSyncExternalStore` compares by identity. */
 interface Snapshot {
   pins: QuestPins
-  /** false until the first load settles. A data-availability flag, never an error. */
+  /** false until a read has SUCCEEDED (a failed one leaves it false: edits stay refused). */
   ready: boolean
 }
 
@@ -78,14 +78,15 @@ function load(force: boolean): void {
       emit({ pins: loaded, ready: true })
     })
     .catch(() => {
-      /* main never rejects; an unreadable store yields an empty tracker, not a crash */
+      // A FAILED READ IS NOT A READ: `ready` stays false, so edits stay refused (an edit folded over
+      // this placeholder would overwrite the stored tracker — apply() says why) and the page's
+      // controls stay disabled. The next push (`onProgress`), character switch or mount retries.
     })
     .finally(() => {
       if (mine !== generation) return
       loading = false
-      // READY EVEN WHEN THE ANSWER WAS DISCARDED: the flag says the first load SETTLED, and a
-      // superseded read settled — the document a caller would draw is the newer one either way.
-      if (!snapshot.ready) emit({ pins: snapshot.pins, ready: true })
+      // Only a SUCCESSFUL read makes the tracker ready (the `.then` above). A read superseded by a
+      // local edit needs nothing here: edits are refused until ready, so it was ready already.
     })
 }
 
@@ -171,7 +172,7 @@ export interface QuestPinsApi {
   /** Note the instant a completion was recorded. Re-recording keeps the first instant. */
   markDone: (page: string, ts: number) => void
   clearDone: (page: string) => void
-  /** false until the first load settles */
+  /** false until a read has succeeded; the page disables its edit controls until then */
   ready: boolean
 }
 
