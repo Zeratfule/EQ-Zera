@@ -27,18 +27,15 @@
  * EXACT ABOUT THE STORE, TOLERANT ABOUT THE GLASS, and the split is the whole point of this spec
  * on a display whose scale factor is not a whole number. `setBounds` and the BrowserWindow
  * constructor round a DIP rectangle through physical pixels, so the window that appears is a few
- * pixels bigger than the one that was asked for. MEASURED on the owner's machine (primary display
- * `scaleFactor: 2.25`, work area 1707x912 DIP), bare Electron window, nothing else running:
- *
- *   setBounds  720x260 -> 720x260     setBounds 1440x520 -> 1441x520
- *   setBounds 1040x720 -> 1040x720    setBounds 1280x860 -> 1282x860
- *   setBounds  798x300 -> 799x300     setMinimumSize(140,90)+setBounds(40x40) -> 140x92
- *   new BrowserWindow(720x260)  -> getBounds 724x263   (the CONSTRUCTOR rounds outward)
- *   new BrowserWindow(1041x721) -> getBounds 1045x725
+ * pixels bigger than the one that was asked for — up to +8 DIP on a quarter-step display (1.25,
+ * 1.75, 2.25), never smaller and never moved; the measured table per scale factor is in
+ * src/main/windowState.ts above `placementEnvelope`. (The old fixed four pixels came from a handful
+ * of placements and was already too narrow: on Electron 43.8.12 this spec's own lost-monitor
+ * placement comes back 1046x722 for 1040x720 on the owner's 2.25 display.)
  *
  * So: anywhere a SHOWN window is compared against a size somebody REQUESTED, the comparison
- * carries that envelope (four pixels per edge, the worst case above, and the same number
- * `APPLIED_SLACK_PX` uses in windowState.ts). Anywhere the STORE is compared, the comparison is
+ * carries the PRODUCT's envelope for the display the window is on (`placementEnvelope`: growth
+ * sized by that display's scale factor, shrink and move four DIP). Anywhere the STORE is compared, the comparison is
  * byte-exact and always will be, because that is the claim: the file holds the rectangle the user
  * left the window at, unrounded and undrifted, however many times the app has re-placed the window
  * since. Widening a store comparison would hide exactly the defect this spec caught, which is that
@@ -64,7 +61,12 @@ import type { ElectronApplication } from 'playwright-core'
 import { buildIfStale, check, note, reportRun, settle } from './appHarness.mjs'
 import { closeWindows, mainWindow, makeUserData, removeUserData } from './appWindow.mjs'
 import { launchOnFixture, stageFixture } from './logFixture.mjs'
-import { DEFAULT_MAIN_WINDOW_SIZE } from '../../src/main/windowState'
+import {
+  DEFAULT_MAIN_WINDOW_SIZE,
+  placementEnvelope,
+  withinPlacementEnvelope,
+  type PlacementEnvelope
+} from '../../src/main/windowState'
 
 /** A window rectangle, as Electron hands it over. */
 interface Bounds {
@@ -78,6 +80,8 @@ interface Bounds {
 interface Placement {
   bounds: Bounds | null
   onScreen: boolean
+  /** The scale factor of the display the window is on — what sizes the rounding envelope. */
+  scaleFactor: number | null
 }
 
 /** The store file this launch reads and writes — `STORE_NAME` in src/main/channel.ts, which cannot
@@ -108,7 +112,7 @@ function mainPlacement(app: ElectronApplication): Promise<Placement> {
       const url = win.webContents.getURL()
       return !url.includes('overlay.html') && !url.includes('cursor.html')
     })
-    if (!w) return { bounds: null, onScreen: false }
+    if (!w) return { bounds: null, onScreen: false, scaleFactor: null }
     const b = w.getBounds()
     const onScreen = screen.getAllDisplays().some((d) => {
       const a = d.workArea
@@ -116,7 +120,7 @@ function mainPlacement(app: ElectronApplication): Promise<Placement> {
         b.x >= a.x && b.y >= a.y && b.x + b.width <= a.x + a.width && b.y + b.height <= a.y + a.height
       )
     })
-    return { bounds: b, onScreen }
+    return { bounds: b, onScreen, scaleFactor: screen.getDisplayMatching(b).scaleFactor }
   })
 }
 
@@ -149,27 +153,33 @@ function writeStoredBounds(userData: string, bounds: Bounds): void {
 }
 
 /**
- * The DPI-rounding envelope, in pixels per edge: how far the window that APPEARS may be from the
- * rectangle that was asked for. Four is the worst case in the measurement table above (the
- * constructor, which rounds outward), and it is the same number the product uses to tell its own
- * placements apart from the user's gestures (`APPLIED_SLACK_PX`, src/main/windowState.ts).
+ * The DPI-rounding envelope: how far the window that APPEARS may be from the rectangle that was
+ * asked for. It is the PRODUCT's own envelope (`placementEnvelope`, src/main/windowState.ts) for
+ * the display the window is on — growth sized by that display's scale factor, shrink and move the
+ * previous four DIP — so this spec and the saver can never disagree about what is rounding.
  */
-const SHOWN_SLACK_PX = 4
+const envelopeOf = (shown: Placement): PlacementEnvelope => placementEnvelope(shown.scaleFactor)
 
 /** Byte-exact. Every STORE comparison in this file goes through this one and no other. */
 const same = (a: Bounds | null, b: Bounds): boolean =>
   a !== null && a.x === b.x && a.y === b.y && a.width === b.width && a.height === b.height
 
 /** The shown rectangle, within the rounding envelope of the one that was requested. */
-const near = (a: Bounds | null, b: Bounds): boolean =>
-  a !== null &&
-  (['x', 'y', 'width', 'height'] as const).every((k) => Math.abs(a[k] - b[k]) <= SHOWN_SLACK_PX)
+const near = (shown: Placement, requested: Bounds): boolean =>
+  withinPlacementEnvelope(requested, shown.bounds, envelopeOf(shown))
 
 /** The shown SIZE, within the same envelope. Position is not part of that question. */
-const nearSize = (a: Bounds | null, b: { width: number; height: number }): boolean =>
-  a !== null &&
-  Math.abs(a.width - b.width) <= SHOWN_SLACK_PX &&
-  Math.abs(a.height - b.height) <= SHOWN_SLACK_PX
+const nearSize = (shown: Placement, requested: { width: number; height: number }): boolean =>
+  shown.bounds !== null &&
+  withinPlacementEnvelope(
+    { ...shown.bounds, width: requested.width, height: requested.height },
+    shown.bounds,
+    envelopeOf(shown)
+  )
+
+/** The envelope a check was judged against, for its detail line. */
+const envelopeNote = (shown: Placement): string =>
+  `scale ${String(shown.scaleFactor)}, up to +${String(envelopeOf(shown).grow)}`
 
 async function main(): Promise<void> {
   buildIfStale()
@@ -188,15 +198,15 @@ async function main(): Promise<void> {
     await mainWindow(first.app)
     const fresh = await mainPlacement(first.app)
     check(
-      `a fresh install opens at today's default size (${String(DEFAULT_SIZE.width)}x${String(DEFAULT_SIZE.height)}, within the ${String(SHOWN_SLACK_PX)}px the display's own rounding adds)`,
-      nearSize(fresh.bounds, DEFAULT_SIZE),
-      key(fresh.bounds)
+      `a fresh install opens at today's default size (${String(DEFAULT_SIZE.width)}x${String(DEFAULT_SIZE.height)}, within the rounding the display adds)`,
+      nearSize(fresh, DEFAULT_SIZE),
+      `${key(fresh.bounds)} · ${envelopeNote(fresh)}`
     )
     await placeMainWindow(first.app, CHOSEN)
-    const moved = await settle(() => mainPlacement(first.app), (p) => near(p.bounds, CHOSEN), {
+    const moved = await settle(() => mainPlacement(first.app), (p) => near(p, CHOSEN), {
       timeoutMs: 10_000
     })
-    check('the window can be put somewhere else', near(moved.bounds, CHOSEN), key(moved.bounds))
+    check('the window can be put somewhere else', near(moved, CHOSEN), `${key(moved.bounds)} · ${envelopeNote(moved)}`)
     chosen = moved.bounds
     // The user's own exit: closing the window is what flushes the debounced save (and `app.quit()`
     // — the path Playwright's own close takes — is covered by the `before-quit` flush beside it).
@@ -224,8 +234,8 @@ async function main(): Promise<void> {
     const arrived = await mainPlacement(second.app)
     check(
       'a relaunch opens at the remembered size AND position (nothing in this spec has moved it)',
-      chosen !== null && near(arrived.bounds, chosen),
-      `${key(arrived.bounds)} vs the remembered ${key(chosen)}`
+      chosen !== null && near(arrived, chosen),
+      `${key(arrived.bounds)} vs the remembered ${key(chosen)} · ${envelopeNote(arrived)}`
     )
     await closeWindows(second.app)
   } finally {
@@ -255,8 +265,8 @@ async function main(): Promise<void> {
     )
     check(
       '…at the size the user chose (only the position had to be overruled)',
-      nearSize(rescued.bounds, LOST_MONITOR),
-      key(rescued.bounds)
+      nearSize(rescued, LOST_MONITOR),
+      `${key(rescued.bounds)} · ${envelopeNote(rescued)}`
     )
     await closeWindows(third.app)
   } finally {

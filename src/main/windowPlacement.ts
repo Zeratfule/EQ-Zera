@@ -116,6 +116,20 @@ export function workAreaFor(rect: Rect): Rect | null {
 }
 
 /**
+ * THE SCALE FACTOR OF THE DISPLAY A RECTANGLE LANDS ON — what sizes the rounding envelope the
+ * window-state saver allows our own placement (`placementEnvelope`, windowState.ts). Same display
+ * resolution as `workAreaFor`, and the same `null` for "no screen information", which the
+ * envelope reads as its widest.
+ */
+export function scaleFactorFor(rect: Rect): number | null {
+  try {
+    return screen.getDisplayMatching(rect).scaleFactor
+  } catch {
+    return null
+  }
+}
+
+/**
  * The same question for the MAIN window, whose fallback is different: it has no reserved slot, so a
  * rectangle on no display keeps the SIZE the user chose and is centred on the primary display.
  *

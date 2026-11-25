@@ -29,8 +29,12 @@ const saver = createWindowStateSaver(setWindowBounds)
  * store keeps the rectangle the USER chose, the screen gets the one that fits. See
  * `WindowStateSaver.applied`.
  */
-export function declareWindowPlacement(rect: Rect | undefined, maximized: boolean): void {
-  saver.applied(rect, maximized)
+export function declareWindowPlacement(
+  rect: Rect | undefined,
+  maximized: boolean,
+  scaleFactor?: number | null
+): void {
+  saver.applied(rect, maximized, scaleFactor)
 }
 
 /** Record where the window is now, debounced. A no-op for a minimized, destroyed or absent one. */
