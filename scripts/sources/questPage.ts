@@ -28,6 +28,8 @@
  * `isItem(title)` predicate (built from the wiki's item-page title set) — that filter is
  * what turns prose links into a trustworthy required-item list.
  */
+import type { QuestStepLink, QuestStepLoc } from '../../src/shared/questTypes'
+import { renderLocTemplates, stepLinksOf, stepLocsOf } from './questStepRefs'
 
 /** The `{| class="questTopTable"` header block, verbatim label → value cells. */
 export interface QuestTopTable {
@@ -52,6 +54,10 @@ export interface ParsedQuestPage extends QuestTopTable {
   expReward: boolean
   /** the quest's steps, one plain-text line each (see `extractSteps`) */
   steps: string[]
+  /** per step, its links (item links left out) — index-aligned with `steps` */
+  stepLinks: QuestStepLink[][]
+  /** per step, the coordinates it states — index-aligned with `steps` */
+  stepLocs: QuestStepLoc[][]
   /** true when the page is a disambiguation hub, not a quest */
   disambiguation: boolean
   /** true when the page has a questTopTable header block */
@@ -267,7 +273,8 @@ function stepText(rawLine: string): string | null {
   if (!rawLine.trim() || TABLE_LINE.test(rawLine) || NPC_DIALOGUE.test(rawLine) || SIDE_EFFECT.test(rawLine)) return null
   if (/^\s*\[\[\s*(category|file|image)\s*:/i.test(rawLine)) return null
   const text = stripMarkup(
-    rawLine
+    // A `{{Loc|Zone|a, b}}` is rendered as its coordinate rather than dropped (questStepRefs.ts).
+    renderLocTemplates(rawLine)
       .replace(/^\s*[*#;:]+\s*/, '') // bullet / numbering
       .replace(/\{\{:\s*([^}|\n]+?)\s*(?:\|[^}]*)?\}\}/g, '$1') // an item box IS the item's name
   ).replace(/&[#\w]+;/g, (e) => ENTITIES[e] ?? ' ')
@@ -309,18 +316,34 @@ function sectionWithChildren(wikitext: string, heading: RegExp): string | null {
  * Comments, `<div class='facblock'>` blocks and `<ref>`s go first, since they span lines.
  */
 export function extractSteps(wikitext: string): string[] {
+  return extractStepLines(wikitext).map((l) => l.text)
+}
+
+/** One step: the text a player reads, and the wikitext line it came from (links and all). */
+export interface StepLine {
+  text: string
+  /** the source line, verbatim — what `questStepRefs.ts` reads the links and coordinates from */
+  raw: string
+}
+
+/**
+ * `extractSteps` with each step's SOURCE LINE kept beside it, index for index. Same list, same
+ * order; the raw line is what the per-step links and coordinates are read from, because the plain
+ * text has already dropped every link target.
+ */
+export function extractStepLines(wikitext: string): StepLine[] {
   const body = wikitext
     .replace(/<!--[\s\S]*?-->/g, '')
     .replace(/<div[^>]*facblock[^>]*>[\s\S]*?<\/div>/gi, '')
     .replace(/<ref[^>]*>[\s\S]*?<\/ref>/gi, '')
-  const toSteps = (section: string): string[] => {
-    const steps: string[] = []
+  const toSteps = (section: string): StepLine[] => {
+    const steps: StepLine[] = []
     for (const line of section.split('\n')) {
       const s = stepText(line)
-      if (s !== null && s !== steps[steps.length - 1]) steps.push(s)
+      if (s !== null && s !== steps[steps.length - 1]?.text) steps.push({ text: s, raw: line })
     }
     // A sub-heading with nothing under it says nothing.
-    while (steps.length > 0 && steps[steps.length - 1].endsWith(':')) steps.pop()
+    while (steps.length > 0 && steps[steps.length - 1].text.endsWith(':')) steps.pop()
     return steps.slice(0, MAX_STEPS)
   }
   let sawHeading = false
@@ -374,6 +397,7 @@ export function parseQuestPage(
     ...transclusionTargets(bodyText).filter(isItem),
     ...linkTargets(bodyText).filter(isItem)
   ]).filter((n) => !rewardKeys.has(n.toLowerCase()))
+  const stepLines = extractStepLines(withoutTable)
 
   return {
     page,
@@ -387,7 +411,9 @@ export function parseQuestPage(
     rewards,
     requiredItems,
     expReward: EXP_MARKER.test(wikitext),
-    steps: extractSteps(withoutTable),
+    steps: stepLines.map((l) => l.text),
+    stepLinks: stepLines.map((l) => stepLinksOf(l.raw, isItem)),
+    stepLocs: stepLines.map((l) => stepLocsOf(l.raw, l.text)),
     disambiguation: /\{\{\s*disambig/i.test(wikitext),
     hasTopTable: top !== null
   }

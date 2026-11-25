@@ -11,6 +11,7 @@ import { VIEW_LABELS, type View } from './appViews'
 import { afterBack, afterLink, originTop, type NavOrigin } from './navOrigin'
 import type { CombatFocus } from './features/combat/combatFocus'
 import type { MobTarget } from './features/mobs/mobTarget'
+import type { MapAnchor } from './features/maps/mapTarget'
 
 /**
  * THE ONE BACK CONTRACT (JOS-43). Every cross-view drill receiver takes this same object — never
@@ -191,6 +192,15 @@ export interface AppRouting {
    */
   openCharacter: (item?: string) => void
   clearPreviewFocus: () => void
+  /** The place the Maps tab should open on and mark, or null for the tab as it stands. */
+  mapAnchor: MapAnchor | null
+  mapNonce: number
+  /**
+   * A quest page's location chip: the Maps tab, on that zone, centred on that point with a target
+   * marker (features/maps/mapTarget.ts). Always anchored, so the arrival names its way Back.
+   */
+  openMap: (anchor: MapAnchor) => void
+  clearMapFocus: () => void
 }
 
 /**
@@ -271,6 +281,8 @@ export function useAppRouting(view: View, setView: (v: View) => void): AppRoutin
   // more here than anywhere else because the Character tab UNMOUNTS on every tab switch and a
   // second preview of the same item is otherwise indistinguishable from the first.
   const character = useFocusSlot<string>('character', linkTo)
+  // A quest location chip's jump (quest locations wave): a zone, a point and what is there.
+  const map = useFocusSlot<MapAnchor>('maps', linkTo)
   // THE WHOLE ROUTER IS ONE MEMOIZED OBJECT (JOS-510 item 3). It is handed down as `routing` to
   // `ViewContent`, which is a `React.memo` boundary now — a fresh object here would make that
   // boundary compare unequal on every App render and buy nothing.
@@ -309,9 +321,13 @@ export function useAppRouting(view: View, setView: (v: View) => void): AppRoutin
       previewItem: character.value,
       previewNonce: character.nonce,
       openCharacter: character.open,
-      clearPreviewFocus: character.clear
+      clearPreviewFocus: character.clear,
+      mapAnchor: map.value,
+      mapNonce: map.nonce,
+      openMap: map.open,
+      clearMapFocus: map.clear
     }),
-    [selectView, nav, spell, mob, quest, questPage, level, combat, loot, character]
+    [selectView, nav, spell, mob, quest, questPage, level, combat, loot, character, map]
   )
 }
 

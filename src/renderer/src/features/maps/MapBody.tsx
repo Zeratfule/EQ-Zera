@@ -163,7 +163,8 @@ function MapSurface({
   floor,
   marker,
   locMarker,
-  pane
+  pane,
+  overlay
 }: {
   data: MapData
   vp: MapViewport
@@ -176,6 +177,8 @@ function MapSurface({
   locMarker: EqLoc | null
   /** The sidebar's contribution, or null when it is closed and draws nothing. */
   pane: PaneOverlay | null
+  /** The quest layer (MapQuestLayer.tsx): pins, the target and its card. Drawn above the rest. */
+  overlay?: ReactNode
 }): JSX.Element {
   const at = marker == null ? null : labelPosition(vp, marker)
   // The SELECTION ring — one symbol for both kinds of pane row, so a wiki mob and a map label
@@ -212,6 +215,7 @@ function MapSurface({
       {/* THE ONE SEAM, AGAIN: the typed reading reaches the screen through `mapFromLoc` and then
           the same `project` every other mark uses. Nothing here knows which way north is. */}
       {locMarker != null && <MapLocMarker at={mapFromLoc(locMarker)} loc={locMarker} vp={vp} />}
+      {overlay}
     </Box>
   )
 }
@@ -258,11 +262,13 @@ export interface MapBodyProps {
   locMarker: EqLoc | null
   /** A cross-zone hit was clicked — `useSearchJump`'s handler, which changes zone first. */
   onJump: (to: JumpTarget) => void
+  /** The quest layer, drawn on the surface when a map is. */
+  overlay?: ReactNode
 }
 
 export default function MapBody(props: MapBodyProps): JSX.Element {
   const { data, empty, vp, hostRef, layers, bands, floor, pane, zoneName, marker, onJump } = props
-  const { locMarker } = props
+  const { locMarker, overlay } = props
   return (
     <Stack direction="row" spacing={1.5} sx={{ position: 'relative', flexGrow: 1, minHeight: 0 }}>
       {data != null ? (
@@ -276,6 +282,7 @@ export default function MapBody(props: MapBodyProps): JSX.Element {
           marker={marker}
           locMarker={locMarker}
           pane={paneOverlay(pane)}
+          overlay={overlay}
         />
       ) : (
         empty
