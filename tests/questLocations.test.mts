@@ -17,8 +17,8 @@ import assert from 'node:assert/strict'
 import questsJson from '../src/renderer/src/data/eqlegends/quests.json'
 import mobsJson from '../src/renderer/src/data/eqlegends/mobs.json'
 import type { MobData, QuestData, QuestEntry } from '../src/shared/types'
-import { buildMobIndex, dropKey, questLocations, type QuestLocChip } from '../src/shared/questLocations'
-import { clauseSpan, sentenceSpan } from '../src/shared/questLocZones'
+import { buildMobIndex, dropKey, mentions, questLocations, type QuestLocChip } from '../src/shared/questLocations'
+import { clauseSpan, mention, movedTo, nextTrail, sentenceSpan } from '../src/shared/questLocZones'
 import { questPinsInZone } from '../src/shared/questMapPins'
 import { ZONES, zoneKey } from '../src/shared/zones'
 import { buildSourceIndex, sourceItemKey } from '../src/renderer/src/lib/itemSources'
@@ -96,8 +96,9 @@ test('REFUSALS: a city name that is two maps names a zone but opens no map', () 
   assert.ok(bard.length >= 2)
   for (const c of bard) {
     assert.equal(c.zone, undefined, brief(c))
-    // Earlier steps walk through Kelethin and Felwithe, so not even the city is asserted any more.
-    assert.notEqual(c.zoneName, 'South Felwithe')
+    // Earlier steps walk through Kelethin and Felwithe, so the walkthrough's zone is unknown: no zone, no map.
+    assert.equal(c.zoneName, undefined, brief(c))
+    assert.match(c.why, /moved somewhere its words do not place/)
   }
 })
 
@@ -278,4 +279,62 @@ test('REVIEW B: a KIND of item ("a tattered note", "Sealed Letter") shows a drop
 test('REVIEW B: two bestiary pages for one mob in one zone are ONE dropper row', () => {
   // "Trakanon" and "Trakanon (triggered)" both drop the strings in Old Sebilis.
   assert.deepEqual(droppersOf('Bard Epic Quest', 'Undead Dragongut Strings'), ['Trakanon'])
+})
+
+// ---- RE-REVIEW (460069d): section boundaries, spoken instructions, whole-name mentions. ------
+
+const trailAfter = (text: string, prev: ReturnType<typeof mention> | null | undefined, atTop = false): string | null | undefined => {
+  const t = nextTrail({ text, links: [], items: [], prev, start: 'South Qeynos', atTop })
+  return t === null || t === undefined ? t : (t.stem ?? t.name)
+}
+
+test('RE-REVIEW 1: a section boundary resets the trail to UNKNOWN, not to the start zone', () => {
+  const north = mention('North Qeynos')
+  assert.equal(trailAfter('----', north), null)
+  assert.equal(trailAfter('Evil Version:', north), null)
+  // A heading that names one zone IS that zone.
+  assert.equal(trailAfter('Lesser Faydark:', north), 'lfaydark')
+  // The page's own opening heading leaves the start zone standing.
+  assert.equal(trailAfter('Good Version:', undefined, true), undefined)
+  // A long line that merely ends in a colon is a step, not a heading.
+  assert.equal(trailAfter('Upon handing the Crate of Rotten Carrots to Blinza:', north), 'qeynos2')
+})
+
+test('RE-REVIEW 1: on a Good/Evil page the first half’s zone does not cross into the second', () => {
+  const page: QuestEntry = {
+    name: 'Split Page',
+    page: 'Split Page',
+    startZone: 'South Qeynos',
+    steps: ['Good Version:', 'Head to North Qeynos.', 'Find him there.', 'Evil Version:', 'He stands at (10, 20).'],
+    stepLocs: [[], [], [], [], [{ ns: 10, ew: 20, at: 13 }]]
+  }
+  const chip = questLocations(page, index).steps[4][0]
+  assert.equal(chip.zone, undefined, brief(chip))
+  assert.match(chip.why, /moved somewhere its words do not place/)
+})
+
+test('RE-REVIEW 2: an NPC telling you to go somewhere does not move the walkthrough', () => {
+  assert.equal(movedTo("Tonmerk says, 'You must go to North Qeynos and find him.'", [], []), undefined)
+  assert.equal(movedTo('Tonmerk tells you, "Head to North Qeynos."', [], []), undefined)
+  // …and the walkthrough's own words still do.
+  assert.equal(movedTo('Go to North Qeynos and find him.', [], [])?.zone.stem, 'qeynos2')
+  assert.notEqual(trailAfter("Tonmerk says, 'You must go to North Qeynos.'", mention('South Qeynos')), 'qeynos2')
+})
+
+test('RE-REVIEW 3: a dropper counts as named only by its FULL name, whole words', () => {
+  // A Magician quest that says "Magician" names no mob called "a magician".
+  assert.equal(mentions('Magician Spells: every Magician guildmaster sells them.', 'a magician'), false)
+  assert.equal(mentions('Loot the page from a magician in the ruins.', 'a magician'), true)
+  assert.equal(mentions('Drosco the Zombie drops it.', 'Drosco'), true)
+  assert.equal(mentions('Visit Droscoville.', 'Drosco'), false)
+  assert.equal(mentions('kill the orc runner on the road', 'orc runner'), true)
+  // The legitimately named droppers survive the stricter match.
+  const named: [string, string, string][] = [
+    ['Dire Wolf-Hide Cloak Quest', 'Sealed Letter', 'Shardwing Courier'],
+    ['Orc Runner (Felwithe)', 'a Sealed Letter', 'orc runner'],
+    ['Drosco the Zombie (good)', 'A Sealed Letter', 'Drosco'],
+    ["Merona's Brother", 'Torn Parchment', 'Ronn Castekin'],
+    ['Library Book', 'Page 30 of a Book', 'Dyllin Starsine']
+  ]
+  for (const [page, item, mob] of named) assert.ok(droppersOf(page, item).includes(mob), `${page}: ${item} <- ${mob}`)
 })

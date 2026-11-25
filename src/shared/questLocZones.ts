@@ -281,9 +281,29 @@ const MOVE_BEFORE =
 export function movedTo(text: string, links: readonly QuestStepLink[], items: readonly string[]): { zone: ZoneMention; at: number } | undefined {
   let last: { zone: ZoneMention; at: number } | undefined
   for (const h of zoneHits(text, links, items)) {
+    if (inSpeech(text, h.a)) continue
     if (MOVE_BEFORE.test(text.slice(Math.max(0, h.a - 48), h.a))) last = { zone: h.zone, at: h.a }
   }
   return last
+}
+
+/** A speaker's verb opening a quote: "Tonmerk says, '…", "Bronto tells you, \"…". */
+const SPEECH_OPEN = /\b(?:says?|said|tells? you|told you|whispers?|shouts?|yells?|asks?)\s*[,:]?\s*(['"])/gi
+
+/**
+ * Is offset `a` inside somebody's quoted words? An NPC telling you "go to North Qeynos" is not the
+ * walkthrough moving you there — the player may not go, or not yet. Any open double quote counts
+ * too; a single quote only after a speech verb, since prose apostrophes ("Ak'Anon") are not quotes.
+ */
+function inSpeech(text: string, a: number): boolean {
+  const before = text.slice(0, a)
+  if ((before.match(/"/g) ?? []).length % 2 === 1) return true
+  for (const m of before.matchAll(SPEECH_OPEN)) {
+    const after = before.slice(m.index + m[0].length)
+    const close = m[1] === "'" ? /'(?=[\s.,!?)]|$)/ : /"/
+    if (!close.test(after)) return true
+  }
+  return false
 }
 
 /** The items a quest names (required and reward) — the words prose zone-reading must skip. */
@@ -573,17 +593,46 @@ export function nextTrail(args: {
   prev: ZoneMention | null | undefined
   start: string | undefined
   placed?: { zone: ZoneMention; at: number }
+  /** no step with content has come before this one */
+  atTop?: boolean
 }): ZoneMention | null | undefined {
   const { text, links, items, prev, start, placed } = args
   const moved = movedTo(text, links, items)
   const last = [moved, placed].filter((m) => m !== undefined).sort((a, b) => b.at - a.at)[0]
   if (last) return last.zone
+  // A SECTION BOUNDARY ("----", or a short heading line like "Evil Version:" / "Quest Stage 2:")
+  // starts a new part of the page — a Good/Evil split walks somewhere else entirely — so the trail
+  // does not cross it. A heading that names one placeable zone ("Lesser Faydark:") is that zone;
+  // any other boundary leaves the walkthrough's position UNKNOWN, never back at the start zone.
+  if (isBoundary(text)) return acrossBoundary(text, links, items, args.atTop === true ? { prev } : undefined)
   const base = prev === undefined ? (start ? mention(start) : undefined) : prev
   // A line of dialogue ("You say, 'A Warder of Ro?'") is talk, not travel.
   if (base == null || /^\s*You say\b/i.test(text)) return prev
   const others = zonesNamed(text, links, items).filter((z) => (z.stem ?? z.name) !== (base.stem ?? base.name) && !refines(z, base))
   const heads = headsIn(text, items).filter((h) => !refines({ name: h, stem: null }, base))
   return others.length === 1 || (others.length === 0 && heads.length > 0) ? null : prev
+}
+
+/**
+ * The trail on the far side of a boundary: the one placeable zone a heading names, else unknown —
+ * except at the page's OWN opening heading (`top` given), where the quest's start still stands.
+ */
+function acrossBoundary(
+  text: string,
+  links: readonly QuestStepLink[],
+  items: readonly string[],
+  top: { prev: ZoneMention | null | undefined } | undefined
+): ZoneMention | null | undefined {
+  if (top) return top.prev
+  const named = zonesNamed(text, links, items)
+  return named.length === 1 && named[0].stem !== null ? named[0] : null
+}
+
+/** A `----` rule, or a heading-like line: ends in ":" and is at most five words, not dialogue. */
+export function isBoundary(text: string): boolean {
+  const t = text.trim()
+  if (/^-{3,}$/.test(t)) return true
+  return t.endsWith(':') && !/^You say\b/i.test(t) && t.split(/\s+/).length <= 5
 }
 
 function startZoneVerdict(args: CoordArgs): ZoneVerdict {

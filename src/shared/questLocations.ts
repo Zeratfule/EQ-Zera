@@ -24,7 +24,7 @@
 import type { ZoneShort } from './maps'
 import type { MobEntry, MobLoc } from './mobTypes'
 import type { QuestEntry, QuestStepLink } from './types'
-import { coordZone, isPlaceholderZone, linksIn, nextTrail, npcZone, questItemNames, sentenceSpan, type NpcZone, type ZoneMention } from './questLocZones'
+import { coordZone, isBoundary, isPlaceholderZone, linksIn, nextTrail, npcZone, questItemNames, sentenceSpan, type NpcZone, type ZoneMention } from './questLocZones'
 import type { MobIndex } from './bestiaryIndex'
 // The bestiary index lives in ./bestiaryIndex.ts; re-exported so callers keep one import.
 export { buildMobIndex, dropKey, type MobIndex } from './bestiaryIndex'
@@ -234,15 +234,19 @@ function sharedName(item: string): boolean {
 
 const placeKey = (r: { zone?: ZoneShort; zoneName?: string }): string => r.zone ?? `?${(r.zoneName ?? '').toLowerCase()}`
 
+const escape = (s: string): string => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+
 /**
- * Does the walkthrough name this mob? Its name without the article ("shadowed man"), or a proper
- * name's distinctive first word as written ("Founy" for Founy Jestands, at least five letters).
+ * Does the walkthrough NAME this mob? Its FULL name, as whole words. A common-noun mob ("a
+ * magician", "an orc runner") must appear WITH an article — any of a / an / the — so a Magician's
+ * quest page that says "Magician" names no mob at all; a proper name ("Drosco", "Ronn Castekin")
+ * appears as written, case aside.
  */
-function mentions(text: string, mob: string): boolean {
-  const bare = mob.replace(/^(a|an|the)\s+/i, '')
-  if (bare.length >= 6 && text.toLowerCase().includes(bare.toLowerCase())) return true
-  const first = /^[A-Z][a-z`']{4,}/.exec(mob)?.[0]
-  return first !== undefined && bare === mob && new RegExp(`\\b${first}\\b`).test(text)
+export function mentions(text: string, mob: string): boolean {
+  const bare = mob.replace(/^(a|an|the)\s+/i, '').trim()
+  if (bare === '') return false
+  const article = bare !== mob.trim() || /^[a-z]/.test(bare) ? '(?:a|an|the)\\s+' : ''
+  return new RegExp(`(?<![\\w'\`])${article}${escape(bare)}(?![\\w'\`])`, 'i').test(text)
 }
 
 /** Two pages for one mob name in one zone are one row: their chips are merged, never repeated. */
@@ -295,7 +299,8 @@ export function questLocations(quest: QuestEntry, index: MobIndex): QuestLocatio
   const items = questItemNames(quest)
   const steps = (quest.steps ?? []).map((text, i) => {
     const { chips, placed } = stepChips(quest, i, index, trail)
-    trail = nextTrail({ text, links: quest.stepLinks?.[i] ?? [], items, prev: trail, start: quest.startZone, ...(placed ? { placed } : {}) })
+    const atTop = (quest.steps ?? []).slice(0, i).every(isBoundary)
+    trail = nextTrail({ text, links: quest.stepLinks?.[i] ?? [], items, prev: trail, start: quest.startZone, atTop, ...(placed ? { placed } : {}) })
     return chips
   })
   return {
