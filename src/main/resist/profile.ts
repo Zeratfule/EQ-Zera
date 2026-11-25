@@ -63,6 +63,10 @@ export function spellDataNote(status: { state: SpellTableState; path: string }):
   if (status.state === 'unloadable') {
     return 'Spell data unavailable - spells_us.txt was found but could not be loaded. The error log has the details.'
   }
+  // The layout gate (shared/gameFileHealth.ts): the same words as the game-file notice.
+  if (status.state === 'changed') {
+    return "Spell data unavailable - the game's last patch changed spells_us.txt, so mob resist estimates are paused until EQ Zera updates."
+  }
   return 'Reading your EverQuest spell data...'
 }
 

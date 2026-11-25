@@ -24,6 +24,8 @@ export interface RowLayout {
   rows: number
   /** field count -> rows with that many fields */
   histogram: Record<string, number>
+  /** The last line has no newline: the client's files always end in one, so a writer is mid-file. */
+  unterminated?: boolean
 }
 
 /**
@@ -54,7 +56,7 @@ export function caretLayout(text: string): RowLayout {
     } else if (c !== 13) nonEmpty = true
   }
   flush()
-  return { rows, histogram }
+  return text.length > 0 && !text.endsWith('\n') ? { rows, histogram, unterminated: true } : { rows, histogram }
 }
 
 function report(id: GameFileId, status: GameFileReport['status'], signature: string, rest: Partial<GameFileReport> & { version: string }): GameFileReport {
@@ -126,7 +128,12 @@ export function spellsUsHealth(m: SpellsUsMeasure, known: ReadonlySet<number>, m
   const verdict = rowTableVerdict('spellsUs', m.layout, known, m.version)
   if (verdict.status !== 'ok') return verdict
   if (m.entries === 0) return { ...verdict, status: 'unrecognised', signature: 'no-spells' }
-  if (!m.semantics || m.semantics.rows < minRows) return verdict
+  // A FILE STILL BEING WRITTEN IS PENDING, NEVER JUDGED AND NEVER SERVED: a last line with no newline,
+  // or fewer rows than the field checks need (a real file has ~74,000). Tests that judge synthetic
+  // fragments pass minRows 0, which turns off both of these production gates.
+  if (minRows > 0 && m.layout.unterminated) return { ...verdict, status: 'pending', signature: 'partial' }
+  if (m.semantics && m.semantics.rows < minRows) return { ...verdict, status: 'pending', signature: 'short' }
+  if (!m.semantics) return verdict
   const s = m.semantics
   const failed = failedChecks(s)
   const checks = Object.keys(s.pass).length

@@ -61,6 +61,7 @@ async function oneInstall(label: string, spells: string): Promise<void> {
     if (check(`${label}: the mob page opens with a Resists card`, await openMobCard(page))) {
       const text = await settle(() => textOf(page, CARD), (t) => !t.includes('Reading what'), { timeoutMs: 30_000 })
       check(`${label}: the Resists card says the spell data is unavailable, not numbers`, text.includes('Spell data unavailable'), text.slice(0, 160))
+      check(`${label}: and says why in the notice's words`, text.includes("the game's last patch changed spells_us.txt"), text.slice(0, 200))
       check(`${label}: and draws no axis rows`, (await countOf(page, '[data-testid="resist-rows"]')) === 0)
     }
     if (failures.length) await dumpArtifacts(page, `game-file-gating-${label}-FAIL`)

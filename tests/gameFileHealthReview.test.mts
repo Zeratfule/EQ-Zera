@@ -17,7 +17,7 @@
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { caretLayout, dbstrHealth, eqclientIniHealth, modelsHealth, spellsUsHealth } from '../src/shared/gameFileDetect'
-import { gameFileNotice, reportMessage, settlePending, shouldReport, type GameFileReport } from '../src/shared/gameFileHealth'
+import { gameFileNotice, reportKey, reportMessage, settlePending, shouldReport, type GameFileReport } from '../src/shared/gameFileHealth'
 import { redactMessage } from '../src/shared/errorReport'
 import { KNOWN_ROW_LENGTHS, parseSpellsUs } from '../src/main/resist/spellsUsParse'
 import { SEMANTICS_VERSION, spellsUsMetaKey, spellsUsSemantics } from '../src/main/resist/spellsUsSemantics'
@@ -145,6 +145,39 @@ test('only readers that matter to this player file a report', () => {
 test('eqclient.ini without the mode keys is a fresh install, not a layout change', () => {
   assert.equal(eqclientIniHealth('[Defaults]\r\nSound=1\r\n', false, 'v').status, 'missing')
   assert.equal(eqclientIniHealth('', false, 'v').status, 'pending')
+})
+
+test('two different moves of the same width are two report keys, so the second is reported too', () => {
+  const at = (p: number, q: number): GameFileReport =>
+    verdict(
+      joinRows(
+        twenty((i) => {
+          const f = shaped190(i)
+          f.splice(p, 0, '0')
+          f.splice(q, 1)
+          return f
+        })
+      )
+    )
+  const early = at(8, 62)
+  const late = at(40, 180)
+  assert.equal(early.signature, late.signature)
+  assert.notEqual(reportKey(early), reportKey(late))
+  assert.match(reportKey(early), /^spellsUs:fields-190-moved:c\d+/)
+})
+
+test('in production, a file still being written is pending: no final newline, or too few rows', () => {
+  const m = (text: string) => ({ layout: caretLayout(text), semantics: spellsUsSemantics(text), version: 'v' })
+  const whole = `${joinRows(twenty(shaped190))}\r\n`
+  assert.equal(spellsUsHealth(m(whole), KNOWN_ROW_LENGTHS).status, 'pending', '20 rows is under minRows')
+  assert.equal(spellsUsHealth(m(whole), KNOWN_ROW_LENGTHS).signature, 'short')
+  const big = `${joinRows(Array.from({ length: 1100 }, (_, i) => shaped190(i)))}\r\n`
+  assert.equal(spellsUsHealth(m(big), KNOWN_ROW_LENGTHS).status, 'ok', 'a whole real-sized file')
+  const half = big.slice(0, big.length - 200)
+  const r = spellsUsHealth(m(half), KNOWN_ROW_LENGTHS)
+  assert.equal(r.status, 'pending')
+  assert.equal(r.signature, 'partial')
+  assert.equal(shouldReport(r, [], () => true), false)
 })
 
 test('the layout sidecar key names the parser: cache version, widths and checks', () => {

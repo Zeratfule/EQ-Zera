@@ -149,8 +149,13 @@ async function parseOnWorker(path: string): Promise<Parsed | null> {
  *   'unloadable' — the file is there and the parse did not produce a table (a worker that failed
  *                  to start, a parse error, a cache write that came back malformed). OUR problem,
  *                  and the error log is where it is written down.
+ *   'changed'    - the file is there and this build does not recognise its layout (the game-file
+ *                  health check, shared/gameFileHealth.ts): a patch moved it, and the data is
+ *                  paused until EQ Zera updates. Says what the notice says.
+ *   'pending'    - the file is still being written (no final newline, or fewer rows than the
+ *                  field checks need). Not served, re-tried when the file changes; reads as loading.
  */
-export type SpellTableState = 'loading' | 'ok' | 'missing' | 'unloadable'
+export type SpellTableState = 'loading' | 'ok' | 'missing' | 'unloadable' | 'changed' | 'pending'
 
 let pending: Promise<SpellResistTable | null> | null = null
 let loaded: SpellResistTable | null = null
@@ -171,7 +176,7 @@ const stampKey = (s: Stamp | null): string => (s ? `${String(s.size)}-${String(s
  */
 export function spellTable(): Promise<SpellResistTable | null> {
   const existing = pending
-  const failed = state === 'missing' || state === 'unloadable'
+  const failed = state === 'missing' || state === 'unloadable' || state === 'changed' || state === 'pending'
   if (existing && !(failed && stampKey(sourceStamp(spellsUsPath())) !== loadedStampKey)) return existing
   const created = load()
   pending = created
@@ -195,21 +200,29 @@ async function load(): Promise<SpellResistTable | null> {
     measuredNow = { key: stampKey(stamp), measured: parsed.measured }
     if (!readSpellsUsMeta(stamp, META_KEY)) writeSpellsUsMeta(stamp, META_KEY, parsed.measured)
   }
-  // A TABLE FROM A FILE THIS BUILD DOES NOT RECOGNISE IS NOT SERVED. An empty table is what an
-  // unmeasured width parses to; a full one read at moved offsets is worse, wrong numbers with a
-  // straight face. Either way the state is 'unloadable' (the mob page and con card say "spell data
-  // unavailable"), which is what makes the game-file notice's "paused" true. Never cached, so the
-  // build that learns the layout re-parses.
-  const version = fileVersion(stamp.size, stamp.mtimeMs)
-  const verdict = parsed?.measured ? spellsUsHealth({ ...parsed.measured, version }, KNOWN_ROW_LENGTHS).status : 'ok'
-  if (!parsed || Object.keys(parsed.table).length === 0 || verdict === 'unrecognised') {
-    state = 'unloadable'
+  // ONLY A TABLE FROM A FILE THIS BUILD RECOGNISES IS SERVED, AND ONLY THAT ONE IS CACHED. A file a
+  // patch moved ('changed': an empty table is what an unmeasured width parses to, a full one read at
+  // moved offsets is wrong numbers with a straight face) and a file still being written ('pending')
+  // both serve nothing, which is what makes the game-file notice's "paused" true; neither is cached,
+  // and both are re-tried when the file changes.
+  const refused = refusal(parsed, stamp)
+  if (refused !== null || !parsed) {
+    state = refused ?? 'unloadable'
     return null
   }
   loaded = parsed.table
   if (!cached) writeCache(stamp, parsed)
   state = 'ok'
   return parsed.table
+}
+
+/** Why a parse is not served, or null when it is: the layout verdict first, then an empty table. */
+function refusal(parsed: Parsed | null, stamp: Stamp): SpellTableState | null {
+  const version = fileVersion(stamp.size, stamp.mtimeMs)
+  const verdict = parsed?.measured ? spellsUsHealth({ ...parsed.measured, version }, KNOWN_ROW_LENGTHS).status : 'ok'
+  if (verdict === 'pending') return 'pending'
+  if (verdict === 'unrecognised') return 'changed'
+  return !parsed || Object.keys(parsed.table).length === 0 ? 'unloadable' : null
 }
 
 /** This run's measurements, for the health check when the sidecar could not be written. */

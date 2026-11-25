@@ -161,7 +161,8 @@ fn widths_recognised(text: &str) -> bool {
 /// only a file of at least the JSON's `minRows` rows, as the app's do.
 #[must_use]
 pub fn recognised(text: &str) -> bool {
-    recognised_with(text, table().min_rows)
+    // The client's file always ends in a newline; one that does not is still being written.
+    (text.is_empty() || text.ends_with('\n')) && recognised_with(text, table().min_rows)
 }
 
 /// [`recognised`] with the field checks judging any file of at least `min_rows` rows.
@@ -224,6 +225,11 @@ mod tests {
         assert!(!recognised(&big("moved-5-77")));
         let small = std::fs::read_to_string(dir.join("moved-20-61.txt")).expect("a parity file");
         assert!(recognised(&small), "thirty rows are judged on width alone");
+        let good = big("ok-190");
+        assert!(
+            !recognised(&good[..good.len() - 40]),
+            "a file with no final newline is still being written"
+        );
     }
 
     /// The parity set (tests/spellsUsParity.test.mts writes it and holds the app to it): the engine

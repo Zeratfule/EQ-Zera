@@ -99,9 +99,17 @@ export function dismissKey(r: Pick<GameFileReport, 'id' | 'version' | 'signature
   return `${r.id}:${r.version}:${r.signature}`
 }
 
-/** The key a report is filed under: one reader, one layout, whatever file version carried it. */
-export function reportKey(r: Pick<GameFileReport, 'id' | 'signature'>): string {
-  return `${r.id}:${r.signature}`
+/**
+ * The key a report is filed under: one reader, one layout, whatever file version carried it. A
+ * `-moved` verdict names WHERE it moved by its first failed checks (`c27.c28.c29`), so a later,
+ * different move of the same width is a new layout and is reported too.
+ */
+export function reportKey(r: Pick<GameFileReport, 'id' | 'signature'> & { facts?: GameFileReport['facts'] }): string {
+  const failed = Object.keys(r.facts ?? {})
+    .filter((k) => k.endsWith('Pct'))
+    .slice(0, 3)
+    .map((k) => k.slice(0, -3))
+  return failed.length > 0 ? `${r.id}:${r.signature}:${failed.join('.')}` : `${r.id}:${r.signature}`
 }
 
 /** Everything the renderer is told: every verdict (for a diagnostics reader) and the notice, if any. */
