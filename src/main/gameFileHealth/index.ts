@@ -35,6 +35,7 @@ import {
   reportErrorName,
   reportKey,
   reportMessage,
+  settlePending,
   shouldReport,
   type GameFileHealthView,
   type GameFileId,
@@ -79,8 +80,10 @@ async function dbstrOnWorker(path: string, version: string): Promise<GameFileRep
 
 /**
  * A PENDING FILE IS LOOKED AT AGAIN. An empty or half-written file is a patcher mid-copy, so the
- * whole check re-runs after `RECHECK_MS`, a few times at most; whatever is still pending after
- * that stays pending (never noticed, never reported) until the next launch.
+ * whole check re-runs after `RECHECK_MS`, a few times at most. A re-check that finds the same file
+ * version still pending is settled (shared `settlePending`): a full-size archive whose directory is
+ * outside the file becomes `unrecognised`; an empty file stays pending (never noticed, never
+ * reported) until the next launch.
  */
 const RECHECK_MS = E2E ? 1500 : 60_000
 const MAX_RECHECKS = 3
@@ -88,7 +91,9 @@ let rechecks = 0
 
 async function runCheck(): Promise<void> {
   try {
-    reports = await probeGameFiles(effectiveEqRoot(), { spellsUs: spellsUsHealthNow, dbstr: dbstrOnWorker })
+    const prev = reports
+    const found = await probeGameFiles(effectiveEqRoot(), { spellsUs: spellsUsHealthNow, dbstr: dbstrOnWorker })
+    reports = found.map((r) => settlePending(prev.find((p) => p.id === r.id), r))
     file(reports)
   } catch (err) {
     logError('main:gameFiles', { message: 'game-file health check failed', err })

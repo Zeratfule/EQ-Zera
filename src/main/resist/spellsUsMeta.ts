@@ -23,30 +23,36 @@ export interface Stamp {
 export interface SpellsUsMeasured {
   layout: RowLayout
   semantics: SpellsUsSemantics
+  /** Spells the parse produced from the same text. */
+  entries?: number
 }
 
-/** Bump when the measurements change shape or meaning (a new semantic check). */
-const META_VERSION = 1
 
 function metaPath(): string {
   return join(app.getPath('userData'), 'spell-resist-cache.meta.json')
 }
 
-export function readSpellsUsMeta(stamp: Stamp): SpellsUsMeasured | null {
+/**
+ * `key` names the build that measured: the resist cache version, the parser's known widths and the
+ * semantic checks' version (resist/spellTable.ts `META_KEY`). A sidecar written by a build that
+ * parses differently is never trusted.
+ */
+export function readSpellsUsMeta(stamp: Stamp, key: string): SpellsUsMeasured | null {
   try {
-    const m = JSON.parse(readFileSync(metaPath(), 'utf8')) as Partial<SpellsUsMeasured & Stamp & { version: number }>
-    if (m.version !== META_VERSION || m.size !== stamp.size || m.mtimeMs !== stamp.mtimeMs) return null
-    return m.layout && m.semantics ? { layout: m.layout, semantics: m.semantics } : null
+    const m = JSON.parse(readFileSync(metaPath(), 'utf8')) as Partial<SpellsUsMeasured & Stamp & { key: string }>
+    if (m.key !== key || m.size !== stamp.size || m.mtimeMs !== stamp.mtimeMs) return null
+    if (!m.layout || !m.semantics) return null
+    return m.entries === undefined ? { layout: m.layout, semantics: m.semantics } : { layout: m.layout, semantics: m.semantics, entries: m.entries }
   } catch {
     return null
   }
 }
 
-export function writeSpellsUsMeta(stamp: Stamp, m: SpellsUsMeasured): void {
+export function writeSpellsUsMeta(stamp: Stamp, key: string, m: SpellsUsMeasured): void {
   const path = metaPath()
   try {
     mkdirSync(app.getPath('userData'), { recursive: true })
-    writeFileSync(`${path}.tmp`, JSON.stringify({ version: META_VERSION, ...stamp, ...m }), 'utf8')
+    writeFileSync(`${path}.tmp`, JSON.stringify({ key, ...stamp, ...m }), 'utf8')
     renameSync(`${path}.tmp`, path)
   } catch (err) {
     logError('main:resistTable', { message: 'spells_us layout meta write failed', err })

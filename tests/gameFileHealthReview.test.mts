@@ -1,87 +1,69 @@
 // GAME-FILE HEALTH: THE ALARMS THE FIRST VERSION MISSED, AND THE ONES IT RAISED FOR NOTHING
-// (EQ Zera, 2026-11-25, independent review of the first cut).
+// (EQ Zera, 2026-11-25, two independent reviews of the first cut).
 //
-//   1. A patch that DROPS a column makes every row 172 wide. 172 was accepted (a leftover of the
-//      old `length < 172` filter), so the file read "ok" with every field after the drop one off.
-//   2. A patch that moves columns but keeps the width (one in before 77, one out of 173..188) reads
-//      at a known width; only the fields themselves can say they are wrong.
-//   3. A 0-byte or half-written file during a patch is not a layout change: it is pending, never a
-//      notice and never a permanent report.
-//   4. The report's counts must survive the error report's redaction (five-digit numbers become <n>).
-//   6. A reader that does not matter to this player files nothing; eqclient.ini without the mode
-//      keys is a fresh install, not a layout change.
+//   - A patch that DROPS a column makes every row 172 wide; 172 is no longer a known width.
+//   - A patch that moves columns and keeps the width is caught by the per-column checks
+//     (src/main/resist/spellsUsSemantics.ts; the full sweep is tests/spellsUsShiftSweep.test.mts).
+//   - A known width that parses to no spells (blank names) is unrecognised.
+//   - An empty or half-written file is pending; a full-size archive whose directory is outside the
+//     file is pending once and unrecognised when a re-check finds it unchanged.
+//   - The report's message keeps its useful numbers, and every failed check, through redaction.
+//   - Only readers that matter to this player file a report; eqclient.ini without mode keys is a
+//     fresh install.
+//   - The layout sidecar is keyed on the parser that measured it.
 //
-// Synthetic rows only. The semantic values below mirror the shapes measured on the owner's install
-// (2026-11-25, 74,024 rows): category 86 is 0..300 on 100% of rows, aemaxtargets 143 is 0..50 on
-// 99.99%, while the column before each (85, 142) holds ids like 200303 and -1.
+// Synthetic rows only, shaped like the real file (tests/spellsUsShape.mts).
 
 import test from 'node:test'
 import assert from 'node:assert/strict'
 import { caretLayout, dbstrHealth, eqclientIniHealth, modelsHealth, spellsUsHealth } from '../src/shared/gameFileDetect'
-import { gameFileNotice, reportMessage, shouldReport, type GameFileReport } from '../src/shared/gameFileHealth'
+import { gameFileNotice, reportMessage, settlePending, shouldReport, type GameFileReport } from '../src/shared/gameFileHealth'
 import { redactMessage } from '../src/shared/errorReport'
 import { KNOWN_ROW_LENGTHS, parseSpellsUs } from '../src/main/resist/spellsUsParse'
-import { spellsUsSemantics } from '../src/main/resist/spellsUsSemantics'
+import { SEMANTICS_VERSION, spellsUsMetaKey, spellsUsSemantics } from '../src/main/resist/spellsUsSemantics'
+import { joinRows, shaped190, shapedRow } from './spellsUsShape.mjs'
 
-/** One row on the 173-field map with the columns the sanity checks read set to real-looking values. */
-function mapRow(i: number): string[] {
-  const f = new Array<string>(173).fill('0')
-  f[0] = String(1000 + i)
-  f[1] = `Synthetic ${String(i)}`
-  f[29] = '2'
-  f[30] = '5'
-  for (let c = 36; c < 52; c++) f[c] = '255'
-  f[40] = '1'
-  f[85] = '200303'
-  f[86] = '125'
-  f[87] = '42'
-  f[142] = '-1'
-  f[143] = '0'
-  f[172] = '1|0|-4|0|101|8'
-  return f
-}
-
-/** The same row as the 2026-11-24 client writes it: 190 fields. */
-function row190(i: number): string[] {
-  const f = mapRow(i)
-  f.splice(77, 0, '0')
-  f.splice(f.length - 1, 0, ...new Array<string>(16).fill('0'))
-  return f
-}
-
-const file = (rows: string[][]): string => rows.map((r) => r.join('^')).join('\r\n')
 const twenty = <T,>(make: (i: number) => T): T[] => Array.from({ length: 20 }, (_, i) => make(i))
 
-function verdict(text: string): GameFileReport {
-  return spellsUsHealth({ layout: caretLayout(text), semantics: spellsUsSemantics(text), version: '1-2' }, KNOWN_ROW_LENGTHS)
+function verdict(text: string, entries?: number): GameFileReport {
+  const m = { layout: caretLayout(text), semantics: spellsUsSemantics(text), version: '1-2' }
+  return spellsUsHealth(entries === undefined ? m : { ...m, entries }, KNOWN_ROW_LENGTHS)
 }
 
-test('1: a file whose rows all lost one column (172 wide) is unrecognised, and the parser reads none of it', () => {
+test('a file whose rows all lost one column (172 wide) is unrecognised, and the parser reads none of it', () => {
   assert.equal(KNOWN_ROW_LENGTHS.has(172), false)
-  const text = file(twenty((i) => mapRow(i).slice(0, 172)))
+  const text = joinRows(twenty((i) => shapedRow(i).slice(0, 172)))
   assert.equal(verdict(text).status, 'unrecognised')
   assert.deepEqual(parseSpellsUs(text), {})
 })
 
-test('2: the real 190 layout passes the field sanity checks', () => {
-  const r = verdict(file(twenty(row190)))
+test('the real-shaped 190 layout passes every field check', () => {
+  const r = verdict(joinRows(twenty(shaped190)))
   assert.equal(r.status, 'ok', JSON.stringify(r))
 })
 
-test('2: columns moved at the same width (one in before 77, one out of 173..188) is unrecognised', () => {
+test('columns moved at the same width (one in before 77, one out of 173..188) is unrecognised', () => {
   const shifted = twenty((i) => {
-    const f = row190(i)
+    const f = shaped190(i)
     f.splice(40, 0, '0')
     f.splice(180, 1)
     return f
   })
   assert.equal(shifted[0].length, 190)
-  const r = verdict(file(shifted))
+  const r = verdict(joinRows(shifted))
   assert.equal(r.status, 'unrecognised', JSON.stringify(r))
   assert.equal(r.signature, 'fields-190-moved')
 })
 
-test('3: empty and half-written files are pending, never a notice and never a report', () => {
+test('a known width with blank names is unrecognised, and so is a parse that yielded no spells', () => {
+  const blank = joinRows(twenty((i) => shaped190(i).map((v, c) => (c === 1 ? '' : v))))
+  assert.equal(verdict(blank).status, 'unrecognised')
+  const r = verdict(joinRows(twenty(shaped190)), 0)
+  assert.equal(r.status, 'unrecognised')
+  assert.equal(r.signature, 'no-spells')
+})
+
+test('empty and half-written files are pending, never a notice and never a report', () => {
   const pending = [
     verdict(''),
     dbstrHealth('', 'v'),
@@ -95,13 +77,23 @@ test('3: empty and half-written files are pending, never a notice and never a re
   assert.equal(gameFileNotice(pending, []), null)
 })
 
-test('4: the report message keeps its useful numbers through redaction', () => {
+test('a full-size archive with its directory outside the file settles to unrecognised; a short one stays pending', () => {
+  const badDir = modelsHealth({ a: { head: new Uint8Array([0x00, 0x10, 0, 0, 0x50, 0x46, 0x53, 0x20]), size: 100 } }, 'v1')
+  assert.equal(badDir.signature, 'directory')
+  assert.equal(settlePending(undefined, badDir).status, 'pending', 'first sight: the directory may still be being written')
+  assert.equal(settlePending(badDir, badDir).status, 'unrecognised', 'unchanged on the re-check')
+  assert.equal(settlePending(badDir, { ...badDir, version: 'v2' }).status, 'pending', 'the file moved: still copying')
+  const short = modelsHealth({ a: { head: new Uint8Array(0), size: 0 } }, 'v1')
+  assert.equal(settlePending(short, short).status, 'pending')
+})
+
+test('the report message keeps its useful numbers through redaction', () => {
   const r: GameFileReport = {
     id: 'spellsUs',
     status: 'unrecognised',
     signature: 'fields-200',
     facts: { rows: 74024, rowsRead: 0, rowsSkipped: 74024, fields: 200 },
-    histogram: { '200': 74024 },
+    histogram: { '200': 74024, '17': 3, '190': 1 },
     version: '40752305-1794869464000'
   }
   const redacted = redactMessage(reportMessage(r))
@@ -111,7 +103,38 @@ test('4: the report message keeps its useful numbers through redaction', () => {
   assert.match(redacted, /200x100%/)
 })
 
-test('6: only readers that matter to this player file a report', () => {
+test('a -moved report keeps every failed check within the redacted 200-character message', () => {
+  const shifted = twenty((i) => {
+    const f = shaped190(i)
+    f.splice(8, 0, '0')
+    f.splice(62, 1)
+    return f
+  })
+  const r = verdict(joinRows(shifted))
+  assert.equal(r.status, 'unrecognised')
+  const failed = Object.keys(r.facts).filter((k) => k.endsWith('Pct'))
+  assert.ok(failed.length >= 2, JSON.stringify(r.facts))
+  const redacted = redactMessage(reportMessage(r))
+  assert.ok(redacted.length <= 200)
+  for (const k of failed.slice(0, 2)) assert.match(redacted, new RegExp(`${k}=\\d+`), redacted)
+  assert.doesNotMatch(redacted, /Pct=100\b/, 'passing checks are not in the message')
+})
+
+test('a move across many columns still fits: the failed count first, then the first checks in column order', () => {
+  const shifted = twenty((i) => {
+    const f = shaped190(i)
+    f.splice(5, 0, '0')
+    f.splice(78, 1)
+    return f
+  })
+  const r = verdict(joinRows(shifted))
+  const redacted = redactMessage(reportMessage(r))
+  assert.ok((r.facts.failed ?? 0) > 8, JSON.stringify(r.facts))
+  assert.match(redacted, /fields-190-moved failed=\d+ rows=20 fields=190 c\d+Pct=\d+/, redacted)
+  assert.match(redacted, / fields 190x100%$/, 'the histogram survives at the end')
+})
+
+test('only readers that matter to this player file a report', () => {
   const luclin: GameFileReport = { id: 'globalLoad', status: 'unrecognised', signature: 'no-anchor', facts: {}, version: 'v' }
   assert.equal(shouldReport(luclin, [], () => false), false, 'Luclin models off')
   assert.equal(shouldReport(luclin, [], () => true), true, 'Luclin models on')
@@ -119,7 +142,15 @@ test('6: only readers that matter to this player file a report', () => {
   assert.equal(shouldReport(ini, [], () => true), false, 'eqclient.ini never notices, so never files')
 })
 
-test('6: eqclient.ini without the mode keys is a fresh install, not a layout change', () => {
+test('eqclient.ini without the mode keys is a fresh install, not a layout change', () => {
   assert.equal(eqclientIniHealth('[Defaults]\r\nSound=1\r\n', false, 'v').status, 'missing')
   assert.equal(eqclientIniHealth('', false, 'v').status, 'pending')
+})
+
+test('the layout sidecar key names the parser: cache version, widths and checks', () => {
+  const now = spellsUsMetaKey(6, KNOWN_ROW_LENGTHS)
+  assert.notEqual(spellsUsMetaKey(7, KNOWN_ROW_LENGTHS), now)
+  assert.notEqual(spellsUsMetaKey(6, new Set([173, 174])), now)
+  assert.notEqual(spellsUsMetaKey(6, KNOWN_ROW_LENGTHS, SEMANTICS_VERSION + 1), now)
+  assert.equal(spellsUsMetaKey(6, new Set([...KNOWN_ROW_LENGTHS].reverse())), now)
 })

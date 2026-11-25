@@ -158,6 +158,17 @@ function compact(n: number): string {
 /** Row counts are sent as a share of `rows`; everything else is compacted. */
 const ROW_SHARES = new Set(['rowsRead', 'rowsSkipped'])
 
+/**
+ * A pending verdict that a re-check found UNCHANGED (same reader, same signature, same file version)
+ * is no longer a file mid-copy. A short or empty file stays pending (a stable empty file is not a
+ * layout, and every feature handles a missing one); a full-size archive whose directory is outside
+ * the file (`directory`) becomes `unrecognised`.
+ */
+export function settlePending(prev: GameFileReport | undefined, next: GameFileReport): GameFileReport {
+  const stable = prev?.status === 'pending' && prev.signature === next.signature && prev.version === next.version
+  return stable && next.status === 'pending' && next.signature === 'directory' ? { ...next, status: 'unrecognised' } : next
+}
+
 /** `spellsUs` -> `GameFileSpellsUs`: the error name, which is what separates one reader's report from another's. */
 export function reportErrorName(id: GameFileId): string {
   return `GameFile${id.charAt(0).toUpperCase()}${id.slice(1)}`
@@ -166,9 +177,11 @@ export function reportErrorName(id: GameFileId): string {
 /**
  * The report's one-line message, built to survive the error report's redaction intact: no path, no
  * quotes, and no number of five digits or more (the redactor turns those into `<n>`). Read and
- * skipped rows are percentages of `rows`, the histogram is percentages of rows, and any other big
- * count is rounded to thousands (`74k`). tests/gameFileHealthReview.test.mts runs it through the
- * real redactor.
+ * skipped rows are percentages of `rows`, the histogram is its two commonest widths as
+ * percentages of rows, and any other big count is rounded to thousands (`74k`). Facts keep their
+ * order, and a `-moved` verdict puts its failed checks first, so the 200-character cap the
+ * redactor applies cuts the least useful end. tests/gameFileHealthReview.test.mts runs it through
+ * the real redactor.
  */
 export function reportMessage(r: GameFileReport): string {
   const label = GAME_FILE_READERS[r.id].label
@@ -179,6 +192,8 @@ export function reportMessage(r: GameFileReport): string {
     .join(' ')
   const hist = r.histogram
     ? ` fields ${Object.entries(r.histogram)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 2)
         .map(([k, v]) => `${k}x${share(v)}`)
         .join(',')}`
     : ''

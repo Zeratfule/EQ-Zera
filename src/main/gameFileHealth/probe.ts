@@ -148,13 +148,14 @@ async function pfsHeader(path: string): Promise<{ header: PfsHeader; version: st
 
 async function probeModels(root: string): Promise<GameFileReport> {
   const archives: Record<string, PfsHeader | null> = {}
-  let version = ''
+  // One version for the set: any archive changing is a new version (settlePending compares it).
+  const versions: string[] = []
   for (const name of MODEL_ARCHIVES) {
     const got = await pfsHeader(join(root, name))
     archives[name] = got?.header ?? null
-    if (got && version === '') version = got.version
+    if (got) versions.push(got.version)
   }
-  return modelsHealth(archives, version)
+  return modelsHealth(archives, versions.join('.'))
 }
 
 async function probeGlobalLoad(root: string): Promise<GameFileReport> {

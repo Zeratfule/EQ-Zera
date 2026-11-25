@@ -75,30 +75,33 @@ function rowTableVerdict(id: GameFileId, layout: RowLayout, known: ReadonlySet<n
   return report(id, status, `fields-${String(fields)}`, { version, facts, histogram })
 }
 
-/** Per-check passing rows over the realigned rows (main/resist/spellsUsSemantics.ts). */
+/** Per-check passing rows over the realigned rows, and how many each needs (main/resist/spellsUsSemantics.ts). */
 export interface SpellsUsSemantics {
   rows: number
   pass: Record<string, number>
+  /** Passing rows each check needs; a check without an entry needs `SEMANTIC_FLOOR` of the rows. */
+  need?: Record<string, number>
 }
 
-/**
- * A field check passes when at least this share of realigned rows look like the field. The real
- * install scores 99.99-100% on every check and a one-column shift scores 0-7.4% on the ones that
- * can see it (the table is in spellsUsSemantics.ts), so 95% is margin on both sides.
- */
+/** The default share of realigned rows a field check must pass (the per-check floors live with the checks). */
 export const SEMANTIC_FLOOR = 0.95
+
+/** How many failed checks a `-moved` report names; `failed` carries the full count. */
+const MAX_FAILED_SHOWN = 8
 
 /** The checks a file failed, by name. Empty when every field looks like itself. */
 function failedChecks(s: SpellsUsSemantics): string[] {
   if (s.rows === 0) return []
   return Object.entries(s.pass)
-    .filter(([, n]) => n < s.rows * SEMANTIC_FLOOR)
+    .filter(([k, n]) => n < (s.need?.[k] ?? Math.ceil(s.rows * SEMANTIC_FLOOR)))
     .map(([k]) => k)
 }
 
 export interface SpellsUsMeasure {
   layout: RowLayout
   semantics?: SpellsUsSemantics
+  /** Spells the parse produced, when a table pass measured it. Zero at a known width is no table. */
+  entries?: number
   version: string
 }
 
@@ -106,19 +109,28 @@ export interface SpellsUsMeasure {
  * `spells_us.txt`. `known` is the parser's own list of measured row widths
  * (`resist/spellsUsParse.ts KNOWN_ROW_LENGTHS`). A measured width is necessary and not sufficient:
  * when the field checks fail (`semantics`), the columns moved under an unchanged width, and the
- * signature says so (`fields-190-moved`) with each check's pass rate as a percentage.
+ * signature says so (`fields-190-moved`). The facts lead with how many checks failed, then name the
+ * first `MAX_FAILED_SHOWN` of them in column order as a percentage each; passing checks are left
+ * out (a report's message is capped at 200 characters after redaction). A known width that
+ * parsed to no spells at all (`entries` 0: blank names, non-numeric ids) is `no-spells`.
  */
 export function spellsUsHealth(m: SpellsUsMeasure, known: ReadonlySet<number>): GameFileReport {
   const verdict = rowTableVerdict('spellsUs', m.layout, known, m.version)
-  if (verdict.status !== 'ok' || !m.semantics) return verdict
+  if (verdict.status !== 'ok') return verdict
+  if (m.entries === 0) return { ...verdict, status: 'unrecognised', signature: 'no-spells' }
+  if (!m.semantics) return verdict
   const s = m.semantics
-  const pct = Object.fromEntries(Object.entries(s.pass).map(([k, n]) => [`${k}Pct`, s.rows ? Math.round((n / s.rows) * 100) : 0]))
   const failed = failedChecks(s)
-  const facts = { ...verdict.facts, ...pct }
-  if (failed.length === 0) return { ...verdict, facts }
-  return { ...verdict, status: 'unrecognised', signature: `${verdict.signature}-moved`, facts }
+  const checks = Object.keys(s.pass).length
+  if (failed.length === 0) return { ...verdict, facts: { ...verdict.facts, checks } }
+  // In column order, the first few only: where the move starts is what the developer needs, and a
+  // move across fifty columns would otherwise run the message past the redactor's cap.
+  const col = (k: string): number => (/^c\d+/.test(k) ? Number(/\d+/.exec(k)?.[0]) : 999)
+  const shown = [...failed].sort((a, b) => col(a) - col(b)).slice(0, MAX_FAILED_SHOWN)
+  const pct = Object.fromEntries(shown.map((k) => [`${k}Pct`, s.rows ? Math.round(((s.pass[k] ?? 0) / s.rows) * 100) : 0]))
+  const { rows, fields } = verdict.facts
+  return { ...verdict, status: 'unrecognised', signature: `${verdict.signature}-moved`, facts: { failed: failed.length, rows, fields, ...pct } }
 }
-
 /** The spell-category namespace of `dbstr_us.txt` (engine `fold::dbstr` reads type 5). */
 const DBSTR_SPELL_CATEGORY_TYPE = '5'
 const DIGITS = /^\d+$/
@@ -190,23 +202,26 @@ export interface PfsHeader {
  * `PFS ` magic at byte 4? `archives` maps an archive name to its header, or null when absent; every
  * archive missing is `missing`, any present archive with the wrong magic is `unrecognised`.
  *
- * A HALF-WRITTEN ARCHIVE IS PENDING, NOT A NEW FORMAT: shorter than its header, or a directory
- * offset past the end of the file, is what a patcher copying in place looks like for a moment
- * (the directory is written last). Pending is re-checked and never noticed or reported.
+ * A FILE SHORTER THAN ITS HEADER IS PENDING (`truncated`): a patcher copying in place. A full
+ * header whose directory offset is outside the file is pending (`directory`) the first time only,
+ * because the directory is written last; `settlePending` (shared/gameFileHealth.ts) turns it into
+ * `unrecognised` when a re-check finds the same file version still saying so.
  */
 export function modelsHealth(archives: Readonly<Record<string, PfsHeader | null>>, version: string): GameFileReport {
   const present = Object.values(archives).filter((h): h is PfsHeader => h !== null)
   if (present.length === 0) return report('models', 'missing', 'none', { version })
   let bad = 0
   let short = 0
+  let badDir = 0
   for (const h of present) {
     if (h.head.length < 8 || h.size < 8) short++
     else if (String.fromCharCode(...h.head.subarray(4, 8)) !== 'PFS ') bad++
-    else if (new DataView(h.head.buffer, h.head.byteOffset, 4).getUint32(0, true) >= h.size) short++
+    else if (new DataView(h.head.buffer, h.head.byteOffset, 4).getUint32(0, true) >= h.size) badDir++
   }
-  const facts = { archives: present.length, badMagic: bad, truncated: short }
+  const facts = { archives: present.length, badMagic: bad, truncated: short, badDirectory: badDir }
   if (bad > 0) return report('models', 'unrecognised', 'magic', { version, facts })
   if (short > 0) return report('models', 'pending', 'truncated', { version, facts })
+  if (badDir > 0) return report('models', 'pending', 'directory', { version, facts })
   return report('models', 'ok', 'pfs', { version, facts })
 }
 

@@ -6,7 +6,7 @@ import { settingsStore } from './store'
 
 /** Plenty for years of patches; the oldest key falls off first. */
 const MAX_KEYS = 64
-const KEY_RE = /^[A-Za-z0-9:_.-]{1,96}$/
+const KEY_RE = /^[A-Za-z0-9:_.-]{1,128}$/
 
 type ListName = 'dismissed' | 'reported'
 

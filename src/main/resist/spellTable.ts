@@ -28,6 +28,7 @@ import { readError, spellsUsHealth } from '../../shared/gameFileDetect'
 import { fileVersion, type GameFileReport } from '../../shared/gameFileHealth'
 import { KNOWN_ROW_LENGTHS } from './spellsUsParse'
 import { readSpellsUsMeta, runResistWorker, writeSpellsUsMeta, type SpellsUsMeasured, type Stamp } from './spellsUsMeta'
+import { spellsUsMetaKey } from './spellsUsSemantics'
 
 /**
  * Bump to invalidate every cached table in the field (a parser change, not a game patch).
@@ -59,6 +60,12 @@ import { readSpellsUsMeta, runResistWorker, writeSpellsUsMeta, type SpellsUsMeas
  *      empty table is no longer cached at all (see `load`), so this cannot recur.
  */
 export const SPELL_RESIST_CACHE_VERSION = 6
+
+/**
+ * Which parser a layout sidecar was measured by: the cache version, the widths it reads and the
+ * semantic checks' version. A build that parses differently never trusts an old measurement.
+ */
+const META_KEY = spellsUsMetaKey(SPELL_RESIST_CACHE_VERSION, KNOWN_ROW_LENGTHS)
 
 interface CacheFile {
   version: number
@@ -118,7 +125,8 @@ function writeCache(stamp: Stamp, table: SpellResistTable): void {
 async function parseOnWorker(path: string): Promise<Parsed | null> {
   const reply = await runResistWorker({ path, job: 'table' })
   if (!reply?.table) return null
-  const measured = reply.layout && reply.semantics ? { layout: reply.layout, semantics: reply.semantics } : undefined
+  const entries = Object.keys(reply.table).length
+  const measured = reply.layout && reply.semantics ? { layout: reply.layout, semantics: reply.semantics, entries } : undefined
   return measured ? { table: reply.table, measured } : { table: reply.table }
 }
 
@@ -171,9 +179,11 @@ async function load(): Promise<SpellResistTable | null> {
     return null
   }
   sourceMtime = stamp.mtimeMs
-  const cached = readCache(stamp)
+  // No layout sidecar from THIS build means this parser has not measured this file: skip the cache,
+  // so the one worker pass produces the table and the measurements together.
+  const cached = readSpellsUsMeta(stamp, META_KEY) ? readCache(stamp) : null
   const parsed = cached ?? (await parseOnWorker(path))
-  if (parsed?.measured) writeSpellsUsMeta(stamp, parsed.measured)
+  if (parsed?.measured) writeSpellsUsMeta(stamp, META_KEY, parsed.measured)
   // AN EMPTY TABLE IS NOT A TABLE. It is what an unmeasured layout parses to (every row skipped),
   // and serving it as 'ok' is how a patch silently switched resist estimates off for everyone. It
   // reads as 'unloadable', and it is never cached, so the build that learns the layout re-parses.
@@ -188,11 +198,12 @@ async function load(): Promise<SpellResistTable | null> {
 }
 
 /**
- * The game-file health verdict on `spells_us.txt` (shared/gameFileHealth.ts), WITHOUT loading the
- * table: the layout measurements come from the small sidecar the last parse wrote
- * (./spellsUsMeta.ts), and only when that is stale (a patch) from a measure-only worker pass. A
- * table load already in flight is waited for, since it writes the same sidecar. An empty file is
- * `pending` (a patcher mid-copy), never a verdict.
+ * The game-file health verdict on `spells_us.txt` (shared/gameFileHealth.ts). Usually WITHOUT
+ * loading the table: the measurements come from the small sidecar the last parse wrote
+ * (./spellsUsMeta.ts). Only when this build has no sidecar for this file version (the first launch
+ * after a patch, or after a parser change) does it ask for the table itself, so ONE worker pass
+ * produces the table and the measurements and nothing reads and splits the 38 MB file twice. An
+ * empty file is `pending` (a patcher mid-copy), never a verdict.
  */
 export async function spellsUsHealthNow(): Promise<GameFileReport> {
   if (pending) await pending
@@ -201,11 +212,10 @@ export async function spellsUsHealthNow(): Promise<GameFileReport> {
   if (!stamp) return { id: 'spellsUs', status: 'missing', signature: 'none', facts: {}, version: '' }
   const version = fileVersion(stamp.size, stamp.mtimeMs)
   if (stamp.size === 0) return { id: 'spellsUs', status: 'pending', signature: 'empty', facts: {}, version }
-  let measured = readSpellsUsMeta(stamp)
+  let measured = readSpellsUsMeta(stamp, META_KEY)
   if (!measured) {
-    const reply = await runResistWorker({ path, job: 'measure' })
-    measured = reply?.layout && reply.semantics ? { layout: reply.layout, semantics: reply.semantics } : null
-    if (measured) writeSpellsUsMeta(stamp, measured)
+    await spellTable()
+    measured = readSpellsUsMeta(stamp, META_KEY)
   }
   if (!measured) return readError('spellsUs', 'unloadable', version)
   return spellsUsHealth({ ...measured, version }, KNOWN_ROW_LENGTHS)

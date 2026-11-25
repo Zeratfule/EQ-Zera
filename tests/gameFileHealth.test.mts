@@ -34,6 +34,7 @@ import {
 import { redactMessage } from '../src/shared/errorReport'
 import { KNOWN_ROW_LENGTHS } from '../src/main/resist/spellsUsParse'
 import { spellsUsSemantics } from '../src/main/resist/spellsUsSemantics'
+import { joinRows, shaped190 } from './spellsUsShape.mjs'
 import { probeGameFiles, spread } from '../src/main/gameFileHealth/probe'
 
 /** One spell row `width` fields wide: Lifetap's id and name, every class barred but SHD. */
@@ -48,6 +49,7 @@ function spellRow(width: number, id = 341, name = 'Lifetap'): string {
 }
 
 function spellFile(width: number, rows: number): string {
+  if (width === 190) return joinRows(Array.from({ length: rows }, (_, i) => shaped190(i)))
   return Array.from({ length: rows }, (_, i) => spellRow(width, 1000 + i, `Spell ${String(i)}`)).join('\r\n')
 }
 
@@ -60,8 +62,8 @@ test('spells_us: the 190-field file of 2026-11-24 is ok, and every row is read',
   assert.equal(r.status, 'ok')
   assert.equal(r.signature, 'fields-190')
   assert.deepEqual(
-    { rows: r.facts.rows, rowsRead: r.facts.rowsRead, rowsSkipped: r.facts.rowsSkipped, fields: r.facts.fields, categoryPct: r.facts.categoryPct },
-    { rows: 20, rowsRead: 20, rowsSkipped: 0, fields: 190, categoryPct: 100 }
+    { rows: r.facts.rows, rowsRead: r.facts.rowsRead, rowsSkipped: r.facts.rowsSkipped, fields: r.facts.fields },
+    { rows: 20, rowsRead: 20, rowsSkipped: 0, fields: 190 }
   )
   assert.deepEqual(r.histogram, { '190': 20 })
 })

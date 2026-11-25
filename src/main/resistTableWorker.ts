@@ -12,10 +12,10 @@
 // legacy dump with high bytes in a handful of names; latin1 never throws and never replaces a
 // byte, and every field this parser reads is ASCII.
 //
-// THREE JOBS, ONE THREAD ENTRY (the game-file health check, EQ Zera 2026-11-25). `table` is the
-// resist table plus the file's layout measurements; `measure` is the measurements alone (the health
-// check needs no table resident); `dbstr` judges `dbstr_us.txt`. A second worker entry would be a
-// build-config change; a job field is not.
+// TWO JOBS, ONE THREAD ENTRY (the game-file health check, EQ Zera 2026-11-25). `table` is the
+// resist table plus the file's layout measurements, from ONE read and split of the file (the health
+// check rides the same pass rather than running its own); `dbstr` judges `dbstr_us.txt`. A second
+// worker entry would be a build-config change; a job field is not.
 
 import { readFileSync } from 'node:fs'
 import { parentPort, workerData } from 'node:worker_threads'
@@ -28,7 +28,7 @@ import type { SpellResistTable } from '../shared/resistTypes'
 export interface ResistTableWorkerInit {
   path: string
   /** Absent means `table`, the original and only job before the health check. */
-  job?: 'table' | 'measure' | 'dbstr'
+  job?: 'table' | 'dbstr'
   /** The file version a `dbstr` verdict is stamped with. */
   version?: string
 }
@@ -51,8 +51,7 @@ const port = parentPort
 function run(): ResistTableWorkerReply {
   const text = readFileSync(init.path, 'latin1')
   if (init.job === 'dbstr') return { ok: true, report: dbstrHealth(text, init.version ?? '') }
-  const measured = { layout: caretLayout(text), semantics: spellsUsSemantics(text) }
-  return init.job === 'measure' ? { ok: true, ...measured } : { ok: true, table: parseSpellsUs(text), ...measured }
+  return { ok: true, table: parseSpellsUs(text), layout: caretLayout(text), semantics: spellsUsSemantics(text) }
 }
 
 let reply: ResistTableWorkerReply
