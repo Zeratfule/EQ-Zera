@@ -110,6 +110,7 @@ import { engineBridge } from './engine'
 import { releaseNotesBridge } from './releaseNotes'
 // The EverQuest Legends patch notes (main fetches and caches them) - see ./patchNotesApi.ts.
 import { patchNotesBridge } from './patchNotesApi'
+import { gameFileHealthBridge } from './gameFileHealthApi'
 // "Post celebrations to Discord" (./celebrationPost.ts), split out for the same file-mass reason.
 // PREFERENCES ONLY: the messages are sent by main off the one function every celebration card
 // already passes through, so there is no door here a renderer could post through.
@@ -322,6 +323,7 @@ const api = {
   // …and the two what's-new methods (./releaseNotes.ts), for the same file-size reason.
   ...releaseNotesBridge,
   ...patchNotesBridge,
+  ...gameFileHealthBridge,
   // …and the celebration-post preferences (./celebrationPost.ts), likewise.
   ...celebrationPostBridge,
   // …and the in-game UI skin (./uiSkin.ts), likewise.

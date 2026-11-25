@@ -101,6 +101,8 @@ import { registerRendererBrokerIpc } from '../dataServer/rendererBroker'
 // rather than beside the broker because the retry reaches the composition root — see its header.
 import { registerEngineLaunchIpc } from './engine'
 import { registerLuclinIpc } from './luclinModels'
+// Did this build recognise the game's own files? One check a launch, and its notice (./gameFileHealth.ts).
+import { registerGameFileHealthIpc } from './gameFileHealth'
 // WHO DRAWS THE CON CARD (JOS-496, boundary verdict 2). Under serve the engine resolves the card
 // and `dataServer/conCardServe.ts` opens the window, so the TypeScript hook — which today calls
 // synchronously into Electron from inside the fold — stands down. Composed HERE and passed as a
@@ -179,4 +181,5 @@ export function registerIpc(): void {
   // answer with is most interesting precisely on the launches where there is no engine at all.
   registerEngineLaunchIpc()
   registerLuclinIpc()
+  registerGameFileHealthIpc()
 }

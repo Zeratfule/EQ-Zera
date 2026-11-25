@@ -1370,6 +1370,13 @@ export const IPC = {
   patchNotesDismissNotice: 'patchNotes:dismissNotice',
   // main -> renderer: the view changed (a check progressed, a note was read). Payload: PatchNotesView.
   onPatchNotes: 'patchNotes:changed',
+  // ---- game-file health (src/main/gameFileHealth; shared/gameFileHealth.ts) ----
+  // renderer -> main: the GameFileHealthView (every reader's verdict, and the notice if any).
+  gameFileHealthGet: 'gameFileHealth:get',
+  // renderer -> main: the notice was closed; dismisses every key it stood for. Returns the view.
+  gameFileHealthDismiss: 'gameFileHealth:dismiss',
+  // main -> renderer: the launch's check finished, or a dismissal changed the notice.
+  onGameFileHealth: 'gameFileHealth:changed',
 
   // ---- misc pushes ----
   onLine: 'log:line',

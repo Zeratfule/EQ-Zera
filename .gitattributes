@@ -19,3 +19,7 @@ src/main/data/spells.json text eol=lf
 # checkout that normalised them to LF failed that suite, so git is told not to touch them at all.
 tests/fixtures/Primitive_freeport-Achievements.txt -text
 tests/fixtures/Primitive_freeport-Inventory.txt -text
+
+# The spells_us parity set (tests/spellsUsParity.test.mts) is GENERATED with LF and compared byte for
+# byte by both the app and the engine tests, so git must check it out exactly as written.
+tests/fixtures/spellsUsShape/** -text

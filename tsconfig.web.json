@@ -88,6 +88,8 @@
     // …and `celebrationPost.ts` (the celebration-post preferences), likewise.
     "src/preload/celebrationPost.ts",
     // …and `patchNotesApi.ts` (the EverQuest Legends patch notes), likewise.
-    "src/preload/patchNotesApi.ts"
+    "src/preload/patchNotesApi.ts",
+    // …and `gameFileHealthApi.ts` (did this build recognise the game's files), likewise.
+    "src/preload/gameFileHealthApi.ts"
   ]
 }

@@ -138,8 +138,17 @@ impl ClientSpells {
 /// reads is ASCII. A UTF-8 read of a file with one stray high byte in a spell name would substitute
 /// a replacement character, which changes a NAME and therefore a join key — so the bytes are widened
 /// one at a time rather than run through `from_utf8_lossy`.
+///
+/// A file this build does not recognise is no table (`Unloadable`), never a table read at moved
+/// offsets: the same width and field checks the app's game-file health notice runs
+/// (`fold::spells_us::layout::recognised`, shared JSON), so a surface the notice calls paused is
+/// paused here too. A recognised file that parses to nothing is no table either.
 fn read(path: &Path) -> Option<SpellTable> {
-    Some(parse_spells_us(&read_latin1(path)?))
+    let text = read_latin1(path)?;
+    if !fold::spells_us::layout::recognised(&text) {
+        return None;
+    }
+    Some(parse_spells_us(&text)).filter(|t| !t.is_empty())
 }
 
 /// One client file's bytes, widened to text. See [`read`] for why the encoding is latin-1.
@@ -251,15 +260,15 @@ mod tests {
     }
 
     #[test]
-    fn a_file_that_parses_to_nothing_is_still_a_read_file() {
-        // An empty table is not a missing one. Every row was refused (none has 172 fields), which
-        // is `ok` with no answers rather than `missing` — conflating them would tell a player to go
-        // and find a folder they are already in.
+    fn a_file_this_build_does_not_recognise_is_unloadable_and_never_missing() {
+        // Every row is a width no client has written, so the file is not served (the app's
+        // game-file notice says the same) - and it is `unloadable`, not `missing`: conflating them
+        // would tell a player to go and find a folder they are already in.
         let dir = scratch("empty");
         let log = dir.join("Logs").join("eqlog_Primitive_freeport.txt");
         std::fs::write(dir.join("spells_us.txt"), "not^a^spell^row\n").expect("staged");
         let spells = ClientSpells::beside_log(&log).expect("a derivable path");
-        assert_eq!(spells.state(), TableState::Ok);
-        assert!(spells.table().expect("a table").is_empty());
+        assert_eq!(spells.state(), TableState::Unloadable);
+        assert!(spells.table().is_none());
     }
 }

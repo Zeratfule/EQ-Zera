@@ -20,9 +20,10 @@
 //! `slot | effectId | base | limit | calc | max` rather than `… | max | calc`.
 //!
 //! The JavaScript semantics are the hard part. Every scalar goes through `Number(x)` or
-//! `Number(x) || 0`, and the row filter is `f.length < 172` — not 173, so a row with exactly 172
-//! fields passes and then reads `undefined` for its slots. Those are the behaviour the app ships,
-//! and a port that corrected them would disagree with the app on real rows. See [`js_number`].
+//! `Number(x) || 0`. The row filter is the app's `realign`: a row is read only at a width that has
+//! been measured ([`KNOWN_ROW_LENGTHS`]), the two patched layouts are mapped back onto the original
+//! field map, and every other width is skipped rather than read at the wrong offsets. See
+//! [`js_number`] and [`realign`].
 
 use eqlog::jsstr::js_trim;
 use eqlog::names::spell_canon_key;
@@ -58,7 +59,12 @@ const F_CATEGORY: usize = 86;
 const F_SUBCATEGORY: usize = 87;
 const F_RESIST_ADJ: usize = 78;
 const F_AE_MAX_TARGETS: usize = 143;
+/// The effect slots' index on the original map; [`layout`] keys its widths off it.
 const F_SLOTS: usize = 172;
+
+/// The row widths this parser reads, and how a patched row maps back onto the field map.
+pub mod layout;
+use layout::realign;
 
 const EFFECT_HITPOINTS: f64 = 0.0;
 const EFFECT_CHARM: f64 = 22.0;
@@ -581,9 +587,7 @@ fn row_info(f: &[&str], name: &str, class_levels: ClassLevels) -> SpellInfo {
 /// The four filters, in order:
 ///
 ///   * an empty line only — a blank-looking line of spaces falls out at the field-count test.
-///   * `f.length < 172`, not 173: a row with exactly 172 fields passes and then reads `undefined`
-///     for its slots, which [`parse_slots`] answers with none. Tightening this drops rows the app
-///     keeps.
+///   * [`realign`]: only a measured width (173, 174, 190) is read.
 ///   * an empty name only — a whitespace-only name survives here and dies at the key test, because
 ///     `spellCanonKey` trims it to nothing.
 ///   * an id that is not a number. `''` is `0`, which is finite, so an empty id is kept.
@@ -601,16 +605,12 @@ pub fn parse_spells_us(text: &str) -> SpellTable {
         if line.is_empty() {
             continue;
         }
-        let f: Vec<&str> = line.split('^').collect();
-        if f.len() < F_SLOTS {
-            continue;
-        }
-        let Some(name) = field(&f, F_NAME) else {
+        let Some(f) = realign(line.split('^').collect()) else {
             continue;
         };
-        if name.is_empty() {
+        let Some(name) = field(&f, F_NAME).filter(|n| !n.is_empty()) else {
             continue;
-        }
+        };
         if !js_number(field(&f, F_ID).unwrap_or("")).is_finite() {
             continue;
         }
@@ -1029,21 +1029,12 @@ mod tests {
     }
 
     #[test]
-    fn a_row_with_exactly_one_hundred_and_seventy_two_fields_is_kept() {
-        // `f.length < 172`, not `< 173`. The row passes and then reads `undefined` for its slots,
-        // which is no slots rather than a panic. Tightening the bound would drop rows the app
-        // keeps.
+    fn a_row_that_lost_a_column_is_dropped() {
+        // 172 fields is what a patch that DROPS a column writes, and no client has written it, so it
+        // is not a measured width: read, every field after the drop would be one off.
         let mut f = vec!["0".to_string(); 172];
         f[F_NAME] = "Short Row".to_string();
-        for i in 0..F_CLASS_COUNT {
-            f[F_CLASS_FIRST + i] = "255".to_string();
-        }
-        let table = parse_spells_us(&f.join("^"));
-        assert_eq!(table.len(), 1);
-        let info = table.into_values().next().expect("one");
-        assert!(info.hp.is_empty());
-        assert!(info.debuff_slots.is_empty());
-        assert_eq!(info.level_cap, None);
+        assert!(parse_spells_us(&f.join("^")).is_empty());
     }
 
     #[test]
