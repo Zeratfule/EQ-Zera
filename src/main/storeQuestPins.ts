@@ -21,7 +21,8 @@
 // one document.
 
 import { sanitizeQuestPins, type QuestPins } from '../shared/questPins'
-import { adoptStepsKeys, reconcileQuestTicks } from '../shared/questStepsSig'
+import { adoptStepsKeys, legacyRule, reconcileQuestTicks } from '../shared/questStepsSig'
+import { launchNotesVersion } from './launchVersion'
 import { questStepsOf } from './questCatalog'
 import { getProgress, setProgress } from './store'
 
@@ -33,7 +34,7 @@ import { getProgress, setProgress } from './store'
  */
 export function getQuestPins(charId: string): QuestPins {
   const stored = sanitizeQuestPins(getProgress(charId).questPins)
-  const pins = reconcileQuestTicks(stored, questStepsOf)
+  const pins = reconcileQuestTicks(stored, questStepsOf, legacyRule(launchNotesVersion()))
   if (pins !== stored) setProgress(charId, { ...getProgress(charId), questPins: pins })
   return pins
 }

@@ -16,13 +16,16 @@
 import { ipcMain } from 'electron'
 import { IPC } from '../../shared/ipc'
 import { getLastSeenNotesVersion, setLastSeenNotesVersion } from '../store'
+import { launchNotesVersion } from '../launchVersion'
 
 export function registerReleaseNotesIpc(): void {
   ipcMain.handle(IPC.releaseNotesSeenGet, () => getLastSeenNotesVersion())
   // Anything that is not a string reads as "clear it" — the fresh-install state — rather than
   // as a silent no-op, so the renderer's `null` and an accidental `undefined` mean the same
   // thing and neither leaves a stale stamp behind.
-  ipcMain.handle(IPC.releaseNotesSeenSet, (_e, version: unknown) =>
-    setLastSeenNotesVersion(typeof version === 'string' ? version : null)
-  )
+  ipcMain.handle(IPC.releaseNotesSeenSet, (_e, version: unknown) => {
+    // Remember what this launch found BEFORE the first write moves it (src/main/launchVersion.ts).
+    launchNotesVersion()
+    return setLastSeenNotesVersion(typeof version === 'string' ? version : null)
+  })
 }

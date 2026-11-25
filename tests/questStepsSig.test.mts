@@ -15,7 +15,8 @@ import assert from 'node:assert/strict'
 import questsJson from '../src/renderer/src/data/eqlegends/quests.json'
 import type { QuestData } from '../src/shared/types'
 import { sanitizeQuestPins, setTick, type QuestPin } from '../src/shared/questPins'
-import { LEGACY_CHANGED_PAGES, adoptStepsKeys, normaliseStep, reconcileQuestTicks, stepHash, stepsKeyFor } from '../src/shared/questStepsSig'
+import { LEGACY_MOVED, adoptStepsKeys, legacyRule, normaliseStep, questStepsDigest, reconcileQuestTicks, stepHash, stepsKeyFor } from '../src/shared/questStepsSig'
+import changedJson from '../src/shared/questStepsChanged.json'
 
 const quests = (questsJson as unknown as QuestData).quests
 const stepsOf = (page: string): readonly string[] | undefined => quests.find((q) => q.page === page)?.steps
@@ -49,7 +50,7 @@ test('A DIFFERENT STEP IS DIFFERENT: Harvester’s old steps against its new one
 test('READ: a changed step COUNT drops every hand tick of that quest', () => {
   const steps = stepsOf("Tarton's Wheel") ?? []
   const stored = pin("Tarton's Wheel", [0, 2], { stepsKey: { n: steps.length + 1, at: {} } })
-  const out = reconcileQuestTicks([stored], stepsOf, new Set())
+  const out = reconcileQuestTicks([stored], stepsOf, () => false)
   assert.deepEqual(out[0].ticks, [])
   assert.equal(out[0].stepsKey?.n, steps.length)
 })
@@ -58,7 +59,7 @@ test('READ: a ticked step whose meaning changed loses THAT tick only; the others
   const steps = stepsOf("Tarton's Wheel") ?? []
   const key = stepsKeyFor(steps, [0, 2])
   key.at['2'] = stepHash('a step that said something else entirely')
-  const out = reconcileQuestTicks([pin("Tarton's Wheel", [0, 2], { stepsKey: key })], stepsOf, new Set())
+  const out = reconcileQuestTicks([pin("Tarton's Wheel", [0, 2], { stepsKey: key })], stepsOf, () => false)
   assert.deepEqual(out[0].ticks, [0])
   assert.deepEqual(Object.keys(out[0].stepsKey?.at ?? {}), ['0'])
 })
@@ -96,8 +97,41 @@ test('the sanitizer keeps a well-formed key through both directions and drops ju
   assert.deepEqual(setTick([pin('A', [], { stepsKey: key })], 'A', 0, true)[0].stepsKey, key, 'a tick fold carries it')
 })
 
-test('THE LEGACY SET (generated from every release since v1.19.0): the five pre-v1.30.1 movers and Harvester, not the in-place re-renders', () => {
-  for (const p of ['Harvester Quest', 'Respecialization', 'Something Fishy', 'The Betrayer', 'The Tragic Tale of House Everling', 'Thex Dagger Quest']) assert.ok(LEGACY_CHANGED_PAGES.has(p), p)
-  for (const p of ['Hungry Deputy', 'Dreadscale Armor', "Sebilis and Veeshan's Peak Key Quest"]) assert.ok(!LEGACY_CHANGED_PAGES.has(p), p)
-  for (const p of LEGACY_CHANGED_PAGES) assert.ok(stepsOf(p) !== undefined, `${p} is a catalog quest`)
+test('THE LEGACY MAP (generated from every release since v1.19.0): each moved quest names the NEWEST release it differs from', () => {
+  assert.equal(LEGACY_MOVED.get('Harvester Quest'), '1.30.1', 'moved in this release')
+  for (const p of ['Respecialization', 'Something Fishy', 'The Betrayer', 'The Tragic Tale of House Everling', 'Thex Dagger Quest']) {
+    const v = LEGACY_MOVED.get(p)
+    assert.ok(v !== undefined && v !== '1.30.1', `${p} moved before v1.30.1 (${String(v)})`)
+  }
+  for (const p of ['Hungry Deputy', 'Dreadscale Armor', "Sebilis and Veeshan's Peak Key Quest"]) assert.ok(!LEGACY_MOVED.has(p), `${p} only re-rendered`)
+  for (const p of LEGACY_MOVED.keys()) assert.ok(stepsOf(p) !== undefined, `${p} is a catalog quest`)
+})
+
+test('READ, A PIN STORED BEFORE KEYS, LAST RUN KNOWN: only quests that moved AFTER that release lose ticks', () => {
+  const legacy = [pin('Harvester Quest', [1]), pin('The Betrayer', [2]), pin("Tarton's Wheel", [0])]
+  // Last run on v1.30.1: The Betrayer's move (before it) was already under the player's ticks.
+  const on1301 = reconcileQuestTicks(legacy, stepsOf, legacyRule('1.30.1'))
+  assert.deepEqual(on1301.map((p) => p.ticks), [[], [2], [0]])
+  // Last run on v1.26.0: The Betrayer moved after that, so its ticks go too.
+  const on1260 = reconcileQuestTicks(legacy, stepsOf, legacyRule('1.26.0'))
+  assert.deepEqual(on1260.map((p) => p.ticks), [[], [], [0]])
+  // A build newer than every listed release: nothing moved since.
+  assert.deepEqual(reconcileQuestTicks(legacy, stepsOf, legacyRule('9.0.0')).map((p) => p.ticks), [[1], [2], [0]])
+})
+
+test('READ, A PIN STORED BEFORE KEYS, LAST RUN UNKNOWN: every quest that moved since the tracker shipped loses ticks', () => {
+  const out = reconcileQuestTicks([pin('Harvester Quest', [1]), pin('The Betrayer', [2]), pin("Tarton's Wheel", [0])], stepsOf, legacyRule(null))
+  assert.deepEqual(out.map((p) => p.ticks), [[], [], [0]])
+  assert.deepEqual(reconcileQuestTicks([pin('The Betrayer', [2])], stepsOf).map((p) => p.ticks), [[]], 'the default is the unknown rule')
+})
+
+test('NOT STALE: questStepsChanged.json was generated from THIS quests.json (re-run `npm run gen:quest-steps-changed`)', () => {
+  assert.equal(
+    (changedJson as { stepsDigest: string }).stepsDigest,
+    questStepsDigest(quests),
+    'quests.json steps changed since src/shared/questStepsChanged.json was generated: run `npm run gen:quest-steps-changed` and commit it'
+  )
+  // …and the digest does move with any step edit, so this check can fail.
+  const edited = quests.map((q, i) => (i === 0 ? { ...q, steps: [...(q.steps ?? []), 'one more step'] } : q))
+  assert.notEqual(questStepsDigest(edited), questStepsDigest(quests))
 })

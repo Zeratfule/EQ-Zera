@@ -18,7 +18,9 @@
  * catalog that lost steps, start zones, givers, rewards, items or whole quests against the file it
  * replaces, fell under a measured floor, or left a heading / label of its wiki pages unread, FAILS —
  * the previous file is put back, the rejected one saved to the temp dir, and the run exits non-zero
- * with the list. `npm run check:quests` runs the same gate alone, offline.
+ * with the list. `npm run check:quests` runs the same gate alone, offline. A quests step that passes
+ * also regenerates src/shared/questStepsChanged.json (`npm run gen:quest-steps-changed`, the tracker's
+ * tick reconcile reads it); commit it with quests.json.
  *
  * THE STAMP RULE (why this script writes files at all). Every scraper stamps
  * `scrapedAt: new Date().toISOString()` UNCONDITIONALLY, so a re-scrape that learned nothing
@@ -59,6 +61,7 @@ import type { ItemDbFile } from '../src/main/itemsDb'
 import type { MobData, QuestData } from '../src/shared/types'
 import { checkQuestHealth } from './check-quest-health.mjs'
 import { formatHealth } from './questHealth.mjs'
+import { generateQuestStepsChanged } from './gen-quest-steps-changed.mjs'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 /** The same runner `npm run scrape:*` uses, invoked directly so npm need not be on PATH. */
@@ -109,7 +112,11 @@ function mobsReport(prev: unknown, next: unknown): Report {
 /** The quest data health gate over the file before and after the scrape. */
 function questsGate(prev: unknown, next: unknown): { ok: boolean; lines: string[] } {
   const result = checkQuestHealth((prev as QuestData | null)?.quests ?? null, (next as QuestData).quests)
-  return { ok: result.ok, lines: formatHealth(result) }
+  const lines = formatHealth(result)
+  // A file that passed is the one that ships: regenerate what the tracker's tick reconcile reads
+  // from it (src/shared/questStepsChanged.json), so the quests refresh can never leave it stale.
+  if (result.ok) lines.push(`  ${generateQuestStepsChanged()}`)
+  return { ok: result.ok, lines }
 }
 
 function questsReport(prev: unknown, next: unknown): Report {

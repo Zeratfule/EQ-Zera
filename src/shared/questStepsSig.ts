@@ -19,13 +19,17 @@
 // "==== Dreadscale Helm ====" become "Dreadscale Helm:". `normaliseStep` reads all 25 as unchanged
 // (tests/questStepsSig.test.mts pins every one) and Harvester Quest as changed.
 //
-// A PIN STORED BEFORE THIS (no `stepsKey`) has nothing to compare and the old text is gone. It could
-// have been ticked on ANY release since the tracker shipped (v1.19.0), so `LEGACY_CHANGED_PAGES`
-// (./questStepsChanged.json, written by scripts/gen-quest-steps-changed.mts) lists every quest whose
-// step count, or the normalised meaning of any step at its index, differs between ANY of those
-// releases' quests.json and this one. An unsigned pin on a listed quest loses its hand ticks — the
-// conservative answer, since we cannot know which release ticked it; every other unsigned pin keeps
-// them. Either way the pin then carries a key, so this happens once per pin.
+// A PIN STORED BEFORE THIS (no `stepsKey`) has nothing to compare and the old text is gone.
+// `LEGACY_MOVED` (./questStepsChanged.json, written by `npm run gen:quest-steps-changed`) names, for
+// every quest whose step count or normalised step-at-index differs between some release since the
+// tracker shipped (v1.19.0) and this build, the NEWEST such release. The pin's ticks were last
+// written under the version the player last ran (main captures the stored What's-new version at
+// launch, before this session can stamp it — src/main/launchVersion.ts), so `legacyRule(v)` drops an
+// unsigned pin's hand ticks only for a quest whose steps moved at or after release v. That version
+// can only LAG the true last run (it is stamped when the notes are shown), and a lag only widens the
+// set: never a kept tick that should have gone. Unknown (a store that never recorded one) ⇒ every
+// listed quest, the conservative union. Either way the pin then carries a key, so this happens once.
+// The one case it cannot see is a DOWNGRADE (a newer build's stamp, then ticks on an older build).
 //
 // THE WRITE PATH ADOPTS: the renderer's ticks were made against the catalog this build ships, so a
 // write is keyed to it, never judged against an older one.
@@ -44,8 +48,50 @@ export interface StepsKey {
   at: Record<string, string>
 }
 
-/** Every quest whose steps moved between some release since v1.19.0 and this build. */
-export const LEGACY_CHANGED_PAGES: ReadonlySet<string> = new Set((changedJson as { pages: string[] }).pages)
+interface ChangedFile {
+  stepsDigest: string
+  releases: string[]
+  /** page → the newest release (MAJOR.MINOR.PATCH) whose steps for it differ from this build's */
+  moved: Record<string, string>
+}
+
+/** page → the newest release since v1.19.0 whose steps for it differ from this build's. */
+export const LEGACY_MOVED: ReadonlyMap<string, string> = new Map(Object.entries((changedJson as ChangedFile).moved))
+
+/** `a` vs `b` as MAJOR.MINOR.PATCH (a leading `v` allowed); negative when `a` is older. */
+function cmp(a: string, b: string): number {
+  const x = a.replace(/^v/, '').split('.').map(Number)
+  const y = b.replace(/^v/, '').split('.').map(Number)
+  for (let i = 0; i < 3; i++) if ((x[i] || 0) !== (y[i] || 0)) return (x[i] || 0) - (y[i] || 0)
+  return 0
+}
+
+/**
+ * Does an UNSIGNED pin on `page` lose its hand ticks? `lastRun` is the version the player last ran
+ * (null when unknown): yes when the quest's steps moved in a release at or after it, or — unknown —
+ * when they moved in any release since the tracker shipped.
+ */
+export function legacyRule(lastRun: string | null): (page: string) => boolean {
+  const known = lastRun !== null && /^v?\d+\.\d+\.\d+$/.test(lastRun) ? lastRun : null
+  return (page) => {
+    const moved = LEGACY_MOVED.get(page)
+    return moved !== undefined && (known === null || cmp(moved, known) >= 0)
+  }
+}
+
+/**
+ * Every quest's steps, as one hash: what questStepsChanged.json was generated FROM. A test compares
+ * it with the committed quests.json, so a quest refresh cannot ship without regenerating the file.
+ */
+export function questStepsDigest(quests: readonly { page: string; steps?: readonly string[] }[]): string {
+  let h = 0x811c9dc5
+  const text = quests.map((q) => `${q.page}\u001e${(q.steps ?? []).join('\u001f')}`).join('\u001d')
+  for (let i = 0; i < text.length; i++) {
+    h ^= text.charCodeAt(i)
+    h = Math.imul(h, 0x01000193) >>> 0
+  }
+  return `${String(quests.length)}:${h.toString(16).padStart(8, '0')}`
+}
 
 let ZONE_BEFORE_POINT: RegExp | null = null
 
@@ -102,16 +148,16 @@ const sameKey = (a: StepsKey, b: StepsKey): boolean =>
 type StepsOf = (page: string) => readonly string[] | undefined
 
 /** The hand ticks that still name the step they were made on. */
-function keptTicks(pin: QuestPin, steps: readonly string[], legacy: ReadonlySet<string>): number[] {
+function keptTicks(pin: QuestPin, steps: readonly string[], legacy: (page: string) => boolean): number[] {
   const key = pin.stepsKey
-  if (key === undefined) return legacy.has(pin.page) ? [] : pin.ticks
+  if (key === undefined) return legacy(pin.page) ? [] : pin.ticks
   if (key.n !== steps.length) return []
   // A tick with no remembered hash was written by this build (a write keys every tick), so it stands.
   return pin.ticks.filter((t) => t < steps.length && (key.at[String(t)] ?? stepHash(steps[t])) === stepHash(steps[t]))
 }
 
 /** One pin, read against the catalog. Null when nothing about it changes. */
-function reconcileOne(pin: QuestPin, stepsOf: StepsOf, legacy: ReadonlySet<string>): QuestPin | null {
+function reconcileOne(pin: QuestPin, stepsOf: StepsOf, legacy: (page: string) => boolean): QuestPin | null {
   const steps = stepsOf(pin.page)
   if (steps === undefined) return null
   const ticks = keptTicks(pin, steps, legacy)
@@ -123,7 +169,7 @@ function reconcileOne(pin: QuestPin, stepsOf: StepsOf, legacy: ReadonlySet<strin
 /**
  * THE READ PATH. Returns the SAME array when nothing changed, so the caller can skip a write.
  */
-export function reconcileQuestTicks(pins: QuestPins, stepsOf: StepsOf, legacy: ReadonlySet<string> = LEGACY_CHANGED_PAGES): QuestPins {
+export function reconcileQuestTicks(pins: QuestPins, stepsOf: StepsOf, legacy: (page: string) => boolean = legacyRule(null)): QuestPins {
   let moved = false
   const out = pins.map((p) => {
     const next = reconcileOne(p, stepsOf, legacy)
