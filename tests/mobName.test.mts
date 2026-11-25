@@ -28,8 +28,11 @@ test('the placeholder words, and what is NOT one', () => {
   assert.equal(shownMobName('a_minnow', 'A minnow'), 'a_minnow')
 })
 
-test('REAL CATALOG: the two NPC_Name pages, and no chip or pin anywhere shows a placeholder', () => {
-  assert.deepEqual(mobs.filter((m) => isPlaceholderMobName(m.name)).map((m) => m.page).sort(), ['Head Chef Vy`zen', 'Lord Ollix Everling'])
+test('REAL CATALOG: no placeholder name survives the scrape, and no chip or pin anywhere shows one', () => {
+  // Head Chef Vy`zen and Lord Ollix Everling still state `|name = NPC_Name` on the wiki (2026-11-25
+  // cache); since the mob parser fix the catalog carries their page titles instead, so none remain.
+  assert.deepEqual(mobs.filter((m) => isPlaceholderMobName(m.name)).map((m) => m.page).sort(), [])
+  assert.equal(mobs.find((m) => m.page === 'Lord Ollix Everling')?.name, 'Lord Ollix Everling')
   const tragic = questLocations(quests.find((q) => q.page === 'The Tragic Tale of House Everling') ?? quests[0], index)
   assert.ok(tragic.steps[0].some((c) => c.name === 'Lord Ollix Everling' && c.zone === 'nektropos'), JSON.stringify(tragic.steps[0]))
   for (const q of quests) {

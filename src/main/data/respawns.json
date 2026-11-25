@@ -1,6 +1,6 @@
 {
  "source": "eqlwiki.com — |respawn_time on every page in the committed mob catalog",
- "scrapedAt": "2026-11-15",
+ "scrapedAt": "2026-11-25",
  "rows": [
   {
    "key": "a alchemist`s acolyte",
@@ -545,6 +545,11 @@
    "page": "A Tier'Dal Spellbinder",
    "text": "2m 26s",
    "seconds": 146
+  },
+  {
+   "key": "a tormented dead",
+   "page": "A tormented dead",
+   "text": "?"
   },
   {
    "key": "a tortured revenant",
@@ -2652,14 +2657,14 @@
    "seconds": 420
   },
   {
-   "key": "sir lucan d`lere",
-   "page": "Sir Lucan D`Lere",
+   "key": "sir lucan d'lere",
+   "page": "Sir Lucan Dlere",
    "text": "7 hours",
    "seconds": 25200
   },
   {
-   "key": "sir lucan dlere",
-   "page": "Sir Lucan Dlere",
+   "key": "sir lucan d`lere",
+   "page": "Sir Lucan D`Lere",
    "text": "7 hours",
    "seconds": 25200
   },

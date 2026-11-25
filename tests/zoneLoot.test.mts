@@ -184,7 +184,7 @@ test('zoneOptions over the REAL catalog: 159 zones, Cazic Thule folded to one 30
   assert.deepEqual(names, [...names].sort((a, b) => a.localeCompare(b)))
 })
 
-test('zoneLootRows over the REAL catalog: Cazic Thule is 61 drops across 21 mobs', () => {
+test('zoneLootRows over the REAL catalog: Cazic Thule is 63 drops across 22 mobs', () => {
   // 42/15 -> 47/14 on the 2026-10-07 rescrape, all of it the wiki's own edits: `a lizard
   // ritualist` gained five Rubicite drops (1 -> 6), `Cazic Cenobite` and `Tae Ew Templar`/`Diviner`
   // gained Lizard Meat/Tail rows (+4), and `Tae Ew Archon` LEFT the table - its page (rev
@@ -194,8 +194,10 @@ test('zoneLootRows over the REAL catalog: Cazic Thule is 61 drops across 21 mobs
   // entry - Tae Ew Archon is back (+4), a lizard judicator (+3 Words), a lizard page (+2), a lizard
   // warder (+2), a lizard defender (+1), and the `Cazic-Thule`-spelled a dwarven merc / a gnomish
   // mage (+1 each). The group link "Fine Steel Weapons" on the Archon's list is NOT read.
+  // 61/21 -> 63/22 on the 2026-11-25 rescrape, both the wiki's own edits: `a lizard page` and
+  // `a lizard probationer` (no drops before) each gained a `{{:Lizardman Fang}}` loot entry.
   const rows = zoneLootRows({ zone: 'Cazic Thule', catalog: REAL, seenByItem: NO_SEEN })
-  assert.deepEqual(zoneLootSummary(rows), { mobs: 21, drops: 61, outOfEra: 0, seen: 0, upgrades: 0 })
+  assert.deepEqual(zoneLootSummary(rows), { mobs: 22, drops: 63, outOfEra: 0, seen: 0, upgrades: 0 })
   assert.ok(rows.every((r) => r.item.trim() !== ''), 'a drop row carried an empty item name')
   assert.ok(rows.every((r) => r.mobPage !== '' && r.era.key === r.itemKey))
   assert.equal(new Set(rows.map((r) => r.key)).size, rows.length, 'a row key collided')
