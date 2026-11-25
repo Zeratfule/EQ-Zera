@@ -18,6 +18,7 @@
  */
 import { type MobLootOptions, parseMobWikitext } from '../../src/main/mobLookupParse'
 import type { MobEntry } from '../../src/shared/types'
+import { isPlaceholderMobName } from '../../src/shared/mobName'
 
 /**
  * The page templates that MAKE a page a mob page, verified against the live wiki (2026-08-03):
@@ -72,7 +73,8 @@ export function parseMobPage(title: string, wikitext: string, opts: MobLootOptio
   // `|name` can be present-but-empty (or unlink to nothing), and an EMPTY name is "the page
   // does not state one" — so the fallback is on emptiness, not merely on absence.
   const stated = facts.pageName ?? ''
-  const entry: MobEntry = { page: title, name: stated.length > 0 ? stated : title }
+  // ...and so is the template's own placeholder, `|name = NPC_Name` (src/shared/mobName.ts).
+  const entry: MobEntry = { page: title, name: isPlaceholderMobName(stated) ? title : stated }
   if (facts.levelText) entry.level = facts.levelText
   const zones = splitZones(facts.zone)
   if (zones.length) entry.zones = zones

@@ -20,6 +20,7 @@ import type { ZoneShort } from './maps'
 import type { MobEntry } from './mobTypes'
 import { itemBaseName } from './itemStats'
 import { zoneShortNameFromCatalog } from './zones'
+import { withShownMobNames } from './mobName'
 import { isPlaceholderZone, type NearbyMob, type NpcLookup } from './questLocZones'
 
 /** The bestiary, indexed once: by page, by unique name, by what each mob drops, by where. */
@@ -142,8 +143,11 @@ function tables(mobs: readonly MobEntry[]): { byPage: Map<string, MobEntry>; byN
  * `questPages` are the catalog's quest titles: a step linking "Cleaner Clockwork" links the QUEST,
  * whatever bestiary page shares its name, so those titles are never read as an NPC.
  */
-export function buildMobIndex(mobs: readonly MobEntry[], questPages: Iterable<string> = []): MobIndex {
+export function buildMobIndex(raw: readonly MobEntry[], questPages: Iterable<string> = []): MobIndex {
   const notNpc = new Set([...questPages].map((p) => p.toLowerCase()))
+  // A template placeholder (`|name = NPC_Name`) is never a name a chip, a pin or a match shows:
+  // the page's title stands in (./mobName.ts).
+  const mobs = withShownMobNames(raw)
   const { byPage, byName, byDrop } = tables(mobs)
   const points = placedPoints(mobs)
   const boxes = spreads(points)
