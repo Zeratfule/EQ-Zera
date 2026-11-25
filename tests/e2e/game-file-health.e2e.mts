@@ -59,7 +59,7 @@ async function dismissFirstRunNotice(page: Page): Promise<void> {
  * is laid out but never mapped, so Playwright waits for a composited frame that never comes, while
  * capturePage borrows one (combat-share.e2e.mts). Evidence, never a check: a failure is a note.
  */
-async function saveShot(electronApp: ElectronApplication): Promise<void> {
+async function saveShot(electronApp: ElectronApplication, name: string): Promise<void> {
   try {
     const b64 = await electronApp.evaluate(async ({ BrowserWindow }) => {
       const w = BrowserWindow.getAllWindows().find((x) => !x.webContents.getURL().includes('overlay'))
@@ -73,7 +73,7 @@ async function saveShot(electronApp: ElectronApplication): Promise<void> {
       return (await w.webContents.capturePage()).toPNG().toString('base64')
     })
     mkdirSync(ARTIFACTS, { recursive: true })
-    const shot = join(ARTIFACTS, 'game-file-notice.png')
+    const shot = join(ARTIFACTS, name)
     writeFileSync(shot, Buffer.from(b64, 'base64'))
     console.log(`artifact: ${shot}`)
   } catch (err) {
@@ -81,15 +81,60 @@ async function saveShot(electronApp: ElectronApplication): Promise<void> {
   }
 }
 
+type Box = { l: number; t: number; r: number; b: number } | null
+
+/** Rendered boxes of the notice, the nav rail and the first-run strip (null when absent). */
+function boxes(page: Page): Promise<{ notice: Box; rail: Box; strip: Box; vw: number; vh: number }> {
+  // No named function inside the evaluate: the tsx transform wraps one in `__name`, which the
+  // page does not have.
+  return page.evaluate(() => {
+    const [notice, rail, strip] = [
+      '[data-testid="gamefile-notice"] .MuiAlert-root',
+      '.MuiDrawer-paper',
+      '[data-testid="telemetry-notice"]'
+    ].map((sel) => {
+      const r = document.querySelector(sel)?.getBoundingClientRect()
+      return r ? { l: r.left, t: r.top, r: r.right, b: r.bottom } : null
+    })
+    return { notice: notice ?? null, rail: rail ?? null, strip: strip ?? null, vw: window.innerWidth, vh: window.innerHeight }
+  })
+}
+
+const meets = (a: Box, b: Box): boolean => !!a && !!b && a.l < b.r && b.l < a.r && a.t < b.b && b.t < a.b
+
+/**
+ * WHERE THE NOTICE SITS, measured with the first-run strip still up (the bottom-centre band) at the
+ * default window size and at the 900px minimum: never over the nav rail, never over that strip, and above the bottom-right toasts' band.
+ */
+async function stepGeometry(app: ElectronApplication, page: Page): Promise<void> {
+  for (const width of [0, 900]) {
+    if (width > 0) {
+      await app.evaluate(({ BrowserWindow }, w) => {
+        const win = BrowserWindow.getAllWindows().find((x) => !x.webContents.getURL().includes('overlay'))
+        win?.setSize(w, 700)
+      }, width)
+    }
+    await settle(() => boxes(page), (x) => x.notice !== null && (width === 0 || Math.abs(x.vw - width) < 40), { timeoutMs: 10_000 })
+    // The Snackbar grows in; a stable reading is the drawn box, not a frame of the transition.
+    const g = await settleStable(() => boxes(page), { stable: 4, timeoutMs: 10_000 })
+    const label = width === 0 ? 'default size' : '900px window'
+    check(`${label}: the notice is clear of the nav rail`, !!g.notice && !!g.rail && g.notice.l >= g.rail.r, JSON.stringify(g))
+    check(`${label}: the notice is clear of the first-run strip`, g.strip === null || !meets(g.notice, g.strip), JSON.stringify(g))
+    // Above the bottom band, where the right-hand toasts (bottom 24, up to ~70px tall) also live.
+    check(`${label}: the notice sits above the bottom toast band`, !!g.notice && g.notice.b <= g.vh - 96, JSON.stringify(g))
+    await saveShot(app, `game-file-notice-${width === 0 ? 'default' : String(width)}.png`)
+  }
+}
+
 async function firstLaunch(log: FixtureLog, userData: string): Promise<void> {
   const app = await launchOnFixture(log, { waitForEngine: false, userData })
   try {
     const page = await mainWindow(app.app)
-    await dismissFirstRunNotice(page)
     await page.waitForSelector(NOTICE_TEXT, { timeout: 60_000 }).catch(() => undefined)
     const text = await page.$eval(NOTICE_TEXT, (el) => el.textContent ?? '').catch(() => '')
     check('the notice names spells_us.txt and the paused feature, in plain copy', text === SENTENCE, text)
-    await saveShot(app.app)
+    await stepGeometry(app.app, page)
+    await dismissFirstRunNotice(page)
     const view = await health(page)
     const by = Object.fromEntries(view.reports.map((r) => [r.id, r]))
     check('spells_us is unrecognised at the width it saw', by.spellsUs?.status === 'unrecognised' && by.spellsUs.signature === 'fields-200', JSON.stringify(by.spellsUs))
