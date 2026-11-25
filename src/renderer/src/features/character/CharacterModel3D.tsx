@@ -374,15 +374,19 @@ export function CharacterModel3D({ model, spin }: { model: EqModelPayload; spin:
     ring.position.y = -size.y / 2
     scene.add(ring)
 
-    const clock = new THREE.Clock()
+    // `Timer`, not `Clock`: three r183 deprecated Clock. A Timer advances only on `update()`, so
+    // every read in one frame sees the same instant.
+    const timer = new THREE.Timer()
     let raf = 0
     let alive = true
     const tick = (): void => {
       if (!alive) return
-      const dt = clock.getDelta()
+      timer.update()
+      const dt = timer.getDelta()
+      const elapsed = timer.getElapsed()
       built.mixer?.update(dt)
-      advanceFlipbooks(built.flipbooks, clock.elapsedTime * 1000)
-      advanceTurning(built.turning, clock.elapsedTime, dt)
+      advanceFlipbooks(built.flipbooks, elapsed * 1000)
+      advanceTurning(built.turning, elapsed, dt)
       if (spinning.current) figure.rotation.z += 0.003
       controls.update()
       renderer.render(scene, camera)

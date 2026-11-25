@@ -76,7 +76,7 @@
     "phonemizer": "1.2.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "three": "^0.170.0"
+    "three": "^0.187.0"
   },
   "devDependencies": {
     "@aws-sdk/client-cloudwatch": "^3.1175.0",
@@ -89,14 +89,14 @@
     "@types/pg": "^8.23.1",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
-    "@types/three": "^0.170.0",
+    "@types/three": "^0.187.0",
     "@vitejs/plugin-react": "^5.2.0",
     "ajv": "^8.20.0",
     "cheerio": "^1.0.0",
     "electron": "^43.8.12",
     "electron-builder": "^26.18.0",
     "electron-vite": "^5.0.0",
-    "esbuild": "^0.25.12",
+    "esbuild": "^0.28.2",
     "eslint": "^9.39.5",
     "eslint-plugin-react-hooks": "^5.2.0",
     "globals": "^15.15.0",
