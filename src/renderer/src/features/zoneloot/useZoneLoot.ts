@@ -18,12 +18,13 @@
 // know how long you stood there. A rate of 0 would read as "this zone pays nothing", which is a
 // claim nobody made, so the cell says `-` and the count stays true.
 //
-// THE ZONE FILTER IS THE LOG'S FOLD APPLIED TO A CATALOG SPELLING, and the one seam where the two
-// naming authorities can still miss: the picker offers the CATALOG's names, and a zone the log
-// spells differently enough that `zoneKey` does not fold them together (the `catalogZonesFor`
-// renames - log "The Ruins of Old Paineel" is catalog "The Hole") shows the wiki table with an
-// empty Yours column rather than a wrong one. Understating your own history is the safe direction;
-// crediting one zone's drops to another is not.
+// THE ZONE FILTER IS THE LOG'S FOLD APPLIED TO THE OPTION'S NAME. Since the 2026-11-25 zone audit
+// an option for a zone the table carries is spelled with the TABLE's name, which is the log's own
+// (`zoneOptions`), so a verified rename (log "The Ruins of Old Paineel" is catalog "The Hole") now
+// fills the Yours column. The seam that remains: a zone the table does not carry, or a log line
+// spelling one of the table's ALIASES, shows the wiki table with an empty Yours column rather
+// than a wrong one. Understating your own history is the safe direction; crediting one zone's
+// drops to another is not.
 
 import { useMemo } from 'react'
 import type { CharacterSnap, LootEvent, ProgressionSnap } from '@shared/types'
@@ -40,6 +41,7 @@ import { dataBounds } from '../leveling/zoneBands'
 import { useLootHistory } from '../loot/useLootHistory'
 import { MOB_CATALOG } from '../mobs/mobSearch'
 import { zoneKey } from '../mobs/mobZone'
+import { zoneEntryFromAnySpelling } from '../../../../shared/zones'
 import {
   lootItemKey,
   zoneLootRows,
@@ -156,7 +158,8 @@ export function useZoneLoot(zone: string): ZoneLootState {
 export function useDefaultZone(): string {
   const zone = useModule<CharacterSnap>('character')?.zone
   return useMemo(() => {
-    const key = zoneKey(zone ?? '')
+    // through the zone table, so a log alias (`The Permafrost Caverns - Solo 3`) finds its zone too
+    const key = zoneKey(zoneEntryFromAnySpelling(zone)?.name ?? zone ?? '')
     if (key === '') return ''
     return zoneLootOptions().find((o) => o.key === key)?.zone ?? ''
   }, [zone])

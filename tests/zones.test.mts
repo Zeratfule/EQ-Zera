@@ -30,7 +30,8 @@ import {
   zoneEntryFor,
   zoneKey,
   zoneShortName,
-  zoneShortNameFromCatalog
+  zoneShortNameFromCatalog,
+  zoneSpellingsFor
 } from '../src/shared/zones'
 // Tests may cross layers; the shipped modules may not. This is the ONLY place the two folds meet.
 import { zoneKey as mobZoneKey } from '../src/renderer/src/features/mobs/mobZone'
@@ -430,4 +431,62 @@ test('Castle Nektropos, Lake Nerius and the Undercrofts resolve from the log, th
   assert.equal(zoneShortName('Castle Mistmoore'), 'mistmoore')
   // A wiki cell that ran two zone links together stays dirt, exactly like the others in the TODO.
   assert.equal(zoneShortNameFromCatalog('Toxxulia Forest Lake Nerius'), null)
+})
+
+// ---- the 2026-11-25 zone audit -----------------------------------------------------------------
+
+test('Temple of Cazic-Thule: every spelling the log, the wiki and the map use is ONE zone', () => {
+  // the log (`You have entered Temple of Cazic-Thule 4 (Refined).`, 18 times on the owner's log)
+  for (const raw of ['Temple of Cazic-Thule', 'Temple of Cazic-Thule 4 (Refined)', 'Temple of Cazic-Thule 2 (Adaptive)']) {
+    assert.equal(zoneShortName(raw), 'cazicthule', `log: ${raw}`)
+  }
+  // the item pages' drop headings and the mob catalog
+  for (const raw of ['Temple of Cazic-Thule', 'Temple of Cazic Thule', 'Cazic Thule', 'Cazic-Thule']) {
+    assert.equal(zoneShortNameFromCatalog(raw), 'cazicthule', `wiki: ${raw}`)
+  }
+  // the map stem's display name is the log's
+  assert.equal(ZONES.find((z) => z.short === 'cazicthule')?.name, 'Temple of Cazic-Thule')
+  // and the mob join reaches the catalog's spelling from the log's
+  assert.ok(catalogZonesFor('Temple of Cazic-Thule 4 (Refined)').includes('Cazic Thule'))
+})
+
+test('The Liberated Citadel of Runnyeye: the log name, the /who stem and the old names are one zone', () => {
+  // `/who` prints `ZONE: The Liberated Citadel of Runnyeye (runnyeye)` - the game naming the stem
+  assert.equal(zoneShortName('The Liberated Citadel of Runnyeye'), 'runnyeye')
+  assert.equal(zoneShortName('Clan RunnyEye'), 'runnyeye')
+  for (const raw of ['RunnyEye Citadel', 'Runnyeye', 'Clan Runnyeye']) assert.equal(zoneShortNameFromCatalog(raw), 'runnyeye', raw)
+})
+
+test('the audit wiki spellings resolve, each to the zone its evidence names', () => {
+  const cases: [string, string][] = [
+    ['Droga', 'droga'],
+    ['Highpass Keep', 'highkeep'],
+    ['Western Freeport', 'freportw'],
+    ['Splitpaw', 'paw'],
+    ['Everfrost', 'everfrost'],
+    ['Oasis', 'oasis'],
+    ['Charasis', 'charasis'],
+    ['Lavastorm', 'lavastorm'],
+    ["Kerafyrm's Lair", 'sleeper'],
+    ['Kerra Ridge', 'kerraridge'],
+    ['Warsliks Wood', 'warslikswood'],
+    ['Mistmoore', 'mistmoore'],
+    ['Northern Ro', 'nro']
+  ]
+  for (const [raw, short] of cases) assert.equal(zoneShortNameFromCatalog(raw), short, raw)
+  // wiki spellings never leak into the LOG-side index
+  assert.equal(zoneShortName('Droga'), null)
+})
+
+test('the audit ambiguous spellings stay unresolved - no guess', () => {
+  for (const raw of ['Commonlands', 'Highpass', 'Kelethin', 'Freeport', 'Kaladim', 'Felwithe', 'Qeynos', 'Neriak']) {
+    assert.equal(zoneShortNameFromCatalog(raw), null, raw)
+  }
+})
+
+test('zoneSpellingsFor answers from ANY authority spelling with the whole register', () => {
+  const fromLog = zoneSpellingsFor('Temple of Cazic-Thule 4 (Refined)')
+  assert.deepEqual(fromLog, ['Temple of Cazic-Thule', 'Cazic-Thule', 'Cazic Thule'])
+  assert.deepEqual(zoneSpellingsFor('Cazic Thule'), fromLog)
+  assert.deepEqual(zoneSpellingsFor('Nowhere Vale'), [])
 })

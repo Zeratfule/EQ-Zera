@@ -35,6 +35,8 @@ import { useWindowedRows, type WindowedRows } from '../../lib/useWindowedRows'
 import { UpgradeChip } from '../loot/UpgradeLine'
 import { outOfEraLabel } from '../mobs/dropEra'
 import { MOB_SCRAPED_AT } from '../mobs/mobSearch'
+import { zoneKey } from '../mobs/mobZone'
+import { zoneEntryFromAnySpelling } from '../../../../shared/zones'
 import type { MobTarget } from '../mobs/mobTarget'
 import { EraChip } from '../planner/PlannerChips'
 import { filterRows, zoneLootSummary, type ZoneLootRow, type ZoneOption } from './zoneLoot'
@@ -57,7 +59,10 @@ const FIXED_TABLE = { tableLayout: 'fixed' } as const
 function loadZone(): string {
   const stored = localStorage.getItem(ZONE_KEY) ?? ''
   if (stored === '') return ''
-  return zoneLootOptions().some((o) => o.zone === stored) ? stored : ''
+  // Matched by the table's identity, so a pick stored under an older spelling (`Cazic Thule`,
+  // before the option took the table's name) still lands on its zone.
+  const key = zoneKey(zoneEntryFromAnySpelling(stored)?.name ?? stored)
+  return zoneLootOptions().find((o) => o.zone === stored || o.key === key)?.zone ?? ''
 }
 
 /** The upgrades toggle's whole state, as one prop - the filter row already carries seven. */

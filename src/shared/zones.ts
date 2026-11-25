@@ -82,6 +82,11 @@ export interface ZoneEntry {
    * Mob-catalog zone spellings that the `zoneKey` fold CANNOT reach from this zone's own name —
    * i.e. where the two sources use a different NAME, not a different spelling. See
    * `catalogZonesFor`. Present only where the mapping was verified against real data.
+   *
+   * SINCE THE 2026-11-25 ZONE AUDIT it is the WIKI-side register as a whole: the item pages'
+   * `dropsfrom` headings and the quest pages' zones are the same wiki spelling the mob rows use,
+   * read through the same catalog index (`zoneShortNameFromCatalog`), so their verified
+   * spellings live here too, each with its evidence beside the row.
    */
   mobCatalogNames?: string[]
   /**
@@ -158,7 +163,8 @@ export const ZONES: readonly ZoneEntry[] = [
   { short: 'erudsxing', name: "Erud's Crossing", era: 'classic' },
   { short: 'erudnext', name: 'Erudin', era: 'classic' },
   { short: 'erudnint', name: 'Erudin Palace', era: 'classic' },
-  { short: 'everfrost', name: 'Everfrost Peaks', era: 'classic' },
+  // `Everfrost`: two item pages' drop headings; the stem itself, and no other zone carries the word.
+  { short: 'everfrost', name: 'Everfrost Peaks', mobCatalogNames: ['Everfrost'], era: 'classic' },
   { short: 'grobb', name: 'Grobb', era: 'classic' },
   { short: 'highpass', name: 'Highpass Hold', era: 'classic' },
   { short: 'innothule', name: 'Innothule Swamp', era: 'classic' },
@@ -231,15 +237,18 @@ export const ZONES: readonly ZoneEntry[] = [
     short: 'paw',
     name: 'The Lair of the Splitpaw',
     aliases: ['Splitpaw Lair', 'Infected Paw'],
-    mobCatalogNames: ['Splitpaw Lair', 'Infected Paw'],
+    // `Splitpaw`: three item pages' drop headings; all three mobs are catalog `Splitpaw Lair` rows.
+    mobCatalogNames: ['Splitpaw Lair', 'Infected Paw', 'Splitpaw'],
     era: 'classic'
   },
-  { short: 'lavastorm', name: 'The Lavastorm Mountains', era: 'classic' },
+  // `Lavastorm`: three item pages' drop headings — the stem's own word, no other zone carries it.
+  { short: 'lavastorm', name: 'The Lavastorm Mountains', mobCatalogNames: ['Lavastorm'], era: 'classic' },
   {
     short: 'nro',
     name: 'The Northern Desert of Ro',
     aliases: ['North Ro'],
-    mobCatalogNames: ['North Ro'],
+    // `Northern Ro`: a quest page's related zone (quests.json), the same place spelled short.
+    mobCatalogNames: ['North Ro', 'Northern Ro'],
     era: 'classic'
   },
   {
@@ -250,7 +259,8 @@ export const ZONES: readonly ZoneEntry[] = [
     mobCatalogNames: ['North Karana', 'Northern Karana', 'Northern Karana (35)'],
     era: 'classic'
   },
-  { short: 'oasis', name: 'The Oasis of Marr', era: 'classic' },
+  // `Oasis`: an item page's drop heading; the stem itself.
+  { short: 'oasis', name: 'The Oasis of Marr', mobCatalogNames: ['Oasis'], era: 'classic' },
   { short: 'oot', name: 'The Ocean of Tears', era: 'classic' },
   { short: 'fearplane', name: 'The Plane of Fear', era: 'classic' },
   { short: 'hateplane', name: 'The Plane of Hate', era: 'classic' }, // brewall only (hateplaneb is the revamp)
@@ -291,7 +301,8 @@ export const ZONES: readonly ZoneEntry[] = [
   { short: 'soltemple', name: 'The Temple of Solusek Ro', era: 'classic' },
   { short: 'tox', name: 'Toxxulia Forest', era: 'classic' }, // classic stem; `toxxulia` is the Live revamp
   { short: 'commons', name: 'West Commonlands', mobCatalogNames: ['WC'], era: 'classic' },
-  { short: 'freportw', name: 'West Freeport', mobCatalogNames: ['WFP'], era: 'classic' },
+  // `Western Freeport`: an item page's drop heading; its one mob is a catalog `West Freeport` row.
+  { short: 'freportw', name: 'West Freeport', mobCatalogNames: ['WFP', 'Western Freeport'], era: 'classic' },
 
   // --- 2. CLASSIC, not yet observed. Names from eqlwiki's table, corroborated by the catalog. ---
   // Four rows in this section carry NO era on purpose — they are not classic zones at all, they
@@ -303,16 +314,29 @@ export const ZONES: readonly ZoneEntry[] = [
   { short: 'barter', name: 'The Barter Hall' },
   { short: 'bazaar', name: 'The Bazaar' },
   { short: 'cauldron', name: "Dagnor's Cauldron", era: 'classic' },
-  { short: 'cazicthule', name: 'Cazic-Thule', era: 'classic' },
+  // The log says `You have entered Temple of Cazic-Thule.` (and `... 4 (Refined)` etc., 18 times
+  // on the owner's log), item pages say `Temple of Cazic-Thule` / `Temple of Cazic Thule`, and
+  // the mob catalog says `Cazic Thule` (29 rows) / `Cazic-Thule` (2) — which the fold cannot reach
+  // from the temple's name, so it is stated here. `Cazic-Thule` stays an alias for the old name.
+  {
+    short: 'cazicthule',
+    name: 'Temple of Cazic-Thule',
+    aliases: ['Cazic-Thule'],
+    mobCatalogNames: ['Cazic Thule'],
+    era: 'classic'
+  },
   { short: 'crushbone', name: 'Clan Crushbone', aliases: ['Crushbone'], era: 'classic' },
   { short: 'felwithea', name: 'North Felwithe', aliases: ['Northern Felwithe'], era: 'classic' },
   { short: 'felwitheb', name: 'South Felwithe', aliases: ['Southern Felwithe'], era: 'classic' },
   { short: 'gfaydark', name: 'The Greater Faydark', era: 'classic' },
   { short: 'guildlobby', name: 'The Guild Lobby' },
   { short: 'halas', name: 'Halas', era: 'classic' },
-  { short: 'highkeep', name: 'High Keep', aliases: ['HighKeep'], era: 'classic' },
+  // `Highpass Keep`: three item pages' drop headings; all three mobs are catalog `High Keep` rows.
+  // (Bare `Highpass` is NOT claimed: Highpass Hold and High Keep both answer to it.)
+  { short: 'highkeep', name: 'High Keep', aliases: ['HighKeep'], mobCatalogNames: ['Highpass Keep'], era: 'classic' },
   { short: 'kedge', name: 'Kedge Keep', era: 'classic' },
-  { short: 'kerraridge', name: 'Kerra Isle', aliases: ['Kerra Island'], era: 'classic' },
+  // `Kerra Ridge`: two item pages' drop headings — the stem's own name; both mobs are `Kerra Island`.
+  { short: 'kerraridge', name: 'Kerra Isle', aliases: ['Kerra Island'], mobCatalogNames: ['Kerra Ridge'], era: 'classic' },
   { short: 'lakerathe', name: 'Lake Rathetear', aliases: ['Lake Rathe'], era: 'classic' },
   { short: 'lfaydark', name: 'The Lesser Faydark', era: 'classic' },
   { short: 'beholder', name: 'Gorge of King Xorbb', aliases: ["Beholder's Maze"], era: 'classic' },
@@ -322,6 +346,8 @@ export const ZONES: readonly ZoneEntry[] = [
     short: 'mistmoore',
     name: 'Castle Mistmoore',
     aliases: ['Mistmoore Castle', 'The Castle of Mistmoore'],
+    // `Mistmoore`: three quest pages' related zone; no other zone carries the name.
+    mobCatalogNames: ['Mistmoore'],
     era: 'classic'
   },
   { short: 'neriakc', name: 'Neriak - Third Gate', era: 'classic' },
@@ -334,10 +360,13 @@ export const ZONES: readonly ZoneEntry[] = [
   // Catalog spells this place three ways: `RunnyEye Citadel` (36 rows) and `Runnyeye Citadel` (4)
   // both fold onto the alias; a bare `Runnyeye` (6 rows, incl. the goblin warlord line) reaches
   // neither the name nor the alias, so it is stated as knowledge rather than left to a matcher.
+  // The NAME is the log's: `You have entered The Liberated Citadel of Runnyeye.`, and the same
+  // character's `/who` row prints `ZONE: The Liberated Citadel of Runnyeye (runnyeye)` — the game
+  // naming the stem itself. `Clan RunnyEye` (the Live name) stays an alias.
   {
     short: 'runnyeye',
-    name: 'Clan RunnyEye',
-    aliases: ['Runnyeye Citadel'],
+    name: 'The Liberated Citadel of Runnyeye',
+    aliases: ['Clan RunnyEye', 'Runnyeye Citadel'],
     mobCatalogNames: ['Runnyeye'],
     era: 'classic'
   }, // brewall only
@@ -366,13 +395,15 @@ export const ZONES: readonly ZoneEntry[] = [
   { short: 'cabeast', name: 'Cabilis East', aliases: ['East Cabilis'], era: 'kunark' }, // in default set
   { short: 'cabwest', name: 'Cabilis West', aliases: ['West Cabilis'], era: 'kunark' }, // in default set
   { short: 'chardok', name: 'Chardok', era: 'kunark' },
-  { short: 'charasis', name: 'Howling Stones', era: 'kunark' },
+  // `Charasis`: the stem's own name, on an item page's drop heading (its mob: `Howling Stones`) and a quest page.
+  { short: 'charasis', name: 'Howling Stones', mobCatalogNames: ['Charasis'], era: 'kunark' },
   { short: 'citymist', name: 'City of Mist', era: 'kunark' },
   // Catalog says `Crypt of Dalnir` (26 rows) and a bare `Dalnir` (3 rows, the Diseased Wolf line);
   // the short form reaches the zone's own name through no fold, so it is stated here.
   { short: 'dalnir', name: 'Crypt of Dalnir', mobCatalogNames: ['Dalnir'], era: 'kunark' },
   { short: 'dreadlands', name: 'The Dreadlands', era: 'kunark' }, // in default set
-  { short: 'droga', name: 'Temple of Droga', era: 'kunark' },
+  // `Droga`: four item pages' drop headings; all four mobs are catalog `Temple of Droga` rows.
+  { short: 'droga', name: 'Temple of Droga', mobCatalogNames: ['Droga'], era: 'kunark' },
   { short: 'emeraldjungle', name: 'The Emerald Jungle', era: 'kunark' }, // in default set
   { short: 'fieldofbone', name: 'The Field of Bone', era: 'kunark' }, // in default set
   { short: 'firiona', name: 'Firiona Vie', era: 'kunark' }, // in default set
@@ -394,7 +425,8 @@ export const ZONES: readonly ZoneEntry[] = [
   { short: 'timorous', name: 'Timorous Deep', era: 'kunark' }, // in default set
   { short: 'trakanon', name: "Trakanon's Teeth", era: 'kunark' },
   { short: 'veeshan', name: "Veeshan's Peak", era: 'kunark' },
-  { short: 'warslikswood', name: "Warslik's Woods", aliases: ['Warsliks Woods'], era: 'kunark' },
+  // `Warsliks Wood`: four item pages' drop headings (singular); their mobs are `Warslik(')s Woods` rows.
+  { short: 'warslikswood', name: "Warslik's Woods", aliases: ['Warsliks Woods'], mobCatalogNames: ['Warsliks Wood'], era: 'kunark' },
 
   // --- 4. VELIOUS. Stems are brewall-only except where marked. ---
   // All `era: 'velious'` (December 2000; 1,679 mob-zone links). Sleeper's Tomb is the row that
@@ -413,7 +445,9 @@ export const ZONES: readonly ZoneEntry[] = [
   { short: 'necropolis', name: 'Dragon Necropolis', era: 'velious' },
   { short: 'sirens', name: "Siren's Grotto", era: 'velious' },
   { short: 'skyshrine', name: 'Skyshrine', era: 'velious' },
-  { short: 'sleeper', name: "Sleeper's Tomb", era: 'velious' },
+  // `Kerafyrm's Lair`: nine item pages' drop headings, and every one of the nine mobs is a catalog
+  // `Sleeper's Tomb` row (Kerafyrm sleeps there); also a quest page's related zone.
+  { short: 'sleeper', name: "Sleeper's Tomb", mobCatalogNames: ["Kerafyrm's Lair"], era: 'velious' },
   { short: 'templeveeshan', name: 'Temple of Veeshan', era: 'velious' },
   { short: 'thurgadina', name: 'Thurgadin', era: 'velious' }, // in default set
   { short: 'thurgadinb', name: 'Icewell Keep', era: 'velious' }, // in default set
@@ -596,7 +630,23 @@ function catalogIndex(): Map<string, ZoneEntry> {
 }
 
 export function zoneShortNameFromCatalog(name: string | undefined | null): ZoneShort | null {
+  return zoneEntryFromAnySpelling(name)?.short ?? null
+}
+
+/** The table row for ANY spelling — the log's, an alias, or a verified wiki spelling. */
+export function zoneEntryFromAnySpelling(name: string | undefined | null): ZoneEntry | null {
   const key = zoneKey(name)
   if (key === '') return null
-  return catalogIndex().get(key)?.short ?? null
+  return catalogIndex().get(key) ?? null
+}
+
+/**
+ * Every spelling the table knows for the zone a name resolves to: the name, its aliases and its
+ * wiki spellings. `[]` for a name the table does not carry. This is what makes a join ONE zone
+ * whichever authority spelled the input (the Zone Loot picker passes a catalog spelling, the log
+ * passes its own), where `catalogZonesFor` answers only from a log-side name.
+ */
+export function zoneSpellingsFor(name: string | undefined | null): string[] {
+  const e = zoneEntryFromAnySpelling(name)
+  return e ? [e.name, ...(e.aliases ?? []), ...(e.mobCatalogNames ?? [])] : []
 }

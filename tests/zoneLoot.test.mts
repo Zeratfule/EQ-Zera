@@ -61,16 +61,28 @@ const rowsFor = (zone: string, catalog: readonly MobEntry[] = CATALOG): ZoneLoot
 
 test('zoneOptions: two catalog spellings fold into ONE option, and the count counts MOBS', () => {
   const opts = zoneOptions(CATALOG)
-  const ct = opts.find((o) => o.key === 'cazic thule')
+  const ct = opts.find((o) => o.key === 'temple of cazic thule')
   assert.ok(ct, 'the folded Cazic Thule option is missing')
   // Four distinct mobs reach the key; `a temple guard` spells BOTH names and must count once.
   assert.equal(ct.mobs, 4)
-  assert.equal(ct.zone, 'Cazic Thule', 'the display name is the FIRST-SEEN spelling')
+  assert.equal(ct.zone, 'Temple of Cazic-Thule', "a zone the table carries is offered under the table's (the log's) name")
+})
+
+test('zoneOptions: a spelling the table does not carry keeps its FIRST-SEEN catalog spelling', () => {
+  const opts = zoneOptions([entry({ page: 'x1', name: 'a ghost', zones: ['Nowhere Vale'] }), entry({ page: 'x2', name: 'a wisp', zones: ['nowhere vale'] })])
+  assert.deepEqual(opts, [{ key: 'nowhere vale', zone: 'Nowhere Vale', mobs: 2 }])
+})
+
+test('zoneOptions: a verified rename merges into ONE option the log zone finds (The Hole is The Ruins of Old Paineel)', () => {
+  const opts = zoneOptions([entry({ page: 'h1', name: 'a hole mob', zones: ['The Hole'] }), entry({ page: 'h2', name: 'a ruins mob', zones: ['The Ruins of Old Paineel'] })])
+  assert.equal(opts.length, 1)
+  assert.equal(opts[0].zone, 'The Ruins of Old Paineel')
+  assert.equal(opts[0].mobs, 2)
 })
 
 test('zoneOptions: sorted by display name, and a blank zone is not an option', () => {
   const opts = zoneOptions([...CATALOG, entry({ page: 'm6', name: 'a nobody', level: '1', zones: ['', '   '] })])
-  assert.deepEqual(opts.map((o) => o.zone), ['Cazic Thule', 'Innothule Swamp'])
+  assert.deepEqual(opts.map((o) => o.zone), ['Innothule Swamp', 'Temple of Cazic-Thule'])
 })
 
 // =============================================================================
@@ -144,7 +156,7 @@ test('zoneLootSummary: mobs are DISTINCT pages, drops are rows, seen is a sum', 
 
 const REAL: MobEntry[] = (mobsJson as unknown as { mobs: MobEntry[] }).mobs
 
-test('zoneOptions over the REAL catalog: 189 zones, Cazic Thule folded to one 30-mob option', () => {
+test('zoneOptions over the REAL catalog: 159 zones, Cazic Thule folded to one 30-mob option', () => {
   const opts = zoneOptions(REAL)
   // 185 -> 186 on the 2026-10-07 rescrape, and the one new option is a SPELLING, not a place:
   // `The Lair of the Splitpaw` (one row, Nisch Mal Gnoll), which is `shared/zones.ts`'s own `paw`
@@ -156,10 +168,15 @@ test('zoneOptions over the REAL catalog: 189 zones, Cazic Thule folded to one 30
   // Undercrofts), -1 `Lake of Ill Omen.` (the wiki dropped the stray full stop, so it folds into
   // the real zone), and +1 WIKI TYPO: `a moss snake`'s page lists "Toxxulia Forest Lake Nerius"
   // with the comma missing, a one-mob option that is fixed on the wiki, never papered over here.
-  assert.equal(opts.length, 189, 'the committed catalog stopped yielding 189 folded zones')
-  // The corpus spells it `Cazic Thule` (28 rows) AND `Cazic-Thule` (2); the fold is why this is one
-  // option and not two, and 30 is the number the picker states beside it.
-  const ct = opts.find((o) => o.zone === 'Cazic Thule')
+  // 189 -> 159 on the 2026-11-25 zone audit, with no catalog change: the picker now resolves each
+  // spelling through `shared/zones.ts` first, so the table's VERIFIED renames merge into the
+  // table's name (EC/WC/EFP/WFP/BBM, the Karana/Ro/Guk families, The Hole, Splitpaw Lair + Infected
+  // Paw + The Lair of the Splitpaw, the three Runnyeye spellings, ...) - 41 duplicate options
+  // gone, 11 renamed to the log's name. Each merge is a row of that table, never a matcher.
+  assert.equal(opts.length, 159, 'the committed catalog stopped yielding 159 zones')
+  // The corpus spells it `Cazic Thule` (28 rows) AND `Cazic-Thule` (2); both resolve to the
+  // table's `Temple of Cazic-Thule` (the log's spelling), and 30 is the number the picker states.
+  const ct = opts.find((o) => o.zone === 'Temple of Cazic-Thule')
   assert.ok(ct, "the catalog no longer spells a zone 'Cazic Thule'")
   assert.equal(ct.mobs, 30)
   // Sorted by display name, so the reader can scan for a place they can already name.

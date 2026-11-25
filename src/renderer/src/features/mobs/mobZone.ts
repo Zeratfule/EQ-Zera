@@ -45,8 +45,9 @@
 // the Karana/Ro/Commonlands abbreviation families. That table now EXISTS — `src/shared/zones.ts`
 // (`catalogZonesFor`), where every row was verified by intersecting the mobs the live log
 // recorded slain in the zone against the catalog rows carrying the candidate spelling — so this
-// join consumes it. It is a UNION with the fold above, never a replacement: `catalogZonesFor`
-// returns `[]` both for an unknown zone and for the common case where the fold already suffices.
+// join consumes it. It is a UNION with the fold above, never a replacement: `zoneSpellingsFor`
+// (every name, alias and wiki spelling of the zone the input resolves to, from ANY authority's
+// spelling — 2026-11-25 zone audit) returns `[]` for an unknown zone.
 //
 // WHAT IT STILL DELIBERATELY DOES NOT DO: guess. There is no fuzzy or closest-match zone
 // matching here and there must never be one — the catalog carries a genuinely distinct
@@ -60,7 +61,7 @@ import type { MobEntry } from '@shared/types'
 // exists inside the vite build, while `tests/mobZone.test.mts` drives this module under the node
 // test runner. Same constraint, same reasoning as mobSearch.ts:33. (`shared/zones` is pure — its
 // own only import is type-only — so nothing follows it into the test process.)
-import { catalogZonesFor } from '../../../../shared/zones'
+import { zoneSpellingsFor } from '../../../../shared/zones'
 
 /** ` - Solo` / ` - Group 2` and everything after it — instance selection, never part of a name. */
 const SOLO_GROUP_RE = /\s*-\s*(Solo|Group)\b.*$/i
@@ -111,7 +112,7 @@ function sortLevel(entry: MobEntry): number | null {
  * folding is this function's job.
  *
  * A row matches on EITHER authority: the fold (`zoneKey` on both sides) or a VERIFIED rename
- * from the shared zone table (`catalogZonesFor`). Both sides of the alias comparison are folded
+ * from the shared zone table (`zoneSpellingsFor`). Both sides of the alias comparison are folded
  * too, so the catalog's ` (35)` / ` (37)` page-disambiguation suffixes come along. The two sets
  * are unioned in ONE pass over the catalog, so a row spelling both names ("The Hole" AND "The
  * Ruins of Old Paineel") is returned exactly once — dedupe is structural, not a post-pass.
@@ -125,7 +126,9 @@ export function mobsInZone(zoneRaw: string, catalog: MobEntry[]): MobEntry[] {
   if (key === '') return []
   // Empty for the vast majority of zones (the fold already reaches them); a Set so the inner
   // test stays O(1) across 7,866 rows.
-  const aliases = new Set(catalogZonesFor(zoneRaw).map(zoneKey).filter((k) => k !== ''))
+  // Every spelling the table knows for the zone, whichever authority spelled the input — so the
+  // Zone Loot picker's catalog spelling and the log's own name reach the same rows.
+  const aliases = new Set(zoneSpellingsFor(zoneRaw).map(zoneKey).filter((k) => k !== ''))
   // eslint-disable-next-line eqc/no-domain-munging -- JOS-459 cutover ledger item 8: MobEntry comes from a corpus still bundled in the renderer (mobs/posky/bosses JSON). Moves behind knowledge queries when that surface cuts over.
   const rows = catalog.filter((m) =>
     m.zones?.some((z) => {
