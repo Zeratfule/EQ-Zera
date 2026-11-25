@@ -24,6 +24,9 @@
 // never the authority — `questProgress` re-derives completion from the evidence every time — so a
 // pin that says done about a quest the evidence no longer supports simply shows the note.
 
+// RELATIVE value import: node-tested pure module.
+import { STEPS_SIG_RE } from './questStepsSig'
+
 /** One tracked quest. Keyed by the wiki PAGE title, which is what the whole catalog is keyed by. */
 export interface QuestPin {
   page: string
@@ -32,6 +35,11 @@ export interface QuestPin {
   ticks: number[]
   /** ts of the completion the player or the log recorded */
   doneAt?: number
+  /**
+   * The signature of the step list `ticks` were made on (shared/questStepsSig.ts). A list that has
+   * changed since drops the hand ticks on read; absent on a pin stored before signatures.
+   */
+  stepsSig?: string
 }
 
 export type QuestPins = QuestPin[]
@@ -83,6 +91,7 @@ function readPin(value: unknown): QuestPin | null {
   // recorded done" to every reader, so writing an explicit `undefined` in would change a stored
   // file's bytes for no change in meaning — and this function is the READ path too.
   if (doneAt !== undefined) pin.doneAt = doneAt
+  if (typeof value.stepsSig === 'string' && STEPS_SIG_RE.test(value.stepsSig)) pin.stepsSig = value.stepsSig
   return pin
 }
 

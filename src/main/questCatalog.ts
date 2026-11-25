@@ -60,3 +60,13 @@ export function questByPage(page: string): QuestEntry | undefined {
   const idx = pageIndex()
   return idx.exact.get(title) ?? idx.lower.get(title.toLowerCase())
 }
+
+/**
+ * The step list the tracker's hand ticks are judged against (shared/questStepsSig.ts): the EXACT
+ * page only, because a pin is stored under the catalog's own title. Undefined for a page the catalog
+ * does not have, which the reconcile leaves as stored.
+ */
+export function questStepsOf(page: string): readonly string[] | undefined {
+  const q = pageIndex().exact.get(page)
+  return q === undefined ? undefined : (q.steps ?? [])
+}
