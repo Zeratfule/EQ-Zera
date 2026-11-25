@@ -450,4 +450,11 @@ export interface StoreShape {
    * own, not settings.
    */
   patchNotes?: { enabled: boolean }
+  /**
+   * GAME-FILE HEALTH (src/main/gameFileHealth/, shared/gameFileHealth.ts): the notices the player
+   * closed (`dismissed`, keyed by reader + file version + layout) and the layouts already filed as
+   * an error report (`reported`, keyed by reader + layout). ADDITIVE + OPTIONAL: absent reads as
+   * two empty lists; `storeGameFileHealth.ts` drops anything that is not a short string.
+   */
+  gameFileHealth?: { dismissed: string[]; reported: string[] }
 }

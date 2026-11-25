@@ -15,6 +15,7 @@
 import { readFileSync } from 'node:fs'
 import { parentPort, workerData } from 'node:worker_threads'
 import { parseSpellsUs } from './resist/spellsUsParse'
+import { caretLayout, type RowLayout } from '../shared/gameFileDetect'
 import type { SpellResistTable } from '../shared/resistTypes'
 
 export interface ResistTableWorkerInit {
@@ -24,6 +25,8 @@ export interface ResistTableWorkerInit {
 export interface ResistTableWorkerReply {
   ok: boolean
   table?: SpellResistTable
+  /** The file's row widths, measured on the same text, for the game-file health check. */
+  layout?: RowLayout
   error?: string
 }
 
@@ -32,8 +35,8 @@ const port = parentPort
 
 let reply: ResistTableWorkerReply
 try {
-  const table = parseSpellsUs(readFileSync(init.path, 'latin1'))
-  reply = { ok: true, table }
+  const text = readFileSync(init.path, 'latin1')
+  reply = { ok: true, table: parseSpellsUs(text), layout: caretLayout(text) }
 } catch (err) {
   reply = { ok: false, error: err instanceof Error ? err.message : String(err) }
 }

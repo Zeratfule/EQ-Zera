@@ -310,6 +310,15 @@ const INSERTED_BEFORE = 77
  */
 const LAYOUT_2026_11B = LAYOUT_2026_11 + 16
 
+/**
+ * Every row width `realign` accepts, for the game-file health check (shared/gameFileDetect.ts):
+ * a file whose rows are mostly some OTHER width is a layout this build has never measured, and the
+ * app says so instead of serving an empty table. The engine's own reader
+ * (engine/crates/fold/src/spells_us/layout.rs `realign`) accepts exactly these too, pinned by
+ * tests/spellsUsLayoutParity.test.mts. A new layout is added here, there, and in that test.
+ */
+export const KNOWN_ROW_LENGTHS: ReadonlySet<number> = new Set([F_SLOTS, LAYOUT_2026_08, LAYOUT_2026_11, LAYOUT_2026_11B])
+
 export function realign(f: string[]): string[] | null {
   if (f.length === LAYOUT_2026_08 || f.length === F_SLOTS) return f
   if (f.length === LAYOUT_2026_11) return [...f.slice(0, INSERTED_BEFORE), ...f.slice(INSERTED_BEFORE + 1)]

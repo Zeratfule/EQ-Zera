@@ -33,6 +33,7 @@ import type { JSX } from 'react'
 import { Box } from '@mui/material'
 import GearAreaTabs from './GearAreaTabs'
 import { EngineLaunchBanner } from './EngineLaunchBanner'
+import { GameFileNotice } from '../features/gamefiles/GameFileNotice'
 import { isGearAreaView, type View } from '../appViews'
 // THE PER-VIEW COMMIT COUNTER (JOS-513). Dev-only; the gate below is spelled inline because that
 // is the form vite folds at transform time — see lib/renderMeter.tsx's header for the measurement.
@@ -56,6 +57,10 @@ export default function MainColumn({
       sx={{ flexGrow: 1, minWidth: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
     >
       <EngineLaunchBanner onReport={onReport} />
+      {/* A game patch changed a file this build cannot read (EQ Zera, 2026-11-25). A portalled
+          Snackbar, so it takes no layout here; it lives in the column rather than in App because
+          App is at its factoring ceiling and the notice is a statement about the content area. */}
+      <GameFileNotice />
       {isGearAreaView(view) && <GearAreaTabs view={view} onSelect={onSelect} />}
       <Box data-testid="app-content" sx={{ flexGrow: 1, overflow: 'auto', p: 2 }}>
         {/* THE VIEWCONTENT SEAM (JOS-513). `children` IS `App`'s `ViewContent`, so this is that

@@ -292,7 +292,7 @@
       "file": "crates/fold/src/spells_us.rs",
       "metric": "file-lines",
       "name": "",
-      "value": 848
+      "value": 846
     },
     {
       "file": "crates/knowledge/src/lib.rs",
