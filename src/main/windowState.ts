@@ -41,9 +41,9 @@
 // stored the rectangle the PREVIOUS launch was granted (measured: 1040x720 chosen, 1041x721 shown,
 // 1045x725 the launch after that) and the clamp for a monitor that went away was written down as
 // if the user had asked for it. That is the JOS-187 promise breaking on 125%/150%/225% scaling,
-// which is most Windows laptops. The applied-bounds marker below is what answers it, and the size
-// of its envelope (`APPLIED_SLACK_PX`) is the whole fix: it must be wide enough to cover the
-// rounding a placement of ours drags behind it, and no wider.
+// which is most Windows laptops. The applied-bounds marker below is what answers it, and the shape
+// of its envelope (`placementEnvelope`) is the whole fix: it must be wide enough to cover the
+// rounding a placement of ours drags behind it on the display it lands on, and no wider.
 //
 // WHAT IS NOT HERE. Where the remembered rectangle may go on the screens that exist NOW is
 // `displayFit.ts` + `windowPlacement.ts` (JOS-187), unchanged and shared with the overlays; this
@@ -137,13 +137,10 @@ export function windowStateOf(w: WindowLike): WindowBounds | null {
 /**
  * Do two states describe the same window position, to within `slackPx`?
  *
- * TWO CALLERS, TWO SLACKS, and the difference is deliberate. The debounced saver compares EXACTLY
- * (slack 0) — its question is "is there anything new to write". The applied-bounds marker compares
- * with the DPI-rounding envelope (`APPLIED_SLACK_PX`), because `setBounds` is not an identity: on
- * a display with a fractional scale factor the value round-trips through physical pixels and comes
- * back a few larger, and that difference is the ROUNDING, not a position anyone is expressing.
- * (That is the overlays' own rule — `sameSpot`, JOS-187 — applied to the window that now has the
- * same problem, at the size this display actually measured.)
+ * This is the debounced saver's EXACT question (slack 0): "is there anything new to write". The
+ * applied-bounds marker asks a different one — "is the window still where WE put it, give or take
+ * the display's rounding" — and that one is `withinPlacementEnvelope`, because the rounding is
+ * one-sided (a placement only ever comes back LARGER) and a symmetric slack cannot say so.
  *
  * `maximized` is compared as a FACT, never with slack: it is the half of the state that a
  * rectangle comparison cannot see, and it is exactly the transition (maximize a window without
@@ -179,30 +176,87 @@ const armWithTimeout: ArmTimer = (fire, delayMs) => {
 
 /**
  * THE DPI-ROUNDING ENVELOPE: how far a window may be from where we PUT it and still be counted as
- * sitting exactly there.
+ * sitting exactly there. One-sided, and DERIVED FROM THE SCALE FACTOR OF THE DISPLAY IT LANDS ON.
  *
- * One pixel was the first answer and it is wrong on any display whose scale factor is not a whole
- * number. MEASURED on the owner's machine (primary display `scaleFactor: 2.25`, work area
- * 1707x912 DIP), with a bare Electron window and nothing else running:
+ * A fixed four pixels was the second answer (one was the first), sized from a handful of
+ * placements on one display, and it was already too narrow. MEASURED with Electron 43.8.12 (43.2.0
+ * differs only in where the worst cases fall): the main window's own shape — frameless, 900x600
+ * minimum — constructed ~1,500 times per scale across six sizes and a grid of positions, with
+ * `--force-device-scale-factor` standing in for the displays this machine does not have (forced
+ * 2.25 reproduces the owner's real 2.25 display exactly). WORST GROWTH of width or height, in DIP:
  *
- *   setBounds  720x260 -> 720x260     setBounds 1440x520 -> 1441x520
- *   setBounds 1040x720 -> 1040x720    setBounds 1280x860 -> 1282x860
- *   setBounds  798x300 -> 799x300     setMinimumSize(140,90)+setBounds(40x40) -> 140x92
- *   new BrowserWindow(720x260)  -> getBounds 724x263   (the CONSTRUCTOR rounds outward)
- *   new BrowserWindow(1041x721) -> getBounds 1045x725
+ *   1.0 -> 0    1.25 -> 8    1.5 -> 5    1.75 -> 7    2.0 -> 1
+ *   2.25 -> 8   2.5  -> 4    2.75 -> 7   3.0  -> 0
  *
- * Four pixels per edge covers every one of those, and the constructor — which rounds outward, and
- * is the placement that matters here because it is the one a RESTORE makes — is the worst case at
- * +4. So four it is: wide enough that the rounding behind our own placement is never mistaken for
- * the user's gesture, narrow enough that it is still a rounding error and not a move.
+ * In every one of ~13,000 placements the POSITION came back exact and the size never came back
+ * SMALLER. So the error is not proportional to the scale factor (3.0 is as exact as 1.0); it
+ * follows the factor's fractional STEP — whole, half or quarter — which is what `scaleStep` reads.
+ * The envelope is therefore:
  *
- * WHAT IT COSTS, stated rather than hidden: a user whose FIRST gesture after a launch nudges the
- * window by four pixels or less is not recorded. The marker is dropped the moment the window
- * reports anything outside the envelope, so this is one four-pixel nudge on a fresh launch and
- * nothing after it — against a store that otherwise drifts on every single launch, on most of the
- * laptops this app runs on.
+ *   grow   min(ROUNDING_GROWTH_CAP_PX, 2*step + 3):  whole 5 · half 7 · quarter (and unknown) 9
+ *   shrink 1   (never measured; one DIP of margin for a conversion nobody has seen)
+ *   move   2   (never measured; a one-DIP origin rounding on a secondary display, doubled)
+ *
+ * THE BOUNDARY, stated exactly because it is the user's half of the bargain: at EVERY scale
+ * factor, a gesture that grows the window by 10 DIP or more on either axis, shrinks it by 2 or
+ * more, or moves it by 3 or more is the USER'S, and is recorded. Smaller ones are absorbed only
+ * while the marker stands — the first geometry report after the app placed the window — and the
+ * marker is dropped the moment anything outside the envelope arrives. The cap is what holds the
+ * 10-DIP promise on a display whose step was not measured (Windows' custom scaling, say 110%),
+ * where the envelope is the widest one rather than a guess. Pinned: tests/windowState.test.mts.
  */
-const APPLIED_SLACK_PX = 4
+export interface PlacementEnvelope {
+  /** Largest growth of width or height, in DIP, that still counts as our own placement. */
+  readonly grow: number
+  /** Largest SHRINK of width or height that still counts (the rounding never shrinks). */
+  readonly shrink: number
+  /** Largest move of x or y that still counts (the rounding never moves). */
+  readonly move: number
+}
+
+/** No rounding growth above this is ever absorbed — the "a 10-DIP resize is always the user's" line. */
+export const ROUNDING_GROWTH_CAP_PX = 9
+
+/**
+ * The scale factor's rounding STEP: 1 for a whole factor, 2 for a half, 4 for a quarter — the
+ * smallest `d` with `scaleFactor * d` whole. `null` when there is no usable factor or it is off the
+ * quarter grid (Windows' custom scaling), which the envelope reads as "widest".
+ */
+export function scaleStep(scaleFactor: number | null | undefined): 1 | 2 | 4 | null {
+  if (typeof scaleFactor !== 'number' || !Number.isFinite(scaleFactor) || scaleFactor <= 0) return null
+  for (const d of [1, 2, 4] as const) {
+    const scaled = scaleFactor * d
+    if (Math.abs(scaled - Math.round(scaled)) < 1e-6) return d
+  }
+  return null
+}
+
+/** The envelope for a placement on a display with this scale factor. See the table above. */
+export function placementEnvelope(scaleFactor: number | null | undefined): PlacementEnvelope {
+  const step = scaleStep(scaleFactor)
+  const grow = step === null ? ROUNDING_GROWTH_CAP_PX : Math.min(ROUNDING_GROWTH_CAP_PX, 2 * step + 3)
+  return { grow, shrink: 1, move: 2 }
+}
+
+/**
+ * Is the window that is SHOWN still the one we PLACED, given the display's rounding? `maximized`
+ * is a FACT, compared exactly: maximizing without moving is a change, whatever the envelope.
+ */
+export function withinPlacementEnvelope(
+  placed: WindowBounds | null,
+  shown: WindowBounds | null,
+  envelope: PlacementEnvelope
+): boolean {
+  if (!placed || !shown) return false
+  if ((placed.maximized === true) !== (shown.maximized === true)) return false
+  if (Math.abs(shown.x - placed.x) > envelope.move || Math.abs(shown.y - placed.y) > envelope.move) {
+    return false
+  }
+  return (['width', 'height'] as const).every((k) => {
+    const delta = shown[k] - placed[k]
+    return delta <= envelope.grow && delta >= -envelope.shrink
+  })
+}
 
 /** A trailing debounce over one store key: `queue` whenever it might have changed, `flush` on the
  *  way out. */
@@ -221,8 +275,11 @@ export interface WindowStateSaver {
    * and plugging the monitor back in returns a window that has forgotten it ever lived there. The
    * declaration is dropped the moment the window reports anything else, so a user who drags the
    * window somewhere new is recorded immediately.
+   *
+   * `scaleFactor` is that of the display the rectangle lands on, and sizes the envelope
+   * (`placementEnvelope`). Absent or unknown means the widest envelope, never the narrowest.
    */
-  applied(rect: Rect | undefined, maximized: boolean): void
+  applied(rect: Rect | undefined, maximized: boolean, scaleFactor?: number | null): void
 }
 
 /**
@@ -242,6 +299,7 @@ export function createWindowStateSaver(
   let pending: WindowBounds | null = null
   let written: WindowBounds | null = null
   let applied: WindowBounds | null = null
+  let envelope: PlacementEnvelope = placementEnvelope(null)
 
   const write = (): void => {
     cancel = null
@@ -256,7 +314,7 @@ export function createWindowStateSaver(
     queue(state: WindowBounds): void {
       // Still exactly where the app put it: that is our placement, not the user's, and it must
       // never overwrite the rectangle they chose (see `applied`).
-      if (sameWindowState(applied, state, APPLIED_SLACK_PX)) return
+      if (withinPlacementEnvelope(applied, state, envelope)) return
       applied = null
       // Nothing new to say — compared against what is already on its way to disk when there is
       // one, and against the last thing written otherwise.
@@ -269,8 +327,9 @@ export function createWindowStateSaver(
       cancel?.()
       write()
     },
-    applied(rect: Rect | undefined, maximized: boolean): void {
+    applied(rect: Rect | undefined, maximized: boolean, scaleFactor?: number | null): void {
       applied = rect ? normalizeWindowState({ ...rect, maximized }) ?? null : null
+      envelope = placementEnvelope(scaleFactor)
     }
   }
 }

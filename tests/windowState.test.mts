@@ -28,10 +28,14 @@ import assert from 'node:assert/strict'
 import {
   DEFAULT_MAIN_WINDOW_SIZE,
   SAVE_DEBOUNCE_MS,
+  ROUNDING_GROWTH_CAP_PX,
   createWindowStateSaver,
   normalizeWindowState,
+  placementEnvelope,
   sameWindowState,
+  scaleStep,
   windowStateOf,
+  withinPlacementEnvelope,
   type ArmTimer,
   type WindowBounds,
   type WindowLike
@@ -242,4 +246,140 @@ test('a move after a write arms the debounce again', () => {
   assert.equal(timer.armed(), 2)
   timer.fire()
   assert.deepEqual(writes, [CHOSEN, { ...CHOSEN, y: 400 }])
+})
+
+// ---- the applied-bounds marker: the rounding envelope, per display --------------------------
+//
+// The envelope a placement of OURS may come back inside (windowState.ts `placementEnvelope`).
+// MEASURED_WORST is the worst constructor growth of width or height, in DIP, for the main
+// window's shape on Electron 43.8.12 (~1,500 placements per scale; position never moved and the
+// size never shrank). Every scale the app is likely to meet is listed, and the two halves of the
+// rule are pinned at each: our worst rounding is absorbed, and a user's 10-DIP gesture is not.
+
+const MEASURED_WORST: readonly (readonly [scale: number, worstGrowth: number])[] = [
+  [1.0, 0],
+  [1.25, 8],
+  [1.5, 5],
+  [1.75, 7],
+  [2.0, 1],
+  [2.25, 8],
+  [2.5, 4],
+  [2.75, 7],
+  [3.0, 0]
+]
+
+/** The user's half of the bargain, stated in windowState.ts: always recorded, at every scale. */
+const USER_GROWS_PX = 10
+const USER_SHRINKS_PX = 2
+const USER_MOVES_PX = 3
+
+test('the rounding step is read from the scale factor: whole, half, quarter — or unknown', () => {
+  assert.equal(scaleStep(1), 1)
+  assert.equal(scaleStep(2), 1)
+  assert.equal(scaleStep(3), 1)
+  assert.equal(scaleStep(1.5), 2)
+  assert.equal(scaleStep(2.5), 2)
+  assert.equal(scaleStep(1.25), 4)
+  assert.equal(scaleStep(2.25), 4)
+  assert.equal(scaleStep(1.75), 4)
+  assert.equal(scaleStep(1.1), null, "Windows' custom scaling is off the quarter grid")
+  for (const bad of [undefined, null, 0, -1, Number.NaN, Number.POSITIVE_INFINITY]) {
+    assert.equal(scaleStep(bad), null, String(bad))
+  }
+})
+
+test('the envelope: whole 5 · half 7 · quarter 9 · unknown 9, and never wider than the cap', () => {
+  assert.deepEqual(placementEnvelope(1), { grow: 5, shrink: 1, move: 2 })
+  assert.deepEqual(placementEnvelope(1.5), { grow: 7, shrink: 1, move: 2 })
+  assert.deepEqual(placementEnvelope(2.25), { grow: 9, shrink: 1, move: 2 })
+  assert.deepEqual(placementEnvelope(1.1), { grow: 9, shrink: 1, move: 2 })
+  assert.deepEqual(placementEnvelope(null), { grow: 9, shrink: 1, move: 2 }, 'unknown is the WIDEST')
+  for (const s of [0.5, 1, 1.1, 1.25, 1.5, 3.5, 4, 5]) {
+    assert.ok(placementEnvelope(s).grow <= ROUNDING_GROWTH_CAP_PX, String(s))
+  }
+  assert.ok(ROUNDING_GROWTH_CAP_PX < USER_GROWS_PX, 'the cap sits below the user boundary')
+})
+
+for (const [scale, worst] of MEASURED_WORST) {
+  test(`at ${String(scale)}x our worst measured rounding (+${String(worst)}) is ours, and a user's gesture is theirs`, () => {
+    const env = placementEnvelope(scale)
+    const placed = { ...CHOSEN }
+    // OUR placement, at its measured worst, on either axis or both: still ours.
+    assert.ok(withinPlacementEnvelope(placed, { ...placed, width: placed.width + worst }, env))
+    assert.ok(withinPlacementEnvelope(placed, { ...placed, height: placed.height + worst }, env))
+    assert.ok(
+      withinPlacementEnvelope(placed, { ...placed, width: placed.width + worst, height: placed.height + worst }, env)
+    )
+    assert.ok(worst < env.grow, `at least one DIP of margin over the measurement (envelope ${String(env.grow)})`)
+    // The USER: 10 DIP bigger, 2 smaller or 3 moved, on any one axis, is a gesture to record.
+    for (const k of ['width', 'height'] as const) {
+      assert.equal(withinPlacementEnvelope(placed, { ...placed, [k]: placed[k] + USER_GROWS_PX }, env), false, `${k} +10`)
+      assert.equal(withinPlacementEnvelope(placed, { ...placed, [k]: placed[k] - USER_SHRINKS_PX }, env), false, `${k} -2`)
+    }
+    for (const k of ['x', 'y'] as const) {
+      assert.equal(withinPlacementEnvelope(placed, { ...placed, [k]: placed[k] + USER_MOVES_PX }, env), false, `${k} +3`)
+      assert.equal(withinPlacementEnvelope(placed, { ...placed, [k]: placed[k] - USER_MOVES_PX }, env), false, `${k} -3`)
+    }
+  })
+}
+
+test('the envelope is one-sided: the rounding only ever GROWS a window, so a shrink is a gesture', () => {
+  const env = placementEnvelope(2.25)
+  assert.ok(withinPlacementEnvelope(CHOSEN, { ...CHOSEN, width: CHOSEN.width + 9 }, env))
+  assert.equal(withinPlacementEnvelope(CHOSEN, { ...CHOSEN, width: CHOSEN.width - 9 }, env), false)
+  assert.ok(withinPlacementEnvelope(CHOSEN, { ...CHOSEN, width: CHOSEN.width - 1 }, env), 'one DIP of margin')
+})
+
+test('maximized stays a FACT inside the envelope, and nothing matches nothing', () => {
+  const env = placementEnvelope(2.25)
+  assert.equal(withinPlacementEnvelope(CHOSEN, { ...CHOSEN, maximized: true }, env), false)
+  assert.equal(withinPlacementEnvelope(null, CHOSEN, env), false)
+  assert.equal(withinPlacementEnvelope(CHOSEN, null, env), false)
+})
+
+test('THE LOST MONITOR at 2.25x: our clamp, rounded +6 by the display, is never written down', () => {
+  // window-bounds.e2e's launch 3 on Electron 43.8.12: placed 391,96 1040x720, shown 1046x722 —
+  // outside the old fixed four pixels, so the clamp overwrote the remembered monitor.
+  const writes: WindowBounds[] = []
+  const timer = fakeTimer()
+  const saver = createWindowStateSaver((s) => writes.push(s), { arm: timer.arm })
+  const fitted = { x: 391, y: 96, width: 1040, height: 720 }
+  saver.applied(fitted, false, 2.25)
+  saver.queue({ x: 391, y: 96, width: 1046, height: 722 })
+  saver.flush()
+  assert.deepEqual(writes, [], 'the rounded clamp is the app talking, not the user')
+})
+
+test("…and the user's first real resize after it IS written, and drops the marker for good", () => {
+  const writes: WindowBounds[] = []
+  const timer = fakeTimer()
+  const saver = createWindowStateSaver((s) => writes.push(s), { arm: timer.arm })
+  const fitted = { x: 391, y: 96, width: 1040, height: 720 }
+  saver.applied(fitted, false, 2.25)
+  const resized = { x: 391, y: 96, width: 1050, height: 720 }
+  saver.queue(resized)
+  saver.flush()
+  assert.deepEqual(writes, [resized], 'ten DIP wider is a gesture, at the widest envelope')
+  // The marker is gone: even a state back inside the old envelope is now the user's.
+  saver.queue({ ...fitted, width: 1044 })
+  saver.flush()
+  assert.deepEqual(writes, [resized, { ...fitted, width: 1044 }])
+})
+
+test('a whole-scale display keeps the tight envelope: 6 DIP of growth at 1.0x is the user', () => {
+  const writes: WindowBounds[] = []
+  const saver = createWindowStateSaver((s) => writes.push(s), { arm: fakeTimer().arm })
+  saver.applied(CHOSEN, false, 1)
+  saver.queue({ ...CHOSEN, width: CHOSEN.width + 6 })
+  saver.flush()
+  assert.deepEqual(writes, [{ ...CHOSEN, width: CHOSEN.width + 6 }])
+})
+
+test('a placement declared with no scale factor gets the widest envelope, not the narrowest', () => {
+  const writes: WindowBounds[] = []
+  const saver = createWindowStateSaver((s) => writes.push(s), { arm: fakeTimer().arm })
+  saver.applied(CHOSEN, false)
+  saver.queue({ ...CHOSEN, width: CHOSEN.width + 8, height: CHOSEN.height + 8 })
+  saver.flush()
+  assert.deepEqual(writes, [])
 })

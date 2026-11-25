@@ -52,7 +52,7 @@ import { installOverlaySnap } from './overlaySnapDrag'
 // consulted here any more: both questions this file asks of it — where an overlay opens, where the
 // main window opens — are decided in windowPlacement.ts over the pure geometry in displayFit.ts,
 // so the policy is testable and both windows can never drift into two answers.
-import { mainWindowBounds } from './windowPlacement'
+import { mainWindowBounds, scaleFactorFor } from './windowPlacement'
 import { allowedExternalUrl, isInternalPageUrl } from './security'
 // WHAT THE X MEANS (JOS-139). One predicate, asked FIRST by the main window's `close` handler
 // below: it answers whether this close is really a hide to the tray, and does the hiding itself.
@@ -358,8 +358,9 @@ export function createMainWindow(): void {
   const bounds = mainWindowBounds(stored)
   // What we are about to apply, so the first save cannot mistake it for the user's own choice. An
   // OS-placed first launch declares nothing: it has no remembered rectangle to protect, and
-  // wherever it lands is worth writing down.
-  declareWindowPlacement(bounds, stored?.maximized === true)
+  // wherever it lands is worth writing down. The scale factor of the display it lands on sizes the
+  // rounding envelope (windowState.ts `placementEnvelope`).
+  declareWindowPlacement(bounds, stored?.maximized === true, bounds ? scaleFactorFor(bounds) : null)
   mainWindow = new BrowserWindow({
     // No remembered state means TODAY'S DEFAULT, exactly: the size a fresh install has always had,
     // and no position at all — a first launch is placed by the OS, as it always was.
