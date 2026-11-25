@@ -97,6 +97,8 @@ export function MapTargetMarker({ target, vp }: { target: MapAnchor & { loc: Non
  * that is also the layer's switch. Drawn only when there is something to say.
  */
 export function MapQuestLegend(props: {
+  /** the map's name when the target's point lies outside it, else null */
+  offMap: string | null
   target: MapAnchor | null
   onDismiss: () => void
   backLabel: string | null
@@ -106,7 +108,7 @@ export function MapQuestLegend(props: {
   questCount: number
   onTogglePins: () => void
 }): JSX.Element | null {
-  const { target, onDismiss, backLabel, onBack, pinsOn, pinCount, questCount, onTogglePins } = props
+  const { offMap, target, onDismiss, backLabel, onBack, pinsOn, pinCount, questCount, onTogglePins } = props
   if (target === null && questCount === 0) return null
   return (
     <Stack
@@ -119,14 +121,15 @@ export function MapQuestLegend(props: {
         e.stopPropagation()
       }}
     >
-      {target !== null && <TargetCard target={target} onDismiss={onDismiss} backLabel={backLabel} onBack={onBack} />}
+      {target !== null && <TargetCard target={target} offMap={offMap} onDismiss={onDismiss} backLabel={backLabel} onBack={onBack} />}
       {questCount > 0 && <PinsToggle on={pinsOn} count={pinCount} onToggle={onTogglePins} />}
     </Stack>
   )
 }
 
 /** What the target is, with the way Back (naming where it goes) and the dismiss. */
-function TargetCard({ target, onDismiss, backLabel, onBack }: { target: MapAnchor; onDismiss: () => void; backLabel: string | null; onBack: () => void }): JSX.Element {
+function TargetCard(props: { target: MapAnchor; offMap: string | null; onDismiss: () => void; backLabel: string | null; onBack: () => void }): JSX.Element {
+  const { target, offMap, onDismiss, backLabel, onBack } = props
   return (
     <Box
       data-testid="maps-target-banner"
@@ -143,6 +146,11 @@ function TargetCard({ target, onDismiss, backLabel, onBack }: { target: MapAncho
         {target.label}
         {target.loc ? ` ${fmt(target.loc)}` : ''}
       </Typography>
+      {offMap !== null && (
+        <Typography variant="caption" color="warning.main" noWrap data-testid="maps-target-offmap" sx={{ minWidth: 0 }}>
+          - outside the {offMap} map, the wiki may be wrong
+        </Typography>
+      )}
       <Tooltip title="Clear this mark">
         <IconButton size="small" data-testid="maps-target-dismiss" aria-label="Clear this mark" onClick={onDismiss} sx={{ p: 0.25 }}>
           <CloseIcon sx={{ fontSize: 16 }} />

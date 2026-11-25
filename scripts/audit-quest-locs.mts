@@ -11,6 +11,7 @@ import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import type { MobData, QuestData, QuestEntry } from '../src/shared/types'
 import { buildMobIndex, questLocations, type MobIndex, type QuestLocChip, type QuestLocations } from '../src/shared/questLocations'
+import { SAME_POINT, zonesNamed } from '../src/shared/questLocZones'
 
 const DATA = join(import.meta.dirname, '..', 'src', 'renderer', 'src', 'data', 'eqlegends')
 const quests = (JSON.parse(readFileSync(join(DATA, 'quests.json'), 'utf8')) as QuestData).quests
@@ -22,15 +23,18 @@ const fmt = (l: { ns: number; ew: number; z?: number }): string => `(${[l.ns, l.
 
 /** The prefix rules, in order: the first `why` pattern that matches names the rule. */
 const RULES: [RegExp, string][] = [
+  [/but the bestiary puts/, 'REFUSED: another zone’s mob stands at this point'],
+  [/own page puts them at this point/, 'a named mob’s own point picks the zone'],
   [/but the point lies outside/, "VETO: point outside the zone's known spread"],
+  [/but its NPC's page says/, 'REFUSED: named zone vs the linked NPC’s own zone'],
   [/^the \{\{Loc\}\} template says/, '{{Loc}} zone sharpened by the words'],
   [/^the \{\{Loc\}\}/, '{{Loc}} template zone'],
-  [/already left/, 'start zone refused: the walkthrough moved on'],
+  [/the walkthrough was last in/, 'trail zone (step names no zone; last zone entered)'],
   [/^the step names no zone/, 'quest start zone (step names no zone)'],
   [/ says .*; its NPC lives in/, 'city name + NPC zone inside it'],
   [/names \d+ zones; its NPC lives in/, 'several zones, the linked NPC picks one'],
   [/links NPCs in/, 'linked NPCs in different zones'],
-  [/mentions .*, not the start zone/, 'start zone refused: the step mentions another zone'],
+  [/^the step mentions /, 'fallback refused: the step mentions another zone'],
   [/^the sentence mentions/, 'refused: the sentence mentions another zone'],
   [/linked in the (sentence|clause)/, 'NPC linked in the clause/sentence'],
   [/linked in the step/, 'NPC linked in the step'],
@@ -87,11 +91,49 @@ function auditSteps(q: QuestEntry, locs: QuestLocations): void {
   })
 }
 
+/**
+ * THE CROSS-CHECKS (review of 4b66753). (1) Every quest coordinate that got a map, against the
+ * bestiary: a mob of ANOTHER zone standing within SAME_POINT units while none of the chosen zone
+ * does is a conflict. (2) Every coordinate placed by the quest's START zone, against the zones its
+ * earlier steps name at all: a different zone named earlier is a fallback worth reading.
+ */
+const conflicts: string[] = []
+const fallbackDoubts: string[] = []
+const coincidences: string[] = []
+
+function crossChecks(q: QuestEntry, locs: QuestLocations): void {
+  locs.steps.forEach((chips, i) => {
+    for (const c of chips) {
+      if (!c.sources.includes('quest') || c.zone === undefined || c.loc === undefined) continue
+      const near = index.nearby(c.loc, SAME_POINT)
+      if (near.length > 0 && !near.some((m) => m.zone.stem === c.zone)) {
+        // A zone the step's own words state, against an UNNAMED mob elsewhere: chance, read and listed.
+        ;(c.why.includes('the step names no zone') ? conflicts : coincidences).push(`[${q.page}] step ${String(i + 1)} ${fmt(c.loc)} -> ${c.zone}; bestiary: ${near.map((m) => `${m.name} (${m.zone.stem ?? m.zone.name})`).join(', ')}`)
+      }
+      if (!c.why.includes('the quest starts in')) continue
+      const before = (q.steps ?? []).slice(0, i).flatMap((s, k) => zonesNamed(s, q.stepLinks?.[k] ?? [], []))
+      const other = [...new Set(before.filter((z) => z.stem !== c.zone).map((z) => z.name))]
+      if (other.length > 0) fallbackDoubts.push(`[${q.page}] step ${String(i + 1)} ${fmt(c.loc)} -> ${c.zone}; earlier steps name ${other.join(', ')}`)
+    }
+  })
+}
+
 for (const q of quests) {
   const locs = questLocations(q, index)
   tallyQuest(q, locs)
   auditSteps(q, locs)
+  crossChecks(q, locs)
 }
+
+console.log(`\n===== cross-check 1: quest coordinate vs another zone's bestiary point (±${String(SAME_POINT)}) =====`)
+for (const l of conflicts) console.log(`  ${l}`)
+console.log(`  ${String(conflicts.length)} conflicts on a fallback zone (must be 0)`)
+console.log('  …and against a zone the step STATES (not refused; chance collisions, read them):')
+for (const l of coincidences) console.log(`    ${l}`)
+console.log(`  ${String(coincidences.length)} coincidences`)
+console.log('\n===== cross-check 2: start-zone fallback vs zones named in EARLIER steps =====')
+for (const l of fallbackDoubts) console.log(`  ${l}`)
+console.log(`  ${String(fallbackDoubts.length)} to read`)
 
 const c = counts
 console.log('\n===== summary =====')

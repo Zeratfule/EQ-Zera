@@ -75,14 +75,14 @@ test('REFUSALS: a coordinate whose zone is not settled is shown with NO map', ()
   assert.equal(bank[0].zone, undefined)
   assert.equal(bank[0].zoneName, undefined)
   assert.deepEqual(bank[0].loc, { ns: 735, ew: 835 })
-  // The start-zone rule refuses a walkthrough that has already left the start zone (Halas → Everfrost).
+  // The walkthrough moved on from Halas to Everfrost, and (+2045, +3835) is not in Everfrost either.
   const tower = noMap("Ivan McMannus' Remains", 10)
   assert.equal(tower[0].zone, undefined)
-  assert.match(tower[0].why, /already left Halas/)
+  assert.match(tower[0].why, /last in Everfrost Peaks, but the point lies outside it/)
   // …and a point outside every point the bestiary states for the start zone.
   const far = noMap('Temple Blankets Quest', 6)
   assert.equal(far[0].zone, undefined)
-  assert.match(far[0].why, /outside it/)
+  assert.match(far[0].why, /outside it|do not place/)
   // A zone named only as the place NEXT to the spot is not the spot's zone.
   const tunic = noMap('Tunic of Ridossan Quest', 12)
   assert.equal(tunic[0].zone, 'feerrott')
@@ -96,7 +96,8 @@ test('REFUSALS: a city name that is two maps names a zone but opens no map', () 
   assert.ok(bard.length >= 2)
   for (const c of bard) {
     assert.equal(c.zone, undefined, brief(c))
-    assert.equal(c.zoneName, 'Felwithe')
+    // Earlier steps walk through Kelethin and Felwithe, so not even the city is asserted any more.
+    assert.notEqual(c.zoneName, 'South Felwithe')
   }
 })
 
@@ -208,4 +209,73 @@ test('COVERAGE floors over the real catalog (identities, not frozen counts)', ()
   assert.ok(mapped / coords > 0.85, `mapped ${String(mapped)}/${String(coords)}`)
   assert.ok(withChip >= 750, `quests with a chip ${String(withChip)}`)
   assert.ok(itemsWithSource >= 2000, `items with a source ${String(itemsWithSource)}`)
+})
+
+// ---- REVIEW CASES (independent review of 4b66753): each was a jump into the WRONG zone. ----------
+
+/** The quest-page chips of one step (1-based, as the wiki numbers it). */
+const quoted = (page: string, step: number): QuestLocChip[] =>
+  questLocations(quest(page), index).steps[step - 1].filter((c) => c.sources.includes('quest'))
+
+test('REVIEW A1: the start-zone fallback follows the walkthrough to the zone it last ENTERED', () => {
+  // "You have entered North Qeynos." two steps earlier; Leanon Ruksey stands at (304, 127) there.
+  assert.equal(quoted('Bard Reports', 25)[0].zone, 'qeynos2')
+  // "Head to North Qeynos." the step before.
+  assert.equal(quoted('Aenia and Behroe', 14)[0].zone, 'qeynos2')
+  // "Go to Qeynos Hills … for Tovax Vmar" three steps earlier.
+  assert.equal(quoted('Plaguebringer Proof', 29)[0].zone, 'qeytoqrg')
+  // Dialogue that NAMES zones ("vendors in the Field of Bones, Cabilis and Neriak") moves nobody.
+  assert.equal(quoted('Cabilis Pale Ale (Firiona Vie)', 10)[0].zone, 'firiona')
+  assert.equal(quoted('Cabilis Pale Ale (Firiona Vie)', 11)[0].zone, 'firiona')
+})
+
+test('REVIEW A2: a coordinate that IS another zone’s bestiary point is that zone (named) or no map', () => {
+  // Sequea Erthinon (Surefall Glade) stands at (-155, -293) and the next step is her talking.
+  assert.equal(quoted('Blank Scrolls', 7)[0].zone, 'qrg')
+  // (-1409.67, 547.72) is Veisha Fathomwalker's spot in Toxxulia, nowhere near East Freeport.
+  assert.equal(quoted("Xelha's Cyclops Eye", 2)[0].zone, undefined)
+})
+
+test('REVIEW A3: a named zone that contradicts the linked NPC’s own single zone is no map at all', () => {
+  const cain = quoted('The Test of the Green and Blue', 1)
+  assert.equal(cain[0].zone, undefined)
+  assert.deepEqual(cain[0].loc, { ns: 662, ew: -675 })
+})
+
+test('REVIEW A4: a SHORT zone head word ("Kael") stops the start-zone fallback', () => {
+  assert.notEqual(quoted('Crest of the Fauns Quest', 8)[0].zone, 'wakening')
+})
+
+test('REVIEW A5: a bestiary point far outside its zone (Paglan at (-8500, 0)) gets no map', () => {
+  const paglan = questLocations(quest('Langseax Quest'), index).steps[44].filter((c) => c.name === 'Paglan')
+  assert.equal(paglan.length, 1)
+  assert.equal(paglan[0].zone, undefined)
+})
+
+test('REVIEW A: a copied coordinate (Sylia Windlehands’ Kelethin spot on a Qeynos page) gets no map', () => {
+  // "Belious Naliedin is located at -253, 242, 77": the same three numbers as Sylia's own page.
+  assert.equal(quoted("Guild Summons - The Wind Spirit's Song", 1)[0].zone, undefined)
+})
+
+const dropped = (page: string): string[] => questLocations(quest(page), index).items.map((i) => i.item)
+const droppersOf = (page: string, item: string): string[] =>
+  questLocations(quest(page), index).items.find((i) => i.item === item)?.rows.map((r) => r.mob) ?? []
+
+test('REVIEW B: a KIND of item ("a tattered note", "Sealed Letter") shows a dropper only when the quest names it', () => {
+  // 36 Guild Summons quests showed a Lake of Ill Omen sarnak for their own tattered note.
+  for (const p of quests.filter((q) => q.page.startsWith('Guild Summons') && q.requiredItems?.includes('a tattered note'))) {
+    assert.ok(!dropped(p.page).includes('a tattered note'), p.page)
+  }
+  // Tergon hands over his own Sealed Letter; West Freeport being on the route is not evidence.
+  assert.ok(!dropped("Tergon's Spellbook Quest").includes('Sealed Letter'))
+  assert.deepEqual(droppersOf("Teir`Dal Courier", 'Sealed Letter'), [])
+  // …and a dropper the quest DOES name survives: the Paladin Message's note is Mojax Hikspin's.
+  assert.ok(droppersOf('Paladin Message', 'Note').includes('Mojax Hikspin'))
+  // A specific name keeps every true source, however many zones: the ring is still Kedgespawn's.
+  assert.deepEqual(droppersOf('Hate, Betrayal, and Trust', 'Ancient Signet Ring of House Everling'), ['Corrupted Kedgespawn'])
+})
+
+test('REVIEW B: two bestiary pages for one mob in one zone are ONE dropper row', () => {
+  // "Trakanon" and "Trakanon (triggered)" both drop the strings in Old Sebilis.
+  assert.deepEqual(droppersOf('Bard Epic Quest', 'Undead Dragongut Strings'), ['Trakanon'])
 })

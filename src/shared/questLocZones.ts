@@ -16,7 +16,16 @@
 //   3. No zone in the sentence ⇒ an NPC linked in the sentence, when every such NPC lives in ONE
 //      zone. Two NPCs in two zones ⇒ no zone.
 //   4. Nothing in the sentence ⇒ rules 1-3 again over the whole step.
-//   5. The step names no zone and links no placeable NPC at all ⇒ the quest's own Start Zone.
+//   5. The step names no zone and links no placeable NPC at all ⇒ the WALKTHROUGH'S current zone:
+//      the zone an earlier step last moved the player to ("You have entered North Qeynos.") or
+//      placed a point in, else the quest's Start Zone; and LOST (no map) once a step names some
+//      other single zone or a zone's bare head word ("Kithicor", "Kael") without moving there.
+//   Then two checks every answer must survive (review of 4b66753):
+//   - a named zone that contradicts the linked NPC's own single bestiary zone ⇒ no map (rule 1);
+//   - the BESTIARY'S SECOND OPINION (`crossCheck`): a mob of ANOTHER zone standing at the point
+//     (±SAME_POINT) picks that zone when the walkthrough names it and the answer was a fallback,
+//     and otherwise refuses a fallback, a named zone the mob contradicts, or a point copied to the
+//     unit from another zone's mob. And the zone's spread, then the map file's own extent at runtime.
 //   Anything else ⇒ the coordinate is shown WITHOUT a map. Never guess (world-model law 1).
 //
 // "AN NPC'S ZONE" is the bestiary's `|zone`, only when it names exactly one place. The quest GIVER
@@ -55,6 +64,16 @@ export interface NpcLookup {
    * when the bestiary states too few points there to say.
    */
   within: (stem: ZoneShort, p: { ns: number; ew: number }) => boolean | undefined
+  /** Every single-zone bestiary point within `tol` /loc units of `p` (both axes), with its zone. */
+  nearby: (p: { ns: number; ew: number }, tol: number) => NearbyMob[]
+}
+
+/** A bestiary mob whose own page puts it at (about) a given point, in one placeable zone. */
+export interface NearbyMob {
+  name: string
+  zone: ZoneMention
+  /** the stated point itself */
+  at: { ns: number; ew: number; z?: number }
 }
 
 /** The zone the bestiary (or, for the giver, the quest header) places an NPC in. */
@@ -112,14 +131,15 @@ function vocabulary(): VocabWord[] {
   return VOCAB
 }
 
-const mention = (name: string): ZoneMention => ({ name, stem: zoneShortNameFromCatalog(name) })
+export const mention = (name: string): ZoneMention => ({ name, stem: zoneShortNameFromCatalog(name) })
 
 /**
  * A zone named as a WAY OUT is not where the point is: "near the Steamfont Mountains entrance",
  * "the Qeynos Hills zone line", "guarding the zone-in to East Cabilis" all describe a spot in the
  * OTHER zone, at its edge. Such a mention is not read at all.
  */
-const EXIT_AFTER = /^\s*(?:'s\s+)?(?:entrance|zone\s*line|zone-?in|zonein|zone|border|tunnel|exit)\b/i
+// "…is on Temple of Solusek Ro faction" names an allegiance, not a place: read the same way.
+const EXIT_AFTER = /^\s*(?:'s\s+)?(?:entrance|zone\s*line|zone-?in|zonein|zone|border|tunnel|exit|faction)\b/i
 const EXIT_BEFORE = /(?:zone[\s-]?(?:in|line|out)?|entrance|tunnel|gate|portal|border|exit|road|path)\s+(?:to|into|from|for|of)\s+(?:the\s+)?$/i
 
 /**
@@ -226,6 +246,11 @@ function mask(text: string, names: readonly string[]): string {
  * Palace" is Erudin Palace.
  */
 export function zonesNamed(scope: string, links: readonly QuestStepLink[], items: readonly string[] = []): ZoneMention[] {
+  return distinct(zoneHits(scope, links, items).map((h) => h.zone))
+}
+
+/** `zonesNamed`, keeping WHERE in `scope` each mention sits (way-out mentions already dropped). */
+function zoneHits(scope: string, links: readonly QuestStepLink[], items: readonly string[]): ProseHit[] {
   const lower = scope.toLowerCase()
   const inScope = linksIn(scope, links).map((l) => {
     const shown = (l.label ?? l.page).toLowerCase()
@@ -238,7 +263,27 @@ export function zonesNamed(scope: string, links: readonly QuestStepLink[], items
     if (l.zone === null || prose.some((h) => h.a <= l.a && h.b >= l.b && h.b - h.a > l.b - l.a)) return []
     return [{ zone: l.zone, a: l.a, b: l.b }]
   })
-  return distinct([...linked, ...prose].filter((h) => !isExitMention(scope, h.a, h.b)).map((h) => h.zone))
+  return [...linked, ...prose].filter((h) => !isExitMention(scope, h.a, h.b)).sort((x, y) => x.a - y.a)
+}
+
+/**
+ * The words that MOVE the player, right before a zone's name: "You have entered North Qeynos",
+ * "Head to North Qeynos", "Go to Qeynos Hills", "Travel through Nektulos Forest into Lake Nerius".
+ * A zone named any other way — "vendors in the Field of Bones, Cabilis and Neriak" — moves nobody.
+ */
+const MOVE_BEFORE =
+  /(?:you have entered|\b(?:head(?:s|ed|ing)?|go(?:es|ing)?|went|travel(?:s|l?ed|l?ing)?|return(?:s|ed|ing)?|run|ran|port(?:s|ed)?|zone(?:s|d)?|enter(?:s|ed)?|make your way|move|swim|fly)\b[^.;:!?()]{0,30})$/i
+
+/**
+ * Where this step leaves the player, when it says so: the LAST zone it moves them to, at its
+ * offset in `text`. `undefined` when the step moves nobody.
+ */
+export function movedTo(text: string, links: readonly QuestStepLink[], items: readonly string[]): { zone: ZoneMention; at: number } | undefined {
+  let last: { zone: ZoneMention; at: number } | undefined
+  for (const h of zoneHits(text, links, items)) {
+    if (MOVE_BEFORE.test(text.slice(Math.max(0, h.a - 48), h.a))) last = { zone: h.zone, at: h.a }
+  }
+  return last
 }
 
 /** The items a quest names (required and reward) — the words prose zone-reading must skip. */
@@ -301,18 +346,28 @@ export function npcsIn(scope: string, links: readonly QuestStepLink[], quest: Qu
 export interface ZoneVerdict {
   zone: ZoneMention | null
   why: string
+  /** true when the zone is the walkthrough's trail or start zone, not anything this step states */
+  fallback?: boolean
 }
 
 /** Rules 1-3 over one scope. `undefined` ⇒ the scope says nothing; look wider. */
+/** Rule 1: the scope names exactly one zone. */
+function oneNamed(zone: ZoneMention, npcs: readonly NpcZone[], npcZones: readonly ZoneMention[], where: string): ZoneVerdict {
+  // "the Kaladim Warrior's Guild" names a city that is two maps; an NPC there whose page says
+  // South Kaladim is the second witness that picks one. Exactly one such NPC zone, or none.
+  const sharper = zone.stem === null ? npcZones.filter((z) => refines(zone, z)) : []
+  if (sharper.length === 1) return { zone: sharper[0], why: `the ${where} says ${zone.name}; its NPC lives in ${sharper[0].name}` }
+  // TWO WITNESSES THAT DISAGREE PICK NOTHING: "Cain Darkmoore is at 662, -675 in East Freeport"
+  // while Cain's own page says West Freeport. Either could be the typo; the map would be a coin.
+  const own = npcs.flatMap((n) => (n.count === 1 && n.zone?.stem != null ? [n.zone] : []))
+  const clash = zone.stem !== null && own.length > 0 && !own.some((z) => z.stem === zone.stem) ? own[0] : undefined
+  if (clash) return { zone: null, why: `the ${where} names ${zone.name}, but its NPC's page says ${clash.name}` }
+  return { zone, why: `the ${where} names ${zone.name}` }
+}
+
 function scopeVerdict(named: ZoneMention[], npcs: NpcZone[], where: string): ZoneVerdict | undefined {
   const npcZones = distinct(npcs.flatMap((n) => (n.zone ? [n.zone] : [])))
-  if (named.length === 1) {
-    // "the Kaladim Warrior's Guild" names a city that is two maps; an NPC there whose page says
-    // South Kaladim is the second witness that picks one. Exactly one such NPC zone, or none.
-    const sharper = named[0].stem === null ? npcZones.filter((z) => refines(named[0], z)) : []
-    if (sharper.length === 1) return { zone: sharper[0], why: `the ${where} says ${named[0].name}; its NPC lives in ${sharper[0].name}` }
-    return { zone: named[0], why: `the ${where} names ${named[0].name}` }
-  }
+  if (named.length === 1) return oneNamed(named[0], npcs, npcZones, where)
   if (named.length > 1) {
     const both = named.filter((z) => z.stem !== null && npcZones.some((n) => n.stem === z.stem))
     if (both.length === 1) return { zone: both[0], why: `the ${where} names ${String(named.length)} zones; its NPC lives in ${both[0].name}` }
@@ -336,9 +391,65 @@ function scopeVerdict(named: ZoneMention[], npcs: NpcZone[], where: string): Zon
  * no zone at all rather than a mark drawn off the edge of the wrong map.
  */
 export function coordZone(args: CoordArgs): ZoneVerdict {
-  const v = coordZoneRules(args)
+  const v = crossCheck(coordZoneRules(args), args)
   if (v.zone?.stem == null || args.lookup.within(v.zone.stem, args.point) !== false) return v
   return { zone: null, why: `${v.why}, but the point lies outside ${v.zone.name}` }
+}
+
+/** How close (per axis, /loc units) a bestiary point must be to BE the quest's coordinate. */
+export const SAME_POINT = 4
+
+/** Within a unit on both axes, and on the third when both sides state it. */
+function sameSpot(a: { ns: number; ew: number; z?: number }, b: { ns: number; ew: number; z?: number }): boolean {
+  if (Math.abs(a.ns - b.ns) > 1 || Math.abs(a.ew - b.ew) > 1) return false
+  return a.z === undefined || b.z === undefined || Math.abs(a.z - b.z) <= 1
+}
+
+/** A mob name worth searching prose for: a proper name, not "a guard" / "an orc pawn". */
+const GENERIC_MOB = /^(a|an|the)\s/i
+
+const named = (text: string, name: string): boolean =>
+  !GENERIC_MOB.test(name) && new RegExp(`(?<![\\w'\`])${name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?![\\w'\`])`, 'i').test(text)
+
+/**
+ * THE BESTIARY'S SECOND OPINION. A quest coordinate that is, to within a few units, some mob's own
+ * stated spawn point is very likely THAT mob's spot. If that mob lives in the zone already chosen,
+ * the choice is confirmed. If it lives elsewhere, the walkthrough naming it nearby makes it the
+ * answer ("Your Location is -154.95, -292.89" between two steps about Sequea Erthinon, who stands
+ * at (-155, -293) in Surefall Glade); otherwise the two disagree and the point gets no map.
+ */
+function crossCheck(v: ZoneVerdict, args: CoordArgs): ZoneVerdict {
+  const near = args.lookup.nearby(args.point, SAME_POINT)
+  if (near.length === 0) return v
+  const chosen = v.zone?.stem
+  if (chosen != null && near.some((m) => m.zone.stem === chosen)) return v
+  const text = args.neighbours ?? args.text
+  const picks = distinct(near.filter((m) => named(text, m.name)).map((m) => m.zone))
+  // A FALLBACK (no zone in the step's own words) yields to the bestiary; a zone the words STATE
+  // only yields to a mob the words also name, and then the two statements disagree: no map.
+  const weak = chosen == null || v.fallback === true
+  if (picks.length === 1 && weak) {
+    const who = near.find((m) => m.zone.stem === picks[0].stem && named(text, m.name))?.name ?? ''
+    return { zone: picks[0], why: `${who}'s own page puts them at this point in ${picks[0].name}, and the walkthrough names them` }
+  }
+  if (chosen == null) return v
+  return disagreement(v, near, picks, args.point)
+}
+
+/** A chosen zone against other zones' mobs at the point: keep it, or refuse it. */
+function disagreement(v: ZoneVerdict, near: readonly NearbyMob[], picks: readonly ZoneMention[], p: CoordArgs['point']): ZoneVerdict {
+  const weak = v.fallback === true
+  // THE SAME SPOT TO THE UNIT (and the same elevation where both state one) is not chance: "Belious
+  // Naliedin is located at -253, 242, 77" is Sylia Windlehands' Kelethin spot copied onto a South
+  // Qeynos page. That refuses even a stated zone.
+  const twin = near.find((m) => sameSpot(m.at, p))
+  // MEASURED: a strongly stated zone meets an UNNAMED mob of another zone within the window about
+  // as often as chance predicts (~3% of coordinates, the density of small city coordinates across
+  // ~130 overlapping zone frames), so that alone is noise, not evidence — the audit lists those and
+  // they do not refuse.
+  if (picks.length === 0 && !weak && twin === undefined) return v
+  const against = twin ?? near.find((m) => picks.some((z) => z.stem === m.zone.stem)) ?? near[0]
+  return { zone: null, why: `${v.why}, but the bestiary puts ${against.name} (${against.zone.name}) at this point` }
 }
 
 /** One coordinate, and everything around it the rules may read. */
@@ -352,9 +463,11 @@ export interface CoordArgs {
   links: readonly QuestStepLink[]
   quest: QuestEntry
   lookup: NpcLookup
-  point: { ns: number; ew: number }
-  /** map stems the quest's EARLIER steps were placed in — the walkthrough's trail so far */
-  earlier?: ReadonlySet<ZoneShort>
+  point: { ns: number; ew: number; z?: number }
+  /** the zone the walkthrough's EARLIER steps last moved to or placed a point in; undefined = none */
+  trail?: ZoneMention | null
+  /** this step's text with its neighbours', for "is that mob named around here" */
+  neighbours?: string
 }
 
 function coordZoneRules(args: CoordArgs): ZoneVerdict {
@@ -407,6 +520,9 @@ function coordZoneRules(args: CoordArgs): ZoneVerdict {
  */
 const GENERIC_HEADS = /^(north|south|east|west|northern|southern|eastern|western|upper|lower|lake|plane|temple|ocean|city|castle|great|greater|lesser|old|new|crystal|dragon|burning|field|estate|ruins|mines|tower|island|frontier|guild|halls|hills|plains|caverns|crypt|lair|tomb|palace|cobalt|crystal|marus)$/i
 
+/** Zone words under five letters that still name one place, case-sensitive as prose writes them. */
+const SHORT_HEADS = ['Kael', 'OOT', 'Lfay', 'Gfay', 'Sky', 'Fear', 'Hate']
+
 let HEADS: RegExp | null = null
 
 function zoneHeads(): RegExp {
@@ -419,12 +535,14 @@ function zoneHeads(): RegExp {
       if (words.length > 1 && head.length >= 5 && !GENERIC_HEADS.test(head)) heads.add(head.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
     }
   }
+  // The SHORT ones a walkthrough writes for a zone ("Headed to Kael from Wakening", "OOT", "Lfay").
+  for (const h of SHORT_HEADS) heads.add(h)
   HEADS = new RegExp(`(?<![\\w'])(${[...heads].join('|')})(?![\\w'])`, 'g')
   return HEADS
 }
 
 /** Every zone head word in `text` standing ALONE: items and full zone names are blanked first. */
-function headsIn(text: string, items: readonly string[]): string[] {
+export function headsIn(text: string, items: readonly string[]): string[] {
   let bare = mask(text, items)
   for (const h of proseZones(bare)) bare = bare.slice(0, h.a) + ' '.repeat(h.b - h.a) + bare.slice(h.b)
   return [...bare.matchAll(zoneHeads())].map((m) => m[1])
@@ -439,19 +557,49 @@ function headsIn(text: string, items: readonly string[]): string[] {
  * somewhere else, "he wanders over to the house at (275, -350)" is wherever that trail now is,
  * which these words do not say.
  */
+/**
+ * THE WALKTHROUGH'S POSITION AFTER ONE STEP. `undefined` = nothing said yet (the start zone
+ * stands), a zone = where it last went, `null` = LOST: it went somewhere its words do not let us
+ * place. A step that moves the player (or places a point) sets it. A step that moves nobody but
+ * names ONE other zone, or a zone's bare head word ("Giz is found in Kithicor"), loses it — the
+ * player is plainly elsewhere now and a later "Your Location is…" cannot be read against the old
+ * zone. A step naming SEVERAL zones in passing ("vendors in the Field of Bones, Cabilis and
+ * Neriak") is a remark, not a move, and changes nothing.
+ */
+export function nextTrail(args: {
+  text: string
+  links: readonly QuestStepLink[]
+  items: readonly string[]
+  prev: ZoneMention | null | undefined
+  start: string | undefined
+  placed?: { zone: ZoneMention; at: number }
+}): ZoneMention | null | undefined {
+  const { text, links, items, prev, start, placed } = args
+  const moved = movedTo(text, links, items)
+  const last = [moved, placed].filter((m) => m !== undefined).sort((a, b) => b.at - a.at)[0]
+  if (last) return last.zone
+  const base = prev === undefined ? (start ? mention(start) : undefined) : prev
+  // A line of dialogue ("You say, 'A Warder of Ro?'") is talk, not travel.
+  if (base == null || /^\s*You say\b/i.test(text)) return prev
+  const others = zonesNamed(text, links, items).filter((z) => (z.stem ?? z.name) !== (base.stem ?? base.name) && !refines(z, base))
+  const heads = headsIn(text, items).filter((h) => !refines({ name: h, stem: null }, base))
+  return others.length === 1 || (others.length === 0 && heads.length > 0) ? null : prev
+}
+
 function startZoneVerdict(args: CoordArgs): ZoneVerdict {
-  const { text, quest, lookup, point: p } = args
-  const earlier = args.earlier ?? new Set<ZoneShort>()
-  if (!quest.startZone) return { zone: null, why: 'nothing names a zone' }
-  const start = mention(quest.startZone)
-  const head = headsIn(text, questItemNames(quest)).find((h) => !refines({ name: h, stem: null }, start))
-  if (head !== undefined) return { zone: null, why: `the step mentions ${head}, not the start zone` }
-  if (start.stem === null) return { zone: start, why: 'the step names no zone; the quest starts in ' + quest.startZone }
-  const moved = [...earlier].find((z) => z !== start.stem)
-  if (moved !== undefined) return { zone: null, why: `the step names no zone, and the walkthrough has already left ${quest.startZone} for ${moved}` }
-  const inside = lookup.within(start.stem, p)
+  const { text, quest, lookup, point: p, trail } = args
+  // WHERE THE WALKTHROUGH IS NOW: the zone an earlier step last moved the player to or placed a
+  // point in ("You have entered North Qeynos."), else where the quest starts.
+  if (trail === null) return { zone: null, why: 'the step names no zone, and the walkthrough has moved somewhere its words do not place' }
+  if (trail === undefined && !quest.startZone) return { zone: null, why: 'nothing names a zone' }
+  const base = trail ?? mention(quest.startZone ?? '')
+  const said = trail === undefined ? `the quest starts in ${base.name}` : `the walkthrough was last in ${base.name}`
+  const head = headsIn(text, questItemNames(quest)).find((h) => !refines({ name: h, stem: null }, base))
+  if (head !== undefined) return { zone: null, why: `the step mentions ${head}, not ${base.name}` }
+  if (base.stem === null) return { zone: base, why: `the step names no zone; ${said}`, fallback: true }
+  const inside = lookup.within(base.stem, p)
   if (inside !== true) {
-    return { zone: null, why: `the quest starts in ${quest.startZone}, but ${inside === false ? 'the point lies outside it' : 'too few known points there to check'}` }
+    return { zone: null, why: `${said}, but ${inside === false ? 'the point lies outside it' : 'too few known points there to check'}` }
   }
-  return { zone: start, why: 'the step names no zone; the quest starts in ' + quest.startZone }
+  return { zone: base, why: `the step names no zone; ${said}`, fallback: true }
 }

@@ -113,12 +113,12 @@ async function capture(app: ElectronApplication, page: Page, tag: string): Promi
  * Open the Quests tab and the quest page this spec is about. After a chip has left for the map,
  * the tab REOPENS that page by itself (questResume.ts) — which is the behaviour, so it is accepted.
  */
-async function openQuestPage(page: Page): Promise<boolean> {
+async function openQuestPage(page: Page, name: string = QUEST): Promise<boolean> {
   await page.click(NAV_QUESTS, { timeout: 30_000 })
   const landed = await page.waitForSelector(`${SEARCH}, ${TITLE}`, { timeout: 60_000 }).then(() => true, () => false)
   if (!check('the Quests tab opens', landed)) return false
-  if ((await titleOf(page)) === QUEST) return check(`…already on ${QUEST}, the page a chip last left from`, true)
-  await page.fill(SEARCH, 'Hate, Betrayal')
+  if ((await titleOf(page)) === name) return check(`…already on ${name}, the page a chip last left from`, true)
+  await page.fill(SEARCH, name === QUEST ? 'Hate, Betrayal' : name)
   await settle(() => countOf(page, ROW), (n) => n >= 1 && n <= 80, { timeoutMs: 15_000 })
   const clicked = await page.evaluate(
     ([sel, name]) => {
@@ -130,12 +130,12 @@ async function openQuestPage(page: Page): Promise<boolean> {
       }
       return false
     },
-    [ROW, QUEST] as const
+    [ROW, name] as const
   )
-  if (!check(`the search lists ${QUEST}`, clicked)) return false
+  if (!check(`the search lists ${name}`, clicked)) return false
   await page.waitForSelector(PAGE, { timeout: 20_000 }).catch(() => undefined)
   const title = await page.evaluate((sel) => (document.querySelector(sel) as HTMLElement | null)?.innerText.trim() ?? '', TITLE)
-  return check(`…and opens ${QUEST}`, title === QUEST, title)
+  return check(`…and opens ${name}`, title === name, title)
 }
 
 /** What the quest page says about where — the agreeing chip, the disagreeing pair, an item's dropper. */
@@ -212,6 +212,11 @@ async function stepLifecycles(page: Page): Promise<void> {
 
 /** Back from the map lands on the quest page; tracking it puts its pins on the map for good. */
 async function stepTrackedPins(page: Page): Promise<void> {
+  // The last chip left for the map, then the player went to LOOT: that ends the round trip, so the
+  // Quests tab opens on its list, not on a page out of nowhere.
+  await page.click(NAV_QUESTS, { timeout: 30_000 })
+  await page.waitForSelector(`${SEARCH}, ${TITLE}`, { timeout: 30_000 }).catch(() => undefined)
+  check('a detour through another tab retires the chip’s round trip (the Quests LIST opens)', (await countOf(page, SEARCH)) === 1 && (await titleOf(page)) === '')
   if (!(await openQuestPage(page))) return
   await page.click(PIN, { timeout: 15_000 })
   await page.click(step(1), { timeout: 15_000 })
@@ -248,6 +253,28 @@ async function stepTrackedPins(page: Page): Promise<void> {
   if (APP) await capture(APP, page, 'maps-quest-pins-shot')
 }
 
+/**
+ * A point its own map does not hold. The bestiary puts "a visiting priestess" at (-493, 170) in
+ * Najena, and the real Najena map does not reach that far (scripts/audit-quest-maps.mts lists it):
+ * the jump opens Najena, draws NO marker, and the card says the point is off the map.
+ */
+async function stepOffMap(page: Page): Promise<void> {
+  await page.click(NAV_LOOT, { timeout: 15_000 })
+  if (!(await openQuestPage(page, 'The Visiting Priestess'))) return
+  const chip = `[data-testid="quest-step"][data-step="0"] ${CHIP}[data-zone="najena"]`
+  if (!check('the priestess chip offers a jump to Najena', (await countOf(page, chip)) >= 1)) return
+  await page.click(chip, { timeout: 15_000 })
+  check('…which opens Najena', (await settle(() => zoneOf(page), (z) => z === 'najena', { timeoutMs: 30_000 })) === 'najena')
+  const card = await settle(
+    () => page.evaluate(() => (document.querySelector('[data-testid="maps-target-offmap"]') as HTMLElement | null)?.innerText ?? ''),
+    (t) => t !== '',
+    { timeoutMs: 15_000 }
+  )
+  check('A POINT OFF ITS OWN MAP IS SAID, NOT DRAWN: the card says so', card.includes('outside the Najena map'), card)
+  check('…and no target marker is drawn', await settleGone(page, TARGET, { timeoutMs: 5_000 }))
+  if (APP) await capture(APP, page, 'maps-offmap-shot')
+}
+
 /** The quest page, then the jump and everything after it (skipped, and said so, with no map packs). */
 async function runSteps(page: Page): Promise<void> {
   if (!(await openQuestPage(page))) return
@@ -260,6 +287,7 @@ async function runSteps(page: Page): Promise<void> {
   if (!(await stepJump(page))) return
   await stepLifecycles(page)
   await stepTrackedPins(page)
+  await stepOffMap(page)
 }
 
 async function main(): Promise<void> {

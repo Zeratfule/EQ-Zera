@@ -52,12 +52,17 @@ function placed(q: QuestForPins): Placed[] {
 }
 
 /** The pins for the zone on screen, one per distinct point per quest, capped. */
-export function questPinsInZone(quests: readonly QuestForPins[], zone: ZoneShort | null | undefined): QuestMapPin[] {
+export function questPinsInZone(
+  quests: readonly QuestForPins[],
+  zone: ZoneShort | null | undefined,
+  /** the map file's own say: a point it does not hold is never drawn (the renderer knows the extent) */
+  keep: (loc: LocPoint) => boolean = () => true
+): QuestMapPin[] {
   if (zone == null) return []
   const byKey = new Map<string, QuestMapPin>()
   for (const q of quests) {
     for (const p of placed(q)) {
-      if (p.zone !== zone || p.loc === undefined) continue
+      if (p.zone !== zone || p.loc === undefined || !keep(p.loc)) continue
       add(byKey, q.page, p.loc, p.label)
     }
   }

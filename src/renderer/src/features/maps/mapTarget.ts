@@ -52,6 +52,21 @@ export function clearMapTarget(): void {
   emit()
 }
 
+/**
+ * Targets the view has already centred on. A target is centred ONCE, when its map is first drawn
+ * and measured; coming back to the tab later shows the mark without moving a map the player has
+ * since panned. Keyed on the target object, so the next jump (a new object) centres again.
+ */
+const centred = new WeakSet<MapAnchor>()
+
+export function wasCentred(t: MapAnchor): boolean {
+  return centred.has(t)
+}
+
+export function markCentred(t: MapAnchor): void {
+  centred.add(t)
+}
+
 function subscribe(l: () => void): () => void {
   listeners.add(l)
   return () => {

@@ -46,7 +46,7 @@ export interface QuestLayer {
 }
 
 /** The layer for the map drawn (`zone` = `data.zone`), given the quest a target came from. */
-export function useQuestLayer(zone: ZoneShort | undefined, fromQuest: string | undefined): QuestLayer {
+export function useQuestLayer(zone: ZoneShort | undefined, fromQuest: string | undefined, keep: (loc: { ns: number; ew: number }) => boolean): QuestLayer {
   const [on, setOn] = useState(loadOn)
   const [tracked] = useQuestPins()
   const quests = useMemo(() => {
@@ -60,7 +60,8 @@ export function useQuestLayer(zone: ZoneShort | undefined, fromQuest: string | u
     }
     return out
   }, [tracked, fromQuest])
-  const pins = useMemo(() => (on ? questPinsInZone(quests, zone) : []), [on, quests, zone])
+  // Off-map pins are not drawn: the map file's own extent is the last word (useMapQuestOverlay.tsx).
+  const pins = useMemo(() => (on ? questPinsInZone(quests, zone, keep) : []), [on, quests, zone, keep])
   // Persisted on the CHANGE HANDLER, not by an effect: an effect cannot tell the click from a mount.
   const toggle = useCallback(() => {
     const next = !on

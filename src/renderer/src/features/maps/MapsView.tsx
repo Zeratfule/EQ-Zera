@@ -60,6 +60,7 @@ import { loadPackPrefs, savePackPrefs, useMapData, useMapPacks } from './useMapD
 import { useLocMarker } from './useLocMarker'
 import { useMapQuestOverlay, type MapAnchorProps } from './useMapQuestOverlay'
 import type { AppRouting } from '../../appRouting'
+import { forgetQuestPage } from '../quests/questResume'
 import {
   loadZoneSelection,
   onCharacterZone,
@@ -467,6 +468,11 @@ export default function MapsView(props: MapAnchorProps): JSX.Element {
  * its measured ceiling, and this tab now takes a deep link's anchor and the Back contract.
  */
 export function MapsBranch({ view, viewKey, routing }: { view: string; viewKey: string; routing: AppRouting }): JSX.Element | null {
+  // The round trip a location chip started (quest page -> map -> back) ends the moment the player
+  // goes ANYWHERE ELSE: a later visit to Quests must not reopen a page out of nowhere.
+  useEffect(() => {
+    if (view !== 'maps' && view !== 'quests') forgetQuestPage()
+  }, [view])
   return view === 'maps' ? (
     <MapsView
       key={viewKey}

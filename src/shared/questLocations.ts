@@ -24,9 +24,10 @@
 import type { ZoneShort } from './maps'
 import type { MobEntry, MobLoc } from './mobTypes'
 import type { QuestEntry, QuestStepLink } from './types'
-import { itemBaseName } from './itemStats'
-import { zoneShortNameFromCatalog } from './zones'
-import { coordZone, isPlaceholderZone, linksIn, npcZone, sentenceSpan, type NpcLookup, type NpcZone, type ZoneMention } from './questLocZones'
+import { coordZone, isPlaceholderZone, linksIn, nextTrail, npcZone, questItemNames, sentenceSpan, type NpcZone, type ZoneMention } from './questLocZones'
+import type { MobIndex } from './bestiaryIndex'
+// The bestiary index lives in ./bestiaryIndex.ts; re-exported so callers keep one import.
+export { buildMobIndex, dropKey, type MobIndex } from './bestiaryIndex'
 
 /** Who stated a point: the quest's own page, or the NPC's / mob's own page. */
 export type LocSource = 'quest' | 'npc'
@@ -88,85 +89,6 @@ export const MAX_ITEM_SOURCES = 3
 /** Chips one step may carry. A step linking nine placeable NPCs is a list, not a step. */
 export const MAX_STEP_CHIPS = 6
 
-/** The bestiary, indexed once: by page, by unique name, and by what each mob drops. */
-export interface MobIndex extends NpcLookup {
-  droppers: (item: string) => readonly MobEntry[]
-}
-
-/** The item key — `lib/itemSources.ts sourceItemKey`, from its shared half. */
-export const dropKey = (name: string): string => itemBaseName(name).toLowerCase()
-
-/** Fewer stated points than this in a zone and its spread is no evidence of anything. */
-const MIN_SPREAD_POINTS = 8
-/** Slack around a zone's stated spread, in /loc units, so an edge camp still counts as inside. */
-const SPREAD_PAD = 150
-
-interface Spread {
-  n: number
-  minNs: number
-  maxNs: number
-  minEw: number
-  maxEw: number
-}
-
-/** Per map stem, the box the bestiary's single-zone pages' stated points span. */
-function zoneSpreads(mobs: readonly MobEntry[]): Map<ZoneShort, Spread> {
-  const out = new Map<ZoneShort, Spread>()
-  for (const m of mobs) {
-    if (m.zones?.length !== 1 || !m.loc?.length) continue
-    const stem = zoneShortNameFromCatalog(m.zones[0])
-    if (stem === null) continue
-    for (const l of m.loc) {
-      const s = out.get(stem)
-      if (!s) out.set(stem, { n: 1, minNs: l.ns, maxNs: l.ns, minEw: l.ew, maxEw: l.ew })
-      else {
-        s.n++
-        s.minNs = Math.min(s.minNs, l.ns)
-        s.maxNs = Math.max(s.maxNs, l.ns)
-        s.minEw = Math.min(s.minEw, l.ew)
-        s.maxEw = Math.max(s.maxEw, l.ew)
-      }
-    }
-  }
-  return out
-}
-
-/**
- * `questPages` are the catalog's quest titles: a step linking "Cleaner Clockwork" links the QUEST,
- * whatever bestiary page shares its name, so those titles are never read as an NPC.
- */
-export function buildMobIndex(mobs: readonly MobEntry[], questPages: Iterable<string> = []): MobIndex {
-  const notNpc = new Set([...questPages].map((p) => p.toLowerCase()))
-  const byPage = new Map<string, MobEntry>()
-  const byName = new Map<string, MobEntry[]>()
-  const byDrop = new Map<string, MobEntry[]>()
-  for (const m of mobs) {
-    byPage.set(m.page.toLowerCase(), m)
-    const n = m.name.toLowerCase()
-    byName.set(n, [...(byName.get(n) ?? []), m])
-    for (const d of new Set((m.drops ?? []).map(dropKey))) {
-      if (d !== '') byDrop.set(d, [...(byDrop.get(d) ?? []), m])
-    }
-  }
-  const spread = zoneSpreads(mobs)
-  return {
-    within: (stem, p) => {
-      const s = spread.get(stem)
-      if (s === undefined || s.n < MIN_SPREAD_POINTS) return undefined
-      const padNs = Math.max(SPREAD_PAD, (s.maxNs - s.minNs) * 0.15)
-      const padEw = Math.max(SPREAD_PAD, (s.maxEw - s.minEw) * 0.15)
-      return p.ns >= s.minNs - padNs && p.ns <= s.maxNs + padNs && p.ew >= s.minEw - padEw && p.ew <= s.maxEw + padEw
-    },
-    // A page title is unique; a name is used only when exactly one page carries it.
-    npc: (page) => {
-      const k = page.replace(/_/g, ' ').trim().toLowerCase()
-      if (notNpc.has(k)) return undefined
-      const named = byName.get(k)
-      return byPage.get(k) ?? (named?.length === 1 ? named[0] : undefined)
-    },
-    droppers: (item) => byDrop.get(dropKey(item)) ?? []
-  }
-}
 
 const point = (l: MobLoc | LocPoint): LocPoint => (l.z === undefined ? { ns: l.ns, ew: l.ew } : { ns: l.ns, ew: l.ew, z: l.z })
 const samePoint = (a: LocPoint, b: LocPoint): boolean => Math.round(a.ns) === Math.round(b.ns) && Math.round(a.ew) === Math.round(b.ew)
@@ -246,12 +168,21 @@ function addChip(list: QuestLocChip[], c: QuestLocChip): void {
 }
 
 /** One step's chips: what its words state, then what the NPCs it links state, merged. */
-function stepChips(quest: QuestEntry, i: number, index: MobIndex, earlier: ReadonlySet<ZoneShort>): QuestLocChip[] {
+/** A zone the walkthrough put the player in, and where in the step's text it said so. */
+interface TrailMark {
+  zone: ZoneMention
+  at: number
+}
+
+function stepChips(quest: QuestEntry, i: number, index: MobIndex, trail: ZoneMention | null | undefined): { chips: QuestLocChip[]; placed?: TrailMark } {
   const text = quest.steps?.[i] ?? ''
   const links = quest.stepLinks?.[i] ?? []
+  const neighbours = (quest.steps ?? []).slice(Math.max(0, i - 1), i + 2).join('\n')
   const out: QuestLocChip[] = []
+  let placed: TrailMark | undefined
   ;(quest.stepLocs?.[i] ?? []).forEach((l, n) => {
-    const v = coordZone({ text, at: l.at, templateZone: l.zone, links, quest, lookup: index, point: l, earlier })
+    const v = coordZone({ text, at: l.at, templateZone: l.zone, links, quest, lookup: index, point: l, trail, neighbours })
+    if (v.zone?.stem != null) placed = { zone: v.zone, at: l.at }
     // Name it after the NPC its sentence links, when the sentence links exactly one.
     const sentence = text.slice(...sentenceSpan(text, l.at))
     const npcs = linksIn(sentence, links).filter((k) => index.npc(k.page) !== undefined)
@@ -264,7 +195,7 @@ function stepChips(quest: QuestEntry, i: number, index: MobIndex, earlier: Reado
     if (entry === undefined) continue
     for (const c of bestiaryChips({ entry, link, quest, index, key: `s${String(i)}` })) addChip(out, c)
   }
-  return out.slice(0, MAX_STEP_CHIPS)
+  return { chips: out.slice(0, MAX_STEP_CHIPS), ...(placed ? { placed } : {}) }
 }
 
 /**
@@ -285,11 +216,57 @@ function itemRow(m: MobEntry, quest: QuestEntry, index: MobIndex, key: string): 
   return row
 }
 
+/**
+ * Item names that are a KIND of thing, not one thing: many unrelated quests need "a note" and many
+ * unrelated mobs drop one. MEASURED: "a tattered note" put a Lake of Ill Omen sarnak under 36
+ * Guild Summons quests, "Sealed Letter" put three unrelated mobs under nine quests.
+ */
+const GENERIC_ITEM = /\b(note|notes|letter|letters|parchment|scroll|paper|papers|message|page|list|map|journal|book|report|orders?|receipt|ticket|sack|bag|box|pouch|key|token|missive|document|writ|card)\b/i
+
+/**
+ * A SPECIFIC name ("Crushed Topaz", "Bone Chips") is one item wherever it drops, so every dropper
+ * is a true answer even across twenty zones; only a KIND name needs the evidence. Measured the
+ * other way first (more than two dropper zones = shared): it hid 549 true gem and bone sources.
+ */
+function sharedName(item: string): boolean {
+  return GENERIC_ITEM.test(item)
+}
+
+const placeKey = (r: { zone?: ZoneShort; zoneName?: string }): string => r.zone ?? `?${(r.zoneName ?? '').toLowerCase()}`
+
+/**
+ * Does the walkthrough name this mob? Its name without the article ("shadowed man"), or a proper
+ * name's distinctive first word as written ("Founy" for Founy Jestands, at least five letters).
+ */
+function mentions(text: string, mob: string): boolean {
+  const bare = mob.replace(/^(a|an|the)\s+/i, '')
+  if (bare.length >= 6 && text.toLowerCase().includes(bare.toLowerCase())) return true
+  const first = /^[A-Z][a-z`']{4,}/.exec(mob)?.[0]
+  return first !== undefined && bare === mob && new RegExp(`\\b${first}\\b`).test(text)
+}
+
+/** Two pages for one mob name in one zone are one row: their chips are merged, never repeated. */
+function dedupeRows(rows: readonly ItemSourceRow[]): ItemSourceRow[] {
+  const out = new Map<string, ItemSourceRow>()
+  for (const r of rows) {
+    const k = `${r.mob.toLowerCase()}|${placeKey(r)}`
+    const had = out.get(k)
+    if (had) had.chips.push(...r.chips.filter((c) => !had.chips.some((o) => c.loc !== undefined && o.loc?.ns === c.loc.ns && o.loc.ew === c.loc.ew)))
+    else out.set(k, { ...r, chips: [...r.chips] })
+  }
+  return [...out.values()]
+}
+
 /** Where each needed item drops: located mobs first, then catalog order; capped. */
 export function itemSources(quest: QuestEntry, index: MobIndex): QuestItemSources[] {
   const out: QuestItemSources[] = []
+  const text = (quest.steps ?? []).join('\n')
   for (const item of quest.requiredItems ?? []) {
-    const rows = index.droppers(item).map((m) => itemRow(m, quest, index, `item:${item}`))
+    const all = dedupeRows(index.droppers(item).map((m) => itemRow(m, quest, index, `item:${item}`)))
+    // A NAME MANY THINGS SHARE ("a tattered note", "Sealed Letter") needs evidence that THIS dropper
+    // drops THIS quest's one: the quest's own words name the mob. (Its zone being on the route is
+    // NOT enough: Tergon's Spellbook visits West Freeport and its Sealed Letter is Tergon's own.)
+    const rows = sharedName(item) ? all.filter((r) => mentions(text, r.mob)) : all
     if (rows.length === 0) continue
     const located = rows.filter((r) => r.zone !== undefined && r.points.length > 0)
     const rest = rows.filter((r) => !(r.zone !== undefined && r.points.length > 0))
@@ -311,11 +288,14 @@ function npcChips(quest: QuestEntry, index: MobIndex): QuestLocations['npcs'] {
 
 /** Everything the quest page draws about WHERE, in one pass. */
 export function questLocations(quest: QuestEntry, index: MobIndex): QuestLocations {
-  // The walkthrough's trail: where the quest page's own words placed each earlier step.
-  const earlier = new Set<ZoneShort>()
-  const steps = (quest.steps ?? []).map((_s, i) => {
-    const chips = stepChips(quest, i, index, earlier)
-    for (const c of chips) if (c.zone !== undefined && c.sources.includes('quest')) earlier.add(c.zone)
+  // THE WALKTHROUGH'S TRAIL: the zone the steps so far last MOVED the player to ("You have entered
+  // North Qeynos.", "Head to North Qeynos.") or placed a point in. A step that names no zone is
+  // read against it, not against the quest's start zone (questLocZones.ts, rule 5).
+  let trail: ZoneMention | null | undefined
+  const items = questItemNames(quest)
+  const steps = (quest.steps ?? []).map((text, i) => {
+    const { chips, placed } = stepChips(quest, i, index, trail)
+    trail = nextTrail({ text, links: quest.stepLinks?.[i] ?? [], items, prev: trail, start: quest.startZone, ...(placed ? { placed } : {}) })
     return chips
   })
   return {
