@@ -101,3 +101,14 @@ test('zoning auto-switches only to a stem the selector can offer, and never gues
   }
   assert.equal(zoneShortName(undefined), null)
 })
+
+test('the search reaches a renamed zone by its OLD and wiki spellings, not just the table name', () => {
+  // 2026-11-25 zone audit renamed both rows to the log's spelling; the old names must still find them
+  assert.ok(zoneMatches('runnyeye', 'Clan RunnyEye'))
+  assert.ok(zoneMatches('runnyeye', 'Runnyeye Citadel'))
+  assert.ok(zoneMatches('runnyeye', 'liberated citadel'))
+  assert.ok(zoneMatches('cazicthule', 'Cazic Thule'))
+  assert.ok(zoneMatches('cazicthule', 'Temple of Cazic-Thule'))
+  assert.ok(zoneMatches('sleeper', "Kerafyrm's Lair"))
+  assert.ok(!zoneMatches('runnyeye', 'Cazic Thule'))
+})
