@@ -26,6 +26,7 @@ import type { MobEntry, MobLoc } from './mobTypes'
 import type { QuestEntry, QuestStepLink } from './types'
 import { coordZone, isBoundary, isPlaceholderZone, linksIn, nextTrail, npcZone, questItemNames, sentenceSpan, type NpcZone, type ZoneMention } from './questLocZones'
 import type { MobIndex } from './bestiaryIndex'
+import { groundSpawnLocs, type GroundSpawnLoc } from './questGroundSpawns'
 // The bestiary index lives in ./bestiaryIndex.ts; re-exported so callers keep one import.
 export { buildMobIndex, dropKey, type MobIndex } from './bestiaryIndex'
 
@@ -83,6 +84,8 @@ export interface QuestLocations {
   npcs: { name: string; chips: QuestLocChip[] }[]
   /** one entry per required item that SOME mob drops */
   items: QuestItemSources[]
+  /** the ground spawns (and objects) the page's tables locate, each with its chip (./questGroundSpawns.ts) */
+  groundSpawns: GroundSpawnLoc[]
 }
 
 export const MAX_ITEM_SOURCES = 3
@@ -306,6 +309,7 @@ export function questLocations(quest: QuestEntry, index: MobIndex): QuestLocatio
   return {
     steps,
     npcs: npcChips(quest, index),
-    items: itemSources(quest, index)
+    items: itemSources(quest, index),
+    groundSpawns: groundSpawnLocs(quest, index)
   }
 }

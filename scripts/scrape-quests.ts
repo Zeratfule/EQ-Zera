@@ -33,7 +33,7 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'fs'
 import { dirname, resolve } from 'path'
 import { fileURLToPath } from 'url'
-import { isEmptyParse, parseQuestPage, type ParsedQuestPage } from './sources/questPage'
+import { buildQuestCatalog, type QuestSourcePage } from './sources/questEntry'
 import type { QuestData, QuestEntry } from '../src/shared/types'
 
 const API = 'https://eqlwiki.com/api.php'
@@ -264,47 +264,6 @@ async function collectItemTitles(): Promise<Set<string>> {
   return titles
 }
 
-// ---- main ----------------------------------------------------------------------
-
-/**
- * Why this page is NOT a quest, or null when it is one.
- *
- * Category:Quests also holds INDEX pages ("Popular Quests by Level", "Class Race Quest
- * List") — no quest header at all, just hundreds of item links. Indexing those would tie
- * every listed item to a page that is not a quest.
- */
-function nonQuestReason(parsed: ParsedQuestPage): string | null {
-  const indexPage =
-    !parsed.hasTopTable && !parsed.giver && !parsed.startZone && parsed.requiredItems.length > 40
-  if (parsed.disambiguation && isEmptyParse(parsed)) return 'disambiguation hub'
-  if (indexPage) return `index/list page (${parsed.requiredItems.length} item links, no quest header)`
-  if (isEmptyParse(parsed)) return 'no quest fields parsed'
-  return null
-}
-
-/** Project a parsed page into a catalog entry — ONLY the fields the page actually stated. */
-function toQuestEntry(parsed: ParsedQuestPage): QuestEntry {
-  const entry: QuestEntry = { name: parsed.page, page: parsed.page }
-  if (parsed.startZone) entry.startZone = parsed.startZone
-  if (parsed.giver) entry.giver = parsed.giver
-  if (parsed.minLevel != null) entry.minLevel = parsed.minLevel
-  if (parsed.classes.length) entry.classes = parsed.classes
-  if (parsed.relatedZones.length) entry.relatedZones = parsed.relatedZones
-  if (parsed.relatedNpcs.length) entry.relatedNpcs = parsed.relatedNpcs
-  if (parsed.rewards.length) entry.rewards = parsed.rewards.map((name) => ({ name }))
-  if (parsed.requiredItems.length) entry.requiredItems = parsed.requiredItems
-  if (parsed.expReward) entry.expReward = true
-  if (parsed.steps.length) entry.steps = parsed.steps
-  return withStepRefs(entry, parsed)
-}
-
-/** The per-step links and coordinates: index-aligned with `steps`, so whole or not at all. */
-function withStepRefs(entry: QuestEntry, parsed: ParsedQuestPage): QuestEntry {
-  if (parsed.stepLinks.some((l) => l.length > 0)) entry.stepLinks = parsed.stepLinks
-  if (parsed.stepLocs.some((l) => l.length > 0)) entry.stepLocs = parsed.stepLocs
-  return entry
-}
-
 function printSummary(quests: QuestEntry[], skipped: { page: string; reason: string }[]): void {
   const indexed = new Set<string>()
   let reqCount = 0
@@ -330,6 +289,8 @@ function printSummary(quests: QuestEntry[], skipped: { page: string; reason: str
   }
 }
 
+// ---- main ----------------------------------------------------------------------
+
 async function main(): Promise<void> {
   const itemTitles = await collectItemTitles()
   const isItem = (title: string): boolean => itemTitles.has(title.toLowerCase().replace(/\s+/g, ' ').trim())
@@ -337,28 +298,23 @@ async function main(): Promise<void> {
   const pages = await collectQuestPages()
   console.log(`\nFetching + parsing ${pages.length} quest pages…`)
 
-  const quests: QuestEntry[] = []
-  const skipped: { page: string; reason: string }[] = []
+  // Fetch every page first (cache hits cost nothing), then parse the lot through the SAME pure
+  // projection the health gate rebuilds the catalog with (./sources/questEntry.ts).
+  const sources: QuestSourcePage[] = []
+  const fetchFailed: { page: string; reason: string }[] = []
   let done = 0
   for (const p of pages) {
     let wt: string | null = null
     try {
       wt = await fetchWikitext(p.pageid)
     } catch (err) {
-      skipped.push({ page: p.title, reason: `fetch failed: ${(err as Error).message}` })
+      fetchFailed.push({ page: p.title, reason: `fetch failed: ${(err as Error).message}` })
     }
-    if (wt == null) {
-      if (!skipped.some((s) => s.page === p.title)) skipped.push({ page: p.title, reason: 'no wikitext' })
-    } else {
-      const parsed = parseQuestPage(p.title, wt, isItem)
-      const reason = nonQuestReason(parsed)
-      if (reason) skipped.push({ page: p.title, reason })
-      else quests.push(toQuestEntry(parsed))
-    }
+    if (wt !== null || !fetchFailed.some((s) => s.page === p.title)) sources.push({ title: p.title, wikitext: wt })
     if (++done % 100 === 0) console.log(`  ${done}/${pages.length}`)
   }
+  const { quests, skipped } = buildQuestCatalog(sources, isItem)
 
-  quests.sort((a, b) => a.page.localeCompare(b.page))
   const out: QuestData = {
     scrapedAt: new Date().toISOString(),
     source: 'eqlwiki.com — Category:Quests + quest subcategories',
@@ -367,7 +323,7 @@ async function main(): Promise<void> {
   mkdirSync(dirname(OUT_PATH), { recursive: true })
   writeFileSync(OUT_PATH, JSON.stringify(out, null, 2))
 
-  printSummary(quests, skipped)
+  printSummary(quests, [...fetchFailed, ...skipped])
 }
 
 void main()

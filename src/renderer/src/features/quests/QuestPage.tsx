@@ -18,7 +18,8 @@ import { questClasses, questItemKey, type LootedQuestItem } from '../../../../sh
 import type { QuestProgress } from '../../../../shared/questProgress'
 import { formatDate } from '../../lib/formatDate'
 import { QuestSteps, type QuestStepsProps } from './QuestSteps'
-import { ItemSourcesList, NpcList } from './QuestWhere'
+import { GroundSpawnList, ItemSourcesList, NpcList } from './QuestWhere'
+import { groundSpawnsTitle, splitGroundSpawns } from '../../../../shared/questGroundSpawns'
 import { questLocationsFor } from './questLocIndex'
 import { rememberQuestPage } from './questResume'
 import type { MapAnchor } from '../maps/mapTarget'
@@ -172,6 +173,8 @@ export function QuestPage({
   const heldByKey: Held = useMemo(() => new Map(held.map((h) => [h.key, h])), [held])
   // WHERE (quest locations wave): resolved once per page by the pure resolver, cached per page.
   const locs = useMemo(() => questLocationsFor(quest), [quest])
+  // A ground spawn of a NEEDED item reads under "Where to get it"; the rest get their own block.
+  const ground = useMemo(() => splitGroundSpawns(locs.groundSpawns, quest.requiredItems ?? []), [locs, quest.requiredItems])
   // Leaving for the map remembers this page, so coming back lands here (questResume.ts).
   const openMap = useMemo(
     () =>
@@ -209,8 +212,13 @@ export function QuestPage({
         <Stack spacing={1.5}>
           <QuestHeader quest={quest} />
           <ItemsSection title="Items needed" names={quest.requiredItems ?? []} held={heldByKey} onOpenLoot={onOpenLoot}>
-            <ItemSourcesList items={locs.items} quest={quest.page} onOpenMap={openMap} />
+            <ItemSourcesList items={locs.items} ground={ground.needed} quest={quest.page} onOpenMap={openMap} />
           </ItemsSection>
+          {ground.rest.length > 0 && (
+            <Section title={groundSpawnsTitle(ground.rest)}>
+              <GroundSpawnList ground={ground.rest} quest={quest.page} onOpenMap={openMap} />
+            </Section>
+          )}
           <ItemsSection title="Rewards" names={(quest.rewards ?? []).map((r) => r.name)} held={heldByKey} onOpenLoot={onOpenLoot} />
           <StepsSection
             steps={steps}

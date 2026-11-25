@@ -172,29 +172,49 @@ function topTableFields(body: string): Record<string, string> {
   return fields
 }
 
+/**
+ * The label words each field is read from: a label CONTAINING one of them, tried in this order.
+ * Exported so the health gate (scripts/questHealth.mts) can tell a label this parser reads from
+ * one it silently skips — "Starts In" was skipped until 2026-11, and 11 quests had no start zone.
+ */
+export const TOP_TABLE_LABELS = {
+  startZone: ['start zone', 'starts in'],
+  giver: ['quest giver', 'giver'],
+  minLevel: ['minimum level', 'min level', 'level'],
+  classes: ['classes'],
+  relatedZones: ['related zones'],
+  relatedNpcs: ['related npcs', 'related npc']
+} as const
+
+/** Every label the page's questTopTable gives a value, lowercased (none without the table). */
+export function topTableLabels(wikitext: string): string[] {
+  const m = TOP_TABLE_RE.exec(wikitext)
+  return m ? Object.keys(topTableFields(m[1])) : []
+}
+
 export function parseTopTable(wikitext: string): QuestTopTable | null {
   const m = TOP_TABLE_RE.exec(wikitext)
   if (!m) return null
   const fields = topTableFields(m[1])
 
   /** First field whose label CONTAINS one of `wants`, in the order given; '' when none. */
-  const pick = (...wants: string[]): string => {
+  const pick = (wants: readonly string[]): string => {
     for (const want of wants) {
       for (const [k, v] of Object.entries(fields)) if (k.includes(want)) return v
     }
     return ''
   }
-  const minText = cellText(pick('minimum level', 'min level', 'level'))
+  const minText = cellText(pick(TOP_TABLE_LABELS.minLevel))
   const minNum = minText ? Number(/(\d+)/.exec(minText)?.[1]) : NaN
 
   return {
-    startZone: cellText(pick('start zone', 'starts in')),
-    giver: cellText(pick('quest giver', 'giver')),
+    startZone: cellText(pick(TOP_TABLE_LABELS.startZone)),
+    giver: cellText(pick(TOP_TABLE_LABELS.giver)),
     minLevel: Number.isFinite(minNum) ? minNum : undefined,
     minLevelText: minText && !/^\d+$/.test(minText) ? minText : undefined,
-    classes: cellList(pick('classes')),
-    relatedZones: cellList(pick('related zones')),
-    relatedNpcs: cellList(pick('related npcs', 'related npc'))
+    classes: cellList(pick(TOP_TABLE_LABELS.classes)),
+    relatedZones: cellList(pick(TOP_TABLE_LABELS.relatedZones)),
+    relatedNpcs: cellList(pick(TOP_TABLE_LABELS.relatedNpcs))
   }
 }
 
@@ -208,7 +228,7 @@ export interface WikiSection {
  * Nektropos patch (2026-11) use level-1 headings, and reading only `==` and deeper left them
  * with no steps and no reward. Group 1 is the `=` run (the depth), group 2 the heading text.
  */
-const HEADING_RE = /^\s*(={1,6})\s*([^=\s][^=]*?)\s*={1,6}\s*$/
+export const HEADING_RE = /^\s*(={1,6})\s*([^=\s][^=]*?)\s*={1,6}\s*$/
 
 /** Split wikitext into its lead and `= Heading =` sections (any depth). */
 export function splitSections(wikitext: string): { lead: string; sections: WikiSection[] } {
@@ -240,7 +260,7 @@ const EXP_MARKER = /\{\{\s*(yougainexperience|exp)\s*\}\}|you gain experience/i
  * first three are bullet lists a player can follow; a Walkthrough is prose with the NPC dialogue
  * pasted in, so it is the fallback and gets the dialogue stripped.
  */
-const STEP_HEADINGS: RegExp[] = [
+export const STEP_HEADINGS: RegExp[] = [
   /quick list$/i,
   /checklist$/i, // "Checklist", "High-level Checklist"
   // "Summary": a {{CheckboxList}} of steps on the Nektropos-patch pages (2026-11), a bullet list
@@ -255,7 +275,7 @@ const STEP_HEADINGS: RegExp[] = [
  * 10th Ring" on the Coldain ring pages, route names on the Bard Mail page) get every section
  * that is not one of these — the sections that are never steps on any page.
  */
-const NOT_STEPS = /rewards?$|^notes?$|^related\b|^see also$|^dialogue$|^exp gain$|^references$|^external links?$|^guides?$|^videos?$/i
+export const NOT_STEPS = /rewards?$|^notes?$|^related\b|^see also$|^dialogue$|^exp gain$|^references$|^external links?$|^guides?$|^videos?$/i
 
 /** Wiki table syntax, in a section that is supposed to be a list. */
 const TABLE_LINE = /^\s*(\{\||\|\}|\|-|\||!)/

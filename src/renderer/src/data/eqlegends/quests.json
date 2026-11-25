@@ -1,5 +1,5 @@
 {
-  "scrapedAt": "2026-11-25T06:59:31.774Z",
+  "scrapedAt": "2026-11-25T09:15:08.928Z",
   "source": "eqlwiki.com — Category:Quests + quest subcategories",
   "quests": [
     {
@@ -59243,6 +59243,157 @@
             "page": "Unrest"
           }
         ]
+      ],
+      "groundSpawns": [
+        {
+          "item": "Azia",
+          "ns": -1159,
+          "ew": 2329,
+          "zone": "Erud's Crossing",
+          "note": "Underwater on the ocean floor past the shipwreck with the zombie sailors, just after the ledge. Use invis and avoid the five zombie sailors inside the ship. BEWARE! Lvl 40 \"a killer shark\"s see invis and dispel!; Enduring breath recommended: Yes",
+          "links": [
+            {
+              "page": "Erud's Crossing"
+            }
+          ],
+          "context": "Locations: NOTE: All rods can be picked up while Invisibility is active and it does not break invis."
+        },
+        {
+          "item": "Beza",
+          "ns": 5000,
+          "ew": -5100,
+          "zone": "Everfrost Peaks",
+          "note": "Floor of the house in the back of the hidden cave entered through the frozen river. The house is located in the northeast portion of the caves. Three ice boned skeletons spawn inside. Enter the river through the closest hole Everfrost Peaks (2417, -4068) and swim up against the ice to breathe. The Lich of Miragul wanders the caves, but it is not aggressive.; Enduring breath recommended: No",
+          "links": [
+            {
+              "page": "Everfrost Peaks"
+            }
+          ],
+          "context": "Locations: NOTE: All rods can be picked up while Invisibility is active and it does not break invis."
+        },
+        {
+          "item": "Caza",
+          "ns": 2782,
+          "ew": 142,
+          "z": -372,
+          "zone": "Lake Rathetear",
+          "note": "Underwater on the top floor of the stone tower in the hidden cave underneath the first island out from Rathe Mountains island #15 on the map. Cave entrance is at Lake Rathetear (2826, -907, -171). Other cave entrance is south-southwest of the South Karana zone line, which is also the Evac location.; Enduring breath recommended: Yes",
+          "links": [
+            {
+              "page": "Lake Rathetear"
+            },
+            {
+              "page": "Rathe Mountains"
+            },
+            {
+              "page": "South Karana"
+            }
+          ],
+          "context": "Locations: NOTE: All rods can be picked up while Invisibility is active and it does not break invis."
+        },
+        {
+          "item": "Dena",
+          "ns": -890,
+          "ew": -740,
+          "z": -431,
+          "zone": "Dagnor's Cauldron",
+          "note": "Underwater in a small gully on the lake floor out and to the west of Kedge Keep (near the island), directly out from Unrest.; Enduring breath recommended: Yes",
+          "links": [
+            {
+              "page": "Dagnor's Cauldron"
+            }
+          ],
+          "context": "Locations: NOTE: All rods can be picked up while Invisibility is active and it does not break invis."
+        },
+        {
+          "item": "Ena",
+          "ns": 1145,
+          "ew": -690,
+          "z": -122,
+          "zone": "Lower Guk",
+          "note": "On the floor of the a reanimated hand (Lower Guk) room.; Enduring breath recommended: No",
+          "links": [
+            {
+              "page": "Lower Guk"
+            },
+            {
+              "page": "a reanimated hand (Lower Guk)"
+            }
+          ],
+          "context": "Locations: NOTE: All rods can be picked up while Invisibility is active and it does not break invis."
+        },
+        {
+          "item": "Fana",
+          "ns": -790,
+          "ew": -60,
+          "zone": "Oasis of Marr",
+          "note": "Underwater on the top floor of the stone tower in the lake.; Enduring breath recommended: No",
+          "links": [
+            {
+              "page": "Oasis of Marr"
+            }
+          ],
+          "context": "Locations: NOTE: All rods can be picked up while Invisibility is active and it does not break invis."
+        },
+        {
+          "item": "Geza",
+          "ns": -207,
+          "ew": 433,
+          "z": -18,
+          "zone": "Highpass Hold",
+          "note": "Beneath the waterfall near The Tiger's Roar patio.; Enduring breath recommended: No",
+          "links": [
+            {
+              "page": "Highpass Hold"
+            }
+          ],
+          "context": "Locations: NOTE: All rods can be picked up while Invisibility is active and it does not break invis."
+        },
+        {
+          "item": "Heda",
+          "ns": 670,
+          "ew": 60,
+          "zone": "Qeynos Aqueducts",
+          "note": "Underwater on the tile floor of the shark pit. 14 on map.; Enduring breath recommended: No",
+          "links": [
+            {
+              "page": "Qeynos Aqueducts"
+            }
+          ],
+          "context": "Locations: NOTE: All rods can be picked up while Invisibility is active and it does not break invis."
+        },
+        {
+          "item": "Izah",
+          "ns": 0.89,
+          "ew": -803.9,
+          "zone": "Neriak Commons",
+          "note": "Underwater on the river floor immediately outside The Blind Fish windows. The Blind Fish is the underground bar near the Bank, with four large windows looking out below the surface.; Enduring breath recommended: No",
+          "links": [
+            {
+              "page": "Neriak"
+            }
+          ],
+          "context": "Locations: NOTE: All rods can be picked up while Invisibility is active and it does not break invis."
+        },
+        {
+          "item": "Jaka",
+          "ns": 520,
+          "ew": -285,
+          "zone": "Unrest",
+          "note": "Underwater on the hidden cavern floor to the right of the manor. Near Serra and a gnomish spelunker, but in a cubby between them and the gazebo.; Enduring breath recommended: No",
+          "links": [
+            {
+              "page": "Unrest"
+            },
+            {
+              "page": "Serra"
+            },
+            {
+              "page": "a gnomish spelunker"
+            }
+          ],
+          "context": "Locations: NOTE: All rods can be picked up while Invisibility is active and it does not break invis."
+        }
       ]
     },
     {
@@ -68604,6 +68755,54 @@
         [],
         [],
         []
+      ],
+      "groundSpawns": [
+        {
+          "item": "Harpsichord Black Key",
+          "ns": -37,
+          "ew": 130,
+          "note": "Southwest, on the chessboard in front of The Game Master; the NPC is at (-34, 118, -7).",
+          "links": [
+            {
+              "page": "The Game Master"
+            }
+          ],
+          "context": "Castle Access and Library Key: Complete Hate, Betrayal, and Trust to enter Nektropos Castle. Inside, hail Lord Ollix Everling and follow his dialogue. He is near the ruined harpsichord in the main hall; his exact NPC coordinates have not yet been recorded. For the Nektropos Library Key, collect these four glowing ground items. The coordinates are the items' ground-spawn positions, not the nearby…"
+        },
+        {
+          "item": "Harpsichord White Key",
+          "ns": 710,
+          "ew": 105,
+          "note": "Northwest storage area with lots of boxes.",
+          "context": "Castle Access and Library Key: Complete Hate, Betrayal, and Trust to enter Nektropos Castle. Inside, hail Lord Ollix Everling and follow his dialogue. He is near the ruined harpsichord in the main hall; his exact NPC coordinates have not yet been recorded. For the Nektropos Library Key, collect these four glowing ground items. The coordinates are the items' ground-spawn positions, not the nearby…"
+        },
+        {
+          "item": "Harpsichord String",
+          "ns": 120,
+          "ew": -151,
+          "note": "Southeast Tormentor room; Tormentor Utzain is at (142, -146, -7).",
+          "links": [
+            {
+              "page": "Tormentor Utzain"
+            }
+          ],
+          "context": "Castle Access and Library Key: Complete Hate, Betrayal, and Trust to enter Nektropos Castle. Inside, hail Lord Ollix Everling and follow his dialogue. He is near the ruined harpsichord in the main hall; his exact NPC coordinates have not yet been recorded. For the Nektropos Library Key, collect these four glowing ground items. The coordinates are the items' ground-spawn positions, not the nearby…"
+        },
+        {
+          "item": "Harpsichord Plectrum",
+          "ns": -23,
+          "ew": -100,
+          "note": "Southeast Priestess of Ulkorruuk room.",
+          "context": "Castle Access and Library Key: Complete Hate, Betrayal, and Trust to enter Nektropos Castle. Inside, hail Lord Ollix Everling and follow his dialogue. He is near the ruined harpsichord in the main hall; his exact NPC coordinates have not yet been recorded. For the Nektropos Library Key, collect these four glowing ground items. The coordinates are the items' ground-spawn positions, not the nearby…"
+        },
+        {
+          "item": "ruined harpsichord",
+          "ns": 368,
+          "ew": 65,
+          "kind": "object",
+          "note": "Combine the four components in the ruined harpsichord at (368, 65), in the main lobby near Lord Ollix Everling. It is directly to the left while facing the staircase.",
+          "context": "Castle Access and Library Key: Complete Hate, Betrayal, and Trust to enter Nektropos Castle. Inside, hail Lord Ollix Everling and follow his dialogue. He is near the ruined harpsichord in the main hall; his exact NPC coordinates have not yet been recorded. For the Nektropos Library Key, collect these four glowing ground items. The coordinates are the items' ground-spawn positions, not the nearby…"
+        }
       ]
     },
     {
