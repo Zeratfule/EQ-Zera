@@ -65,6 +65,36 @@ test('EVERY catalog spelling (the pre-change option labels included) is yours un
   }
 })
 
+test('THE RATE PATH: active time under BOTH spellings is the zone time the drops divide by', () => {
+  // Two back-to-back ten-minute visits, the log spelling the zone two ways, a kill every minute in
+  // each (so no idle gap), and one drop in each visit.
+  const T = 1_000_000
+  const VISIT = 600_000
+  const killTs = Array.from({ length: 20 }, (_, i) => T + 30_000 + i * 60_000)
+  const snap: ProgressionSnap = {
+    ...EMPTY_PROGRESSION,
+    zoneStart: [T, T + VISIT],
+    zoneEnd: [T + VISIT, 0],
+    zoneName: ['Northern Felwithe', 'North Felwithe'],
+    killTs,
+    killZone: killTs.map((t) => (t < T + VISIT ? 0 : 1)),
+    killCredit: killTs.map(() => 0),
+    lastTs: T + 2 * VISIT
+  }
+  const events: LootEvent[] = [
+    { ts: T + 100_000, item: 'Rusty Spear', zone: 'Northern Felwithe', source: 'a guard', sourceKind: 'corpse' },
+    { ts: T + VISIT + 100_000, item: 'Rusty Spear', zone: 'North Felwithe', source: 'a guard', sourceKind: 'corpse' }
+  ]
+  const seen = zoneLootSeen(events, snap, 'North Felwithe')
+  assert.equal(seen.hasRates, true)
+  const row = seen.map.get('rusty spear')
+  assert.equal(row?.drops, 2)
+  // 2 drops over the WHOLE 20 minutes of the zone = 6 per hour; with only one spelling's visit
+  // admitted it would read 12 (two drops over ten minutes) or no rate at all
+  // (the range's one-millisecond half-open tail makes it 5.999995)
+  assert.ok(row?.perHour != null && Math.abs(row.perHour - 6) < 1e-3, `perHour=${String(row?.perHour)}`)
+})
+
 test('a different zone is never yours, and no zone picked counts everything', () => {
   assert.equal(yours('South Felwithe', 'North Felwithe', true), 0)
   assert.equal(yours('Paineel', 'The Ruins of Old Paineel', false), 0)

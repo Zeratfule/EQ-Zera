@@ -2,7 +2,7 @@
 // reincarnation AA is listed; defaults to the one the log's grant line states) and the last RESPEC
 // (paid purchase lines before it stop counting as held). Rules: shared/aaCharacter.ts.
 
-import { type JSX, useState } from 'react'
+import { type JSX, useCallback, useEffect, useState } from 'react'
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField, Typography } from '@mui/material'
 import { REINCARNATION_RACES } from '../../../../shared/reincarnation'
 import { respecInstant, respecRefusal, type AaRespec } from '../../../../shared/aaCharacter'
@@ -49,12 +49,36 @@ interface RespecDialogProps {
   onConfirm: (at: number) => void
 }
 
+/** Re-read the clock this often while the dialog is open, so "now" keeps up with the game. */
+const CLOCK_TICK_MS = 5_000
+
+/**
+ * The wall clock as dialog state: read at mount, on every edit and focus, and on a short tick, so
+ * a dialog left open while the user respecs in game never calls the present "the future".
+ */
+function useNow(): [number, () => void] {
+  const [now, setNow] = useState(() => Date.now())
+  const refresh = useCallback(() => setNow(Date.now()), [])
+  useEffect(() => {
+    const id = window.setInterval(refresh, CLOCK_TICK_MS)
+    return () => window.clearInterval(id)
+  }, [refresh])
+  return [now, refresh]
+}
+
 function RespecDialog({ last, onClose, onConfirm }: RespecDialogProps): JSX.Element {
-  const [now] = useState(() => Date.now())
-  const [when, setWhen] = useState(() => toLocalInput(now))
+  const [now, refreshNow] = useNow()
+  const [when, setWhen] = useState(() => toLocalInput(Date.now()))
+  const history = { respecs: last ? [last] : [] }
   // covers lines through the end of the named second (shared/aaCharacter.ts respecInstant)
   const at = respecInstant(new Date(when).getTime())
-  const refusal = respecRefusal({ respecs: last ? [last] : [] }, at, now)
+  const refusal = respecRefusal(history, at, now)
+  const confirm = (): void => {
+    // the confirm-time re-check reads the clock itself, never the last tick
+    const t = Date.now()
+    refreshNow()
+    if (respecRefusal(history, at, t) === null) onConfirm(at)
+  }
   return (
     <Dialog open onClose={onClose} data-testid="aa-planner-respec-dialog">
       <DialogTitle>Record a respec</DialogTitle>
@@ -68,7 +92,11 @@ function RespecDialog({ last, onClose, onConfirm }: RespecDialogProps): JSX.Elem
             size="small"
             label="When you respecced"
             value={when}
-            onChange={(e) => setWhen(e.target.value)}
+            onChange={(e) => {
+              refreshNow()
+              setWhen(e.target.value)
+            }}
+            onFocus={refreshNow}
             error={refusal !== null}
             helperText={refusal ?? ' '}
             slotProps={{
@@ -88,7 +116,7 @@ function RespecDialog({ last, onClose, onConfirm }: RespecDialogProps): JSX.Elem
         <Button onClick={onClose} data-testid="aa-planner-respec-cancel">
           Cancel
         </Button>
-        <Button variant="contained" disabled={refusal !== null} onClick={() => onConfirm(at)} data-testid="aa-planner-respec-confirm">
+        <Button variant="contained" disabled={refusal !== null} onClick={confirm} data-testid="aa-planner-respec-confirm">
           I respecced
         </Button>
       </DialogActions>
