@@ -12,10 +12,10 @@ import assert from 'node:assert/strict'
 import { parseStatsBlock, type ItemStatBlock } from '../src/shared/itemStats'
 import { scaleStatBlock, upgradeStateForTier } from '../src/shared/itemUpgrade'
 import {
-  blockScalesWithUpgrade,
   clampProjectionTier,
   defaultProjectionTier,
   itemWindowRows,
+  offersProjection,
   projectionCaption,
   type ItemWindowRow
 } from '../src/shared/itemProjection'
@@ -112,20 +112,24 @@ test('timing keys stay out of the attribute grid and never scale', () => {
   assert.deepEqual(r.timing, [{ key: 'CAST TIME', value: 'Instant' }, { key: 'CHARGES', value: '5' }])
 })
 
-test('the control is offered only where something actually moves', () => {
-  assert.equal(blockScalesWithUpgrade(THELVORN), true)
-  assert.equal(blockScalesWithUpgrade(CROWN), true)
-  assert.equal(blockScalesWithUpgrade(AXE), true)
-  assert.equal(blockScalesWithUpgrade(JACINTH), false, 'WT 0.1 is the weight entry guard')
-  assert.equal(blockScalesWithUpgrade(MOTE), false, 'no stats at all')
-  assert.equal(blockScalesWithUpgrade(undefined), false)
-  const heroicOnly: ItemStatBlock = { ...MOTE, stats: [{ key: 'HEROIC STR', value: '+5' }], dmgBonus: 4 }
-  assert.equal(blockScalesWithUpgrade(heroicOnly), false, 'heroics and Dmg Bon are left alone by the reference')
+test('the control is offered only on wearable gear where more than Weight moves', () => {
+  assert.equal(offersProjection(THELVORN), true)
+  assert.equal(offersProjection(CROWN), true)
+  assert.equal(offersProjection(AXE), true)
+  assert.equal(offersProjection(JACINTH), false, 'WT 0.1 is the weight entry guard, and no slot')
+  assert.equal(offersProjection(MOTE), false, 'no stats at all')
+  assert.equal(offersProjection(undefined), false)
+  const heroicOnly: ItemStatBlock = { ...MOTE, slot: 'NECK', stats: [{ key: 'HEROIC STR', value: '+5' }], dmgBonus: 4 }
+  assert.equal(offersProjection(heroicOnly), false, 'heroics and Dmg Bon are left alone by the reference')
   const scroll: ItemStatBlock = {
     ...MOTE, weight: '0.1', effects: [{ kind: 'click', name: 'Minor Healing' }], stats: [{ key: 'CAST TIME', value: '1.5' }]
   }
-  assert.equal(blockScalesWithUpgrade(scroll), false, 'a spell scroll gets no control')
-  assert.equal(blockScalesWithUpgrade({ ...MOTE, weight: '2.0' }), true, 'a lone weight still moves')
+  assert.equal(offersProjection(scroll), false, 'a spell scroll gets no control')
+  assert.equal(offersProjection({ ...MOTE, weight: '2.0' }), false, 'food / a hide only loses weight')
+  assert.equal(offersProjection({ ...MOTE, slot: 'CHEST', weight: '9.0' }), false, 'slotted but weight-only')
+  assert.equal(offersProjection({ ...MOTE, stats: [{ key: 'STR', value: '+5' }] }), false, 'no slot, not gear')
+  assert.equal(offersProjection({ ...MOTE, slot: 'RANGE', dmg: 8, atkDelay: 30 }), true, 'a lone DMG moves')
+  assert.equal(offersProjection({ ...MOTE, slot: 'FINGER', saves: [{ key: 'SV FIRE', value: '+3' }] }), true)
 })
 
 test('the default projection is the item`s own tier', () => {

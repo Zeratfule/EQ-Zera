@@ -4,7 +4,7 @@
 // ItemWindow callers hold which:
 //   loot item page (ItemDetailContent)  BASE: `lookupItem` strips ` +N` and parses the wiki
 //                                       `|statsblock`; posky's fallback is keyed by base name.
-//                                       The only `projectable` caller.
+//                                       The only `ProjectableItemWindow` caller.
 //   KnownItemTooltip, feed hover cards  BASE, same lookup, but compact: never projected.
 //   share card (ShareItemTooltip)       ALREADY SCALED: `characterShareItem` runs `wornBlock`
 //                                       at the sharer's tier before the cell travels. Compact.
@@ -118,11 +118,14 @@ function rowsChanged(rows: ItemWindowRow[]): boolean {
   return rows.some((r) => r.base !== undefined || r.added === true)
 }
 
-/** Whether ANY drawn value moves with the upgrade; if none does, a projection control is noise. */
-export function blockScalesWithUpgrade(block: ItemStatBlock | undefined): boolean {
-  if (!block) return false
+/**
+ * Whether the item page offers a projection: wearable gear (it states a slot) on which something
+ * other than Weight moves at +10. Food and tradeskill hides only lose weight, so they get nothing.
+ */
+export function offersProjection(block: ItemStatBlock | undefined): boolean {
+  if (!block?.slot) return false
   const top = itemWindowRows(block, ITEM_MAX_TIER)
-  return [top.physical, top.combat, top.attrs, top.saves].some(rowsChanged)
+  return [top.combat, top.attrs, top.saves].some(rowsChanged)
 }
 
 /**

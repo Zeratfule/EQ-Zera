@@ -11,13 +11,14 @@
 // carries its item level (` +N`). Within-tier item exp is unobservable (no log line
 // reports it), so the meter shows tier position, never a fabricated exp fill.
 //
-// PROJECTION (full window, `projectable` callers only): a whole-tier slider redraws the block at
-// +0..+10 through `shared/itemProjection.ts`, each changed value beside its muted +0 base. The
-// meter keeps the item's REAL tier; the slider starts there and the caption says when it differs.
-// Only a caller holding the BASE block may opt in: scaling a block that already reads +N applies
-// the upgrade twice (the module header says which surfaces hold which).
+// PROJECTION (full window): `projectedTier` redraws the block at a whole +N through
+// `shared/itemProjection.ts`, each changed value beside its muted +0 base; the meter keeps the
+// item's REAL tier. The control and its state live in `ProjectableItemWindow` (ItemProjection.tsx)
+// and arrive here as a slot, so compact importers (the overlay bundle) never load the slider.
+// Only a caller holding the BASE block may project: a block that already reads +N would be scaled
+// twice (the module header says which surfaces hold which).
 
-import { type JSX, useMemo } from 'react'
+import { type JSX, type ReactNode, useMemo } from 'react'
 import { Box, Chip, Stack, Typography } from '@mui/material'
 import {
   EFFECT_LABEL,
@@ -32,7 +33,6 @@ import {
   type ItemStatBlock
 } from '@shared/itemStats'
 import { itemWindowRows, type ItemWindowRow, type ItemWindowRows } from '@shared/itemProjection'
-import { ItemProjection, useItemProjection } from './ItemProjection'
 import { Tooltip } from './Tooltip'
 import { PALETTE } from '../../../shared/palette'
 
@@ -77,6 +77,12 @@ function BaseMark({ base, added }: { base?: string; added?: boolean }): JSX.Elem
   )
 }
 
+/** Full window only: the label ellipsizes (whole text in `title`) before anything is clipped. */
+const FULL_LABEL_SX = { minWidth: '3ch', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' } as const
+
+/** Two equal columns. Full: `minmax(0, …)` so a long row shrinks inside its column, never widens it. */
+const gridColumns = (compact?: boolean): string => (compact ? '1fr 1fr' : 'minmax(0, 1fr) minmax(0, 1fr)')
+
 function Row({
   label,
   value,
@@ -96,10 +102,15 @@ function Row({
   return (
     <Stack direction="row" justifyContent="space-between" spacing={1} sx={{ lineHeight: 1.45 }}>
       {label && (
-        <Typography component="span" sx={{ color: EQ_ITEM_COLORS.label, fontSize: compact ? 11 : 12, fontFamily: MONO }}>
+        <Typography
+          component="span"
+          title={compact ? undefined : label}
+          sx={{ color: EQ_ITEM_COLORS.label, fontSize: compact ? 11 : 12, fontFamily: MONO, ...(compact ? {} : FULL_LABEL_SX) }}
+        >
           {label}
         </Typography>
       )}
+      {/* The base mark may wrap above the value in a full window; the value itself never breaks. */}
       <Typography
         component="span"
         data-testid={moved ? 'item-projected-value' : undefined}
@@ -108,11 +119,12 @@ function Row({
           fontSize: compact ? 11 : 12,
           fontFamily: MONO,
           textAlign: 'right',
-          whiteSpace: 'nowrap'
+          whiteSpace: compact ? 'nowrap' : 'normal',
+          minWidth: compact ? undefined : 0
         }}
       >
         <BaseMark base={base} added={added} />
-        {value}
+        <Box component="span" sx={{ whiteSpace: 'nowrap' }}>{value}</Box>
       </Typography>
     </Stack>
   )
@@ -225,10 +237,12 @@ export interface ItemWindowProps {
    */
   observedTier?: number
   /**
-   * The caller vouches `stats`/`rawStats` is the BASE (+0) block, so the full window may offer
-   * the +N projection. Never set it for a block that is already scaled (a share card's).
+   * Full window only: draw the block at this whole tier, changed values beside their base. The
+   * caller vouches the block is the BASE (+0) block — never pass it for an already-scaled one.
    */
-  projectable?: boolean
+  projectedTier?: number
+  /** Full window only: the projection control, drawn under the tier meter. */
+  projectionSlot?: ReactNode
 }
 
 /** The window shell: the game's frame, or nothing at all on a compact hover surface. */
@@ -317,7 +331,7 @@ function StatGrid({ rows, compact }: { rows: ItemWindowRows; compact?: boolean }
   const { physical, combat, ratio } = rows
   if (physical.length === 0 && combat.length === 0) return null
   return (
-    <Box sx={{ mt: 0.75, display: 'grid', gridTemplateColumns: '1fr 1fr', columnGap: 2, alignItems: 'start' }}>
+    <Box sx={{ mt: 0.75, display: 'grid', gridTemplateColumns: gridColumns(compact), columnGap: 2, alignItems: 'start' }}>
       <GridColumn rows={physical} compact={compact} />
       <Box>
         <GridColumn rows={combat} compact={compact} />
@@ -339,7 +353,7 @@ function StatPairs({
 }): JSX.Element | null {
   if (rows.length === 0) return null
   return (
-    <Box sx={{ mt: 0.5, display: 'grid', gridTemplateColumns: '1fr 1fr', columnGap: 2 }}>
+    <Box sx={{ mt: 0.5, display: 'grid', gridTemplateColumns: gridColumns(compact), columnGap: 2 }}>
       {rows.map((s, i) => (
         <Row
           key={`${s.key}${String(i)}`}
@@ -438,7 +452,8 @@ export function ItemWindow({
   flavor,
   compact,
   observedTier,
-  projectable
+  projectedTier,
+  projectionSlot
 }: ItemWindowProps): JSX.Element {
   const block = useMemo(() => stats ?? (rawStats ? parseStatsBlock(rawStats) : undefined), [stats, rawStats])
   // The displayed NAME wins when it states a level: that is this exact instance's tier, and
@@ -448,12 +463,12 @@ export function ItemWindow({
   const tier = nameTier ?? observedTier
   const tierIsObserved = nameTier === undefined && observedTier !== undefined
 
-  const projection = useItemProjection({ name, observedTier, block, allowed: projectable === true && !compact })
+  const drawnTier = compact ? 0 : (projectedTier ?? 0)
   // Cast/cooldown split out for the click effect, attrs and saves paired with their base.
-  const rows = useMemo(() => itemWindowRows(block, projection.tier), [block, projection.tier])
+  const rows = useMemo(() => itemWindowRows(block, drawnTier), [block, drawnTier])
 
   return (
-    <Box sx={shellSx(compact)}>
+    <Box sx={shellSx(compact)} data-testid={compact ? undefined : 'item-window'}>
       <ItemHeader name={name} iconId={iconId} compact={compact} />
 
       <IdentityLines block={block} compact={compact} />
@@ -461,7 +476,7 @@ export function ItemWindow({
       {/* Item level — only when the name carries it, or we watched this character merge it */}
       {tier !== undefined && <TierBlock tier={tier} compact={compact} observed={tierIsObserved} />}
 
-      {projection.offered && <ItemProjection {...projection} colors={EQ_ITEM_COLORS} />}
+      {!compact && projectionSlot}
 
       <StatGrid rows={rows} compact={compact} />
       <StatPairs rows={rows.attrs} compact={compact} />

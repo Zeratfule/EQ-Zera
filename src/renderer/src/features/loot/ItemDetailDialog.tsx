@@ -18,7 +18,7 @@ import type { Timeslice } from '@shared/timeslice'
 import { isAcquisition } from '@shared/lootDisposition'
 import { formatDate } from '../../lib/formatDate'
 import { EQ_ITEM_COLORS } from '../../lib/ItemWindow'
-import { ObservedItemWindow } from '../../lib/ObservedItemWindow'
+import { ProjectableItemWindow } from '../../lib/ItemProjection'
 import { ItemDbSources, ObservedChip } from './ItemDbSources'
 import { ItemZoneTable } from './ItemZoneTable'
 import { KnowledgeSection } from './KnowledgeSection'
@@ -201,7 +201,8 @@ function aggregateLoot(events: LootEvent[]): LootBreakdown {
 /* The item as the GAME shows it: wiki base data, drawn in the item-window language.
    `stats` (posky's scraped block) is the offline fallback when the wiki lookup hasn't
    structured one yet. Both are the +0 block (`lookupItem` strips the name's ` +N` and reads the
-   wiki `|statsblock`; posky is keyed by the base name), which is what makes it `projectable`. */
+   wiki `|statsblock`; posky is keyed by the base name), which is what makes projection safe.
+   Keyed on the item so the projection starts over at each item's own tier. */
 function ItemWindowColumn({
   item,
   stats,
@@ -213,13 +214,13 @@ function ItemWindowColumn({
 }): JSX.Element {
   return (
     <Box sx={{ width: { xs: '100%', md: 340 }, flexShrink: 0 }}>
-      <ObservedItemWindow
+      <ProjectableItemWindow
+        key={item}
         name={item}
         stats={knowledge.data?.stats}
         rawStats={stats ?? knowledge.data?.statsBlock}
         iconId={knowledge.data?.iconId}
         flavor={knowledge.data?.summary}
-        projectable
       />
       {knowledge.loading && !knowledge.data && (
         <Stack direction="row" spacing={1} alignItems="center" sx={{ mt: 1, color: 'text.secondary' }}>
