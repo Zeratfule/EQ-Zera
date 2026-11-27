@@ -7,9 +7,11 @@
 // set is not a picker. Clustering is mandatory, and the raw set is the only input we have.
 //
 // WHAT WE CANNOT DO, AND WILL NOT PRETEND TO. The in-game height filter is PLAYER-RELATIVE
-// ("N units above and below your character", default 10/10). `Your Location` appears 0 times in
-// 86.6 MB of log (§0 #7), so there is no character z to centre on and no honest auto-select. The
-// control below is MANUAL and defaults to All. It never guesses which floor you are standing on.
+// ("N units above and below your character", default 10/10). The log carries a character z only
+// when you type `/loc` (EverQuest Legends writes the answer — measured 2026-11-27:
+// `Your Location is 218.95, 91.12, 17.90`; the old "0 times" count was a log with no /loc in it),
+// so the slice is never re-centred on you continuously. The control defaults to All levels and is
+// manual; the one automatic move, on a NEW reading only, is `loggedLoc.floorForNewLoc`'s.
 //
 // THE CLUSTERING — recursive balanced natural-break bisection.
 //

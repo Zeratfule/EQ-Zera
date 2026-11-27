@@ -18,6 +18,9 @@
 // deliberately NOT a click on the map — the toolbar's chip owns that, next to the box the loc was
 // typed into, so the affordance sits where the user's attention already is and a stray click on a
 // map can never delete something they typed.
+//
+// THE LOGGED /loc (`MapLoggedLocMarker`) shares the crosshair and differs in tone and caption: the
+// game wrote it to the log (loggedLoc.ts), it is never persisted, and it says the minute it was read.
 
 import type { JSX } from 'react'
 import { useTheme } from '@mui/material'
@@ -45,14 +48,67 @@ function tick(color: string, style: React.CSSProperties): JSX.Element {
 
 export function MapLocMarker({ at, loc, vp }: MapLocMarkerProps): JSX.Element {
   const color = useTheme().palette.info.main
+  return (
+    <Crosshair
+      at={at}
+      vp={vp}
+      color={color}
+      testId="maps-loc-marker"
+      dataLoc={formatLoc(loc)}
+      title={`The location you entered - /loc ${formatLoc(loc)}`}
+    />
+  )
+}
+
+/**
+ * THE GAME'S OWN /loc — a fourth authority, so a fourth look: the same crosshair (it is still "this
+ * exact point") in the theme's success tone, with its label written beside it so it can never be
+ * mistaken for the pasted one or for a live position. The label carries the minute it was read.
+ * Off the floor on screen it dims rather than vanishing, like the geometry around it.
+ */
+export function MapLoggedLocMarker({
+  at,
+  loc,
+  label,
+  dim,
+  vp
+}: MapLocMarkerProps & { label: string; dim: boolean }): JSX.Element {
+  const color = useTheme().palette.success.main
+  return (
+    <Crosshair
+      at={at}
+      vp={vp}
+      color={color}
+      testId="maps-logged-loc-marker"
+      dataLoc={formatLoc(loc)}
+      title={`${label} - ${formatLoc(loc)}`}
+      caption={label}
+      dim={dim}
+    />
+  )
+}
+
+interface CrosshairProps {
+  at: { x: number; y: number }
+  vp: MapViewport
+  color: string
+  testId: string
+  dataLoc: string
+  title: string
+  caption?: string
+  dim?: boolean
+}
+
+function Crosshair({ at, vp, color, testId, dataLoc, title, caption, dim = false }: CrosshairProps): JSX.Element {
   const p = vp.toScreen(at.x, at.y)
   const half = RING_PX / 2
   const arm = { width: 2, height: TICK_PX, marginLeft: -1 } as const
   const bar = { height: 2, width: TICK_PX, marginTop: -1 } as const
   return (
     <div
-      data-testid="maps-loc-marker"
-      data-loc={formatLoc(loc)}
+      data-testid={testId}
+      data-loc={dataLoc}
+      data-dim={dim ? 'true' : undefined}
       style={{
         position: 'absolute',
         left: p.px,
@@ -60,11 +116,29 @@ export function MapLocMarker({ at, loc, vp }: MapLocMarkerProps): JSX.Element {
         width: 0,
         height: 0,
         pointerEvents: 'none',
-        zIndex: 4
+        zIndex: 4,
+        opacity: dim ? 0.45 : 1
       }}
     >
+      {caption != null && (
+        <span
+          data-testid={`${testId}-label`}
+          style={{
+            position: 'absolute',
+            left: half + TICK_PX + 4,
+            top: -9,
+            whiteSpace: 'nowrap',
+            fontSize: 12,
+            fontWeight: 600,
+            color,
+            textShadow: '0 0 3px rgba(0,0,0,0.9)'
+          }}
+        >
+          {caption}
+        </span>
+      )}
       <span
-        title={`The location you entered - /loc ${formatLoc(loc)}`}
+        title={title}
         style={{
           position: 'absolute',
           left: -half,

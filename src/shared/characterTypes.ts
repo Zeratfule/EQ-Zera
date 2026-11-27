@@ -27,6 +27,35 @@ export interface CharacterSnap {
    * projection). See shared/currentLevel.ts for the precedence rules and the wording.
    */
   level?: LevelStatement
+  /**
+   * WHERE `/loc` LAST SAID YOU WERE, in this zone, this session. EverQuest Legends writes the
+   * answer to the log (measured 2026-11-27: `Your Location is 218.95, 91.12, 17.90`), and the
+   * engine files it only from the LIVE tail, under the zone held at that moment; any zone line or
+   * new session drops it. Absent means "no /loc since you arrived", never "you are at the origin".
+   */
+  loc?: LoggedLoc
+}
+
+/** A live `/loc` reading: the game's own axes (north/south FIRST) plus when and where it was read. */
+export interface LoggedLoc {
+  ns: number
+  ew: number
+  z: number
+  /** LOG timestamp of the line, epoch millis. */
+  ts: number
+  /** The raw zone name the character was in, exactly as `CharacterSnap.zone` spelled it. */
+  zone: string
+}
+
+/** `Your Location is <ns>, <ew>, <z>` — the game's answer to `/loc`, anchored on the system line. */
+export interface LocEvent {
+  kind: 'loc'
+  seq: number
+  ts: number
+  raw: string
+  ns: number
+  ew: number
+  z: number
 }
 
 /** Every field is optional in a delta — the module pushes only what actually moved. */

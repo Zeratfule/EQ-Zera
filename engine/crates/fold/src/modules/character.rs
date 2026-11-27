@@ -11,6 +11,10 @@
 //!
 //! `seq` is this module's own revision, monotonic and never reset: state here moves without a log
 //! event (`set_character`), and `useModule` dedupes with `d.seq <= knownSeq`.
+//!
+//! The `/loc` position is LIVE-ONLY and never checkpointed: a replayed `Your Location is` is where
+//! the character stood when it was typed, not where it stands now. It is filed under the zone held
+//! at that moment (none held ⇒ nothing filed) and any zone line or new session drops it.
 
 use crate::event::Event;
 use crate::EqModule;
@@ -39,11 +43,25 @@ fn next_wins(held: &LevelStatement, next: &LevelStatement) -> bool {
     next.source == "who"
 }
 
+/// `shared/characterTypes.ts LoggedLoc` — a live `/loc` answer and the zone it was read in.
+#[derive(Debug, Clone, Serialize)]
+pub struct LoggedLoc {
+    ns: f64,
+    ew: f64,
+    z: f64,
+    /// LOG timestamp of the line.
+    ts: i64,
+    zone: String,
+}
+
 #[derive(Default, Serialize, Deserialize)]
 pub struct CharacterModule {
     /// The `CharacterRef` as JSON, or `None` for the null the snapshot publishes.
     character: Option<Value>,
     zone: Option<String>,
+    /// Skipped by the checkpoint on purpose: a restored position would be a stale one.
+    #[serde(skip)]
+    loc: Option<LoggedLoc>,
     level: Option<LevelStatement>,
     /// The module's own revision, monotonic for the life of the process. See the header.
     rev: i64,
@@ -62,6 +80,7 @@ impl CharacterModule {
         CharacterModule {
             character: None,
             zone: None,
+            loc: None,
             level: None,
             rev: 0,
             pending: Some(character),
@@ -86,6 +105,30 @@ impl CharacterModule {
         self.level = Some(next);
         self.rev += 1;
     }
+
+    /// A live `/loc` replaces the last one. Historical lines and a zone not yet stated file nothing.
+    fn state_loc(&mut self, ev: &Event, live: bool) {
+        let Some(zone) = self.zone.clone().filter(|_| live) else {
+            return;
+        };
+        let (Some(ns), Some(ew), Some(z)) = (ev.f64("ns"), ev.f64("ew"), ev.f64("z")) else {
+            return;
+        };
+        self.loc = Some(LoggedLoc {
+            ns,
+            ew,
+            z,
+            ts: ev.ts(),
+            zone,
+        });
+        self.rev += 1;
+    }
+
+    fn drop_loc(&mut self) {
+        if self.loc.take().is_some() {
+            self.rev += 1;
+        }
+    }
 }
 
 impl EqModule for CharacterModule {
@@ -108,6 +151,7 @@ impl EqModule for CharacterModule {
     fn reset(&mut self) {
         // The ref survives; see the header.
         self.zone = None;
+        self.loc = None;
         self.level = None;
         self.rebirths.reset();
         self.rev += 1;
@@ -119,12 +163,13 @@ impl EqModule for CharacterModule {
         }
     }
 
-    fn on_event(&mut self, ev: &Event, _live: bool) {
+    fn on_event(&mut self, ev: &Event, live: bool) {
         match ev.kind() {
             "epoch" => {
                 // Character rebirth: the wiped character's level and zone say nothing about this
                 // one. The ref is pushed in and stays.
                 self.zone = None;
+                self.loc = None;
                 self.level = None;
                 self.rebirths.reset();
                 self.rev += 1;
@@ -139,12 +184,16 @@ impl EqModule for CharacterModule {
                 }
             }
             "zone" => {
+                // Every zone line moves the character, even back into the zone it left.
+                self.drop_loc();
                 let zone = ev.str("zone").map(str::to_string);
                 if zone != self.zone {
                     self.zone = zone;
                     self.rev += 1;
                 }
             }
+            "sessionStart" => self.drop_loc(),
+            "loc" => self.state_loc(ev, live),
             "level" => self.state_level(LevelStatement {
                 level: ev.int("level").unwrap_or(0),
                 ts: ev.ts(),
@@ -165,9 +214,8 @@ impl EqModule for CharacterModule {
     }
 
     fn snapshot(&self) -> Value {
-        // Three fields, two different absences: `character` publishes null (the TS field is
-        // `CharacterRef | null`) while `zone`/`level` are `undefined` and `JSON.stringify` drops
-        // them.
+        // Two different absences: `character` publishes null (the TS field is
+        // `CharacterRef | null`) while `zone`/`loc`/`level` are `undefined` and are left out.
         let mut state = serde_json::Map::new();
         state.insert(
             "character".to_string(),
@@ -175,6 +223,9 @@ impl EqModule for CharacterModule {
         );
         if let Some(zone) = &self.zone {
             state.insert("zone".to_string(), json!(zone));
+        }
+        if let Some(loc) = &self.loc {
+            state.insert("loc".to_string(), serde_json::to_value(loc).expect("a"));
         }
         if let Some(level) = &self.level {
             state.insert("level".to_string(), serde_json::to_value(level).expect("a"));

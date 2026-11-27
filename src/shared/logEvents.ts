@@ -34,6 +34,7 @@ import type { HailEvent } from './hailTypes'
 import type { FactionCap, FactionHitEvent } from './factionTypes'
 import type { SkillUpEvent } from './skillTypes'
 import type { DoorUnlockedEvent } from './progressionTypes'
+import type { LocEvent } from './characterTypes'
 
 // One re-export for all three, the `ConsiderFaction` line's own form: they are already imported
 // above for the union, so naming them again with a `from` clause would cost two more lines of a
@@ -1465,6 +1466,7 @@ export interface UnknownEvent extends LogEventBase {
 /** The canonical discriminated union of everything the parser can emit. */
 export type LogEvent =
   | ZoneEvent
+  | LocEvent
   | LootEventE
   // A lock picked open (Z Engine, 2026-09-11). Declared in ./progressionTypes, beside the one
   // column that reads it; measured `{kind:'unknown'}` before it existed.

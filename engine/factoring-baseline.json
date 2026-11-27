@@ -10,31 +10,31 @@
       "file": "crates/eqlog/src/event.rs",
       "metric": "complexity",
       "name": "Key::as_str",
-      "value": 87
+      "value": 90
     },
     {
       "file": "crates/eqlog/src/event.rs",
       "metric": "complexity",
       "name": "Key::parse",
-      "value": 87
+      "value": 90
     },
     {
       "file": "crates/eqlog/src/event.rs",
       "metric": "complexity",
       "name": "Kind::as_str",
-      "value": 69
+      "value": 70
     },
     {
       "file": "crates/eqlog/src/event.rs",
       "metric": "complexity",
       "name": "Kind::parse",
-      "value": 68
+      "value": 69
     },
     {
       "file": "crates/eqlog/src/event.rs",
       "metric": "file-lines",
       "name": "",
-      "value": 1194
+      "value": 1210
     },
     {
       "file": "crates/eqlog/src/names.rs",
@@ -64,7 +64,7 @@
       "file": "crates/eqlog/src/parse/mod.rs",
       "metric": "complexity",
       "name": "Parser::classify",
-      "value": 47
+      "value": 48
     },
     {
       "file": "crates/eqlog/src/parse/world.rs",

@@ -2,8 +2,8 @@
 //
 // Split out of MapsView.tsx, which owns WHICH zone is open and nothing about how it is drawn.
 // Everything here is the drawing: the positioned host the viewport measures, the canvas, the
-// label layer, the three marks — the search flash, the selection ring and the typed-/loc crosshair
-// — and the sidebar column beside them.
+// label layer, the marks — the search flash, the selection ring, the typed-/loc crosshair and the
+// logged-/loc one (loggedLoc.ts) — and the sidebar column beside them.
 //
 // WHEN THE SIDEBAR IS OFF IT IS NOT RENDERED AT ALL, so the surface is the row's only flex child
 // and takes the full width. That is the whole anti-flicker design: no zero-width box, no width
@@ -29,7 +29,9 @@ import type { JumpTarget } from './crossZone'
 import { MapCanvas } from './MapCanvas'
 import { MapPointsLayer, labelPosition } from './MapPointsLayer'
 import { MapMobPins } from './MapMobPins'
-import { MapLocMarker } from './MapLocMarker'
+import { MapLocMarker, MapLoggedLocMarker } from './MapLocMarker'
+import { loggedLocLabel } from './loggedLoc'
+import type { LoggedLocState } from './useLoggedLoc'
 import MapMobPane from './MapMobPane'
 import { paneOverlay, type PaneOverlay, type ZonePaneState } from './useMapPane'
 import { mapFromLoc, type EqLoc, type LayerMask } from './mapGeometry'
@@ -163,6 +165,7 @@ function MapSurface({
   floor,
   marker,
   locMarker,
+  logged,
   pane,
   overlay
 }: {
@@ -175,6 +178,8 @@ function MapSurface({
   marker: Marker | null
   /** The `/loc` the user typed for THIS zone, still in the game's own axes (JOS-98). */
   locMarker: EqLoc | null
+  /** Where the game's own /loc put you, in this zone, this visit (loggedLoc.ts). */
+  logged: Pick<LoggedLocState, 'loc' | 'offFloor'>
   /** The sidebar's contribution, or null when it is closed and draws nothing. */
   pane: PaneOverlay | null
   /** The quest layer (MapQuestLayer.tsx): pins, the target and its card. Drawn above the rest. */
@@ -215,6 +220,15 @@ function MapSurface({
       {/* THE ONE SEAM, AGAIN: the typed reading reaches the screen through `mapFromLoc` and then
           the same `project` every other mark uses. Nothing here knows which way north is. */}
       {locMarker != null && <MapLocMarker at={mapFromLoc(locMarker)} loc={locMarker} vp={vp} />}
+      {logged.loc != null && (
+        <MapLoggedLocMarker
+          at={mapFromLoc(logged.loc)}
+          loc={logged.loc}
+          label={loggedLocLabel(logged.loc)}
+          dim={logged.offFloor}
+          vp={vp}
+        />
+      )}
       {overlay}
     </Box>
   )
@@ -260,6 +274,8 @@ export interface MapBodyProps {
   marker: Marker | null
   /** This zone's typed-/loc marker, or null. Persistent, unlike `marker` above it. */
   locMarker: EqLoc | null
+  /** The logged-/loc marker's reading and whether it sits off the floor on screen. */
+  logged: Pick<LoggedLocState, 'loc' | 'offFloor'>
   /** A cross-zone hit was clicked — `useSearchJump`'s handler, which changes zone first. */
   onJump: (to: JumpTarget) => void
   /** The quest layer, drawn on the surface when a map is. */
@@ -268,7 +284,7 @@ export interface MapBodyProps {
 
 export default function MapBody(props: MapBodyProps): JSX.Element {
   const { data, empty, vp, hostRef, layers, bands, floor, pane, zoneName, marker, onJump } = props
-  const { locMarker, overlay } = props
+  const { locMarker, logged, overlay } = props
   return (
     <Stack direction="row" spacing={1.5} sx={{ position: 'relative', flexGrow: 1, minHeight: 0 }}>
       {data != null ? (
@@ -281,6 +297,7 @@ export default function MapBody(props: MapBodyProps): JSX.Element {
           floor={floor}
           marker={marker}
           locMarker={locMarker}
+          logged={logged}
           pane={paneOverlay(pane)}
           overlay={overlay}
         />

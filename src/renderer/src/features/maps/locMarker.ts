@@ -5,20 +5,21 @@
 // THE ASK (JOS-98, a v0.10.0 report): "Would also be nice if there was a marker on the map for my
 // current positon. I realize I would need to feed the map a /loc but would gladly do so."
 //
-// WHY THE USER HAS TO TYPE IT AT ALL. The log states the zone you entered and nothing else
-// positional — `Your Location` appears ZERO times in it, re-measured for this ticket across the
-// owner's whole 116.8 MB `eqlog_Primitive_freeport.txt` and every other log in that directory,
-// because /loc answers in the game window and is never written to the file the app tails. So there
-// is no live tracking to build and none is pretended: the app knows one position, the one you
-// handed it, and it says so rather than implying a dot that follows you. That absence is also why
-// the reporter offered to feed it in by hand — they had already worked out that nothing else could.
+// THE LOG DOES CARRY /loc — CORRECTED 2026-11-27. JOS-98 measured `Your Location` ZERO times across
+// the owner's 116.8 MB log of the day and concluded /loc never reaches the file. It does: the
+// owner's real log, `eqlog_<Char>_freeport.txt`, holds `[Fri Nov 27 16:44:57 2026] Your Location is
+// 218.95, 91.12, 17.90` — the earlier log simply had no /loc typed into it. The engine now parses
+// that line and the map draws it on its own (loggedLoc.ts). THIS module is still the PASTE path: a
+// position the user hands over, kept per zone across restarts, which the logged reading never
+// overwrites. It is still not live tracking — one position per paste.
 //
-// THE SHAPE IS EVIDENCED, NOT INVENTED. Since the log never carries the line, the exact wording was
-// taken from players pasting their own /loc output into wiki walkthroughs (24 pages in
-// `scripts/sources/cache/quests/`), e.g. page-15280: `Your Location is -192.19, -129.81, 3.26`. So:
-// the literal words `Your Location is`, then three signed decimals at two places, comma-and-space
-// separated, no parentheses, no trailing period of the game's own. Everything this parser accepts
-// BEYOND that shape is defensive slack, never a second believed format.
+// THE SHAPE IS EVIDENCED, NOT INVENTED: the real log line above, and players pasting their own /loc
+// output into wiki walkthroughs (24 pages in `scripts/sources/cache/quests/`), e.g. page-15280:
+// `Your Location is -192.19, -129.81, 3.26`. So: the literal words `Your Location is`, then three
+// signed decimals at two places, comma-and-space separated, no parentheses, no trailing period of
+// the game's own. Everything this parser accepts BEYOND that shape is defensive slack (it is a
+// paste box), never a second believed format — the LOG line is parsed by the engine, strictly
+// (eqlog `parse/loc.rs`), because a parser that forgives a paste would also forgive a spoof.
 //
 // THE TRANSFORM IS NOT REDERIVED HERE. `mapGeometry.mapFromLoc` has owned `/loc` → map-file
 // coordinates since wave 1 (`mapX = -ew, mapY = -ns, mapZ = elevation`), it is the transform

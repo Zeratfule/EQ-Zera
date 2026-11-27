@@ -33,6 +33,16 @@ it exists today. Numbers in this document are **counts I took**, not estimates.
 > else — §2.1's, unchanged — and the marker reaches the screen through the same `project` as every
 > other mark. Read #7 as: **the app will never claim to know where you are; it will remember where
 > you said you were.**
+
+> **CORRECTED AGAIN 2026-11-27 — the measurement behind #7 was wrong.** EverQuest Legends DOES
+> write `/loc` output to the log. Real line, owner's log `eqlog_<Char>_freeport.txt`:
+> `[Fri Nov 27 16:44:57 2026] Your Location is 218.95, 91.12, 17.90`. The 0-count was a log nobody
+> had typed /loc into. So the engine now parses the line (eqlog `parse/loc.rs`, anchored on the
+> system line so chat quoting it is never a position) and the character module files a LIVE reading
+> under the current zone, dropping it on any zone line or new session; the map draws it as
+> "You (from /loc, HH:MM)" (`loggedLoc.ts`, `useLoggedLoc.ts`). Still no live TRACKING: one reading
+> per /loc, nothing between readings, no memory reading. A replayed (backfilled) /loc places
+> nothing. The pasted marker above is unchanged and is a separate mark.
 | 8 | **Height filter: manual z-slice, default OFF, last wave.** | The in-game filter is *player-relative*, and per #7 we have no player Z. A manual discrete-floor selector is the honest substitute (§8). |
 
 ---
@@ -673,6 +683,12 @@ something other than the player would be a lie.
 > input — a lie with a number attached. The stepper stays manual (and `mobPins.ts` carries the
 > matching reason for why pins do not slice either).
 
+> **Amended 2026-11-27 (logged /loc, §0 #7's correction).** A FRESH logged `/loc` is the one input
+> allowed to move the floor, and only when the map follows you AND a specific floor is already on
+> screen (`loggedLoc.floorForNewLoc`): it jumps to the band holding the reading's z. Pinned and All
+> levels are never moved, nothing happens on mount or tab switch, and the logged marker dims (never
+> hides) when it sits off the floor on screen; clicking its chip centres on it and shows its floor.
+
 Recommendation — **include, in the last wave, as a manual control**, and label it as such:
 
 - Compute `MapData.zLevels` in main: the distinct `min(z1, z2)` of every segment, clustered.
@@ -777,7 +793,8 @@ Bound by the stated UI conventions:
 
 | Can | Cannot |
 |---|---|
-| Auto-open the **current zone's** map from the log | Show **where you are** on its own — no positional line exists in the log (verified: 0 `Your Location`, re-measured over 116.8 MB) |
+| Auto-open the **current zone's** map from the log | Show **where you are** between `/loc`s — the log states a position only when you type one |
+| Mark where you stood at your last `/loc` this visit, from the log, cleared on zoning (2026-11-27) | Replay an old `/loc` as current — backfilled lines place nothing |
 | Mark a `/loc` **you type or paste**, per zone, until you replace or clear it (JOS-98) | **Follow** you — the mark is a fact you stated once, not live tracking |
 | Search POI labels in-zone and corpus-wide | Show live mob positions, spawn timers, or anything not in the file |
 | Toggle layers, pick per-layer packs, step floors | Follow the player's Z (that is what the in-game filter does; we have no Z) |

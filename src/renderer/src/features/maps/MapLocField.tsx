@@ -1,10 +1,9 @@
 // THE ONE PLACE A POSITION CAN ENTER THIS APP (JOS-98) — type or paste a `/loc`, get a marker.
 //
 // WHY A TEXT BOX ON A TOOLBAR THAT "DESCRIBES THE DRAWING". Because this control describes the
-// drawing: it states the one position drawn on the surface, and it is the only way to put one
-// there. The log never says where you are standing, so the alternative to a box is no marker at
-// all — which is what the header used to say, in the flat voice of something that could not be
-// fixed. It can be fixed; the user just has to say the number.
+// drawing: it states a position drawn on the surface, and it is how a pasted one gets there. The
+// log carries your position only at a `/loc` and only for the visit it was typed in (loggedLoc.ts
+// draws that one on its own); this box is for a mark you want KEPT on a zone across visits.
 //
 // THE FIELD EMPTIES ON SUCCESS AND THE CHIP TAKES OVER. Two controls, two jobs: the box is where a
 // loc goes IN, the chip is what the app currently BELIEVES — stated in the game's own words and

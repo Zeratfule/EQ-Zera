@@ -27,8 +27,9 @@
 // THE ONE BOX THAT IS NOT A CONTROL OVER THE MAP FILE is the `/loc` field (JOS-98,
 // MapLocField.tsx): it states, and lets you set, the single position the app has been TOLD. It
 // earns its place on a row about the drawing because that is exactly what it is — the marker is
-// drawn on the surface, and this is the only way one gets there. It is gated on `hasMap` with the
-// rest: a coordinate typed against no map has nowhere to land.
+// drawn on the surface, and this is how a pasted one gets there. It is gated on `hasMap` with the
+// rest: a coordinate typed against no map has nowhere to land. Beside it, when the game's own
+// `/loc` reached the log this visit, sits the chip that states that reading (MapLoggedLocChip.tsx).
 //
 // NOTHING HERE SEARCHES. The bar used to carry a `Search labels…` box, a This zone / All zones
 // scope toggle and a sidebar toggle called `Zone` — three controls asking the same question the
@@ -72,6 +73,8 @@ import { bandLabel, type FloorBand } from './floorSlice'
 import type { EqLoc, LayerMask } from './mapGeometry'
 import ZoneSelect from './MapZoneSelect'
 import MapLocField from './MapLocField'
+import MapLoggedLocChip from './MapLoggedLocChip'
+import type { LoggedLoc } from '@shared/characterTypes'
 import type { ZoneMode } from './zoneFollow'
 
 /** The three optional layers, in file order. Layer 0 (the zone's geometry) is always drawn. */
@@ -84,10 +87,12 @@ const TOGGLEABLE: { layer: MapLayer; label: string }[] = [
 /**
  * The FLOOR STEPPER — a discrete walk up and down the zone's clustered elevations (§8).
  *
- * IT IS MANUAL, AND SAYING SO IS THE POINT. The in-game height filter follows your CHARACTER
- * ("N units above and below"); the log states the zone you entered and nothing else positional,
- * so there is no character z here and no honest auto-select. Default is All levels; the control
- * never claims to know which floor you are standing on (world-model law 1 and law 6).
+ * IT IS MANUAL BETWEEN READINGS. The in-game height filter follows your CHARACTER ("N units above
+ * and below"); the log carries your z only when you type `/loc` (EverQuest Legends writes the
+ * answer to the log — measured 2026-11-27, `Your Location is 218.95, 91.12, 17.90`). So the one
+ * time this moves on its own is a NEW logged /loc while the map follows you and a specific floor
+ * is already on screen (`loggedLoc.floorForNewLoc`). Default is All levels, and between readings
+ * it never claims to know which floor you are standing on (world-model law 1).
  *
  * Compact by construction — two arrows and a chip — because a dozen bands as a button group
  * would be wider than every other control on this row put together. Fully keyboard operable:
@@ -254,6 +259,10 @@ export interface MapToolbarProps {
   onPlaceLoc: (loc: EqLoc) => void
   onShowLoc: () => void
   onClearLoc: () => void
+  /** Where the game's own /loc put you in this zone, this visit, or null (loggedLoc.ts). */
+  loggedLoc: LoggedLoc | null
+  /** Centre on it, and show its floor. */
+  onShowLoggedLoc: () => void
   /** The view is tighter than the whole zone — zoom-out and Fit have something to do. */
   zoomedIn: boolean
   /** > 1 zooms in, < 1 out, around the pane centre. */
@@ -388,6 +397,7 @@ function DrawnControls(props: MapToolbarProps): JSX.Element {
       {/* The one position the app can hold, and the only way one gets in (JOS-98). It belongs on
           this row for the row's own reason: it describes what is DRAWN on the surface. */}
       <MapLocField marker={locMarker} onPlace={onPlaceLoc} onShow={onShowLoc} onClear={onClearLoc} />
+      {props.loggedLoc != null && <MapLoggedLocChip loc={props.loggedLoc} onShow={props.onShowLoggedLoc} />}
     </>
   )
 }
