@@ -10,12 +10,18 @@
 // NO socket rows at all, and the tier meter appears only for a name that actually
 // carries its item level (` +N`). Within-tier item exp is unobservable (no log line
 // reports it), so the meter shows tier position, never a fabricated exp fill.
+//
+// PROJECTION (full window): `projectedTier` redraws the block at a whole +N through
+// `shared/itemProjection.ts`, each changed value beside its muted +0 base; the meter keeps the
+// item's REAL tier. The control and its state live in `ProjectableItemWindow` (ItemProjection.tsx)
+// and arrive here as a slot, so compact importers (the overlay bundle) never load the slider.
+// Only a caller holding the BASE block may project: a block that already reads +N would be scaled
+// twice (the module header says which surfaces hold which).
 
-import { type JSX, useMemo } from 'react'
+import { type JSX, type ReactNode, useMemo } from 'react'
 import { Box, Chip, Stack, Typography } from '@mui/material'
 import {
   EFFECT_LABEL,
-  damageRatio,
   expToNextTier,
   itemTierFromName,
   parseStatsBlock,
@@ -23,8 +29,10 @@ import {
   tierBonusPct,
   unlockedExaltationSlots,
   ITEM_MAX_TIER,
+  type ItemStat,
   type ItemStatBlock
 } from '@shared/itemStats'
+import { itemWindowRows, type ItemWindowRow, type ItemWindowRows } from '@shared/itemProjection'
 import { Tooltip } from './Tooltip'
 import { PALETTE } from '../../../shared/palette'
 
@@ -38,6 +46,7 @@ export const EQ_ITEM_COLORS = {
   value: '#e9eaf2',
   effect: '#f08ae0', // effects + filled exaltations — magenta
   ratio: '#ff8079', // damage ratio — red
+  projected: '#5fe08a', // a value the projection moved — the green the game paints gains in
   meter: PALETTE.accent
 } as const
 
@@ -58,35 +67,64 @@ export function itemIconUrl(iconId: number): string {
   return `eqimg://item/${iconId}`
 }
 
+/** A projected value's +0 base, muted, ahead of the new value ("15 → 19"; "new +3" when added). */
+function BaseMark({ base, added }: { base?: string; added?: boolean }): JSX.Element | null {
+  if (base === undefined && !added) return null
+  return (
+    <Box component="span" sx={{ color: EQ_ITEM_COLORS.label }}>
+      {base === undefined ? 'new ' : `${base} → `}
+    </Box>
+  )
+}
+
+/** Full window only: the label ellipsizes (whole text in `title`) before anything is clipped. */
+const FULL_LABEL_SX = { minWidth: '3ch', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' } as const
+
+/** Two equal columns. Full: `minmax(0, …)` so a long row shrinks inside its column, never widens it. */
+const gridColumns = (compact?: boolean): string => (compact ? '1fr 1fr' : 'minmax(0, 1fr) minmax(0, 1fr)')
+
 function Row({
   label,
   value,
   color,
-  compact
+  compact,
+  base,
+  added
 }: {
   label?: string
   value: string
   color?: string
   compact?: boolean
+  base?: string
+  added?: boolean
 }): JSX.Element {
+  const moved = base !== undefined || added === true
   return (
     <Stack direction="row" justifyContent="space-between" spacing={1} sx={{ lineHeight: 1.45 }}>
       {label && (
-        <Typography component="span" sx={{ color: EQ_ITEM_COLORS.label, fontSize: compact ? 11 : 12, fontFamily: MONO }}>
+        <Typography
+          component="span"
+          title={compact ? undefined : label}
+          sx={{ color: EQ_ITEM_COLORS.label, fontSize: compact ? 11 : 12, fontFamily: MONO, ...(compact ? {} : FULL_LABEL_SX) }}
+        >
           {label}
         </Typography>
       )}
+      {/* The base mark may wrap above the value in a full window; the value itself never breaks. */}
       <Typography
         component="span"
+        data-testid={moved ? 'item-projected-value' : undefined}
         sx={{
-          color: color ?? EQ_ITEM_COLORS.value,
+          color: color ?? (moved ? EQ_ITEM_COLORS.projected : EQ_ITEM_COLORS.value),
           fontSize: compact ? 11 : 12,
           fontFamily: MONO,
           textAlign: 'right',
-          whiteSpace: 'nowrap'
+          whiteSpace: compact ? 'nowrap' : 'normal',
+          minWidth: compact ? undefined : 0
         }}
       >
-        {value}
+        <BaseMark base={base} added={added} />
+        <Box component="span" sx={{ whiteSpace: 'nowrap' }}>{value}</Box>
       </Typography>
     </Stack>
   )
@@ -178,9 +216,6 @@ function TierBlock({
   )
 }
 
-/** Stat keys that describe an effect's timing rather than the item's own numbers. */
-const TIMING_KEYS = new Set(['CAST TIME', 'COOLDOWN', 'RECAST', 'CHARGES'])
-
 export interface ItemWindowProps {
   /** display name exactly as observed (keeps its ` +N` item level) */
   name: string
@@ -201,6 +236,13 @@ export interface ItemWindowProps {
    * stays blank: unknown is not tier 0 (law 1).
    */
   observedTier?: number
+  /**
+   * Full window only: draw the block at this whole tier, changed values beside their base. The
+   * caller vouches the block is the BASE (+0) block — never pass it for an already-scaled one.
+   */
+  projectedTier?: number
+  /** Full window only: the projection control, drawn under the tier meter. */
+  projectionSlot?: ReactNode
 }
 
 /** The window shell: the game's frame, or nothing at all on a compact hover surface. */
@@ -273,54 +315,28 @@ function IdentityLines({
   )
 }
 
-/** Left column = the physical description. */
-function physicalRows(block?: ItemStatBlock): [string, string][] {
-  const left: [string, string][] = []
-  if (block?.size) left.push(['Size', block.size])
-  if (block?.weight) left.push(['Weight', block.weight])
-  if (block?.skill) left.push(['Skill', block.skill])
-  if (block?.range) left.push(['Range', block.range])
-  return left
-}
-
-/** Right column = combat/defense numbers. */
-function combatRows(block?: ItemStatBlock): [string, string][] {
-  const right: [string, string][] = []
-  if (block?.ac !== undefined) right.push(['AC', String(block.ac)])
-  if (block?.dmg !== undefined) right.push(['Base Dmg', String(block.dmg)])
-  if (block?.dmgBonus !== undefined) right.push(['Dmg Bonus', String(block.dmgBonus)])
-  if (block?.atkDelay !== undefined) right.push(['Delay', String(block.atkDelay)])
-  if (block?.backstab !== undefined) right.push(['Backstab', String(block.backstab)])
-  return right
+/** One grid column; each row's `key` is already its label. */
+function GridColumn({ rows, compact }: { rows: ItemWindowRow[]; compact?: boolean }): JSX.Element {
+  return (
+    <Box>
+      {rows.map((r) => (
+        <Row key={r.key} label={r.key} value={r.value} base={r.base} compact={compact} />
+      ))}
+    </Box>
+  )
 }
 
 /** Stat grid: physical | combat, with the damage ratio (red) closing the combat column. */
-function StatGrid({ block, compact }: { block?: ItemStatBlock; compact?: boolean }): JSX.Element | null {
-  const left = physicalRows(block)
-  const right = combatRows(block)
-  const ratio = damageRatio(block?.dmg, block?.atkDelay)
-  if (left.length === 0 && right.length === 0) return null
+function StatGrid({ rows, compact }: { rows: ItemWindowRows; compact?: boolean }): JSX.Element | null {
+  const { physical, combat, ratio } = rows
+  if (physical.length === 0 && combat.length === 0) return null
   return (
-    <Box
-      sx={{
-        mt: 0.75,
-        display: 'grid',
-        gridTemplateColumns: '1fr 1fr',
-        columnGap: 2,
-        alignItems: 'start'
-      }}
-    >
+    <Box sx={{ mt: 0.75, display: 'grid', gridTemplateColumns: gridColumns(compact), columnGap: 2, alignItems: 'start' }}>
+      <GridColumn rows={physical} compact={compact} />
       <Box>
-        {left.map(([l, v]) => (
-          <Row key={l} label={l} value={v} compact={compact} />
-        ))}
-      </Box>
-      <Box>
-        {right.map(([l, v]) => (
-          <Row key={l} label={l} value={v} compact={compact} />
-        ))}
-        {ratio !== undefined && (
-          <Row label="Ratio" value={ratio.toFixed(2)} color={EQ_ITEM_COLORS.ratio} compact={compact} />
+        <GridColumn rows={combat} compact={compact} />
+        {ratio && (
+          <Row label="Ratio" value={ratio.value} base={ratio.base} color={EQ_ITEM_COLORS.ratio} compact={compact} />
         )}
       </Box>
     </Box>
@@ -332,14 +348,21 @@ function StatPairs({
   rows,
   compact
 }: {
-  rows: { key: string; value: string }[]
+  rows: ItemWindowRow[]
   compact?: boolean
 }): JSX.Element | null {
   if (rows.length === 0) return null
   return (
-    <Box sx={{ mt: 0.5, display: 'grid', gridTemplateColumns: '1fr 1fr', columnGap: 2 }}>
+    <Box sx={{ mt: 0.5, display: 'grid', gridTemplateColumns: gridColumns(compact), columnGap: 2 }}>
       {rows.map((s, i) => (
-        <Row key={`${s.key}${i}`} label={statLabel(s.key)} value={s.value} compact={compact} />
+        <Row
+          key={`${s.key}${String(i)}`}
+          label={statLabel(s.key)}
+          value={s.value}
+          base={s.base}
+          added={s.added}
+          compact={compact}
+        />
       ))}
     </Box>
   )
@@ -352,7 +375,7 @@ function EffectsBlock({
   compact
 }: {
   block?: ItemStatBlock
-  timing: { key: string; value: string }[]
+  timing: ItemStat[]
   compact?: boolean
 }): JSX.Element | null {
   if (!block || (block.effects.length === 0 && timing.length === 0)) return null
@@ -428,7 +451,9 @@ export function ItemWindow({
   iconId,
   flavor,
   compact,
-  observedTier
+  observedTier,
+  projectedTier,
+  projectionSlot
 }: ItemWindowProps): JSX.Element {
   const block = useMemo(() => stats ?? (rawStats ? parseStatsBlock(rawStats) : undefined), [stats, rawStats])
   // The displayed NAME wins when it states a level: that is this exact instance's tier, and
@@ -438,15 +463,12 @@ export function ItemWindow({
   const tier = nameTier ?? observedTier
   const tierIsObserved = nameTier === undefined && observedTier !== undefined
 
-  // Cast/cooldown belong to the click effect, not the attribute grid (Boots of the Long
-  // Road prints them right under its `Click Effect:` line).
-  // eslint-disable-next-line eqc/no-domain-munging -- JOS-459 cutover ledger item 8: ItemStat comes from a corpus still bundled in the renderer (mobs/posky/bosses JSON). Moves behind knowledge queries when that surface cuts over.
-  const attrs = (block?.stats ?? []).filter((s) => !TIMING_KEYS.has(s.key))
-  // eslint-disable-next-line eqc/no-domain-munging -- JOS-459 cutover ledger item 8: ItemStat comes from a corpus still bundled in the renderer (mobs/posky/bosses JSON). Moves behind knowledge queries when that surface cuts over.
-  const timing = (block?.stats ?? []).filter((s) => TIMING_KEYS.has(s.key))
+  const drawnTier = compact ? 0 : (projectedTier ?? 0)
+  // Cast/cooldown split out for the click effect, attrs and saves paired with their base.
+  const rows = useMemo(() => itemWindowRows(block, drawnTier), [block, drawnTier])
 
   return (
-    <Box sx={shellSx(compact)}>
+    <Box sx={shellSx(compact)} data-testid={compact ? undefined : 'item-window'}>
       <ItemHeader name={name} iconId={iconId} compact={compact} />
 
       <IdentityLines block={block} compact={compact} />
@@ -454,11 +476,13 @@ export function ItemWindow({
       {/* Item level — only when the name carries it, or we watched this character merge it */}
       {tier !== undefined && <TierBlock tier={tier} compact={compact} observed={tierIsObserved} />}
 
-      <StatGrid block={block} compact={compact} />
-      <StatPairs rows={attrs} compact={compact} />
-      <StatPairs rows={block?.saves ?? []} compact={compact} />
+      {!compact && projectionSlot}
 
-      <EffectsBlock block={block} timing={timing} compact={compact} />
+      <StatGrid rows={rows} compact={compact} />
+      <StatPairs rows={rows.attrs} compact={compact} />
+      <StatPairs rows={rows.saves} compact={compact} />
+
+      <EffectsBlock block={block} timing={rows.timing} compact={compact} />
       <ExaltationBlock block={block} compact={compact} />
       <ExtrasBlock block={block} compact={compact} />
 

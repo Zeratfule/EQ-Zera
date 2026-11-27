@@ -57,6 +57,13 @@ const LOOT_DETAIL = '[data-testid="loot-detail"]'
 const LOOT_TITLE = '[data-testid="loot-detail-title"]'
 const LOOT_ROW = '[data-testid="loot-row"]'
 const LOOT_PREVIEW = '[data-testid="loot-preview"]'
+const ITEM_WINDOW = '[data-testid="item-window"]'
+const PROJECTION = '[data-testid="item-projection"]'
+const PROJECTION_SLIDER = '[data-testid="item-projection-slider"]'
+const PROJECTION_LABEL = '[data-testid="item-projection-label"]'
+const PROJECTION_CAPTION = '[data-testid="item-projection-caption"]'
+const PROJECTION_RESET = '[data-testid="item-projection-reset"]'
+const PROJECTED_VALUE = '[data-testid="item-projected-value"]'
 
 /** The staged dump — the owner's own, and the one every other character spec reads. */
 const DUMP = 'Primitive_freeport-Inventory.txt'
@@ -270,6 +277,7 @@ async function stepItemPage(page: Page, item: string): Promise<void> {
   )
   if (!check('its name opens the item page in the Loot tab', pane)) return
   check('…on the item this spec asked for', (await textOf(page, LOOT_TITLE)).trim() === item, await textOf(page, LOOT_TITLE))
+  await stepProjection(page)
   if (!check('…and a wearable item page carries the preview control', (await countOf(page, LOOT_PREVIEW)) === 1)) return
 
   await page.click(LOOT_PREVIEW, { timeout: 15_000 })
@@ -282,6 +290,48 @@ async function stepItemPage(page: Page, item: string): Promise<void> {
     check('…and the banner names it', (await textOf(page, BANNER)).includes(item))
     await page.click(CLEAR, { timeout: 15_000 })
     await until(async () => (await countOf(page, BANNER)) === 0)
+  }
+}
+
+/**
+ * Every element of the full item window (the window itself, its grids, each row) whose content is
+ * wider than its own box — a projected row that pushes its column wide shows up here.
+ */
+function widerThanBox(page: Page): Promise<string[]> {
+  return page.evaluate((sel) => {
+    const root = document.querySelector(sel)
+    if (!root) return ['no item window']
+    return [root, ...Array.from(root.querySelectorAll('*'))]
+      .filter((el) => el instanceof HTMLElement && el.scrollWidth > el.clientWidth + 1 && el.clientWidth > 0)
+      // A label that ellipsizes is the designed degradation (its title carries the text); the
+      // slider's thumb halo is MUI's own business.
+      .filter((el) => getComputedStyle(el).textOverflow !== 'ellipsis' && !el.closest('[data-testid="item-projection"]'))
+      .map((el) => `${el.tagName} ${String(el.scrollWidth)}>${String(el.clientWidth)} "${(el as HTMLElement).innerText.slice(0, 40)}"`)
+  }, ITEM_WINDOW)
+}
+
+/**
+ * 3b. THE ITEM PAGE PROJECTS THE ITEM TO +N (whole tiers). A plate chest states AC, so something
+ * moves: End drives the slider to +10, changed rows show their base, and reset puts it back.
+ */
+async function stepProjection(page: Page): Promise<void> {
+  const up = await until(async () => (await countOf(page, PROJECTION)) === 1, 30_000)
+  if (!check('the wearable`s item window offers a +N projection', up)) return
+  const before = await textOf(page, PROJECTION_LABEL)
+  await page.focus(`${PROJECTION_SLIDER} input`, { timeout: 15_000 })
+  await page.keyboard.press('End')
+  const at10 = await until(async () => (await textOf(page, PROJECTION_LABEL)).startsWith('+10 '))
+  check('the slider answers the keyboard: End projects to +10 (+100%)', at10, await textOf(page, PROJECTION_LABEL))
+  check('…and at least one value is redrawn beside its base', (await countOf(page, PROJECTED_VALUE)) > 0)
+  check('…with a caption saying it is a projection', (await textOf(page, PROJECTION_CAPTION)).includes('Projected at +10'))
+  const overflow = await widerThanBox(page)
+  check('…and at +10 nothing in the item window is wider than its box', overflow.length === 0, overflow.join(' | '))
+  if ((await countOf(page, PROJECTION_RESET)) === 1) {
+    await page.click(PROJECTION_RESET, { timeout: 15_000 })
+    const back = await until(async () => (await textOf(page, PROJECTION_LABEL)) === before)
+    check('reset returns the projection to the item`s own tier', back, `${await textOf(page, PROJECTION_LABEL)} vs ${before}`)
+  } else {
+    check('a projection away from the item`s tier carries a reset', false)
   }
 }
 
@@ -309,6 +359,11 @@ async function stepNonWearable(page: Page): Promise<void> {
     (await countOf(page, LOOT_PREVIEW)) === 0,
     name
   )
+  // Both of the fixture's drops (a WT 0.1 gem, a stat-less mote) have nothing the upgrade moves.
+  // The stat block must have DRAWN first, or "no control" would also be true of a failed lookup.
+  const drawn = await until(async () => /\bSize\b/.test(await textOf(page, ITEM_WINDOW)), 30_000)
+  if (!check(`"${name}"'s stat block is drawn (a Size row is on screen)`, drawn, await textOf(page, ITEM_WINDOW))) return
+  check(`"${name}" has no stat an upgrade moves, so it draws NO projection control`, (await countOf(page, PROJECTION)) === 0, name)
 }
 
 async function main(): Promise<void> {
