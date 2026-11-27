@@ -77,6 +77,8 @@ pub enum Kind {
     ItemMergeFailed,
     ItemReceived,
     Level,
+    /// `Your Location is <ns>, <ew>, <z>` — the game's answer to `/loc`.
+    Loc,
     Loot,
     Miss,
     Mitigation,
@@ -157,6 +159,7 @@ impl Kind {
             Kind::ItemMergeFailed => "itemMergeFailed",
             Kind::ItemReceived => "itemReceived",
             Kind::Level => "level",
+            Kind::Loc => "loc",
             Kind::Loot => "loot",
             Kind::Miss => "miss",
             Kind::Mitigation => "mitigation",
@@ -235,6 +238,7 @@ impl Kind {
             "itemMergeFailed" => Kind::ItemMergeFailed,
             "itemReceived" => Kind::ItemReceived,
             "level" => Kind::Level,
+            "loc" => Kind::Loc,
             "loot" => Kind::Loot,
             "miss" => Kind::Miss,
             "mitigation" => Kind::Mitigation,
@@ -271,7 +275,7 @@ impl Kind {
 
     /// Every kind this build knows, for the round-trip test. `Other` is deliberately absent: it is
     /// the answer to an unknown string, not a kind anything writes.
-    pub const ALL: [Kind; 66] = [
+    pub const ALL: [Kind; 67] = [
         Kind::AaActivate,
         Kind::AaGain,
         Kind::AaPotion,
@@ -309,6 +313,7 @@ impl Kind {
         Kind::ItemMergeFailed,
         Kind::ItemReceived,
         Kind::Level,
+        Kind::Loc,
         Kind::Loot,
         Kind::Miss,
         Kind::Mitigation,
@@ -377,6 +382,7 @@ pub enum Key {
     Dtype,
     DurationMs,
     Effect,
+    Ew,
     Faction,
     File,
     FromTs,
@@ -397,6 +403,7 @@ pub enum Key {
     Name,
     NowHave,
     Npc,
+    Ns,
     OverTime,
     Owner,
     Party,
@@ -433,6 +440,7 @@ pub enum Key {
     Verb,
     Via,
     Who,
+    Z,
     Zone,
 }
 
@@ -471,6 +479,7 @@ impl Key {
             Key::Dtype => "dtype",
             Key::DurationMs => "durationMs",
             Key::Effect => "effect",
+            Key::Ew => "ew",
             Key::Faction => "faction",
             Key::File => "file",
             Key::FromTs => "fromTs",
@@ -491,6 +500,7 @@ impl Key {
             Key::Name => "name",
             Key::NowHave => "nowHave",
             Key::Npc => "npc",
+            Key::Ns => "ns",
             Key::OverTime => "overTime",
             Key::Owner => "owner",
             Key::Party => "party",
@@ -527,6 +537,7 @@ impl Key {
             Key::Verb => "verb",
             Key::Via => "via",
             Key::Who => "who",
+            Key::Z => "z",
             Key::Zone => "zone",
         }
     }
@@ -566,6 +577,7 @@ impl Key {
             "dtype" => Key::Dtype,
             "durationMs" => Key::DurationMs,
             "effect" => Key::Effect,
+            "ew" => Key::Ew,
             "faction" => Key::Faction,
             "file" => Key::File,
             "fromTs" => Key::FromTs,
@@ -586,6 +598,7 @@ impl Key {
             "name" => Key::Name,
             "nowHave" => Key::NowHave,
             "npc" => Key::Npc,
+            "ns" => Key::Ns,
             "overTime" => Key::OverTime,
             "owner" => Key::Owner,
             "party" => Key::Party,
@@ -622,13 +635,14 @@ impl Key {
             "verb" => Key::Verb,
             "via" => Key::Via,
             "who" => Key::Who,
+            "z" => Key::Z,
             "zone" => Key::Zone,
             _ => return None,
         })
     }
 
     /// Every key, for the round-trip test.
-    pub const ALL: [Key; 86] = [
+    pub const ALL: [Key; 89] = [
         Key::Ability,
         Key::Action,
         Key::Amount,
@@ -658,6 +672,7 @@ impl Key {
         Key::Dtype,
         Key::DurationMs,
         Key::Effect,
+        Key::Ew,
         Key::Faction,
         Key::File,
         Key::FromTs,
@@ -678,6 +693,7 @@ impl Key {
         Key::Name,
         Key::NowHave,
         Key::Npc,
+        Key::Ns,
         Key::OverTime,
         Key::Owner,
         Key::Party,
@@ -714,6 +730,7 @@ impl Key {
         Key::Verb,
         Key::Via,
         Key::Who,
+        Key::Z,
         Key::Zone,
     ];
 }

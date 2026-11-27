@@ -130,9 +130,9 @@ export interface MapCoord {
  *
  * This negation is already BAKED INTO THE FILE, so nothing at render time repeats it: in map
  * coordinates x grows EAST and y grows SOUTH — the screen's own two directions — so `project` is
- * a pure scale-and-translate and negates nothing. The log has no player marker to place
- * (`Your Location` appears 0 times in 86.6 MB — §0 #7), so this pair is the pinned documentation
- * of the convention and the seam a future `/loc` pin would use.
+ * a pure scale-and-translate and negates nothing. This pair is the pinned documentation of the
+ * convention and the one seam every `/loc` mark goes through: the pasted marker, and the reading
+ * the game writes to the log (`Your Location is 218.95, 91.12, 17.90`, measured 2026-11-27).
  *
  * The SIGNS here are independently evidenced and unchanged by JOS-65: `mobPins.ts` measured this
  * transform against 7,423 wiki-stated coordinates across 119 mapped zones and it put 99.4% of

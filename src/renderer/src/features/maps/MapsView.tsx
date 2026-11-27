@@ -1,8 +1,8 @@
 // The Maps tab (docs/plans/map-viewer.md §10, §11 wave 3) — the view that resolves WHICH zone to
 // show and hands everything about the drawing to MapBody.tsx.
 //
-// AUTO-OPEN, AND THE ONE THING IT MUST NEVER DO. The log states the zone you are in and nothing
-// else positional, so the feature's whole "it just knows" is one fold: `CharacterSnap.zone` (the
+// AUTO-OPEN, AND THE ONE THING IT MUST NEVER DO. The log states the zone you are in (and, only when
+// you type `/loc`, a position — below), so the feature's whole "it just knows" is one fold: `CharacterSnap.zone` (the
 // raw long name, off the `You have entered X.` line) → `zoneShortName()` → the map-file stem.
 // That table is HAND-AUTHORED because there is no algorithm — measured, naive normalization
 // resolves 7 of the 51 zone names the real log has printed ("The Plane of Sky" → `airplane`).
@@ -24,22 +24,22 @@
 // own labels, every other installed map AND the bestiary of every other zone (JOS-135) — so a
 // name you half-remember is findable from wherever you happen to be standing.
 //
-// WHAT THIS VIEW CANNOT DO, AND THE HALF OF IT THE USER CAN (JOS-98). There is no AUTOMATIC "you
-// are here" marker and there cannot be: `Your Location` appears ZERO times in the log — re-measured
-// across the owner's whole 116.8 MB of it for this ticket — because /loc answers in the game window
-// and is never written to the file the app tails. What the viewer can do is take the answer from
-// you: the toolbar's `/loc marker` field accepts the line the game printed, drops a crosshair where
-// it says, and keeps it there per zone until you replace it or clear it. The caption states exactly
-// that pair, because a user hunting for a dot that does not exist is a worse outcome than one quiet
-// line saying so (§10) — and a user who does not know they can place one is the report we got.
+// WHERE YOU ARE, WHEN YOU ASK. EverQuest Legends writes the answer to `/loc` into the log — measured
+// 2026-11-27 in `eqlog_<Char>_freeport.txt`: `Your Location is 218.95, 91.12, 17.90` (JOS-98's
+// "it is never written" was measured on a log with no /loc in it). The engine files a LIVE reading
+// under the zone you are in and drops it when you zone, and this view draws it as "You (from /loc,
+// HH:MM)" (loggedLoc.ts / useLoggedLoc.ts). It is one reading per /loc, not live tracking — nothing
+// here reads memory or follows you between readings. The toolbar's `/loc marker` field still takes
+// a pasted reading and keeps it per zone across restarts (useLocMarker.ts); the two never write
+// into each other.
 //
 // TWO DENSITY CONTROLS LIVE HERE AND BOTH ARE HONEST ABOUT WHAT THEY ARE. Labels declutter
 // themselves (`labelLayout.ts`) — a label that loses its space becomes a dot and hover raises the
 // text, so nothing is deleted. Floors are CLUSTERED from the map file's own elevations
 // (`floorSlice.ts`) and stepped through by hand: the in-game height filter follows your
-// character, and the log never says where that is, so there is no auto-select and the default is
-// All levels. Out-of-band geometry DIMS rather than disappearing — a floor with its surroundings
-// deleted is a diagram you cannot place.
+// character, and the log says where that is only at a /loc, so the default is All levels and the
+// one automatic move is `loggedLoc.floorForNewLoc`'s. Out-of-band geometry DIMS rather than
+// disappearing — a floor with its surroundings deleted is a diagram you cannot place.
 
 import { useCallback, useEffect, useMemo, useState, useRef, type JSX } from 'react'
 import { Box, Chip, Paper, Stack, Typography } from '@mui/material'
@@ -58,6 +58,7 @@ import MapToolbar from './MapToolbar'
 import { zoneLabel } from './zoneOptions'
 import { loadPackPrefs, savePackPrefs, useMapData, useMapPacks } from './useMapData'
 import { useLocMarker } from './useLocMarker'
+import { useLoggedLoc } from './useLoggedLoc'
 import { useMapQuestOverlay, type MapAnchorProps } from './useMapQuestOverlay'
 import type { AppRouting } from '../../appRouting'
 import { forgetQuestPage } from '../quests/questResume'
@@ -240,9 +241,9 @@ function MapsHeader({
         </Box>
       </Stack>
       <Typography variant="caption" color="text.disabled">
-        The log states the zone you entered and nothing else positional - so there is no automatic
-        “you are here”. Type <code>/loc</code> in game and paste the line into the toolbar to mark
-        where you are; the mark stays with this zone until you replace or clear it.
+        Type <code>/loc</code> in game and the map marks where you were standing. Each new /loc moves
+        it, and it clears when you change zone. To keep a mark on this zone, paste a /loc into the
+        toolbar instead.
       </Typography>
     </Stack>
   )
@@ -364,8 +365,10 @@ function useMapOpenTracking(data: MapData | null): void {
  */
 export default function MapsView(props: MapAnchorProps): JSX.Element {
   // WHERE YOU ARE. The character module owns the raw display zone off the `zone` log event; it
-  // is undefined until the log prints one, and that absence is a state this view renders.
-  const raw = useModule<CharacterSnap>('character')?.zone
+  // is undefined until the log prints one, and that absence is a state this view renders. The
+  // same snapshot carries the live `/loc` reading, filed under that zone.
+  const character = useModule<CharacterSnap>('character')
+  const raw = character?.zone
   const { zone, auto, mode, pick, followCurrent } = useZoneSelection(raw)
   const [prefs, setPrefs] = useState<MapPackPrefs>(loadPackPrefs)
   const [layers, setLayers] = useState<LayerMask>(DEFAULT_LAYERS)
@@ -377,8 +380,8 @@ export default function MapsView(props: MapAnchorProps): JSX.Element {
   const reserve = mapPossible({ zones, ready })
 
   // THE FLOORS. `zLevels` is the raw distinct set (measured: 10,694 values in the default set's
-  // crystallos.txt), so it is clustered once per loaded map and stepped through by hand — there
-  // is no character z to auto-select with, and pretending otherwise would be law 1's exact sin.
+  // crystallos.txt), so it is clustered once per loaded map and stepped through by hand — the only
+  // character z is a /loc reading, and only a NEW one may move it (`floorForNewLoc`).
   const bands = useMemo(
     () => (data ? floorBands(data.zLevels, data.heightHint ? { hint: data.heightHint } : {}) : []),
     [data]
@@ -395,7 +398,10 @@ export default function MapsView(props: MapAnchorProps): JSX.Element {
   // THE POSITION YOU TOLD IT (JOS-98). Keyed on the zone actually DRAWN, never the one being
   // fetched: a marker attributed to a map that has not loaded would be drawn against the previous
   // zone's bounds for a frame — a dot in the wrong place, which is the one thing this must not do.
-  const loc = useLocMarker(data?.zone ?? null, vp)
+  const drawn = data?.zone ?? null
+  const loc = useLocMarker(drawn, vp)
+  // THE POSITION THE GAME STATED — same zone rule, plus the floor rule and the modest pan.
+  const logged = useLoggedLoc({ snap: character, drawn, mode, bands, floor, onFloor: setFloor, vp })
   // THE QUEST LAYER: an inbound chip's target and the followed quests' pins. Never the typed /loc.
   const questOverlay = useMapQuestOverlay({ props, vp, data, onJump })
 
@@ -434,6 +440,9 @@ export default function MapsView(props: MapAnchorProps): JSX.Element {
         onPlaceLoc={loc.place}
         onShowLoc={loc.show}
         onClearLoc={loc.clear}
+        loggedLoc={logged.loc}
+        onShowLoggedLoc={logged.show}
+        loggedLocElsewhere={logged.elsewhere}
         zoomedIn={vp.zoomedIn}
         onZoom={vp.zoomBy}
         onFit={vp.fit}
@@ -454,6 +463,7 @@ export default function MapsView(props: MapAnchorProps): JSX.Element {
         zoneName={zoneName}
         marker={marker}
         locMarker={loc.marker}
+        logged={logged}
         onJump={onJump}
         overlay={questOverlay}
       />

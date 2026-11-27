@@ -10,6 +10,7 @@ pub mod casts;
 pub mod combat;
 pub mod data;
 pub mod group;
+pub mod loc;
 pub mod quest;
 pub mod session;
 pub mod who;
@@ -160,6 +161,7 @@ impl Parser {
             || quest::classify_hail(&self.quest, c, out)
             || world::classify_death(&self.world, c, out)
             || world::classify_zone(&self.world, c, out)
+            || loc::classify_loc(c, out)
             || world::classify_instance_create(&self.world, c, out)
             || world::classify_door(c, out)
             || session::classify_session_start(c, out)

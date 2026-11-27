@@ -516,6 +516,14 @@ labels w/ collision declutter, floor slicing). Pure fns + goldens all over.
   SOUTH — JOS-65). Wiki mob pins and the user's typed-/loc marker (JOS-98,
   `eq.maps.loc`, per zone) both go through it and then through `project`;
   a second copy of those negations is the bug this repo already shipped once.
+  **EQL WRITES `/loc` TO THE LOG** (measured 2026-11-27: `Your Location is
+  218.95, 91.12, 17.90`; the old "0 times" was a log with no /loc in it). The
+  engine's `loc` kind (eqlog `parse/loc.rs`, anchored on the system line) is
+  filed by the character module as `CharacterSnap.loc` — LIVE tail only, not
+  older than the newest folded line, under the current zone, dropped on any
+  zone line or new session, never checkpointed. The map draws it as a separate
+  "You (from /loc, HH:MM)" marker (`loggedLoc.ts`), never written into
+  `eq.maps.loc`. One reading per /loc — not live tracking.
 Renderer: `useView(descriptor)` — subscribe, take the reset, ride the diffs, and drop everything on
 an epoch bump (resume is always re-query). `useModule` was its predecessor and went with the fold.
 Overlay = second renderer entry (overlay.html) with a minimal `eqOverlay` bridge (transparent
