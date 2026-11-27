@@ -135,6 +135,25 @@ export interface ReleaseNote {
  * still sees exactly the releases above it.
  */
 export const RELEASE_NOTES: readonly ReleaseNote[] = [
+  // Per-item +N projection on the item page, and the /loc map marker read from the log.
+  {
+    version: '1.31.1',
+    date: '2026-11-27',
+    entries: [
+      {
+        kind: 'new',
+        text: "Item pages now let you preview a piece of gear at any level from +0 to +10. Drag the slider and each stat that grows shows its +0 value beside the new one, starting at the item's own level."
+      },
+      {
+        kind: 'new',
+        text: 'Type /loc in game and the Maps tab marks where you are in your current zone. Each new /loc moves the marker, and it clears when you change zones.'
+      },
+      {
+        kind: 'fixed',
+        text: 'Times just after midnight now read 00:05 instead of 24:05.'
+      }
+    ]
+  },
   // Quest locations, game-patch detection, AA tab additions, zone and data fixes, fresh wiki data.
   {
     version: '1.31.0',
