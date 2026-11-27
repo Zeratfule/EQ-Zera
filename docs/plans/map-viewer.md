@@ -21,7 +21,8 @@ it exists today. Numbers in this document are **counts I took**, not estimates.
 | 4 | **Hybrid render**: geometry on canvas, the ~350 point labels as absolutely-positioned DOM. | Labels need hit-testing, tooltips, non-scaling text and search-jump focus. Measured max 316 points per zone — DOM is free at that scale. |
 | 5 | **Zone long→short mapping is a HAND-AUTHORED, committed table.** | Measured: naive normalization resolves **7 of 51** real zone names from the live log. This is the feature's critical path (§5). |
 | 6 | **Layer `_2` is a LEGEND, not map geometry** — off by default and **excluded from the bounds computation**. | Measured: `brewall\airplane_2.txt` spans y ∈ [-250, 4800] while the actual map is y ∈ [-1668, 1737]. Naively unioning it makes every map render as a speck. |
-| 7 | **No AUTOMATIC player-position marker. Confirmed impossible.** | `Your Location` appears **0 times** in the log (re-measured 2026-08-08 across the whole 116.8 MB `eqlog_Primitive_freeport.txt` and every log beside it). The log states the zone and nothing else positional (law 6 — say what the log cannot say). |
+| 7 | **No AUTOMATIC player-position marker. Confirmed impossible.** (SUPERSEDED 2026-11-27 - see the corrections below the table.) | `Your Location` appears **0 times** in the log (re-measured 2026-08-08 across the whole 116.8 MB `eqlog_Primitive_freeport.txt` and every log beside it). The log states the zone and nothing else positional (law 6 — say what the log cannot say). |
+| 8 | **Height filter: manual z-slice, default OFF, last wave.** | The in-game filter is *player-relative*, and per #7 we have no player Z. A manual discrete-floor selector is the honest substitute (§8). |
 
 > **CORRECTED 2026-08-08 (JOS-98).** #7 said "no player-position marker", and the UI said so too.
 > The measurement is unchanged and still decides the AUTOMATIC case — nothing in the log will ever
@@ -43,7 +44,6 @@ it exists today. Numbers in this document are **counts I took**, not estimates.
 > "You (from /loc, HH:MM)" (`loggedLoc.ts`, `useLoggedLoc.ts`). Still no live TRACKING: one reading
 > per /loc, nothing between readings, no memory reading. A replayed (backfilled) /loc places
 > nothing. The pasted marker above is unchanged and is a separate mark.
-| 8 | **Height filter: manual z-slice, default OFF, last wave.** | The in-game filter is *player-relative*, and per #7 we have no player Z. A manual discrete-floor selector is the honest substitute (§8). |
 
 ---
 

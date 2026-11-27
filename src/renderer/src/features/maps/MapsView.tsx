@@ -442,6 +442,7 @@ export default function MapsView(props: MapAnchorProps): JSX.Element {
         onClearLoc={loc.clear}
         loggedLoc={logged.loc}
         onShowLoggedLoc={logged.show}
+        loggedLocElsewhere={logged.elsewhere}
         zoomedIn={vp.zoomedIn}
         onZoom={vp.zoomBy}
         onFit={vp.fit}

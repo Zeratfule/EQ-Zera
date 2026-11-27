@@ -263,6 +263,8 @@ export interface MapToolbarProps {
   loggedLoc: LoggedLoc | null
   /** Centre on it, and show its floor. */
   onShowLoggedLoc: () => void
+  /** A current reading this map cannot show — stated rather than silently absent. */
+  loggedLocElsewhere: { zone: string; mapped: boolean } | null
   /** The view is tighter than the whole zone — zoom-out and Fit have something to do. */
   zoomedIn: boolean
   /** > 1 zooms in, < 1 out, around the pane centre. */
@@ -397,7 +399,7 @@ function DrawnControls(props: MapToolbarProps): JSX.Element {
       {/* The one position the app can hold, and the only way one gets in (JOS-98). It belongs on
           this row for the row's own reason: it describes what is DRAWN on the surface. */}
       <MapLocField marker={locMarker} onPlace={onPlaceLoc} onShow={onShowLoc} onClear={onClearLoc} />
-      {props.loggedLoc != null && <MapLoggedLocChip loc={props.loggedLoc} onShow={props.onShowLoggedLoc} />}
+      <MapLoggedLocChip loc={props.loggedLoc} onShow={props.onShowLoggedLoc} elsewhere={props.loggedLocElsewhere} />
     </>
   )
 }

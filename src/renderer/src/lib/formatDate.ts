@@ -40,10 +40,15 @@ export function formatCalendarDate(iso: string): string {
   return new Date(Number(m[1]), Number(m[2]) - 1, Number(m[3])).toLocaleDateString()
 }
 
-/** Time only, local, 24h: e.g. "13:00:28". */
+/**
+ * Time only, local, 24h: e.g. "13:00:28".
+ *
+ * `hourCycle: 'h23'`, never `hour12: false`: the latter lets some locales pick h24 and print five
+ * past midnight as "24:05". A caller's own `hour12` still wins (it overrides `hourCycle`).
+ */
 export function formatTime(ts: number, opts?: Intl.DateTimeFormatOptions): string {
   if (!ts) return ''
-  return new Date(ts).toLocaleTimeString([], { hour12: false, ...opts })
+  return new Date(ts).toLocaleTimeString([], { hourCycle: 'h23', ...opts })
 }
 
 /** Date + time, local: e.g. "8/1/2026, 1:00:28 PM" (or per opts). */

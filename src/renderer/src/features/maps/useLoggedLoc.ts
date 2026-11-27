@@ -5,7 +5,9 @@
 // ONLY A NEW READING ACTS. The view is unmounted on every tab switch, so "the reading on screen" and
 // "a reading that just arrived" have to be told apart or every return to the tab would move the
 // floor and the view. The reading present at mount is recorded as already seen; only a different
-// one — a /loc typed while the tab is open — runs the floor rule and the pan.
+// one — a /loc typed while the tab is open — runs the floor rule and the pan, and one that lands
+// while its zone's map is still loading waits for that map rather than being spent on the old one
+// (`loggedLoc.readingToAct`).
 //
 // THE PAN IS MODEST. A new reading in follow mode re-centres the view only when the dot would be
 // off screen, at the scale the user chose; a view that can already see it is left exactly where it
@@ -22,7 +24,9 @@ import {
   floorForNewLoc,
   floorShowing,
   inView,
+  loggedLocElsewhere,
   loggedLocKey,
+  readingToAct,
   type LoggedLocSource
 } from './loggedLoc'
 import type { MapViewport } from './useMapViewport'
@@ -36,6 +40,8 @@ export interface LoggedLocState {
   offFloor: boolean
   /** Centre on it and show its floor. The chip's click. */
   show: () => void
+  /** A current reading this map cannot show, and whether its zone has a map at all. */
+  elsewhere: { zone: string; mapped: boolean } | null
 }
 
 export interface LoggedLocArgs {
@@ -56,14 +62,13 @@ export function useLoggedLoc({ snap, drawn, mode, bands, floor, onFloor, vp }: L
   const { rect, centerOn, zoomedIn, view } = vp
 
   useEffect(() => {
-    if (key === seen.current) return
+    if (loc == null || !readingToAct(seen.current, snap?.loc, loc)) return
     seen.current = key
-    if (loc == null) return
     const next = floorForNewLoc({ mode, bands, floor, z: loc.z })
     if (next !== floor) onFloor(next)
     const p = mapFromLoc(loc)
     if (mode === 'follow' && !inView(rect, p)) centerOn(p.x, p.y)
-  }, [key, loc, mode, bands, floor, onFloor, rect, centerOn])
+  }, [key, snap?.loc, loc, mode, bands, floor, onFloor, rect, centerOn])
 
   const show = useCallback(() => {
     if (loc == null) return
@@ -74,5 +79,5 @@ export function useLoggedLoc({ snap, drawn, mode, bands, floor, onFloor, vp }: L
   }, [loc, bands, floor, onFloor, centerOn, zoomedIn, view.scale])
 
   const offFloor = loc != null && !inActiveBand(bands, floor, loc.z)
-  return { loc, offFloor, show }
+  return { loc, offFloor, show, elsewhere: loggedLocElsewhere(snap, drawn) }
 }

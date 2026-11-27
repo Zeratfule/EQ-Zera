@@ -17,9 +17,11 @@ import {
   floorForNewLoc,
   floorShowing,
   inView,
+  loggedLocElsewhere,
   loggedLocKey,
   loggedLocLabel,
-  loggedLocTime
+  loggedLocTime,
+  readingToAct
 } from '../src/renderer/src/features/maps/loggedLoc'
 import { parseLoc } from '../src/renderer/src/features/maps/locMarker'
 import type { FloorBand } from '../src/renderer/src/features/maps/floorSlice'
@@ -62,6 +64,20 @@ test('a reading filed under a zone you have since left is never drawn as current
   assert.equal(currentLoggedLoc({ loc: READING }, stem), null, 'no zone stated - never guess')
 })
 
+test('a current reading another map cannot show is stated, not silently dropped', () => {
+  const stem = zoneShortName(NEK)
+  assert.deepEqual(loggedLocElsewhere({ zone: NEK, loc: READING }, 'freporte'), { zone: NEK, mapped: true })
+  assert.equal(loggedLocElsewhere({ zone: NEK, loc: READING }, stem), null, 'the drawn map shows it')
+  const unmapped = { ...READING, zone: 'The EQL Tutorial Nowhere' }
+  assert.deepEqual(loggedLocElsewhere({ zone: unmapped.zone, loc: unmapped }, 'freporte'), {
+    zone: unmapped.zone,
+    mapped: false
+  })
+  // a stale reading (zone since left) is never stated anywhere
+  assert.equal(loggedLocElsewhere({ zone: 'East Freeport', loc: READING }, 'freporte'), null)
+  assert.equal(loggedLocElsewhere({ zone: NEK }, 'freporte'), null)
+})
+
 test('each new reading has a new identity; the same reading keeps its own', () => {
   const again = { ...READING }
   assert.equal(loggedLocKey(READING), loggedLocKey(again))
@@ -69,6 +85,19 @@ test('each new reading has a new identity; the same reading keeps its own', () =
   assert.notEqual(loggedLocKey(READING), loggedLocKey({ ...READING, ns: -10 }))
   assert.equal(loggedLocKey(null), null)
   assert.equal(loggedLocKey(undefined), null)
+})
+
+test('a reading that lands while its map is loading is acted on when the map arrives, once', () => {
+  const mountKey = loggedLocKey(READING)
+  // present at mount and drawn: already seen, nothing moves
+  assert.equal(readingToAct(mountKey, READING, READING), false)
+  // a new reading while the new zone's map loads: not drawable yet, so NOT consumed...
+  const next = { ...READING, ts: READING.ts + 60_000 }
+  assert.equal(readingToAct(mountKey, next, null), false)
+  // ...and acted on the moment it is drawable
+  assert.equal(readingToAct(mountKey, next, next), true)
+  // once acted (seen := its key), never again
+  assert.equal(readingToAct(loggedLocKey(next), next, next), false)
 })
 
 test('the label states the minute it was read, so it never reads as live tracking', () => {
@@ -118,5 +147,6 @@ test('the engine parser is anchored on the system line and claims the kind the a
   assert.match(event, /Kind::Loc => "loc"/)
   for (const key of ['ns', 'ew', 'z']) assert.match(event, new RegExp(`=> "${key}",`))
   const character = readFileSync(join(ROOT, 'engine', 'crates', 'fold', 'src', 'modules', 'character.rs'), 'utf8')
-  assert.match(character, /"loc" => self\.state_loc\(ev, live\)/, 'the module must hand the live flag through')
+  assert.match(character, /let fresh = live && ev\.ts\(\) >= self\.newest_ts;/, 'the module gates on the live flag')
+  assert.match(character, /"loc" => self\.state_loc\(ev, fresh\)/)
 })

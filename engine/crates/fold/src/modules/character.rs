@@ -12,7 +12,8 @@
 //! `seq` is this module's own revision, monotonic and never reset: state here moves without a log
 //! event (`set_character`), and `useModule` dedupes with `d.seq <= knownSeq`.
 //!
-//! The `/loc` position is LIVE-ONLY and never checkpointed: a replayed `Your Location is` is where
+//! The `/loc` position is LIVE-ONLY, never older than the newest line already folded (a truncated
+//! log re-emits survivors as live), and never checkpointed: a replayed `Your Location is` is where
 //! the character stood when it was typed, not where it stands now. It is filed under the zone held
 //! at that moment (none held ⇒ nothing filed) and any zone line or new session drops it.
 
@@ -59,6 +60,10 @@ pub struct CharacterModule {
     /// The `CharacterRef` as JSON, or `None` for the null the snapshot publishes.
     character: Option<Value>,
     zone: Option<String>,
+    /// The newest log stamp folded so far. A live line older than it is a re-read (a truncated or
+    /// replaced log re-emits its surviving lines as live), never a /loc typed now.
+    #[serde(default)]
+    newest_ts: i64,
     /// Skipped by the checkpoint on purpose: a restored position would be a stale one.
     #[serde(skip)]
     loc: Option<LoggedLoc>,
@@ -80,6 +85,7 @@ impl CharacterModule {
         CharacterModule {
             character: None,
             zone: None,
+            newest_ts: 0,
             loc: None,
             level: None,
             rev: 0,
@@ -106,9 +112,10 @@ impl CharacterModule {
         self.rev += 1;
     }
 
-    /// A live `/loc` replaces the last one. Historical lines and a zone not yet stated file nothing.
-    fn state_loc(&mut self, ev: &Event, live: bool) {
-        let Some(zone) = self.zone.clone().filter(|_| live) else {
+    /// A live `/loc` replaces the last one. Historical lines, re-read lines and a zone not yet
+    /// stated file nothing.
+    fn state_loc(&mut self, ev: &Event, fresh: bool) {
+        let Some(zone) = self.zone.clone().filter(|_| fresh) else {
             return;
         };
         let (Some(ns), Some(ew), Some(z)) = (ev.f64("ns"), ev.f64("ew"), ev.f64("z")) else {
@@ -151,6 +158,7 @@ impl EqModule for CharacterModule {
     fn reset(&mut self) {
         // The ref survives; see the header.
         self.zone = None;
+        self.newest_ts = 0;
         self.loc = None;
         self.level = None;
         self.rebirths.reset();
@@ -164,6 +172,8 @@ impl EqModule for CharacterModule {
     }
 
     fn on_event(&mut self, ev: &Event, live: bool) {
+        let fresh = live && ev.ts() >= self.newest_ts;
+        self.newest_ts = self.newest_ts.max(ev.ts());
         match ev.kind() {
             "epoch" => {
                 // Character rebirth: the wiped character's level and zone say nothing about this
@@ -193,7 +203,7 @@ impl EqModule for CharacterModule {
                 }
             }
             "sessionStart" => self.drop_loc(),
-            "loc" => self.state_loc(ev, live),
+            "loc" => self.state_loc(ev, fresh),
             "level" => self.state_level(LevelStatement {
                 level: ev.int("level").unwrap_or(0),
                 ts: ev.ts(),

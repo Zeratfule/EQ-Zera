@@ -4,6 +4,8 @@
 //! Anchored at the start of the message, so the game's own system line is the only shape that
 //! claims: a tell, say or channel line quoting the sentence starts with the speaker's name.
 //! North/south is printed FIRST; the fields are named `ns`/`ew` so nothing calls them x and y.
+//! Accepted risk: a custom emote reading `Your Location is …` exactly (a player named `Your`
+//! typing `/em Location is 1, 2, 3`) would match; it costs one wrong dot until the next /loc.
 
 use crate::event::{Ev, Key, Kind};
 use regex::Regex;

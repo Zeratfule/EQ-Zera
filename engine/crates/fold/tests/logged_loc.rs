@@ -60,6 +60,14 @@ fn a_loc_before_any_zone_line_places_nothing() {
     assert_eq!(loc_of(&f), Value::Null);
 }
 
+fn loc_at(ts: i64) -> String {
+    format!(r#"{{"kind":"loc","seq":1,"ts":{ts},"raw":"r","ns":1.5,"ew":2.5,"z":3}}"#)
+}
+
+fn freeport_at(ts: i64) -> String {
+    format!(r#"{{"kind":"zone","seq":1,"ts":{ts},"raw":"r","zone":"East Freeport"}}"#)
+}
+
 #[test]
 fn any_zone_line_or_new_session_drops_it() {
     let mut f = fold();
@@ -68,18 +76,36 @@ fn any_zone_line_or_new_session_drops_it() {
     feed(&mut f, OTHER, true);
     assert_eq!(loc_of(&f), Value::Null);
 
-    feed(&mut f, LOC, true);
+    feed(&mut f, &loc_at(6000), true);
     assert_eq!(loc_of(&f)["zone"], json!("East Freeport"));
-    feed(&mut f, OTHER, true);
+    feed(&mut f, &freeport_at(7000), true);
     assert_eq!(
         loc_of(&f),
         Value::Null,
         "re-entering the same zone is still a move"
     );
 
-    feed(&mut f, LOC, true);
-    feed(&mut f, WELCOME, true);
+    feed(&mut f, &loc_at(8000), true);
+    let welcome = WELCOME.replace("4000", "9000");
+    feed(&mut f, &welcome, true);
     assert_eq!(loc_of(&f), Value::Null);
+}
+
+/// A truncated or replaced log re-emits its surviving lines through the LIVE tail; a /loc among
+/// them is older than what was already folded and is not where the character stands now.
+#[test]
+fn a_re_read_loc_older_than_the_newest_line_places_nothing() {
+    let mut f = fold();
+    feed(&mut f, ZONE, false);
+    feed(&mut f, &loc_at(1500), false);
+    feed(&mut f, &freeport_at(5000), false);
+    // the shrink: survivors come back live, zone line and old /loc included
+    feed(&mut f, ZONE, true);
+    feed(&mut f, &loc_at(1500), true);
+    assert_eq!(loc_of(&f), Value::Null);
+    // a /loc typed now, at or after the newest stamp, still places
+    feed(&mut f, &loc_at(5000), true);
+    assert_eq!(loc_of(&f)["ts"], json!(5000));
 }
 
 #[test]

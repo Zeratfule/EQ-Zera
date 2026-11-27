@@ -13,6 +13,8 @@
  *      it is NOT written into the pasted-marker store.
  *   3. CHAT CANNOT SPOOF IT. A tell and a say quoting the sentence ride the same burst as a second
  *      real reading, AFTER it — if either claimed, the settled marker would be the spoof's.
+ *   3b. THE FLOOR RULE, when the zone has more than one floor: following, on a hand-picked floor,
+ *      a new /loc on another floor moves the stepper to it.
  *   4. IT SURVIVES A TAB ROUND TRIP (the view unmounts; the reading is the engine's).
  *   5. ZONING DROPS IT. A `You have entered` line takes the marker and its chip away.
  *
@@ -47,6 +49,9 @@ const LOGGED_LABEL = '[data-testid="maps-logged-loc-marker-label"]'
 const LOGGED_CHIP = '[data-testid="maps-logged-loc-chip"]'
 const TYPED = '[data-testid="maps-loc-marker"]'
 const LOC_KEY = 'eq.maps.loc'
+const FLOORS = '[data-testid="maps-floors"]'
+const FLOOR_LABEL = '[data-testid="maps-floor-label"]'
+const FLOOR_UP = '[data-testid="maps-floor-up"]'
 
 /** A point well inside the drawn map, in map coordinates, and the /loc a player there would read. */
 interface Spot {
@@ -110,7 +115,35 @@ async function stepLive(page: Page, log: FixtureLog, spot: Spot): Promise<void> 
   check('…and the toolbar states it too', (await textOf(page, LOGGED_CHIP)).startsWith('You (from /loc, '))
   check('…as its own mark, not the pasted one', (await countOf(page, TYPED)) === 0)
   const stored = await page.evaluate((k) => localStorage.getItem(k), LOC_KEY)
-  check('…and it is never written into the pasted-marker store', stored == null || !stored.includes('ns'), String(stored))
+  const parsed: unknown = stored == null ? {} : JSON.parse(stored)
+  check(
+    '…and it is never written into the pasted-marker store',
+    typeof parsed === 'object' && parsed !== null && !Array.isArray(parsed) && Object.keys(parsed).length === 0,
+    String(stored)
+  )
+}
+
+/**
+ * THE FLOOR RULE: following, on a specific floor, a NEW /loc whose z sits on another floor moves
+ * the stepper there. A z far above every band lands in the top one (bandRange runs it to +Infinity),
+ * so the target is knowable without reading the band edges. Skipped on a zone with one band.
+ */
+async function stepFloor(page: Page, log: FixtureLog, spot: Spot): Promise<void> {
+  const label = await textOf(page, FLOOR_LABEL)
+  const total = /of (\d+)$/.exec(label)?.[1]
+  if ((await countOf(page, `${FLOORS}[data-reserved]`)) > 0) {
+    note('this zone has a single floor - the floor rule is left to the unit suite')
+    return
+  }
+  await page.click(FLOOR_UP, { timeout: 15_000 })
+  const picked = await settle(() => textOf(page, FLOOR_LABEL), (t) => t.startsWith('Level 1 of'), { timeoutMs: 8000 })
+  if (!check('a specific floor is selected by hand', picked.startsWith('Level 1 of'), picked)) return
+  const n = /of (\d+)$/.exec(picked)?.[1] ?? total ?? '?'
+  log.append(sentence({ ...spot, z: 99_999 }))
+  const moved = await settle(() => textOf(page, FLOOR_LABEL), (t) => t === `Level ${n} of ${n}`, { timeoutMs: 20_000 })
+  check('A NEW /loc ON ANOTHER FLOOR MOVES THE STEPPER TO ITS FLOOR (following)', moved === `Level ${n} of ${n}`, moved)
+  const dim = await page.evaluate((s) => document.querySelector(s)?.getAttribute('data-dim') ?? null, LOGGED)
+  check('…and the marker is on the floor shown, so it is not dimmed', dim == null, String(dim))
 }
 
 async function stepSpoof(page: Page, log: FixtureLog, spot: Spot): Promise<void> {
@@ -164,6 +197,7 @@ async function run(page: Page, log: FixtureLog): Promise<void> {
 
   await stepLive(page, log, spot)
   await stepSpoof(page, log, spot)
+  await stepFloor(page, log, spot)
   await stepTabs(page)
   await stepZone(page, log, zone)
 }

@@ -67,6 +67,7 @@ const FIRST_PERSON_KINDS: &[&str] = &[
     "itemMergeFailed",
     "consider",
     "doorUnlocked",
+    "loc",
     "stanceChange",
     "invocationChange",
     "petClaim",
@@ -273,5 +274,12 @@ mod tests {
         let other = ev(r#"{"kind":"buffApply","seq":0,"ts":1,"raw":"b","target":"Dranix"}"#);
         assert!(in_world_evidence(&self_land));
         assert!(!in_world_evidence(&other));
+    }
+
+    /// `/loc` answers only the character who typed it.
+    #[test]
+    fn a_loc_reading_is_evidence() {
+        let loc = ev(r#"{"kind":"loc","seq":0,"ts":1,"raw":"l","ns":1.5,"ew":2,"z":3}"#);
+        assert!(in_world_evidence(&loc));
     }
 }

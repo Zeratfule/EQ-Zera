@@ -48,9 +48,32 @@ export function currentLoggedLoc(snap: LoggedLocSource | null | undefined, drawn
   return zoneShortName(loc.zone) === drawn ? loc : null
 }
 
+/**
+ * A current reading the drawn map cannot show — you pinned another zone, or your zone has no map
+ * name — so the toolbar can say where it is instead of showing nothing. Null when there is no
+ * current reading, or when the drawn map already shows it.
+ */
+export function loggedLocElsewhere(
+  snap: LoggedLocSource | null | undefined,
+  drawn: ZoneShort | null
+): { zone: string; mapped: boolean } | null {
+  const loc = snap?.loc
+  if (loc == null || loc.zone !== snap?.zone || currentLoggedLoc(snap, drawn) != null) return null
+  return { zone: loc.zone, mapped: zoneShortName(loc.zone) != null }
+}
+
 /** One reading's identity, so a view can tell a NEW /loc from the one it mounted with. */
 export function loggedLocKey(loc: LoggedLoc | null | undefined): string | null {
   return loc == null ? null : `${String(loc.ts)}|${String(loc.ns)}|${String(loc.ew)}|${String(loc.z)}`
+}
+
+/**
+ * Does this render bring a reading the view has not acted on? `seen` is the identity last acted on
+ * (or present at mount). A reading that arrives while the map it belongs to is still loading is NOT
+ * consumed — `drawable` is null until that map is drawn — so it acts the moment the map lands.
+ */
+export function readingToAct(seen: string | null, snapLoc: LoggedLoc | null | undefined, drawable: LoggedLoc | null): boolean {
+  return drawable != null && loggedLocKey(snapLoc) !== seen
 }
 
 /** `16:44` — the minute the log stamped the line, local, 24h, through the app's one formatter. */
