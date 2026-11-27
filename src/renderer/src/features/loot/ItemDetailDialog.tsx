@@ -200,7 +200,8 @@ function aggregateLoot(events: LootEvent[]): LootBreakdown {
 
 /* The item as the GAME shows it: wiki base data, drawn in the item-window language.
    `stats` (posky's scraped block) is the offline fallback when the wiki lookup hasn't
-   structured one yet. */
+   structured one yet. Both are the +0 block (`lookupItem` strips the name's ` +N` and reads the
+   wiki `|statsblock`; posky is keyed by the base name), which is what makes it `projectable`. */
 function ItemWindowColumn({
   item,
   stats,
@@ -218,6 +219,7 @@ function ItemWindowColumn({
         rawStats={stats ?? knowledge.data?.statsBlock}
         iconId={knowledge.data?.iconId}
         flavor={knowledge.data?.summary}
+        projectable
       />
       {knowledge.loading && !knowledge.data && (
         <Stack direction="row" spacing={1} alignItems="center" sx={{ mt: 1, color: 'text.secondary' }}>
