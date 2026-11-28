@@ -102,6 +102,48 @@ fn a_landing_without_a_rank_suffix_counts_and_a_later_cast_is_a_second_timer() {
     assert_eq!(rows[1]["spell"], json!("Denon's Desperate Dirge"));
 }
 
+/// A killing blow prints the bare name and often lands first; the burst still learns the rank.
+#[test]
+fn an_unranked_killing_blow_first_in_a_burst_still_ends_up_ranked_and_counted() {
+    let (p, mut f) = (parser(), fold());
+    let kill = "[Fri Nov 27 18:31:50 2026] You hit an icy terror for 1395 points of magic damage by Denon's Desperate Dirge.";
+    let slain = "[Fri Nov 27 18:31:50 2026] You have slain an icy terror!";
+    for line in [kill, slain, HIT_A, HIT_CRIT] {
+        feed(&mut f, &p, line, true);
+    }
+    let rows = lockouts(&f);
+    assert_eq!(rows.len(), 1, "{rows:?}");
+    assert_eq!(rows[0]["castName"], json!("Denon's Desperate Dirge VII"));
+    assert_eq!(rows[0]["count"], json!(3));
+    assert_eq!(
+        rows[0]["targets"][0],
+        json!({"name": "an icy terror", "count": 1})
+    );
+}
+
+/// A clock set back (DST fall-back) must not silence a new session until stamps pass the old max;
+/// within a session the re-read guard still holds.
+#[test]
+fn a_new_session_on_a_clock_set_back_still_locks() {
+    let (p, mut f) = (parser(), fold());
+    feed(&mut f, &p, HIT_UNRANKED, true);
+    let welcome = "[Fri Nov 27 17:40:00 2026] Welcome to EverQuest Legends!";
+    feed(&mut f, &p, welcome, true);
+    assert!(lockouts(&f).is_empty(), "a new session clears");
+    let earlier = "[Fri Nov 27 17:40:05 2026] You hit an ice giant for 1395 points of magic damage by Denon's Desperate Dirge VII.";
+    feed(&mut f, &p, earlier, true);
+    assert_eq!(
+        lockouts(&f).len(),
+        1,
+        "landed after the set-back clock's welcome"
+    );
+    // …and a re-read older than that session's newest line is still refused.
+    let reread = "[Fri Nov 27 17:40:01 2026] You hit a priest of Nagafen for 1395 points of magic damage by Denon's Desperate Dirge VII.";
+    feed(&mut f, &p, reread, true);
+    assert_eq!(lockouts(&f).len(), 1);
+    assert_eq!(lockouts(&f)[0]["count"], json!(1));
+}
+
 #[test]
 fn a_resist_another_bard_a_quoted_line_and_another_spell_lock_nothing() {
     let (p, mut f) = (parser(), fold());

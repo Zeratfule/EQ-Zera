@@ -214,7 +214,7 @@
       "file": "crates/fold/src/modules/buff_timers.rs",
       "metric": "file-lines",
       "name": "",
-      "value": 657
+      "value": 658
     },
     {
       "file": "crates/fold/src/modules/buffs_instances.rs",

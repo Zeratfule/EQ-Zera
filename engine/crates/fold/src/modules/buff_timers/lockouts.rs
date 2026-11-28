@@ -23,10 +23,14 @@ pub struct LockoutRule {
 
 /// One row per spell. Denon's Desperate Dirge: EverQuest Legends patch of 2026-11-10 as quoted by
 /// players (no official notes found) — "can now only land on the same target once every 2 ticks
-/// (12-17 seconds)"; a blogger says 12 to 18. 18 s covers 17 s plus the log's 1 s stamp resolution.
+/// (12-17 seconds)"; a blogger says 12 to 18. A stamp floors the real landing by up to 1 s, so it
+/// landed in [stamp, stamp + 1 s): the lock certainly holds only to stamp + 12 s (a landing at the
+/// stamp's first instant frees then), and certainly ends by stamp + 17 s + 1 s.
 pub const RULES: &[LockoutRule] = &[LockoutRule {
     spell: "Denon's Desperate Dirge",
+    // 12 s + 0: any later and a landing at the stamp's first instant is free while we say locked.
     earliest_ms: 12_000,
+    // 17 s + 1 s: a landing at the stamp's last instant is still locked until then.
     certain_ms: 18_000,
 }];
 
@@ -75,6 +79,11 @@ pub struct Lockouts {
 impl Lockouts {
     /// Fold one event; `true` when the published rows changed.
     pub fn on_event(&mut self, ev: &Event, live: bool) -> bool {
+        // A new session may run on a clock set back (DST fall-back, a manual change): the
+        // truncation guard below holds within a session, never across one.
+        if matches!(ev.kind_of(), Kind::SessionStart | Kind::Epoch) {
+            self.newest_ts = ev.ts();
+        }
         let fresh = live && ev.ts() >= self.newest_ts;
         self.newest_ts = self.newest_ts.max(ev.ts());
         match ev.kind_of() {
@@ -121,6 +130,11 @@ impl Lockouts {
             .filter(|h| ts - h.started_ts <= BURST_MS);
         if let Some(open) = open {
             add_target(open, target);
+            // A killing blow prints the bare name and often comes first; keep the rank once seen.
+            let cast = ev.str(Key::Skill).unwrap_or_default();
+            if open.cast_name == open.spell && cast != open.spell {
+                open.cast_name = cast.to_string();
+            }
             return true;
         }
         self.held

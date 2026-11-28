@@ -12,8 +12,8 @@
 //! `seq` is this module's own revision, monotonic and never reset: state here moves without a log
 //! event (`set_character`), and `useModule` dedupes with `d.seq <= knownSeq`.
 //!
-//! The `/loc` position is LIVE-ONLY, never older than the newest line already folded (a truncated
-//! log re-emits survivors as live), and never checkpointed: a replayed `Your Location is` is where
+//! The `/loc` position is LIVE-ONLY, never older than the newest line already folded this session
+//! (a truncated log re-emits survivors as live), and never checkpointed: a replayed `Your Location is` is where
 //! the character stood when it was typed, not where it stands now. It is filed under the zone held
 //! at that moment (none held ⇒ nothing filed) and any zone line or new session drops it.
 
@@ -172,6 +172,10 @@ impl EqModule for CharacterModule {
     }
 
     fn on_event(&mut self, ev: &Event, live: bool) {
+        // The re-read guard holds within a session: a new one may run on a clock set back.
+        if matches!(ev.kind(), "sessionStart" | "epoch") {
+            self.newest_ts = ev.ts();
+        }
         let fresh = live && ev.ts() >= self.newest_ts;
         self.newest_ts = self.newest_ts.max(ev.ts());
         match ev.kind() {
