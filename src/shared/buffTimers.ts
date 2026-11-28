@@ -77,6 +77,7 @@ import { buffAllowAllowed, buffAllowIsDefault, type BuffAllowPrefs } from './buf
 // Type-only: `shared/types.ts` is a value module (OVERLAY_KINDS) and this one is imported by the
 // node tests as a pure module, so the reference is erased at compile time and nothing follows it.
 import type { OverlayConfig, OverlayKind } from './types'
+import type { SpellLockoutsSnap } from './spellLockouts'
 
 // ----- the two TIMER SURFACES (JOS-119) -----
 
@@ -207,6 +208,8 @@ export interface CcEnd {
 export interface BuffTimersSnap {
   holds: CcHold[]
   ends: CcEnd[]
+  /** The spell-lockout timers (shared/spellLockouts.ts). Read by the lockout overlay only. */
+  lockouts?: SpellLockoutsSnap
 }
 export type BuffTimersDelta = BuffTimersSnap
 

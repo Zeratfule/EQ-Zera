@@ -38,7 +38,9 @@ import type { CharacterRef, OverlayKind } from '../shared/types'
 // `kills` for the named, `loot` for the keys, `coin` for the auto-sell and `deaths` for the
 // deaths. A crawl is a live thing, but the record it is cut out of is months of log, so it needs
 // the rebuild signal for exactly the reason 'farm' and 'xp' do.
-export const MODULE_READING_OVERLAYS: OverlayKind[] = ['events', 'buffs', 'debuffs', 'xp', 'respawn', 'farm', 'run']
+// 'lockout' (2026-11-27) reads ONE - `buffTimers` for its `lockouts` - live-only rows, but a rebuild
+// still has to clear what the window holds.
+export const MODULE_READING_OVERLAYS: OverlayKind[] = ['events', 'buffs', 'debuffs', 'xp', 'respawn', 'farm', 'run', 'lockout']
 
 /**
  * Push to every overlay window that reads modules.

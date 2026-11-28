@@ -134,3 +134,26 @@ fn a_checkpoint_never_carries_a_position() {
     let zone = &g.registry.snapshot_of("character").unwrap()["state"]["zone"];
     assert_eq!(zone, &json!("Nektropos Castle 2 (Adaptive)"));
 }
+
+/// A new session may run on a clock set back (DST fall-back): its /loc still places, while a re-read
+/// older than that session's newest line still does not.
+#[test]
+fn a_new_session_on_a_clock_set_back_still_places() {
+    let mut f = fold();
+    feed(&mut f, ZONE, true);
+    feed(&mut f, &loc_at(9000), true);
+    feed(&mut f, &WELCOME.replace("4000", "6000"), true);
+    feed(&mut f, &ZONE.replace("1000", "6100"), true);
+    feed(&mut f, &loc_at(6500), true);
+    assert_eq!(
+        loc_of(&f)["ts"],
+        json!(6500),
+        "placed under the set-back clock"
+    );
+    feed(&mut f, &loc_at(6200), true);
+    assert_eq!(
+        loc_of(&f)["ts"],
+        json!(6500),
+        "a re-read within the session is still refused"
+    );
+}

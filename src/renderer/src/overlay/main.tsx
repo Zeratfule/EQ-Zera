@@ -11,6 +11,7 @@ import XpOverlay from './XpOverlay'
 import RespawnOverlay from './RespawnOverlay'
 import FarmOverlay from './FarmOverlay'
 import RunOverlay from './RunOverlay'
+import LockoutOverlay from './LockoutOverlay'
 import { isHealOverlayKind } from '@shared/types'
 import { isTimerOverlayKind } from '@shared/buffTimers'
 import { installOverlayPointerExit } from './pointerExit'
@@ -50,6 +51,8 @@ import { installOverlayPointerExit } from './pointerExit'
 //   'run'                             → the run tracker (2026-09-11): where you are inside a
 //                                       dungeon instance - elapsed time, kills and pace, the named
 //                                       in the order they went down, the keys, the deaths
+//   'lockout'                         → the dirge lockout timer (2026-11-27): when your Denon's
+//                                       Desperate Dirge can land on the same targets again
 //   everything else                   → the damage meter (fight / zone selection lives inside)
 const kind = window.eqOverlay?.kind ?? 'fight'
 
@@ -62,6 +65,7 @@ function Surface(): React.JSX.Element {
   if (kind === 'respawn') return <RespawnOverlay />
   if (kind === 'farm') return <FarmOverlay />
   if (kind === 'run') return <RunOverlay />
+  if (kind === 'lockout') return <LockoutOverlay />
   if (isTimerOverlayKind(kind)) return <BuffsOverlay kind={kind} />
   if (isHealOverlayKind(kind)) return <HealMeter />
   return <OverlayMeter />

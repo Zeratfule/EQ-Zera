@@ -68,6 +68,7 @@ const ALL_KINDS = [
   'respawn',
   'farm',
   'run',
+  'lockout',
   'toast',
   'alertBanner',
   'conCard'
