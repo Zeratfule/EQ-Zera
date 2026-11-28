@@ -135,6 +135,25 @@ export interface ReleaseNote {
  * still sees exactly the releases above it.
  */
 export const RELEASE_NOTES: readonly ReleaseNote[] = [
+  // The Dirge lockout overlay for the 11/10 Denon's Desperate Dirge change.
+  {
+    version: '1.31.2',
+    date: '2026-11-27',
+    entries: [
+      {
+        kind: 'new',
+        text: "New Dirge lockout overlay: after your Denon's Desperate Dirge lands, it counts down until the same mobs can be hit again. Open it from the Overlay menu."
+      },
+      {
+        kind: 'new',
+        text: 'Since the 11/10 patch the Dirge can only land on the same target once every two ticks, and the game says nothing when it is blocked. The overlay shows how many mobs your last Dirge hit, red while they are locked, amber once they may be ready, and green when they surely are.'
+      },
+      {
+        kind: 'fixed',
+        text: 'The /loc map marker keeps working after your PC clock moves back, such as at the end of daylight saving time.'
+      }
+    ]
+  },
   // Per-item +N projection on the item page, and the /loc map marker read from the log.
   {
     version: '1.31.1',
