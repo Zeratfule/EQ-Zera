@@ -123,11 +123,16 @@ export type { LootDisposition, LootSourceKind, ItemStatBlock }
  * index and nobody's window moves. It reads `progression`, `kills`, `loot`, `coin` and `deaths`,
  * so it joins `worldRebuilt.MODULE_READING_OVERLAYS`; `shared/runTracker.ts` carries the fold and
  * the four facts the engine does not emit that it therefore does not claim.
+ *
+ * The TWELFTH ('lockout', 2026-11-27) is a METER on the same terms: before 'alertBanner', the next
+ * free dock slot. It shows when YOUR Denon's Desperate Dirge can land on the same targets again
+ * (the 2026-11-10 lockout), off the `buffTimers` module's `lockouts`; `shared/spellLockouts.ts`
+ * carries the phases. Default off; it reads a module, so it is in `MODULE_READING_OVERLAYS` too.
  */
 // prettier-ignore
-export type OverlayKind = 'fight' | 'overall' | 'events' | 'heal-fight' | 'heal-overall' | 'toast' | 'buffs' | 'debuffs' | 'xp' | 'respawn' | 'farm' | 'run' | 'alertBanner' | 'conCard'
+export type OverlayKind = 'fight' | 'overall' | 'events' | 'heal-fight' | 'heal-overall' | 'toast' | 'buffs' | 'debuffs' | 'xp' | 'respawn' | 'farm' | 'run' | 'lockout' | 'alertBanner' | 'conCard'
 // prettier-ignore
-export const OVERLAY_KINDS: OverlayKind[] = ['fight', 'overall', 'events', 'heal-fight', 'heal-overall', 'toast', 'buffs', 'debuffs', 'xp', 'respawn', 'farm', 'run', 'alertBanner', 'conCard']
+export const OVERLAY_KINDS: OverlayKind[] = ['fight', 'overall', 'events', 'heal-fight', 'heal-overall', 'toast', 'buffs', 'debuffs', 'xp', 'respawn', 'farm', 'run', 'lockout', 'alertBanner', 'conCard']
 
 /** True for the two HEALING overlay kinds (they render HealMeter, not OverlayMeter). */
 export function isHealOverlayKind(kind: OverlayKind): boolean {

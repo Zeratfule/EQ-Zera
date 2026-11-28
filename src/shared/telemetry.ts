@@ -183,6 +183,9 @@ export const TELEMETRY_OVERLAY_KINDS = [
   // fork, so the closed-enum deploy order does not bite here, and the value is listed because
   // tests/telemetryContract.test.mts pins this list to `OVERLAY_KINDS`.
   'run',
+  // The dirge lockout timer (EQ Zera, 2026-11-27) - telemetry is DARK in this fork; listed because
+  // tests/telemetryContract.test.mts pins this list to `OVERLAY_KINDS`.
+  'lockout',
   // JOS-378 added the alert banner. THE SAME DEPLOY ORDER APPLIES A FOURTH TIME, for the fourth
   // identical reason: the enum is CLOSED, the ingest Lambda validates through this module, and a
   // batch carrying a value the server has not learned yet is refused WHOLE with a 400 the client

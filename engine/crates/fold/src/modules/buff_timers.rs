@@ -12,6 +12,9 @@
 //! somebody is watching a mez run out — so a delta advancing no log seq would be dropped as a
 //! duplicate and the row would sit on screen forever. Every `rev += 1` here is a published number.
 //!
+//! It also carries the spell-lockout timers (`lockouts.rs`, the lockout overlay's data): they share
+//! this module's revision and snapshot so a new timer needs no module of its own.
+//!
 //! An offline gap is an explicit no-op. Everything held here is on somebody else, and the world
 //! those mobs stand in does not stop when you camp, so their landings stay where they are. It is
 //! written out rather than left as an absent case because the asymmetry with `buffs.rs` looks like
@@ -37,6 +40,7 @@ use std::rc::Rc;
 
 mod candidates;
 use candidates::{cc_candidates, damage_breaks, sorted_names};
+pub mod lockouts;
 
 /// How long an END is remembered — long enough for the projection to retire a matching active buff
 /// the buffs model never clears, and for the overlay to flash a drop. It is not a history.
@@ -175,6 +179,8 @@ pub struct BuffTimersModule {
     /// Samples minted within the last [`WAKE_CENSOR_MS`], awaiting a possible wake annotation.
     recent_mints: Vec<RecentMint>,
     last_event_ts: i64,
+    /// The spell-lockout timers, which share this module's revision and snapshot.
+    lockouts: lockouts::Lockouts,
     /// Our own revision, not the last event's seq — see the module header.
     rev: i64,
 }
@@ -188,6 +194,7 @@ impl BuffTimersModule {
             culled: JsMap::new(),
             recent_mints: Vec::new(),
             last_event_ts: 0,
+            lockouts: lockouts::Lockouts::default(),
             rev: 0,
         }
     }
@@ -745,23 +752,6 @@ impl BuffTimersModule {
         }
     }
 
-    /// Retire memories past their join window, and mints too old for a wake line to be about.
-    fn sweep_memories(&mut self, now_ms: i64) {
-        let dead: Vec<String> = self
-            .culled
-            .iter()
-            .filter(|(_, m)| now_ms > m.joinable_until)
-            .map(|(k, _)| k.to_string())
-            .collect();
-        for k in dead {
-            self.culled.remove(&k);
-        }
-        if !self.recent_mints.is_empty() {
-            self.recent_mints
-                .retain(|m| now_ms - m.ts <= WAKE_CENSOR_MS);
-        }
-    }
-
     /// You left them behind. The memories go too: a landing you left behind is one whose break line
     /// you will never see.
     fn clear_holds(&mut self) {
@@ -824,7 +814,7 @@ impl BuffTimersModule {
     }
 
     fn build_snap(&self) -> Value {
-        json!({ "holds": self.holds(), "ends": self.ends })
+        json!({ "holds": self.holds(), "ends": self.ends, "lockouts": self.lockouts.view() })
     }
 
     /// Every live hold, oldest first, in the module's own shape.
@@ -893,10 +883,12 @@ impl EqModule for BuffTimersModule {
         self.culled.clear();
         self.recent_mints.clear();
         self.last_event_ts = 0;
+        self.lockouts = lockouts::Lockouts::default();
         self.rev = 0;
     }
 
-    fn on_event(&mut self, ev: &Event, _live: bool) {
+    fn on_event(&mut self, ev: &Event, live: bool) {
+        self.rev += i64::from(self.lockouts.on_event(ev, live));
         // A 30-minute event-time hole is past any hold this module can carry (the same boundary the
         // buffs model uses), and a character epoch is a different character entirely.
         if ev.kind() == "epoch" {

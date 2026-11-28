@@ -446,6 +446,8 @@ const DEFAULT_OVERLAY_CONFIG: Record<OverlayKind, OverlayConfig> = {
   // migration, on exactly the terms the row above states: `overlays.run` has never been written by
   // any build, so every existing store reads this default and gets the window off for free.
   run: { open: false, locked: false, bgAlpha: 0.72, bounds: undefined, drill: null },
+  // THE DIRGE LOCKOUT TIMER (2026-11-27). Default off, no migration, on the terms above.
+  lockout: { open: false, locked: false, bgAlpha: 0.72, bounds: undefined, drill: null },
   // THE ALERT BANNER (JOS-378). `locked: true` is the resting state that makes it a notifier
   // rather than a window — the celebration toast's arrangement, and for the same reason: locked
   // is click-through, and the overlay flips capture on only while a line is actually on screen.

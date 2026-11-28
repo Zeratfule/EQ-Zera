@@ -566,6 +566,7 @@ export const OVERLAY_TITLE: Partial<Record<OverlayKind, string>> = {
   // window list reads consistently, and the Overlay menu's shorter "Farm meter" is the label there.
   farm: 'Farm Meter Overlay',
   run: 'Run Tracker Overlay',
+  lockout: 'Dirge Lockout Overlay',
   alertBanner: 'Alert Banner Overlay',
   conCard: 'Mob Card Overlay'
 }
